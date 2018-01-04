@@ -1,0 +1,1 @@
+cmd_drivers/misc/mediatek/lcm/ili9806e_fwvga_dsi_vdo_TXD/built-in.o :=  /root/linaro/bin/arm-cortex_a7-linux-gnueabihf-ld -EL    -r -o drivers/misc/mediatek/lcm/ili9806e_fwvga_dsi_vdo_TXD/built-in.o drivers/misc/mediatek/lcm/ili9806e_fwvga_dsi_vdo_TXD/ili9806e_fwvga_dsi_vdo_TXD.o 
