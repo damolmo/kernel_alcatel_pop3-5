@@ -1,16 +1,3 @@
-/*
- * Copyright (C) 2015 MediaTek Inc.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
-
 /*****************************************************************************
  *
  * Filename:
@@ -40,7 +27,6 @@
 #include <linux/fs.h>
 #include <asm/atomic.h>
 //#include <asm/system.h>
-#include <linux/xlog.h>
 
 #include "kd_camera_hw.h"
 #include "kd_imgsensor.h"
@@ -55,7 +41,7 @@
 #define LOG_2 LOG_INF("preview 1280*960@30fps,864Mbps/lane; video 1280*960@30fps,864Mbps/lane; capture 5M@30fps,864Mbps/lane\n")
 /****************************   Modify end    *******************************************/
 
-#define LOG_INF(format, args...)    pr_debug(PFX "[%s] " format, __FUNCTION__, ##args)
+#define LOG_INF(format, args...)    pr_err(PFX "[%s] " format, __FUNCTION__, ##args)
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 
@@ -143,19 +129,30 @@ static imgsensor_info_struct imgsensor_info = {
     .ihdr_le_firstline = 0,  //1,le first ; 0, se first
     .sensor_mode_num = 5,      //support sensor mode num
 
+    //BEGIN: fangjie modify for CTS android.hardware.camera2.cts.RobustnessTest/testMandatoryOutputCombinations
+     /* old:
     .cap_delay_frame = 3,        //enter capture delay frame num
     .pre_delay_frame = 3,         //enter preview delay frame num
     .video_delay_frame = 3,        //enter video delay frame num
     .hs_video_delay_frame = 3,    //enter high speed video  delay frame num
     .slim_video_delay_frame = 3,//enter slim video delay frame num
+    */
+// resume the delay frame from 1 to 3 for defect 485200,  and google cts testMandatoryOutputCombinations resolved by other patch task506144
+    .cap_delay_frame = 3,        //enter capture delay frame num
+    .pre_delay_frame = 3,         //enter preview delay frame num
+    .video_delay_frame = 3,        //enter video delay frame num
+    .hs_video_delay_frame = 3,    //enter high speed video  delay frame num
+    .slim_video_delay_frame = 3,//enter slim video delay frame num
+    //END: fangjie modify for CTS android.hardware.camera2.cts.RobustnessTest/testMandatoryOutputCombinations
+
 
     .isp_driving_current = ISP_DRIVING_6MA, //mclk driving current
     .sensor_interface_type = SENSOR_INTERFACE_TYPE_MIPI,//sensor_interface_type
     .mipi_sensor_type = MIPI_OPHY_NCSI2, //0,MIPI_OPHY_NCSI2;  1,MIPI_OPHY_CSI2
-    .mipi_settle_delay_mode = MIPI_SETTLEDELAY_AUTO,//0,MIPI_SETTLEDELAY_AUTO; 1,MIPI_SETTLEDELAY_MANNUAL
-    .sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_B,//sensor output first pixel color
+    .mipi_settle_delay_mode = MIPI_SETTLEDELAY_MANUAL, //MIPI_SETTLEDELAY_AUTO,//0,MIPI_SETTLEDELAY_AUTO; 1,MIPI_SETTLEDELAY_MANNUAL
+    .sensor_output_dataformat = SENSOR_OUTPUT_FORMAT_RAW_R,//sensor output first pixel color
     .mclk = 24,//mclk value, suggest 24 or 26 for 24Mhz or 26Mhz
-    .mipi_lane_num = SENSOR_MIPI_2_LANE,//mipi lane num
+    .mipi_lane_num = SENSOR_MIPI_1_LANE,//mipi lane num
     .i2c_addr_table = {0x78, 0xff},//record sensor support all write id addr, only supprt 4must end with 0xff
 };
 
@@ -513,7 +510,7 @@ static void sensor_init(void)
 	write_cmos_sensor(0xfe,0x80);
 	write_cmos_sensor(0xf2,0x00); //sync_pad_io_ebi
 	write_cmos_sensor(0xf6,0x00); //up down
-	write_cmos_sensor(0xf7,0x31); //19 //pll enable
+	write_cmos_sensor(0xf7,0x19); //19 //pll enable
 	write_cmos_sensor(0xf8,0x06); //Pll mode 2  /////86--Ƶ
 	write_cmos_sensor(0xf9,0x0e); //de//[0] pll enable
 	write_cmos_sensor(0xfa,0x00); //div
@@ -540,7 +537,7 @@ static void sensor_init(void)
 	write_cmos_sensor(0x14,0x01);
 	write_cmos_sensor(0x15,0x00);
 	write_cmos_sensor(0x16,0xc1);*/
-	write_cmos_sensor(0x17,0x17);//14
+	write_cmos_sensor(0x17,0x14);//14
 	//write_cmos_sensor(0x18,0x02);
 	write_cmos_sensor(0x19,0x0b);
 	write_cmos_sensor(0x1b,0x49); //48
@@ -613,8 +610,8 @@ static void sensor_init(void)
 
 	/*MIPI*/
 	  write_cmos_sensor(0xfe, 0x03);
-	  write_cmos_sensor(0x10, 0x81);
-	  write_cmos_sensor(0x01, 0x87);
+	  write_cmos_sensor(0x10, 0x80);
+	  write_cmos_sensor(0x01, 0x83);
 	  write_cmos_sensor(0x02, 0x11);
 	  write_cmos_sensor(0x03, 0x91);
 	  write_cmos_sensor(0x04, 0x01);
@@ -626,16 +623,16 @@ static void sensor_init(void)
 	  write_cmos_sensor(0x12, 0xd0); //d0//40
 	  write_cmos_sensor(0x13, 0x07); //07//06
 	  write_cmos_sensor(0x21, 0x10);
-	  write_cmos_sensor(0x22, 0x03);
-	  write_cmos_sensor(0x23, 0x20);
+	  write_cmos_sensor(0x22, 0x05);
+	  write_cmos_sensor(0x23, 0x30);
 	  write_cmos_sensor(0x24, 0x02);
-	  write_cmos_sensor(0x25, 0x10);
+	  write_cmos_sensor(0x25, 0x15);
 	  write_cmos_sensor(0x26, 0x08);
 	//  write_cmos_sensor(0x27, 0x06);
-	  write_cmos_sensor(0x29, 0x02);//04
+	  write_cmos_sensor(0x29, 0x06);//04
 	  write_cmos_sensor(0x2a, 0x0a);
 	  write_cmos_sensor(0x2b, 0x08);
-	  write_cmos_sensor(0x10, 0x81);//91//94//1lane raw8
+	  write_cmos_sensor(0x10, 0x80);//91//94//1lane raw8
 	  write_cmos_sensor(0x40, 0x00);
 	  write_cmos_sensor(0x41, 0x00);
 	  write_cmos_sensor(0x42, 0x40);
@@ -677,7 +674,7 @@ static void preview_setting(void)
   write_cmos_sensor(0xfe,0x03);
   write_cmos_sensor(0x12,0xd0); //d0//40
   write_cmos_sensor(0x13,0x07);
-  write_cmos_sensor(0x10,0x91);
+  write_cmos_sensor(0x10,0x90);
   write_cmos_sensor(0xfe,0x00);
 
 }    /*    preview_setting  */
@@ -715,7 +712,7 @@ static void capture_setting(kal_uint16 currefps)
 		  write_cmos_sensor(0xfe,0x03);
 		  write_cmos_sensor(0x12,0xd0); //d0//40
 		  write_cmos_sensor(0x13,0x07);
-		  write_cmos_sensor(0x10,0x91);
+		  write_cmos_sensor(0x10,0x90);
 		  write_cmos_sensor(0xfe,0x00);
 
 	} else {   //30fps			//30fps for Normal capture & ZSD
@@ -748,7 +745,7 @@ static void capture_setting(kal_uint16 currefps)
 		   write_cmos_sensor(0xfe,0x03);
 		   write_cmos_sensor(0x12,0xd0); //d0//40
 		   write_cmos_sensor(0x13,0x07);
-		   write_cmos_sensor(0x10,0x91);
+		   write_cmos_sensor(0x10,0x90);//0x91
 		   write_cmos_sensor(0xfe,0x00);
 	}
 
@@ -787,7 +784,7 @@ static void normal_video_setting(kal_uint16 currefps)
 	 write_cmos_sensor(0xfe,0x03);
 	 write_cmos_sensor(0x12,0xd0); //d0//40
 	 write_cmos_sensor(0x13,0x07);
-	 write_cmos_sensor(0x10,0x91);
+	 write_cmos_sensor(0x10,0x90);
 	 write_cmos_sensor(0xfe,0x00);
 
 }
@@ -822,9 +819,9 @@ static void hs_video_setting()
 	write_cmos_sensor(0xb6,0x03);
 
 	write_cmos_sensor(0xfe,0x03);
-	write_cmos_sensor(0x12,0x20);
-	write_cmos_sensor(0x13,0x03);
-	write_cmos_sensor(0x10,0x91);
+	write_cmos_sensor(0x12,0xd0);//0x20
+	write_cmos_sensor(0x13,0x07);//0x03
+	write_cmos_sensor(0x10,0x90);
 	write_cmos_sensor(0xfe,0x00);
 
 }
@@ -861,7 +858,7 @@ static void slim_video_setting()
 	write_cmos_sensor(0xfe,0x03);
 	write_cmos_sensor(0x12,0xd0); //d0//40
 	write_cmos_sensor(0x13,0x07);
-	write_cmos_sensor(0x10,0x91);
+	write_cmos_sensor(0x10,0x90);
 	write_cmos_sensor(0xfe,0x00);
 }
 
