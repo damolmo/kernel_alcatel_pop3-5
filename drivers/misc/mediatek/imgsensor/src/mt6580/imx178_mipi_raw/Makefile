@@ -1,4 +1,5 @@
 include $(srctree)/drivers/misc/mediatek/Makefile.custom
-obj-y += ov5670mipi_Sensor.o
+obj-y += imx178otp.o
+obj-y += imx178mipiraw_Sensor.o
 
 

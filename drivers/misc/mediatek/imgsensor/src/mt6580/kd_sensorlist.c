@@ -56,8 +56,14 @@ char g_cam_infos[camera_infos_size] = {0};
 static unsigned int gDrvIndex;
 int cntPWROnMain = 0;
 int cntPWROnSub = 0;
-
-
+/*add by xiaopu.zhu for hardwareinfo*/
+#if defined (CONFIG_HW_INFO) 
+#define CAM_NAME_LEN    32
+static char mainCameraName[CAM_NAME_LEN + 1] = {0};
+static char subCameraName[CAM_NAME_LEN + 1] = {0};
+char *g_main_camera=NULL;
+char *g_sub_camera=NULL;
+#endif
 static DEFINE_SPINLOCK(power_count_lock);
 
 static DEFINE_SPINLOCK(kdsensor_drv_lock);
@@ -1709,7 +1715,18 @@ static inline int adopt_CAMERA_HW_CheckIsAlive(void)
 					snprintf(g_cam_infos, sizeof(g_cam_infos),"%s CAM[%d]:%s,Width:%d, Height:%d;",
 								g_cam_infos, g_invokeSocketIdx[i], g_invokeSensorNameStr[i],
 								sensorResolution[curr_sensor_id].SensorFullWidth, sensorResolution[curr_sensor_id].SensorFullHeight);
-
+			          #if defined (CONFIG_HW_INFO) 
+					  if(g_invokeSocketIdx[i]==DUAL_CAMERA_MAIN_SENSOR)
+					  {
+					 memcpy(mainCameraName,(char*)g_invokeSensorNameStr[i],CAM_NAME_LEN);
+					 g_main_camera = mainCameraName;
+					  }
+					  else if(g_invokeSocketIdx[i]==DUAL_CAMERA_SUB_SENSOR)
+					  {
+					 memcpy(subCameraName,(char*)g_invokeSensorNameStr[i],CAM_NAME_LEN);
+					 g_sub_camera = subCameraName;
+					  }
+					 #endif
 					err = ERROR_NONE;
 				}
 				if (ERROR_NONE != err) {
@@ -2998,6 +3015,9 @@ bool Get_Cam_Regulator(void)
 				if (regVCAMAF == NULL) {
 					regVCAMAF = regulator_get(sensor_device, "vcamaf");
 				}
+				if (regSubVCAMD == NULL) {
+					regSubVCAMD = regulator_get(sensor_device, "vgp3");
+				}				
 			} else {
 				/* backup original dev.of_node */
 				kd_node = sensor_device->of_node;
@@ -3017,7 +3037,7 @@ bool Get_Cam_Regulator(void)
 						regVCAMD = regulator_get(sensor_device, "vcamd");
 				}
 				if (regSubVCAMD == NULL) {
-						regSubVCAMD = regulator_get(sensor_device, "vcamd_sub");
+						regSubVCAMD = regulator_get(sensor_device, "vgp3");
 				}
 				if (regVCAMIO == NULL) {
 						regVCAMIO = regulator_get(sensor_device, "vcamio");
@@ -3053,6 +3073,8 @@ bool _hwPowerOn(KD_REGULATOR_TYPE_T type, int powerVolt)
 		reg = regVCAMIO;
 	} else if (type == VCAMAF) {
 		reg = regVCAMAF;
+	} else if (type == SUB_VCAMD) {
+		reg = regSubVCAMD;
 	} else
 		return ret;
 
@@ -3090,7 +3112,10 @@ bool _hwPowerDown(KD_REGULATOR_TYPE_T type)
 		reg = regVCAMIO;
 	} else if (type == VCAMAF) {
 		reg = regVCAMAF;
-	} else
+	} else if (type == SUB_VCAMD) {
+		reg = regSubVCAMD;
+	}
+	else
 		return ret;
 
 	if (!IS_ERR(reg)) {
