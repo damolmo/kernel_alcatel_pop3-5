@@ -298,6 +298,5 @@ source "drivers/misc/mediatek/usb_c/Kconfig"
 source "drivers/misc/mediatek/hardwareinfo/Kconfig"
 source "drivers/misc/mediatek/aw8155_pixi4_5/Kconfig"
 source "drivers/misc/mediatek/fc8180/Kconfig"
-source "drivers/misc/mediatek/sound/Kconfig"
 source "drivers/misc/mediatek/cam_cal/Kconfig"
 endif
