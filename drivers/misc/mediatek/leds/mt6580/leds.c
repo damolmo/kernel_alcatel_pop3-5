@@ -16,7 +16,6 @@
 #include <linux/ctype.h>
 #include <linux/leds.h>
 #include <linux/of.h>
-/* #include <linux/leds-mt65xx.h> */
 #include <linux/workqueue.h>
 #include <linux/wakelock.h>
 #include <linux/slab.h>
@@ -425,7 +424,7 @@ static int led_switch_breath_pmic(enum mt65xx_led_pmic pmic_type,
 			break;
 		case MT65XX_LED_PMIC_NLED_ISINK2:
 			pmic_set_register_value(PMIC_ISINK_CH2_MODE, ISINK_BREATH_MODE);
-			pmic_set_register_value(PMIC_ISINK_CH2_STEP, ISINK_3);
+			pmic_set_register_value(PMIC_ISINK_CH2_STEP, ISINK_4);
 			pmic_set_register_value(PMIC_ISINK_BREATH2_TRF_SEL, 0x04);
 			/* pmic_set_register_value(PMIC_ISINK_BREATH2_TR1_SEL,0x04); */
 			/* pmic_set_register_value(PMIC_ISINK_BREATH2_TR2_SEL,0x04); */
@@ -541,7 +540,7 @@ int mt_led_blink_pmic(enum mt65xx_led_pmic pmic_type, struct nled_setting *led)
 		pmic_set_register_value(PMIC_RG_ISINK2_CK_PDN, 0);
 		pmic_set_register_value(PMIC_RG_ISINK2_CK_SEL, 0);
 		pmic_set_register_value(PMIC_ISINK_CH2_MODE, ISINK_PWM_MODE);
-		pmic_set_register_value(PMIC_ISINK_CH2_STEP, ISINK_3);	/* 16mA */
+		pmic_set_register_value(PMIC_ISINK_CH2_STEP, ISINK_4);	/* 16mA */
 		pmic_set_register_value(PMIC_ISINK_DIM2_DUTY, duty);
 		pmic_set_register_value(PMIC_ISINK_DIM2_FSEL, pmic_freqsel_array[time_index]);
 		pmic_set_register_value(PMIC_ISINK_CH2_EN, NLED_ON);
@@ -902,10 +901,9 @@ int mt_brightness_set_pmic(enum mt65xx_led_pmic pmic_type, u32 level, u32 div)
 		pmic_set_register_value(PMIC_RG_DRV_32K_CK_PDN, 0x0);	/* Disable power down */
 		pmic_set_register_value(PMIC_RG_ISINK2_CK_PDN, 0);
 		pmic_set_register_value(PMIC_RG_ISINK2_CK_SEL, 0);
-		pmic_set_register_value(PMIC_ISINK_CH2_MODE, ISINK_PWM_MODE);
-		pmic_set_register_value(PMIC_ISINK_CH2_STEP, ISINK_3);	/* 16mA */
-		pmic_set_register_value(PMIC_ISINK_DIM2_DUTY, 15);
-		pmic_set_register_value(PMIC_ISINK_DIM2_FSEL, ISINK_1KHZ);	/* 1KHz */
+		pmic_set_register_value(PMIC_RG_ISINK2_DOUBLE_EN,0x1); // Enable double current add by xiaopu.zhu
+		pmic_set_register_value(PMIC_ISINK_CH2_MODE,ISINK_REGISTER_MODE);//modify by xiaopu.zhu to ISINK_REGISTER_MODE 
+		pmic_set_register_value(PMIC_ISINK_CH2_STEP,ISINK_4);//modify by xiaopu.zhu to 20mA 16mA old
 		if (level){
 			pmic_set_register_value(PMIC_ISINK_CH2_EN, NLED_ON);
 			printk("PMIC#%d:%d,%d,allenyao\n", pmic_type, level,__LINE__);

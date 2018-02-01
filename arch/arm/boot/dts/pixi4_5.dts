@@ -14,18 +14,12 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0 0 0xffffffff>;
-
-		// Start duanjinhui.wt ADD 20160223
-                ext_pa_aw8155: ext_pa_aw8155 {
-                        compatible = "mediatek,aw8155-pa";
-                };
-		// End
 	};
 
 	led@0 {
 		compatible = "mediatek,red";
 		led_mode = <3>;
-		data = <2>;
+		data = <4>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@1 {
@@ -37,7 +31,7 @@
 	led@2 {
 		compatible = "mediatek,blue";
 		led_mode = <3>;
-		data = <3>;
+		data = <4>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@3 {
@@ -54,8 +48,8 @@
 	};
 	led@5 {
 		compatible = "mediatek,button-backlight";
-		led_mode = <0>;
-		data = <1>;
+		led_mode = <3>;
+		data = <3>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@6 {
@@ -360,8 +354,6 @@ chosen {
 	pinctrl-2 = <&strobe_pins_enable_output1>;
 	pinctrl-3 = <&strobe_pins_torch_output0>;
 	pinctrl-4 = <&strobe_pins_torch_output1>;
-	pinctrl-5 = <&strobe_pins_enablef_output0>;
-	pinctrl-6 = <&strobe_pins_enablef_output1>;
 	status = "okay";
 };
 &pio {
@@ -384,28 +376,14 @@ chosen {
 	};
 	strobe_pins_torch_output0: torchoutput0 {
 		pins_cmd_dat {
-			pins = <PINMUX_GPIO19__FUNC_GPIO19>;
+			pins = <PINMUX_GPIO7__FUNC_GPIO7>;
 			slew-rate = <1>;
 			output-low;
 		};
 	};
 	strobe_pins_torch_output1: torchoutput1 {
 		pins_cmd_dat {
-			pins = <PINMUX_GPIO19__FUNC_GPIO19>;
-			slew-rate = <1>;
-			output-high;
-		};
-	};
-	strobe_pins_enablef_output0: enablefoutput0 {
-		pins_cmd_dat {
-			pins = <PINMUX_GPIO34__FUNC_GPIO34>;
-			slew-rate = <1>;
-			output-low;
-		};
-	};
-	strobe_pins_enablef_output1: enablefoutput1 {
-		pins_cmd_dat {
-			pins = <PINMUX_GPIO34__FUNC_GPIO34>;
+			pins = <PINMUX_GPIO7__FUNC_GPIO7>;
 			slew-rate = <1>;
 			output-high;
 		};
@@ -464,28 +442,6 @@ chosen {
 	};
 };
 /*ACCDET END*/
-
-//Start liuyang.wt ADD 20151229
-/* AW8155 GPIO standardization */
-&ext_pa_aw8155 {
-	pinctrl-names = "default", "en_pin";
-	pinctrl-0 = <&pa_pins_default>;
-	pinctrl-1 = <&pa_pins_en>;
-	status = "okay";
-};
-&pio {
-	pa_pins_default: papinsdefault {
-	};
-	pa_pins_en: papins@0 {
-		pins_cmd_dat {
-			pins = <PINMUX_GPIO21__FUNC_GPIO21>;
-			slew-rate = <1>;
-            bias-disable;
-			output-low;
-		};
-	};
-};
-/* AW8155 end*/
 
 /* DTV EINT Start */
 &eint_dtv {
