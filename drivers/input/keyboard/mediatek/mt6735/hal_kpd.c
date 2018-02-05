@@ -89,12 +89,12 @@ void sb_kpd_disable(void)
 static void enable_kpd(int enable)
 {
 	if (enable == 1) {
-			mt_reg_sync_writew((u16)(enable), KP_EN);
-			kpd_print("KEYPAD is enabled\n");
+		mt_reg_sync_writew((u16) (enable), KP_EN);
+		kpd_print("KEYPAD is enabled\n");
 	} else if (enable == 0) {
-			mt_reg_sync_writew((u16)(enable), KP_EN);
-			kpd_print("KEYPAD is disabled\n");
-		}
+		mt_reg_sync_writew((u16) (enable), KP_EN);
+		kpd_print("KEYPAD is disabled\n");
+	}
 }
 #endif
 
@@ -212,17 +212,27 @@ void kpd_auto_test_for_factorymode(void)
 	kpd_print("begin kpd_auto_test_for_factorymode!\n");
 	if (pmic_get_register_value(PMIC_PWRKEY_DEB) == 1) {
 		kpd_print("power key release\n");
+		/*kpd_pwrkey_pmic_handler(1);*/
+		/*mdelay(time);*/
+		/*kpd_pwrkey_pmic_handler(0);}*/
 	} else {
 		kpd_print("power key press\n");
 		kpd_pwrkey_pmic_handler(1);
+		/*mdelay(time);*/
+		/*kpd_pwrkey_pmic_handler(0);*/
 	}
 
 #ifdef KPD_PMIC_RSTKEY_MAP
-	if (pmic_get_register_value(PMIC_FCHRKEY_DEB) == 1) {
-		;
+	if (pmic_get_register_value(PMIC_HOMEKEY_DEB) == 1) {
+		/*kpd_print("home key release\n");*/
+		/*kpd_pmic_rstkey_handler(1);*/
+		/*mdelay(time);*/
+		/*kpd_pmic_rstkey_handler(0);*/
 	} else {
 		kpd_print("home key press\n");
 		kpd_pmic_rstkey_handler(1);
+		/*mdelay(time);*/
+		/*kpd_pmic_rstkey_handler(0);*/
 	}
 #endif
 }
@@ -235,20 +245,20 @@ void long_press_reboot_function_setting(void)
 		kpd_info("Normal Boot long press reboot selection\n");
 #ifdef CONFIG_KPD_PMIC_LPRST_TD
 		kpd_info("Enable normal mode LPRST\n");
-	#ifdef CONFIG_ONEKEY_REBOOT_NORMAL_MODE
-		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x00);
+#ifdef CONFIG_ONEKEY_REBOOT_NORMAL_MODE
+		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x00);
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_TD, CONFIG_KPD_PMIC_LPRST_TD);
-	#endif
+#endif
 
 #ifdef CONFIG_TWOKEY_REBOOT_NORMAL_MODE
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_TD, CONFIG_KPD_PMIC_LPRST_TD);
-	#endif
+#endif
 #else
 		kpd_info("disable normal mode LPRST\n");
-		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
+		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x00);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x00);
 
 #endif
@@ -256,25 +266,25 @@ void long_press_reboot_function_setting(void)
 		kpd_info("Other Boot Mode long press reboot selection\n");
 #ifdef CONFIG_KPD_PMIC_LPRST_TD
 		kpd_info("Enable other mode LPRST\n");
-	#ifdef CONFIG_ONEKEY_REBOOT_OTHER_MODE
-		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x00);
+#ifdef CONFIG_ONEKEY_REBOOT_OTHER_MODE
+		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x00);
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_TD, CONFIG_KPD_PMIC_LPRST_TD);
-	#endif
+#endif
 
 #ifdef CONFIG_TWOKEY_REBOOT_OTHER_MODE
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x01);
 		pmic_set_register_value(PMIC_RG_PWRKEY_RST_TD, CONFIG_KPD_PMIC_LPRST_TD);
-	#endif
+#endif
 #else
 		kpd_info("disable other mode LPRST\n");
-		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
+		pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x00);
 		pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x00);
 #endif
 	}
 #else
-	pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x01);
+	pmic_set_register_value(PMIC_RG_PWRKEY_RST_EN, 0x00);
 	pmic_set_register_value(PMIC_RG_HOMEKEY_RST_EN, 0x00);
 #endif
 }
@@ -283,7 +293,7 @@ void long_press_reboot_function_setting(void)
 void kpd_wakeup_src_setting(int enable)
 {
 #ifndef EVB_PLATFORM
-#if 0 /* FM not ready */
+#ifdef CONFIG_MTK_TC1_FM_AT_SUSPEND
 	int is_fm_radio_playing = 0;
 
 	/* If FM is playing, keep keypad as wakeup source */
@@ -334,13 +344,13 @@ void kpd_init_keymap_state(u16 keymap_state[])
 		keymap_state[i] = kpd_keymap_state[i];
 	kpd_info("init_keymap_state done: %x %x %x %x %x!\n", keymap_state[0], keymap_state[1], keymap_state[2],
 		 keymap_state[3], keymap_state[4]);
-	}
+}
 
 /********************************************************************/
 
 void kpd_set_debounce(u16 val)
 {
-	mt_reg_sync_writew((u16)(val & KPD_DEBOUNCE_MASK), KP_DEBOUNCE);
+	mt_reg_sync_writew((u16) (val & KPD_DEBOUNCE_MASK), KP_DEBOUNCE);
 }
 
 /********************************************************************/
@@ -368,10 +378,9 @@ void kpd_pmic_pwrkey_hal(unsigned long pressed)
 			kpd_print(KPD_SAY "(%s) HW keycode =%d using PMIC\n",
 			       pressed ? "pressed" : "released", kpd_dts_data.kpd_sw_pwrkey);
 		}
-#ifdef CONFIG_MTK_AEE_POWERKEY_HANG_DETECT
+		/*ZH CHEN*/
 		/*aee_powerkey_notify_press(pressed);*/
-#endif
-		}
+	}
 #endif
 }
 
@@ -386,7 +395,6 @@ void kpd_pwrkey_handler_hal(unsigned long data)
 	pressed = (kpd_pwrkey_state == !!KPD_PWRKEY_POLARITY);
 	if (kpd_show_hw_keycode)
 		kpd_print(KPD_SAY "(%s) HW keycode = using EINT\n", pressed ? "pressed" : "released");
-	kpd_backlight_handler(pressed, kpd_dts_data.kpd_sw_pwrkey);
 	input_report_key(kpd_input_dev, kpd_dts_data.kpd_sw_pwrkey, pressed);
 	kpd_print("report Linux keycode = %u\n", kpd_dts_data.kpd_sw_pwrkey);
 	input_sync(kpd_input_dev);
