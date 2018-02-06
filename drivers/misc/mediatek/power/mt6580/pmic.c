@@ -95,9 +95,6 @@
 #include "pmic.h"
 #include "pmic_dvt.h"
 #include "cust_pmic.h"
-#include "cust_battery_meter.h"
-
-
 /*
  * PMIC extern variable
  */

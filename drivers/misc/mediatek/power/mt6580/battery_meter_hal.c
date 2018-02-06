@@ -8,7 +8,6 @@
 #include <mach/mt_battery_meter.h>
 #include <mach/mt_pmic.h>
 #include <mt-plat/battery_meter.h>
-#include "cust_battery_meter.h"
 #include "cust_pmic.h"
 
 

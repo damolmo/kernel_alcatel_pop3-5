@@ -43,7 +43,6 @@
 #include <linux/time.h>
 
 #include "cust_pmic.h"
-#include "cust_battery_meter.h"
 
 /* extern void __iomem *spm_base; TBD */
 

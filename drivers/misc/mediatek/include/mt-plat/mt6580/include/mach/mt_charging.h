@@ -21,8 +21,8 @@
 
 /* Linear Charging Threshold */
 #define V_PRE2CC_THRES	3400	/*mV*/
-#define V_CC2TOPOFF_THRES	4150
-#define RECHARGING_VOLTAGE	4265  //modify by jiayu.ding
+#define V_CC2TOPOFF_THRES	4050
+#define RECHARGING_VOLTAGE	4275  //modify by jiayu.ding
 #define CHARGING_FULL_CURRENT	 150	/*mA*/ //old:100 modify-by-jiangjingjing
 
 /* Charging Current Setting */
@@ -38,7 +38,7 @@
 #define CHARGING_HOST_CHARGER_CURRENT	CHARGE_CURRENT_650_00_MA
 #define APPLE_0_5A_CHARGER_CURRENT	CHARGE_CURRENT_500_00_MA
 #define APPLE_1_0A_CHARGER_CURRENT	CHARGE_CURRENT_650_00_MA
-#define APPLE_2_1A_CHARGER_CURRENT	CHARGE_CURRENT_650_00_MA
+#define APPLE_2_1A_CHARGER_CURRENT	CHARGE_CURRENT_800_00_MA
 
 
 /* Precise Tunning */

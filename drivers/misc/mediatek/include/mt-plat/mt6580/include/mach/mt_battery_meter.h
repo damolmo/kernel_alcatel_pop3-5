@@ -31,10 +31,10 @@
 #ifndef TARGET_BUILD_GCF 
  #if defined(CONFIG_BATT_ID_CHECK_SUPPORT)
 #define AUXADC_BATT_ID_CHANNEL       12
-#define BYD_MIN_VALID_BATT_ID         455
-#define BYD_MAX_VALID_BATT_ID       	 655
-#define VEKEN_MIN_VALID_BATT_ID     215
-#define VEKEN_MAX_VALID_BATT_ID     415 
+#define BYD_MIN_VALID_BATT_ID        250
+#define BYD_MAX_VALID_BATT_ID       	 950
+#define VEKEN_MIN_VALID_BATT_ID     1100
+#define VEKEN_MAX_VALID_BATT_ID     1600
 #endif
 //jiangjingjing-modify-20151027-end-defect-811778
 #endif
@@ -61,7 +61,7 @@
 
 /* battery meter parameter */
 #define CHANGE_TRACKING_POINT
-#define CUST_TRACKING_POINT	0
+#define CUST_TRACKING_POINT	1
 #define CUST_R_SENSE	200
 #define CUST_HW_CC	0
 #define AGING_TUNING_VALUE	103
@@ -116,10 +116,10 @@
 #define CUST_POWERON_DELTA_CAPACITY_TOLRANCE	40
 #define CUST_POWERON_LOW_CAPACITY_TOLRANCE	5
 #define CUST_POWERON_MAX_VBAT_TOLRANCE	90
-#define CUST_POWERON_DELTA_VBAT_TOLRANCE	30
-#define CUST_POWERON_DELTA_HW_SW_OCV_CAPACITY_TOLRANCE	25
+#define CUST_POWERON_DELTA_VBAT_TOLRANCE	10
+#define CUST_POWERON_DELTA_HW_SW_OCV_CAPACITY_TOLRANCE	10
 /*add by xiaopu.zhu for power on swocv offset*/
-#define POWERON_BOOTIMG_VBAT_OFFSET 80 //old:20 modify-by-jiangjingjing-for-swocv-offset-20160108
+#define POWERON_BOOTIMG_VBAT_OFFSET 100 //old:20 modify-by-jiangjingjing-for-swocv-offset-20160108
 /*add by xiaopu.zhu for power on swocv offset*/
 
 /* Disable Battery check for HQA */
@@ -130,7 +130,7 @@
 /* Dynamic change wake up period of battery thread when suspend*/
 #define VBAT_NORMAL_WAKEUP	3600	/*3.6V*/
 #define VBAT_LOW_POWER_WAKEUP	3500	/*3.5v*/
-#define NORMAL_WAKEUP_PERIOD	3600	/*90 * 60 = 90 min*///old:5400 modify-by-jiangjingjing-for-battery capacity update after long time sleep-20160108
+#define NORMAL_WAKEUP_PERIOD	5400	/*90 * 60 = 90 min*///old:5400 modify-by-jiangjingjing-for-battery capacity update after long time sleep-20160108
 #define LOW_POWER_WAKEUP_PERIOD	300	/*5 * 60 = 5 min*/
 #define CLOSE_POWEROFF_WAKEUP_PERIOD	30	/*30 s*/
 
