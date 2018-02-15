@@ -354,6 +354,8 @@ chosen {
 	pinctrl-2 = <&strobe_pins_enable_output1>;
 	pinctrl-3 = <&strobe_pins_torch_output0>;
 	pinctrl-4 = <&strobe_pins_torch_output1>;
+	pinctrl-5 = <&strobe_pins_enablef_output0>;
+	pinctrl-6 = <&strobe_pins_enablef_output1>;
 	status = "okay";
 };
 &pio {
@@ -376,19 +378,33 @@ chosen {
 	};
 	strobe_pins_torch_output0: torchoutput0 {
 		pins_cmd_dat {
-			pins = <PINMUX_GPIO7__FUNC_GPIO7>;
+			pins = <PINMUX_GPIO19__FUNC_GPIO19>;
 			slew-rate = <1>;
 			output-low;
 		};
 	};
 	strobe_pins_torch_output1: torchoutput1 {
 		pins_cmd_dat {
-			pins = <PINMUX_GPIO7__FUNC_GPIO7>;
+			pins = <PINMUX_GPIO19__FUNC_GPIO19>;
 			slew-rate = <1>;
 			output-high;
 		};
 	};
-    };
+	strobe_pins_enablef_output0: enablefoutput0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO34__FUNC_GPIO34>;
+			slew-rate = <1>;
+			output-low;
+		};
+	};
+	strobe_pins_enablef_output1: enablefoutput1 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO34__FUNC_GPIO34>;
+			slew-rate = <1>;
+			output-high;
+		};
+	};
+};
 /* strobe end */
 
 &sgm_led {
@@ -791,6 +807,7 @@ chosen {
 	pinctrl-16 = <&camera_pins_cam_mclk2_disable>;
 
 	status = "okay";
+
 };
 /* CAMERA GPIO end */
 /* CONSYS GPIO standardization */
