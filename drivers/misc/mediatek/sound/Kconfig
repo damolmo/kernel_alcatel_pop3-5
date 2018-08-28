@@ -1,0 +1,5 @@
+config SOUND_PIXI3_5
+  bool CONFIG_SOUND_PIXI3_5
+  default n
+
+

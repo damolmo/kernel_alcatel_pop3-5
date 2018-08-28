@@ -26,6 +26,9 @@ LCM_DRIVER *lcm_driver_list[] = {
 #if defined(ILI9806E_FWVGA_DSI_VDO_TXD)
 	&ili9806e_fwvga_dsi_vdo_TXD_lcm_drv,
 #endif
+#if defined(ILI9881C_HD720_DSI_VDO)
+	&ili9881c_hd720_dsi_vdo_lcm_drv,
+#endif
 #if defined(HX8379C_FWVGA_DSI_VDO_TDT)
 	&hx8379c_fwvga_dsi_vdo_TDT_lcm_drv,
 #endif

@@ -22,6 +22,7 @@ extern LCM_DRIVER nt35521_dsi_6735_H;
 
 
 extern LCM_DRIVER ili9806e_fwvga_dsi_vdo_TXD_lcm_drv;
+extern LCM_DRIVER ili9881c_hd720_dsi_vdo_lcm_drv;
 extern LCM_DRIVER hx8379c_fwvga_dsi_vdo_TDT_lcm_drv;
 extern LCM_DRIVER otm1282a_hd720_dsi_vdo_60hz_lcm_drv;
 extern LCM_DRIVER otm1282a_hd720_dsi_vdo_lcm_drv;

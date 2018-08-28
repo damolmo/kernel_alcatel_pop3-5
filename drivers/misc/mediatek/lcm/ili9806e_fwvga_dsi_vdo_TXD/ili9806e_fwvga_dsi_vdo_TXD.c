@@ -1,18 +1,18 @@
 #if defined(BUILD_LK)
 #include <string.h>
-#include "cust_gpio_usage.h"
 #else
 #include <linux/string.h>
-#include "cust_gpio_usage.h"
 #endif
 
 
 #if defined(BUILD_LK)
-#include "cust_gpio_usage.h"
+#include <platform/mt_gpio.h>
+#else
 #include <mt-plat/mt_gpio.h>
+#include <mach/gpio_const.h>
 #endif
-#include "lcm_drv.h"
 
+#include "lcm_drv.h"
 
 // ---------------------------------------------------------------------------
 //  Local Constants
@@ -39,6 +39,14 @@
 
 bool lcm_ili9806e_vendor=LCM_TDT;	//default to choose byd panel
 
+#define GPIO_LCM_ID1         (GPIO21 | 0x80000000)
+#define GPIO_LCM_ID1_M_GPIO   GPIO_MODE_00
+#define GPIO_LCM_ID1_M_CLK   GPIO_MODE_03
+#define GPIO_LCM_ID1_M_EINT   GPIO_MODE_06
+
+#define GPIO_LCM_ID2         (GPIO84 | 0x80000000)
+#define GPIO_LCM_ID2_M_GPIO   GPIO_MODE_00
+#define GPIO_LCM_ID2_M_EINT   GPIO_MODE_06
 
 //set LCM IC ID
 #define LCM_ID_ILI9806E 									(0x980604)
@@ -236,24 +244,6 @@ static struct LCM_setting_table lcm_tdt_initialization_setting[] = {
 	{REGFLAG_END_OF_TABLE, 0x00, {}}
 };
 
-static struct LCM_setting_table lcm_sleep_out_setting[] = {
-
-	{0xFF,	5,	{0xFF, 0x98, 0x06, 0x04, 0x00}},// Change to Page 0
-
-	// Sleep Out
-	{0x11, 1, {0x00}},
-	{REGFLAG_DELAY, 150, {}},
-
-	// Display ON
-	{0x29, 1, {0x00}},
-	{REGFLAG_DELAY, 50, {}},
-
-	//{0x2C, 1, {0x00}},
-
-	{REGFLAG_END_OF_TABLE, 0x00, {}}
-};
-
-
 static struct LCM_setting_table lcm_deep_sleep_mode_in_setting[] = {
 
 	{0xFF,	5,	{0xFF, 0x98, 0x06, 0x04, 0x00}},// Change to Page 0
@@ -376,7 +366,6 @@ static void lcm_get_params(LCM_PARAMS *params)
 		params->dsi.cont_clock = TRUE;
 }
 
-static int first_init=0;
 static void lcm_init(void)
 {
 	//BEGIN: delete by fangjie 
@@ -438,38 +427,6 @@ static void lcm_resume(void)
        lcm_init();
 	//push_table(lcm_sleep_out_setting, sizeof(lcm_sleep_out_setting) / sizeof(struct LCM_setting_table), 1);
 }
-
-static void lcm_update(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
-{
-	unsigned int x0 = x;
-	unsigned int y0 = y;
-	unsigned int x1 = x0 + width - 1;
-	unsigned int y1 = y0 + height - 1;
-
-	unsigned char x0_MSB = ((x0>>8)&0xFF);
-	unsigned char x0_LSB = (x0&0xFF);
-	unsigned char x1_MSB = ((x1>>8)&0xFF);
-	unsigned char x1_LSB = (x1&0xFF);
-	unsigned char y0_MSB = ((y0>>8)&0xFF);
-	unsigned char y0_LSB = (y0&0xFF);
-	unsigned char y1_MSB = ((y1>>8)&0xFF);
-	unsigned char y1_LSB = (y1&0xFF);
-
-	unsigned int data_array[16];
-
-	//printk("\t\t 9806e [lcm_update]\n");
-	data_array[0]= 0x00053902;
-	data_array[1]= (x1_MSB<<24)|(x0_LSB<<16)|(x0_MSB<<8)|0x2a;
-	data_array[2]= (x1_LSB);
-	data_array[3]= 0x00053902;
-	data_array[4]= (y1_MSB<<24)|(y0_LSB<<16)|(y0_MSB<<8)|0x2b;
-	data_array[5]= (y1_LSB);
-	data_array[6]= 0x002c3909;
-
-	dsi_set_cmdq(data_array, 7, 0);
-
-}
-
 
 static unsigned int lcm_esd_check(void)
 {
@@ -611,6 +568,15 @@ static unsigned int lcm_compare_id(void)
 	return (id == LCM_ID_ILI9806E)?1:0;
 #endif
 	int id_type=0;	
+
+
+	mt_set_gpio_mode(GPIO_LCM_ID1, GPIO_LCM_ID1_M_GPIO);
+	mt_set_gpio_pull_enable(GPIO_LCM_ID1, GPIO_PULL_DISABLE);
+	mt_set_gpio_dir(GPIO_LCM_ID1, GPIO_DIR_IN);
+	mt_set_gpio_mode(GPIO_LCM_ID2, GPIO_LCM_ID1_M_GPIO);
+	mt_set_gpio_pull_enable(GPIO_LCM_ID2, GPIO_PULL_DISABLE);
+	mt_set_gpio_dir(GPIO_LCM_ID2, GPIO_DIR_IN);
+	id_type = mt_get_gpio_in(GPIO_LCM_ID2)<<1 | mt_get_gpio_in(GPIO_LCM_ID1);
 
 #if defined(BUILD_LK)
 	printf("\t\t 9806e [lcm_compare_id   id_type  %d ]\n" , id_type);		

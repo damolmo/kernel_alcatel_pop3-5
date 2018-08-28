@@ -41,7 +41,7 @@ config TPD_ROTATE_270
 
 config FT_AUTO_UPGRADE_SUPPORT
 	bool "ft5x0x for Mediatek package"
-	default n
+	default y
 	help
 	Say Y here if you have ft5x0x touch panel FT_AUTO_UPGRADE_SUPPORT.
 
@@ -52,7 +52,7 @@ config FT_AUTO_UPGRADE_SUPPORT
 
 config CUST_FTS_APK_DEBUG
 	bool "ft5x0x for Mediatek package"
-	default n
+	default y
 	help
 	Say Y here if you have ft5x0x touch panel CUST_FTS_APK_DEBUG.
 
@@ -82,13 +82,4 @@ config TPD_CUSTOM_CALIBRATION
 
 	To compile this dirver as a module, choose M here: the
 	module will be called.
-
-config HCT_TP_GESTRUE
-	bool "CONFIG_HCT_TP_GESTRUE"
-	default n
-
-config TPD_CLOSE_POWER_IN_SLEEP
-	bool "CONFIG_TPD_CLOSE_POWER_IN_SLEEP"
-	default n
-
 endif

@@ -14,12 +14,18 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0 0 0xffffffff>;
+
+		// Start duanjinhui.wt ADD 20160223
+                ext_pa_aw8155: ext_pa_aw8155 {
+                        compatible = "mediatek,aw8155-pa";
+                };
+		// End
 	};
 
 	led@0 {
 		compatible = "mediatek,red";
 		led_mode = <3>;
-		data = <4>;
+		data = <2>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@1 {
@@ -31,7 +37,7 @@
 	led@2 {
 		compatible = "mediatek,blue";
 		led_mode = <3>;
-		data = <4>;
+		data = <3>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@3 {
@@ -49,7 +55,7 @@
 	led@5 {
 		compatible = "mediatek,button-backlight";
 		led_mode = <3>;
-		data = <3>;
+		data = <1>;
 		pwm_config = <0 0 0 0 0>;
 	};
 	led@6 {
@@ -404,7 +410,7 @@ chosen {
 			output-high;
 		};
 	};
-};
+    };
 /* strobe end */
 
 &sgm_led {
@@ -451,13 +457,35 @@ chosen {
 	};
 	ACCDET_pins_eint_as_int: eint@0 {
 		pins_cmd_dat {
-			pins = <PINMUX_GPIO0__FUNC_EINT0>;
+			pins = <PINMUX_GPIO9__FUNC_EINT9>;
 			slew-rate = <0>;
 			bias-disable;
 		};
 	};
 };
 /*ACCDET END*/
+
+//Start liuyang.wt ADD 20151229
+/* AW8155 GPIO standardization */
+&ext_pa_aw8155 {
+	pinctrl-names = "default", "en_pin";
+	pinctrl-0 = <&pa_pins_default>;
+	pinctrl-1 = <&pa_pins_en>;
+	status = "okay";
+};
+&pio {
+	pa_pins_default: papinsdefault {
+	};
+	pa_pins_en: papins@0 {
+		pins_cmd_dat {
+			pins = <PINMUX_GPIO21__FUNC_GPIO21>;
+			slew-rate = <1>;
+            bias-disable;
+			output-low;
+		};
+	};
+};
+/* AW8155 end*/
 
 /* DTV EINT Start */
 &eint_dtv {
@@ -807,7 +835,6 @@ chosen {
 	pinctrl-16 = <&camera_pins_cam_mclk2_disable>;
 
 	status = "okay";
-
 };
 /* CAMERA GPIO end */
 /* CONSYS GPIO standardization */

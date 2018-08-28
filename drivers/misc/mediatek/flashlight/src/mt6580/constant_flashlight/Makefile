@@ -1,8 +1,13 @@
 #
 # Makefile for misc devices that really don't fit anywhere else.
 #
-ccflags-$(CONFIG_MTK_LCM) += -I$(srctree)/drivers/misc/mediatek/mach/mt6580/k80hd/dct/dct/\
-  							 -I$(srctree)/drivers/misc/mediatek/include/mt-plat/mt6580/include/mach/\
-							 -I$(srctree)/drivers/misc/mediatek/include/mt-plat/
 
+
+
+ifeq ($(CONFIG_PIXI3_55_SUPPORT),y)
+obj-y				+= leds_strobe_pixi3_55.o
+else
 obj-y				+= leds_strobe.o
+endif
+
+

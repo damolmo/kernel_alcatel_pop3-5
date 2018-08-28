@@ -152,6 +152,6 @@ config TOUCHSCREEN_MTK_MSG2238_PIXI4_5
 	  If unsure, say N.
 
 	  To compile this dirver as a module, choose M here: the
-	  module will be called.	  
-
+	  module will be called.
+	  
 endif

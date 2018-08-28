@@ -190,6 +190,7 @@ obj-$(CONFIG_HW_INFO)   += hardwareinfo/
 # Start liuyang.wt ADD 20152029
 obj-$(CONFIG_EXT_PA_AW8155_PIXI4_5)    += aw8155_pixi4_5/
 obj-$(CONFIG_DTV_SUPPORT_PIXI4_5) +=fc8180/
+obj-$(CONFIG_SOUND_PIXI3_5) += sound/
 
 ifeq ($(wildcard $(srctree)/drivers/misc/mediatek/mach/$(MTK_PLATFORM)/$(ARCH_MTK_PROJECT)/cam_cal),)
 obj-$(CONFIG_MTK_CAM_CAL)	+= cam_cal/src/

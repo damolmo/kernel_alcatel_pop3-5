@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2015 MediaTek Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 #ifndef _LEDS_HAL_H
 #define _LEDS_HAL_H
 
@@ -42,9 +55,5 @@ extern int mt_mt65xx_blink_set(struct led_classdev *led_cdev,
 
 extern struct cust_mt65xx_led *mt_get_cust_led_list(void);
 
-#ifdef CONFIG_MTK_VIDEOX
-extern int disp_bls_set_backlight(int level_1024);
 extern int mtkfb_set_backlight_level(unsigned int level);
-#endif
-
 #endif
