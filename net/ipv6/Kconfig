@@ -70,6 +70,10 @@ config INET6_ESP
 	select CRYPTO_CBC
 	select CRYPTO_SHA1
 	select CRYPTO_DES
+<<<<<<< HEAD
+=======
+	select CRYPTO_ECHAINIV
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	---help---
 	  Support for IPsec ESP.
 
@@ -258,9 +262,12 @@ config IPV6_PIMSM_V2
 	  Support for IPv6 PIM multicast routing protocol PIM-SMv2.
 	  If unsure, say N.
 
+<<<<<<< HEAD
 config MTK_DHCPV6C_WIFI
 	bool "dhcpv6 on wifi"
 	default y
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif # IPV6

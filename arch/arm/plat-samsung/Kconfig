@@ -271,6 +271,10 @@ config SAMSUNG_PM_DEBUG
 	bool "Samsung PM Suspend debug"
 	depends on PM && DEBUG_KERNEL
 	depends on DEBUG_EXYNOS_UART || DEBUG_S3C24XX_UART || DEBUG_S3C2410_UART
+<<<<<<< HEAD
+=======
+	depends on DEBUG_LL && MMU
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Say Y here if you want verbose debugging from the PM Suspend and
 	  Resume code. See <file:Documentation/arm/Samsung-S3C24XX/Suspend.txt>
@@ -287,7 +291,11 @@ config S3C_PM_DEBUG_LED_SMDK
 
 config SAMSUNG_PM_CHECK
 	bool "S3C2410 PM Suspend Memory CRC"
+<<<<<<< HEAD
 	depends on PM
+=======
+	depends on PM && (PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select CRC32
 	help
 	  Enable the PM code's memory area checksum over sleep. This option

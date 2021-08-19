@@ -464,6 +464,10 @@ relookup:
 		atomic_set(&p->rid, 0);
 		p->metrics[RTAX_LOCK-1] = INETPEER_METRICS_NEW;
 		p->rate_tokens = 0;
+<<<<<<< HEAD
+=======
+		p->n_redirects = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* 60*HZ is arbitrary, but chosen enough high so that the first
 		 * calculation of tokens is at its maximum.
 		 */

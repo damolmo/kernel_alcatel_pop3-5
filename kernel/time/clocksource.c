@@ -34,6 +34,7 @@
 #include "tick-internal.h"
 #include "timekeeping_internal.h"
 
+<<<<<<< HEAD
 void timecounter_init(struct timecounter *tc,
 		      const struct cyclecounter *cc,
 		      u64 start_tstamp)
@@ -110,6 +111,8 @@ u64 timecounter_cyc2time(struct timecounter *tc,
 }
 EXPORT_SYMBOL_GPL(timecounter_cyc2time);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * clocks_calc_mult_shift - calculate mult/shift factors for scaled math of clocks
  * @mult:	pointer to mult variable
@@ -345,8 +348,20 @@ static void clocksource_watchdog(unsigned long data)
 	next_cpu = cpumask_next(raw_smp_processor_id(), cpu_online_mask);
 	if (next_cpu >= nr_cpu_ids)
 		next_cpu = cpumask_first(cpu_online_mask);
+<<<<<<< HEAD
 	watchdog_timer.expires += WATCHDOG_INTERVAL;
 	add_timer_on(&watchdog_timer, next_cpu);
+=======
+
+	/*
+	 * Arm timer if not already pending: could race with concurrent
+	 * pair clocksource_stop_watchdog() clocksource_start_watchdog().
+	 */
+	if (!timer_pending(&watchdog_timer)) {
+		watchdog_timer.expires += WATCHDOG_INTERVAL;
+		add_timer_on(&watchdog_timer, next_cpu);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	spin_unlock(&watchdog_lock);
 }
@@ -396,6 +411,7 @@ static void clocksource_enqueue_watchdog(struct clocksource *cs)
 		/* cs is a watchdog. */
 		if (cs->flags & CLOCK_SOURCE_IS_CONTINUOUS)
 			cs->flags |= CLOCK_SOURCE_VALID_FOR_HRES;
+<<<<<<< HEAD
 		/* Pick the best watchdog. */
 		if (!watchdog || cs->rating > watchdog->rating) {
 			watchdog = cs;
@@ -403,6 +419,44 @@ static void clocksource_enqueue_watchdog(struct clocksource *cs)
 			clocksource_reset_watchdog();
 		}
 	}
+=======
+	}
+	spin_unlock_irqrestore(&watchdog_lock, flags);
+}
+
+static void clocksource_select_watchdog(bool fallback)
+{
+	struct clocksource *cs, *old_wd;
+	unsigned long flags;
+
+	spin_lock_irqsave(&watchdog_lock, flags);
+	/* save current watchdog */
+	old_wd = watchdog;
+	if (fallback)
+		watchdog = NULL;
+
+	list_for_each_entry(cs, &clocksource_list, list) {
+		/* cs is a clocksource to be watched. */
+		if (cs->flags & CLOCK_SOURCE_MUST_VERIFY)
+			continue;
+
+		/* Skip current if we were requested for a fallback. */
+		if (fallback && cs == old_wd)
+			continue;
+
+		/* Pick the best watchdog. */
+		if (!watchdog || cs->rating > watchdog->rating)
+			watchdog = cs;
+	}
+	/* If we failed to find a fallback restore the old one. */
+	if (!watchdog)
+		watchdog = old_wd;
+
+	/* If we changed the watchdog we need to reset cycles. */
+	if (watchdog != old_wd)
+		clocksource_reset_watchdog();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Check if the watchdog timer needs to be started. */
 	clocksource_start_watchdog();
 	spin_unlock_irqrestore(&watchdog_lock, flags);
@@ -477,6 +531,10 @@ static void clocksource_enqueue_watchdog(struct clocksource *cs)
 		cs->flags |= CLOCK_SOURCE_VALID_FOR_HRES;
 }
 
+<<<<<<< HEAD
+=======
+static void clocksource_select_watchdog(bool fallback) { }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void clocksource_dequeue_watchdog(struct clocksource *cs) { }
 static inline void clocksource_resume_watchdog(void) { }
 static inline int __clocksource_watchdog_kthread(void) { return 0; }
@@ -797,6 +855,10 @@ int __clocksource_register_scale(struct clocksource *cs, u32 scale, u32 freq)
 	clocksource_enqueue(cs);
 	clocksource_enqueue_watchdog(cs);
 	clocksource_select();
+<<<<<<< HEAD
+=======
+	clocksource_select_watchdog(false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&clocksource_mutex);
 	return 0;
 }
@@ -846,6 +908,10 @@ void clocksource_change_rating(struct clocksource *cs, int rating)
 	mutex_lock(&clocksource_mutex);
 	__clocksource_change_rating(cs, rating);
 	clocksource_select();
+<<<<<<< HEAD
+=======
+	clocksource_select_watchdog(false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&clocksource_mutex);
 }
 EXPORT_SYMBOL(clocksource_change_rating);
@@ -855,12 +921,21 @@ EXPORT_SYMBOL(clocksource_change_rating);
  */
 static int clocksource_unbind(struct clocksource *cs)
 {
+<<<<<<< HEAD
 	/*
 	 * I really can't convince myself to support this on hardware
 	 * designed by lobotomized monkeys.
 	 */
 	if (clocksource_is_watchdog(cs))
 		return -EBUSY;
+=======
+	if (clocksource_is_watchdog(cs)) {
+		/* Select and try to install a replacement watchdog. */
+		clocksource_select_watchdog(true);
+		if (clocksource_is_watchdog(cs))
+			return -EBUSY;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (cs == curr_clocksource) {
 		/* Select and try to install a replacement clock source */

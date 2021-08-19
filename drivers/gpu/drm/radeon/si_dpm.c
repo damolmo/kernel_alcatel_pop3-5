@@ -1952,6 +1952,10 @@ static void si_initialize_powertune_defaults(struct radeon_device *rdev)
 		case 0x682C:
 			si_pi->cac_weights = cac_weights_cape_verde_pro;
 			si_pi->dte_data = dte_data_sun_xt;
+<<<<<<< HEAD
+=======
+			update_dte_from_pl2 = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case 0x6825:
 		case 0x6827:
@@ -2922,6 +2926,15 @@ static struct si_dpm_quirk si_dpm_quirk_list[] = {
 	/* PITCAIRN - https://bugs.freedesktop.org/show_bug.cgi?id=76490 */
 	{ PCI_VENDOR_ID_ATI, 0x6810, 0x1462, 0x3036, 0, 120000 },
 	{ PCI_VENDOR_ID_ATI, 0x6811, 0x174b, 0xe271, 0, 120000 },
+<<<<<<< HEAD
+=======
+	{ PCI_VENDOR_ID_ATI, 0x6811, 0x174b, 0x2015, 0, 120000 },
+	{ PCI_VENDOR_ID_ATI, 0x6810, 0x174b, 0xe271, 85000, 90000 },
+	{ PCI_VENDOR_ID_ATI, 0x6811, 0x1762, 0x2015, 0, 120000 },
+	{ PCI_VENDOR_ID_ATI, 0x6811, 0x1043, 0x2015, 0, 120000 },
+	{ PCI_VENDOR_ID_ATI, 0x6811, 0x148c, 0x2015, 0, 120000 },
+	{ PCI_VENDOR_ID_ATI, 0x6810, 0x1682, 0x9275, 0, 120000 },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ 0, 0, 0, 0 },
 };
 
@@ -2939,6 +2952,50 @@ static void si_apply_state_adjust_rules(struct radeon_device *rdev,
 	int i;
 	struct si_dpm_quirk *p = si_dpm_quirk_list;
 
+<<<<<<< HEAD
+=======
+	/* limit all SI kickers */
+	if (rdev->family == CHIP_PITCAIRN) {
+		if ((rdev->pdev->revision == 0x81) ||
+		    (rdev->pdev->device == 0x6810) ||
+		    (rdev->pdev->device == 0x6811) ||
+		    (rdev->pdev->device == 0x6816) ||
+		    (rdev->pdev->device == 0x6817) ||
+		    (rdev->pdev->device == 0x6806))
+			max_mclk = 120000;
+	} else if (rdev->family == CHIP_OLAND) {
+		if ((rdev->pdev->revision == 0xC7) ||
+		    (rdev->pdev->revision == 0x80) ||
+		    (rdev->pdev->revision == 0x81) ||
+		    (rdev->pdev->revision == 0x83) ||
+		    (rdev->pdev->revision == 0x87) ||
+		    (rdev->pdev->device == 0x6604) ||
+		    (rdev->pdev->device == 0x6605)) {
+			max_sclk = 75000;
+			max_mclk = 80000;
+		}
+	} else if (rdev->family == CHIP_HAINAN) {
+		if ((rdev->pdev->revision == 0x81) ||
+		    (rdev->pdev->revision == 0x83) ||
+		    (rdev->pdev->revision == 0xC3) ||
+		    (rdev->pdev->device == 0x6664) ||
+		    (rdev->pdev->device == 0x6665) ||
+		    (rdev->pdev->device == 0x6667)) {
+			max_sclk = 75000;
+			max_mclk = 80000;
+		}
+	} else if (rdev->family == CHIP_OLAND) {
+		if ((rdev->pdev->revision == 0xC7) ||
+		    (rdev->pdev->revision == 0x80) ||
+		    (rdev->pdev->revision == 0x81) ||
+		    (rdev->pdev->revision == 0x83) ||
+		    (rdev->pdev->revision == 0x87) ||
+		    (rdev->pdev->device == 0x6604) ||
+		    (rdev->pdev->device == 0x6605)) {
+			max_sclk = 75000;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Apply dpm quirks */
 	while (p && p->chip_device != 0) {
 		if (rdev->pdev->vendor == p->chip_vendor &&
@@ -4013,7 +4070,11 @@ static int si_populate_smc_voltage_tables(struct radeon_device *rdev,
 							      &rdev->pm.dpm.dyn_state.phase_shedding_limits_table)) {
 				si_populate_smc_voltage_table(rdev, &si_pi->vddc_phase_shed_table, table);
 
+<<<<<<< HEAD
 				table->phaseMaskTable.lowMask[SISLANDS_SMC_VOLTAGEMASK_VDDC] =
+=======
+				table->phaseMaskTable.lowMask[SISLANDS_SMC_VOLTAGEMASK_VDDC_PHASE_SHEDDING] =
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					cpu_to_be32(si_pi->vddc_phase_shed_table.mask_low);
 
 				si_write_smc_soft_register(rdev, SI_SMC_SOFT_REGISTER_phase_shedding_delay,
@@ -5834,9 +5895,15 @@ static void si_set_pcie_lane_width_in_smc(struct radeon_device *rdev,
 {
 	u32 lane_width;
 	u32 new_lane_width =
+<<<<<<< HEAD
 		(radeon_new_state->caps & ATOM_PPLIB_PCIE_LINK_WIDTH_MASK) >> ATOM_PPLIB_PCIE_LINK_WIDTH_SHIFT;
 	u32 current_lane_width =
 		(radeon_current_state->caps & ATOM_PPLIB_PCIE_LINK_WIDTH_MASK) >> ATOM_PPLIB_PCIE_LINK_WIDTH_SHIFT;
+=======
+		((radeon_new_state->caps & ATOM_PPLIB_PCIE_LINK_WIDTH_MASK) >> ATOM_PPLIB_PCIE_LINK_WIDTH_SHIFT) + 1;
+	u32 current_lane_width =
+		((radeon_current_state->caps & ATOM_PPLIB_PCIE_LINK_WIDTH_MASK) >> ATOM_PPLIB_PCIE_LINK_WIDTH_SHIFT) + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (new_lane_width != current_lane_width) {
 		radeon_set_pcie_lanes(rdev, new_lane_width);

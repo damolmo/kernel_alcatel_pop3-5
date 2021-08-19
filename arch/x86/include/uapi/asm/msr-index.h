@@ -69,6 +69,15 @@
 #define MSR_LBR_CORE_FROM		0x00000040
 #define MSR_LBR_CORE_TO			0x00000060
 
+<<<<<<< HEAD
+=======
+#define MSR_LBR_INFO_0			0x00000dc0 /* ... 0xddf for _31 */
+#define LBR_INFO_MISPRED		BIT_ULL(63)
+#define LBR_INFO_IN_TX			BIT_ULL(62)
+#define LBR_INFO_ABORT			BIT_ULL(61)
+#define LBR_INFO_CYCLES			0xffff
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define MSR_IA32_PEBS_ENABLE		0x000003f1
 #define MSR_IA32_DS_AREA		0x00000600
 #define MSR_IA32_PERF_CAPABILITIES	0x00000345

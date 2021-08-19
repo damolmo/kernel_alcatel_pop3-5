@@ -40,6 +40,16 @@ struct pinctrl_dt_map {
 static void dt_free_map(struct pinctrl_dev *pctldev,
 		     struct pinctrl_map *map, unsigned num_maps)
 {
+<<<<<<< HEAD
+=======
+	int i;
+
+	for (i = 0; i < num_maps; ++i) {
+		kfree_const(map[i].dev_name);
+		map[i].dev_name = NULL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pctldev) {
 		const struct pinctrl_ops *ops = pctldev->desc->pctlops;
 		ops->dt_free_map(pctldev, map, num_maps);
@@ -73,7 +83,17 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 
 	/* Initialize common mapping table entry fields */
 	for (i = 0; i < num_maps; i++) {
+<<<<<<< HEAD
 		map[i].dev_name = dev_name(p->dev);
+=======
+		const char *devname;
+
+		devname = kstrdup_const(dev_name(p->dev), GFP_KERNEL);
+		if (!devname)
+			goto err_free_map;
+
+		map[i].dev_name = devname;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		map[i].name = statename;
 		if (pctldev)
 			map[i].ctrl_dev_name = dev_name(pctldev->dev);
@@ -81,11 +101,16 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 
 	/* Remember the converted mapping table entries */
 	dt_map = kzalloc(sizeof(*dt_map), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dt_map) {
 		dev_err(p->dev, "failed to alloc struct pinctrl_dt_map\n");
 		dt_free_map(pctldev, map, num_maps);
 		return -ENOMEM;
 	}
+=======
+	if (!dt_map)
+		goto err_free_map;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dt_map->pctldev = pctldev;
 	dt_map->map = map;
@@ -93,6 +118,13 @@ static int dt_remember_or_free_map(struct pinctrl *p, const char *statename,
 	list_add_tail(&dt_map->node, &p->dt_maps);
 
 	return pinctrl_register_map(map, num_maps, false);
+<<<<<<< HEAD
+=======
+
+err_free_map:
+	dt_free_map(pctldev, map, num_maps);
+	return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 struct pinctrl_dev *of_pinctrl_get(struct device_node *np)

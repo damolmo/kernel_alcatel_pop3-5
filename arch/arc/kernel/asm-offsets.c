@@ -59,5 +59,10 @@ int main(void)
 
 	DEFINE(SZ_CALLEE_REGS, sizeof(struct callee_regs));
 	DEFINE(SZ_PT_REGS, sizeof(struct pt_regs));
+<<<<<<< HEAD
+=======
+	DEFINE(PT_user_r25, offsetof(struct pt_regs, user_r25));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }

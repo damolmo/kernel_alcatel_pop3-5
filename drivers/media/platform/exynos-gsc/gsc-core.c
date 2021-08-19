@@ -846,9 +846,13 @@ int gsc_prepare_addr(struct gsc_ctx *ctx, struct vb2_buffer *vb,
 
 	if ((frame->fmt->pixelformat == V4L2_PIX_FMT_VYUY) ||
 		(frame->fmt->pixelformat == V4L2_PIX_FMT_YVYU) ||
+<<<<<<< HEAD
 		(frame->fmt->pixelformat == V4L2_PIX_FMT_NV61) ||
 		(frame->fmt->pixelformat == V4L2_PIX_FMT_YVU420) ||
 		(frame->fmt->pixelformat == V4L2_PIX_FMT_NV21) ||
+=======
+		(frame->fmt->pixelformat == V4L2_PIX_FMT_YVU420) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		(frame->fmt->pixelformat == V4L2_PIX_FMT_YVU420M))
 		swap(addr->cb, addr->cr);
 

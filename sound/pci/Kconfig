@@ -155,6 +155,10 @@ config SND_AZT3328
 	select SND_PCM
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
+<<<<<<< HEAD
+=======
+	select SND_TIMER
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select ZONE_DMA
 	help
 	  Say Y here to include support for Aztech AZF3328 (PCI168)
@@ -463,6 +467,10 @@ config SND_EMU10K1
 	select SND_HWDEP
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
+<<<<<<< HEAD
+=======
+	select SND_TIMER
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select ZONE_DMA
 	help
 	  Say Y to include support for Sound Blaster PCI 512, Live!,
@@ -880,6 +888,10 @@ config SND_YMFPCI
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
+=======
+	select SND_TIMER
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Say Y here to include support for Yamaha PCI audio chips -
 	  YMF724, YMF724F, YMF740, YMF740C, YMF744, YMF754.

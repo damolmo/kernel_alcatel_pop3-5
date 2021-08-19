@@ -65,6 +65,10 @@
 #include <linux/platform_data/usb-ohci-s3c2410.h>
 #include <plat/usb-phy.h>
 #include <plat/regs-spi.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/asoc-s3c.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/platform_data/spi-s3c64xx.h>
 
 static u64 samsung_device_dma_mask = DMA_BIT_MASK(32);
@@ -74,9 +78,18 @@ static u64 samsung_device_dma_mask = DMA_BIT_MASK(32);
 static struct resource s3c_ac97_resource[] = {
 	[0] = DEFINE_RES_MEM(S3C2440_PA_AC97, S3C2440_SZ_AC97),
 	[1] = DEFINE_RES_IRQ(IRQ_S3C244X_AC97),
+<<<<<<< HEAD
 	[2] = DEFINE_RES_DMA_NAMED(DMACH_PCM_OUT, "PCM out"),
 	[3] = DEFINE_RES_DMA_NAMED(DMACH_PCM_IN, "PCM in"),
 	[4] = DEFINE_RES_DMA_NAMED(DMACH_MIC_IN, "Mic in"),
+=======
+};
+
+static struct s3c_audio_pdata s3c_ac97_pdata = {
+	.dma_playback = (void *)DMACH_PCM_OUT,
+	.dma_capture = (void *)DMACH_PCM_IN,
+	.dma_capture_mic = (void *)DMACH_MIC_IN,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct platform_device s3c_device_ac97 = {
@@ -87,6 +100,10 @@ struct platform_device s3c_device_ac97 = {
 	.dev		= {
 		.dma_mask		= &samsung_device_dma_mask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
+<<<<<<< HEAD
+=======
+		.platform_data		= &s3c_ac97_pdata,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 };
 #endif /* CONFIG_CPU_S3C2440 */

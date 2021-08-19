@@ -595,7 +595,11 @@ qla25xx_delete_queues(struct scsi_qla_host *vha)
 	/* Delete request queues */
 	for (cnt = 1; cnt < ha->max_req_queues; cnt++) {
 		req = ha->req_q_map[cnt];
+<<<<<<< HEAD
 		if (req) {
+=======
+		if (req && test_bit(cnt, ha->req_qid_map)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = qla25xx_delete_req_que(vha, req);
 			if (ret != QLA_SUCCESS) {
 				ql_log(ql_log_warn, vha, 0x00ea,
@@ -609,7 +613,11 @@ qla25xx_delete_queues(struct scsi_qla_host *vha)
 	/* Delete response queues */
 	for (cnt = 1; cnt < ha->max_rsp_queues; cnt++) {
 		rsp = ha->rsp_q_map[cnt];
+<<<<<<< HEAD
 		if (rsp) {
+=======
+		if (rsp && test_bit(cnt, ha->rsp_qid_map)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = qla25xx_delete_rsp_que(vha, rsp);
 			if (ret != QLA_SUCCESS) {
 				ql_log(ql_log_warn, vha, 0x00eb,

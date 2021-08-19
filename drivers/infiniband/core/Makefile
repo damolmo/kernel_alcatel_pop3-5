@@ -5,8 +5,13 @@ obj-$(CONFIG_INFINIBAND) +=		ib_core.o ib_mad.o ib_sa.o \
 					ib_cm.o iw_cm.o ib_addr.o \
 					$(infiniband-y)
 obj-$(CONFIG_INFINIBAND_USER_MAD) +=	ib_umad.o
+<<<<<<< HEAD
 obj-$(CONFIG_INFINIBAND_USER_ACCESS) +=	ib_uverbs.o ib_ucm.o \
 					$(user_access-y)
+=======
+obj-$(CONFIG_INFINIBAND_USER_ACCESS) += ib_uverbs.o $(user_access-y)
+obj-$(CONFIG_INFINIBAND_USER_ACCESS_UCM) += ib_ucm.o $(user_access-y)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ib_core-y :=			packer.o ud_header.o verbs.o sysfs.o \
 				device.o fmr_pool.o cache.o netlink.o

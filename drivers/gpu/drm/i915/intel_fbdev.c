@@ -333,12 +333,20 @@ static bool intel_fb_initial_config(struct drm_fb_helper *fb_helper,
 	int num_connectors_enabled = 0;
 	int num_connectors_detected = 0;
 
+<<<<<<< HEAD
 	save_enabled = kcalloc(dev->mode_config.num_connector, sizeof(bool),
+=======
+	save_enabled = kcalloc(fb_helper->connector_count, sizeof(bool),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       GFP_KERNEL);
 	if (!save_enabled)
 		return false;
 
+<<<<<<< HEAD
 	memcpy(save_enabled, enabled, dev->mode_config.num_connector);
+=======
+	memcpy(save_enabled, enabled, fb_helper->connector_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < fb_helper->connector_count; i++) {
 		struct drm_fb_helper_connector *fb_conn;
@@ -462,7 +470,11 @@ static bool intel_fb_initial_config(struct drm_fb_helper *fb_helper,
 	if (fallback) {
 bail:
 		DRM_DEBUG_KMS("Not using firmware configuration\n");
+<<<<<<< HEAD
 		memcpy(enabled, save_enabled, dev->mode_config.num_connector);
+=======
+		memcpy(enabled, save_enabled, fb_helper->connector_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(save_enabled);
 		return false;
 	}

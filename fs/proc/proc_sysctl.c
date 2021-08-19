@@ -617,7 +617,14 @@ static bool proc_sys_link_fill_cache(struct file *file,
 				    struct ctl_table *table)
 {
 	bool ret = true;
+<<<<<<< HEAD
 	head = sysctl_head_grab(head);
+=======
+
+	head = sysctl_head_grab(head);
+	if (IS_ERR(head))
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (S_ISLNK(table->mode)) {
 		/* It is not an error if we can not follow the link ignore it */
@@ -666,7 +673,11 @@ static int proc_sys_readdir(struct file *file, struct dir_context *ctx)
 	ctl_dir = container_of(head, struct ctl_dir, header);
 
 	if (!dir_emit_dots(file, ctx))
+<<<<<<< HEAD
 		return 0;
+=======
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pos = 2;
 
@@ -676,6 +687,10 @@ static int proc_sys_readdir(struct file *file, struct dir_context *ctx)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sysctl_head_finish(head);
 	return 0;
 }
@@ -1509,8 +1524,16 @@ static void drop_sysctl_table(struct ctl_table_header *header)
 	if (--header->nreg)
 		return;
 
+<<<<<<< HEAD
 	put_links(header);
 	start_unregistering(header);
+=======
+	if (parent) {
+		put_links(header);
+		start_unregistering(header);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!--header->count)
 		kfree_rcu(header, rcu);
 

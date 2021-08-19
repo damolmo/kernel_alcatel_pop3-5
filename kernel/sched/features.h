@@ -36,11 +36,14 @@ SCHED_FEAT(CACHE_HOT_BUDDY, true)
  */
 SCHED_FEAT(WAKEUP_PREEMPTION, true)
 
+<<<<<<< HEAD
 /*
  * Use arch dependent cpu capacity functions
  */
 SCHED_FEAT(ARCH_CAPACITY, true)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 SCHED_FEAT(HRTICK, false)
 SCHED_FEAT(DOUBLE_TICK, false)
 SCHED_FEAT(LB_BIAS, true)
@@ -57,9 +60,17 @@ SCHED_FEAT(NONTASK_CAPACITY, true)
 SCHED_FEAT(TTWU_QUEUE, true)
 
 SCHED_FEAT(FORCE_SD_OVERLAP, false)
+<<<<<<< HEAD
 SCHED_FEAT(RT_RUNTIME_SHARE, false)
 SCHED_FEAT(LB_MIN, false)
 
+=======
+SCHED_FEAT(RT_RUNTIME_SHARE, true)
+SCHED_FEAT(LB_MIN, false)
+
+SCHED_FEAT(ATTACH_AGE_LOAD, true)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Apply the automatic NUMA scheduling policy. Enabled automatically
  * at runtime if running on a NUMA machine. Can be controlled via
@@ -85,6 +96,7 @@ SCHED_FEAT(NUMA_RESIST_LOWER, false)
 #endif
 
 /*
+<<<<<<< HEAD
  * HMP scheduling. Use dynamic threshold depends on system load and
  * CPU capacity to make schedule decisions.
  */
@@ -93,3 +105,9 @@ SCHED_FEAT(SCHED_HMP, true)
 #else
 SCHED_FEAT(SCHED_HMP, false)
 #endif
+=======
+ * Energy aware scheduling. Use platform energy model to guide scheduling
+ * decisions optimizing for energy efficiency.
+ */
+SCHED_FEAT(ENERGY_AWARE, false)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

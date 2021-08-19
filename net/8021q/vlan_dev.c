@@ -276,6 +276,20 @@ void vlan_dev_get_realdev_name(const struct net_device *dev, char *result)
 	strncpy(result, vlan_dev_priv(dev)->real_dev->name, 23);
 }
 
+<<<<<<< HEAD
+=======
+bool vlan_dev_inherit_address(struct net_device *dev,
+			      struct net_device *real_dev)
+{
+	if (dev->addr_assign_type != NET_ADDR_STOLEN)
+		return false;
+
+	ether_addr_copy(dev->dev_addr, real_dev->dev_addr);
+	call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int vlan_dev_open(struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -286,7 +300,12 @@ static int vlan_dev_open(struct net_device *dev)
 	    !(vlan->flags & VLAN_FLAG_LOOSE_BINDING))
 		return -ENETDOWN;
 
+<<<<<<< HEAD
 	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr)) {
+=======
+	if (!ether_addr_equal(dev->dev_addr, real_dev->dev_addr) &&
+	    !vlan_dev_inherit_address(dev, real_dev)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = dev_uc_add(real_dev, dev->dev_addr);
 		if (err < 0)
 			goto out;
@@ -382,10 +401,19 @@ static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	ifrr.ifr_ifru = ifr->ifr_ifru;
 
 	switch (cmd) {
+<<<<<<< HEAD
 	case SIOCGMIIPHY:
 	case SIOCGMIIREG:
 	case SIOCSMIIREG:
 	case SIOCSHWTSTAMP:
+=======
+	case SIOCSHWTSTAMP:
+		if (!net_eq(dev_net(dev), &init_net))
+			break;
+	case SIOCGMIIPHY:
+	case SIOCGMIIREG:
+	case SIOCSMIIREG:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case SIOCGHWTSTAMP:
 		if (netif_device_present(real_dev) && ops->ndo_do_ioctl)
 			err = ops->ndo_do_ioctl(real_dev, &ifrr, cmd);
@@ -582,7 +610,11 @@ static int vlan_dev_init(struct net_device *dev)
 			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CSUM |
 			   NETIF_F_ALL_FCOE;
 
+<<<<<<< HEAD
 	dev->features |= real_dev->vlan_features | NETIF_F_LLTX;
+=======
+	dev->features |= dev->hw_features | NETIF_F_LLTX;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->gso_max_size = real_dev->gso_max_size;
 	if (dev->features & NETIF_F_VLAN_FEATURES)
 		netdev_warn(real_dev, "VLAN features are set incorrectly.  Q-in-Q configurations may not work correctly.\n");
@@ -591,8 +623,15 @@ static int vlan_dev_init(struct net_device *dev)
 	/* ipv6 shared card related stuff */
 	dev->dev_id = real_dev->dev_id;
 
+<<<<<<< HEAD
 	if (is_zero_ether_addr(dev->dev_addr))
 		eth_hw_addr_inherit(dev, real_dev);
+=======
+	if (is_zero_ether_addr(dev->dev_addr)) {
+		ether_addr_copy(dev->dev_addr, real_dev->dev_addr);
+		dev->addr_assign_type = NET_ADDR_STOLEN;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (is_zero_ether_addr(dev->broadcast))
 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
 
@@ -623,7 +662,12 @@ static int vlan_dev_init(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void vlan_dev_uninit(struct net_device *dev)
+=======
+/* Note: this function might be called multiple times for the same device. */
+void vlan_dev_uninit(struct net_device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct vlan_priority_tci_mapping *pm;
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);

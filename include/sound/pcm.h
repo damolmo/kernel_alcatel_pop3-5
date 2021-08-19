@@ -98,7 +98,11 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_IOCTL1_TRUE		((void *)1)
 
 #define SNDRV_PCM_IOCTL1_RESET		0
+<<<<<<< HEAD
 #define SNDRV_PCM_IOCTL1_INFO		1
+=======
+/* 1 is absent slot. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SNDRV_PCM_IOCTL1_CHANNEL_INFO	2
 #define SNDRV_PCM_IOCTL1_GSTATE		3
 #define SNDRV_PCM_IOCTL1_FIFO_SIZE	4
@@ -109,6 +113,10 @@ struct snd_pcm_ops {
 #define SNDRV_PCM_TRIGGER_PAUSE_RELEASE	4
 #define SNDRV_PCM_TRIGGER_SUSPEND	5
 #define SNDRV_PCM_TRIGGER_RESUME	6
+<<<<<<< HEAD
+=======
+#define SNDRV_PCM_TRIGGER_DRAIN		7
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define SNDRV_PCM_POS_XRUN		((snd_pcm_uframes_t)-1)
 
@@ -341,10 +349,13 @@ struct snd_pcm_runtime {
 	struct snd_pcm_hardware hw;
 	struct snd_pcm_hw_constraints hw_constraints;
 
+<<<<<<< HEAD
 	/* -- interrupt callbacks -- */
 	void (*transfer_ack_begin)(struct snd_pcm_substream *substream);
 	void (*transfer_ack_end)(struct snd_pcm_substream *substream);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* -- timer -- */
 	unsigned int timer_resolution;	/* timer resolution */
 	int tstamp_type;		/* timestamp type */
@@ -535,6 +546,15 @@ snd_pcm_debug_name(struct snd_pcm_substream *substream, char *buf, size_t size)
  *  PCM library
  */
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_stream_linked - Check whether the substream is linked with others
+ * @substream: substream to check
+ *
+ * Returns true if the given substream is being linked with others.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int snd_pcm_stream_linked(struct snd_pcm_substream *substream)
 {
 	return substream->group != &substream->self_group;
@@ -545,6 +565,19 @@ void snd_pcm_stream_unlock(struct snd_pcm_substream *substream);
 void snd_pcm_stream_lock_irq(struct snd_pcm_substream *substream);
 void snd_pcm_stream_unlock_irq(struct snd_pcm_substream *substream);
 unsigned long _snd_pcm_stream_lock_irqsave(struct snd_pcm_substream *substream);
+<<<<<<< HEAD
+=======
+
+/**
+ * snd_pcm_stream_lock_irqsave - Lock the PCM stream
+ * @substream: PCM substream
+ * @flags: irq flags
+ *
+ * This locks the PCM stream like snd_pcm_stream_lock() but with the local
+ * IRQ (only when nonatomic is false).  In nonatomic case, this is identical
+ * as snd_pcm_stream_lock().
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define snd_pcm_stream_lock_irqsave(substream, flags)		 \
 	do {							 \
 		typecheck(unsigned long, flags);		 \
@@ -553,9 +586,31 @@ unsigned long _snd_pcm_stream_lock_irqsave(struct snd_pcm_substream *substream);
 void snd_pcm_stream_unlock_irqrestore(struct snd_pcm_substream *substream,
 				      unsigned long flags);
 
+<<<<<<< HEAD
 #define snd_pcm_group_for_each_entry(s, substream) \
 	list_for_each_entry(s, &substream->group->substreams, link_list)
 
+=======
+/**
+ * snd_pcm_group_for_each_entry - iterate over the linked substreams
+ * @s: the iterator
+ * @substream: the substream
+ *
+ * Iterate over the all linked substreams to the given @substream.
+ * When @substream isn't linked with any others, this gives returns @substream
+ * itself once.
+ */
+#define snd_pcm_group_for_each_entry(s, substream) \
+	list_for_each_entry(s, &substream->group->substreams, link_list)
+
+/**
+ * snd_pcm_running - Check whether the substream is in a running state
+ * @substream: substream to check
+ *
+ * Returns true if the given substream is in the state RUNNING, or in the
+ * state DRAINING for playback.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int snd_pcm_running(struct snd_pcm_substream *substream)
 {
 	return (substream->runtime->status->state == SNDRV_PCM_STATE_RUNNING ||
@@ -563,45 +618,107 @@ static inline int snd_pcm_running(struct snd_pcm_substream *substream)
 		 substream->stream == SNDRV_PCM_STREAM_PLAYBACK));
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * bytes_to_samples - Unit conversion of the size from bytes to samples
+ * @runtime: PCM runtime instance
+ * @size: size in bytes
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline ssize_t bytes_to_samples(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * 8 / runtime->sample_bits;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * bytes_to_frames - Unit conversion of the size from bytes to frames
+ * @runtime: PCM runtime instance
+ * @size: size in bytes
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline snd_pcm_sframes_t bytes_to_frames(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * 8 / runtime->frame_bits;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * samples_to_bytes - Unit conversion of the size from samples to bytes
+ * @runtime: PCM runtime instance
+ * @size: size in samples
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline ssize_t samples_to_bytes(struct snd_pcm_runtime *runtime, ssize_t size)
 {
 	return size * runtime->sample_bits / 8;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * frames_to_bytes - Unit conversion of the size from frames to bytes
+ * @runtime: PCM runtime instance
+ * @size: size in frames
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline ssize_t frames_to_bytes(struct snd_pcm_runtime *runtime, snd_pcm_sframes_t size)
 {
 	return size * runtime->frame_bits / 8;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * frame_aligned - Check whether the byte size is aligned to frames
+ * @runtime: PCM runtime instance
+ * @bytes: size in bytes
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int frame_aligned(struct snd_pcm_runtime *runtime, ssize_t bytes)
 {
 	return bytes % runtime->byte_align == 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_lib_buffer_bytes - Get the buffer size of the current PCM in bytes
+ * @substream: PCM substream
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline size_t snd_pcm_lib_buffer_bytes(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	return frames_to_bytes(runtime, runtime->buffer_size);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_lib_period_bytes - Get the period size of the current PCM in bytes
+ * @substream: PCM substream
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline size_t snd_pcm_lib_period_bytes(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	return frames_to_bytes(runtime, runtime->period_size);
 }
 
+<<<<<<< HEAD
 /*
  *  result is: 0 ... (boundary - 1)
+=======
+/**
+ * snd_pcm_playback_avail - Get the available (writable) space for playback
+ * @runtime: PCM runtime instance
+ *
+ * Result is between 0 ... (boundary - 1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static inline snd_pcm_uframes_t snd_pcm_playback_avail(struct snd_pcm_runtime *runtime)
 {
@@ -613,8 +730,16 @@ static inline snd_pcm_uframes_t snd_pcm_playback_avail(struct snd_pcm_runtime *r
 	return avail;
 }
 
+<<<<<<< HEAD
 /*
  *  result is: 0 ... (boundary - 1)
+=======
+/**
+ * snd_pcm_playback_avail - Get the available (readable) space for capture
+ * @runtime: PCM runtime instance
+ *
+ * Result is between 0 ... (boundary - 1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static inline snd_pcm_uframes_t snd_pcm_capture_avail(struct snd_pcm_runtime *runtime)
 {
@@ -624,11 +749,25 @@ static inline snd_pcm_uframes_t snd_pcm_capture_avail(struct snd_pcm_runtime *ru
 	return avail;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_playback_hw_avail - Get the queued space for playback
+ * @runtime: PCM runtime instance
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline snd_pcm_sframes_t snd_pcm_playback_hw_avail(struct snd_pcm_runtime *runtime)
 {
 	return runtime->buffer_size - snd_pcm_playback_avail(runtime);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_capture_hw_avail - Get the free space for capture
+ * @runtime: PCM runtime instance
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline snd_pcm_sframes_t snd_pcm_capture_hw_avail(struct snd_pcm_runtime *runtime)
 {
 	return runtime->buffer_size - snd_pcm_capture_avail(runtime);
@@ -708,6 +847,23 @@ static inline int snd_pcm_capture_empty(struct snd_pcm_substream *substream)
 	return snd_pcm_capture_avail(runtime) == 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_trigger_done - Mark the master substream
+ * @substream: the pcm substream instance
+ * @master: the linked master substream
+ *
+ * When multiple substreams of the same card are linked and the hardware
+ * supports the single-shot operation, the driver calls this in the loop
+ * in snd_pcm_group_for_each_entry() for marking the substream as "done".
+ * Then most of trigger operations are performed only to the given master
+ * substream.
+ *
+ * The trigger_master mark is cleared at timestamp updates at the end
+ * of trigger operations.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_trigger_done(struct snd_pcm_substream *substream, 
 					struct snd_pcm_substream *master)
 {
@@ -883,6 +1039,17 @@ unsigned int snd_pcm_rate_bit_to_rate(unsigned int rate_bit);
 unsigned int snd_pcm_rate_mask_intersect(unsigned int rates_a,
 					 unsigned int rates_b);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_set_runtime_buffer - Set the PCM runtime buffer
+ * @substream: PCM substream to set
+ * @bufp: the buffer information, NULL to clear
+ *
+ * Copy the buffer information to runtime->dma_buffer when @bufp is non-NULL.
+ * Otherwise it clears the current buffer information.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_set_runtime_buffer(struct snd_pcm_substream *substream,
 					      struct snd_dma_buffer *bufp)
 {
@@ -908,6 +1075,14 @@ void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream);
 void snd_pcm_timer_init(struct snd_pcm_substream *substream);
 void snd_pcm_timer_done(struct snd_pcm_substream *substream);
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_gettime - Fill the timespec depending on the timestamp mode
+ * @runtime: PCM runtime instance
+ * @tv: timespec to fill
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_gettime(struct snd_pcm_runtime *runtime,
 				   struct timespec *tv)
 {
@@ -998,18 +1173,44 @@ struct page *snd_pcm_sgbuf_ops_page(struct snd_pcm_substream *substream,
 #define snd_pcm_sgbuf_ops_page	NULL
 #endif /* SND_DMA_SGBUF */
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_sgbuf_get_addr - Get the DMA address at the corresponding offset
+ * @substream: PCM substream
+ * @ofs: byte offset
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline dma_addr_t
 snd_pcm_sgbuf_get_addr(struct snd_pcm_substream *substream, unsigned int ofs)
 {
 	return snd_sgbuf_get_addr(snd_pcm_get_dma_buf(substream), ofs);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_sgbuf_get_ptr - Get the virtual address at the corresponding offset
+ * @substream: PCM substream
+ * @ofs: byte offset
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void *
 snd_pcm_sgbuf_get_ptr(struct snd_pcm_substream *substream, unsigned int ofs)
 {
 	return snd_sgbuf_get_ptr(snd_pcm_get_dma_buf(substream), ofs);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_sgbuf_chunk_size - Compute the max size that fits within the contig.
+ * page from the given size
+ * @substream: PCM substream
+ * @ofs: byte offset
+ * @size: byte size to examine
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline unsigned int
 snd_pcm_sgbuf_get_chunk_size(struct snd_pcm_substream *substream,
 			     unsigned int ofs, unsigned int size)
@@ -1017,13 +1218,31 @@ snd_pcm_sgbuf_get_chunk_size(struct snd_pcm_substream *substream,
 	return snd_sgbuf_get_chunk_size(snd_pcm_get_dma_buf(substream), ofs, size);
 }
 
+<<<<<<< HEAD
 /* handle mmap counter - PCM mmap callback should handle this counter properly */
+=======
+/**
+ * snd_pcm_mmap_data_open - increase the mmap counter
+ * @area: VMA
+ *
+ * PCM mmap callback should handle this counter properly
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_mmap_data_open(struct vm_area_struct *area)
 {
 	struct snd_pcm_substream *substream = (struct snd_pcm_substream *)area->vm_private_data;
 	atomic_inc(&substream->mmap_count);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_mmap_data_close - decrease the mmap counter
+ * @area: VMA
+ *
+ * PCM mmap callback should handle this counter properly
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_mmap_data_close(struct vm_area_struct *area)
 {
 	struct snd_pcm_substream *substream = (struct snd_pcm_substream *)area->vm_private_data;
@@ -1043,6 +1262,14 @@ int snd_pcm_lib_mmap_iomem(struct snd_pcm_substream *substream, struct vm_area_s
 
 #define snd_pcm_lib_mmap_vmalloc NULL
 
+<<<<<<< HEAD
+=======
+/**
+ * snd_pcm_limit_isa_dma_size - Get the max size fitting with ISA DMA transfer
+ * @dma: DMA number
+ * @max: pointer to store the max size
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void snd_pcm_limit_isa_dma_size(int dma, size_t *max)
 {
 	*max = dma < 4 ? 64 * 1024 : 128 * 1024;
@@ -1095,7 +1322,15 @@ struct snd_pcm_chmap {
 	void *private_data;	/* optional: private data pointer */
 };
 
+<<<<<<< HEAD
 /* get the PCM substream assigned to the given chmap info */
+=======
+/**
+ * snd_pcm_chmap_substream - get the PCM substream assigned to the given chmap info
+ * @info: chmap information
+ * @idx: the substream number index
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline struct snd_pcm_substream *
 snd_pcm_chmap_substream(struct snd_pcm_chmap *info, unsigned int idx)
 {
@@ -1122,7 +1357,14 @@ int snd_pcm_add_chmap_ctls(struct snd_pcm *pcm, int stream,
 			   unsigned long private_value,
 			   struct snd_pcm_chmap **info_ret);
 
+<<<<<<< HEAD
 /* Strong-typed conversion of pcm_format to bitwise */
+=======
+/**
+ * pcm_format_to_bits - Strong-typed conversion of pcm_format to bitwise
+ * @pcm_format: PCM format
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline u64 pcm_format_to_bits(snd_pcm_format_t pcm_format)
 {
 	return 1ULL << (__force int) pcm_format;

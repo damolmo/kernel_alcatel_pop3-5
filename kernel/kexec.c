@@ -28,10 +28,17 @@
 #include <linux/suspend.h>
 #include <linux/device.h>
 #include <linux/freezer.h>
+<<<<<<< HEAD
 #include <linux/pm.h>
 #include <linux/cpu.h>
 #include <linux/console.h>
 #include <linux/vmalloc.h>
+=======
+#include <linux/vmalloc.h>
+#include <linux/pm.h>
+#include <linux/cpu.h>
+#include <linux/console.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/swap.h>
 #include <linux/syscore_ops.h>
 #include <linux/compiler.h>
@@ -44,6 +51,12 @@
 
 #include <crypto/hash.h>
 #include <crypto/sha.h>
+<<<<<<< HEAD
+=======
+#include "kexec_internal.h"
+
+DEFINE_MUTEX(kexec_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Per cpu memory for storing cpu states in case of system crash. */
 note_buf_t __percpu *crash_notes;
@@ -57,6 +70,7 @@ size_t vmcoreinfo_max_size = sizeof(vmcoreinfo_data);
 /* Flag to indicate we are going to kexec a new kernel */
 bool kexec_in_progress = false;
 
+<<<<<<< HEAD
 /*
  * Declare these symbols weak so that if architecture provides a purgatory,
  * these will be overridden.
@@ -67,6 +81,8 @@ size_t __weak kexec_purgatory_size = 0;
 #ifdef CONFIG_KEXEC_FILE
 static int kexec_calculate_store_digests(struct kimage *image);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Location of the reserved area for the crash kernel */
 struct resource crashk_res = {
@@ -135,8 +151,11 @@ int kexec_should_crash(struct task_struct *p)
  */
 #define KIMAGE_NO_DEST (-1UL)
 
+<<<<<<< HEAD
 static int kimage_is_destination_range(struct kimage *image,
 				       unsigned long start, unsigned long end);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct page *kimage_alloc_page(struct kimage *image,
 				       gfp_t gfp_mask,
 				       unsigned long dest);
@@ -158,7 +177,11 @@ static int copy_user_segment_list(struct kimage *image,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int sanity_check_segment_list(struct kimage *image)
+=======
+int sanity_check_segment_list(struct kimage *image)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int result, i;
 	unsigned long nr_segments = image->nr_segments;
@@ -248,7 +271,11 @@ static int sanity_check_segment_list(struct kimage *image)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kimage *do_kimage_alloc_init(void)
+=======
+struct kimage *do_kimage_alloc_init(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct kimage *image;
 
@@ -275,8 +302,11 @@ static struct kimage *do_kimage_alloc_init(void)
 	return image;
 }
 
+<<<<<<< HEAD
 static void kimage_free_page_list(struct list_head *list);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int kimage_alloc_init(struct kimage **rimage, unsigned long entry,
 			     unsigned long nr_segments,
 			     struct kexec_segment __user *segments,
@@ -343,6 +373,7 @@ out_free_image:
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_FILE
 static int copy_file_from_fd(int fd, void **buf, unsigned long *buf_len)
 {
@@ -620,6 +651,9 @@ static inline void kimage_file_post_load_cleanup(struct kimage *image) { }
 #endif /* CONFIG_KEXEC_FILE */
 
 static int kimage_is_destination_range(struct kimage *image,
+=======
+int kimage_is_destination_range(struct kimage *image,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					unsigned long start,
 					unsigned long end)
 {
@@ -665,7 +699,11 @@ static void kimage_free_pages(struct page *page)
 	__free_pages(page, order);
 }
 
+<<<<<<< HEAD
 static void kimage_free_page_list(struct list_head *list)
+=======
+void kimage_free_page_list(struct list_head *list)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct list_head *pos, *next;
 
@@ -707,7 +745,11 @@ static struct page *kimage_alloc_normal_control_pages(struct kimage *image,
 	do {
 		unsigned long pfn, epfn, addr, eaddr;
 
+<<<<<<< HEAD
 		pages = kimage_alloc_pages(GFP_KERNEL, order);
+=======
+		pages = kimage_alloc_pages(KEXEC_CONTROL_MEMORY_GFP, order);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!pages)
 			break;
 		pfn   = page_to_pfn(pages);
@@ -885,7 +927,11 @@ static void kimage_free_extra_pages(struct kimage *image)
 	kimage_free_page_list(&image->unusable_pages);
 
 }
+<<<<<<< HEAD
 static void kimage_terminate(struct kimage *image)
+=======
+void kimage_terminate(struct kimage *image)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (*image->entry != 0)
 		image->entry++;
@@ -906,7 +952,11 @@ static void kimage_free_entry(kimage_entry_t entry)
 	kimage_free_pages(page);
 }
 
+<<<<<<< HEAD
 static void kimage_free(struct kimage *image)
+=======
+void kimage_free(struct kimage *image)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	kimage_entry_t *ptr, entry;
 	kimage_entry_t ind = 0;
@@ -1197,7 +1247,11 @@ out:
 	return result;
 }
 
+<<<<<<< HEAD
 static int kimage_load_segment(struct kimage *image,
+=======
+int kimage_load_segment(struct kimage *image,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				struct kexec_segment *segment)
 {
 	int result = -ENOMEM;
@@ -1238,8 +1292,11 @@ struct kimage *kexec_image;
 struct kimage *kexec_crash_image;
 int kexec_load_disabled;
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(kexec_mutex);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
 		struct kexec_segment __user *, segments, unsigned long, flags)
 {
@@ -1381,6 +1438,7 @@ COMPAT_SYSCALL_DEFINE4(kexec_load, compat_ulong_t, entry,
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_FILE
 SYSCALL_DEFINE5(kexec_file_load, int, kernel_fd, int, initrd_fd,
 		unsigned long, cmdline_len, const char __user *, cmdline_ptr,
@@ -1460,6 +1518,8 @@ out:
 
 #endif /* CONFIG_KEXEC_FILE */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void crash_kexec(struct pt_regs *regs)
 {
 	/* Take the kexec_mutex here to prevent sys_kexec_load
@@ -2014,6 +2074,7 @@ static int __init crash_save_vmcoreinfo_init(void)
 
 subsys_initcall(crash_save_vmcoreinfo_init);
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC_FILE
 static int locate_mem_hole_top_down(unsigned long start, unsigned long end,
 				    struct kexec_buf *kbuf)
@@ -2680,6 +2741,8 @@ int kexec_purgatory_get_set_symbol(struct kimage *image, const char *name,
 }
 #endif /* CONFIG_KEXEC_FILE */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Move into place and start executing a preloaded standalone
  * executable.  If nothing was preloaded return an error.

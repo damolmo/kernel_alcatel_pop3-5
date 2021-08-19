@@ -2047,7 +2047,11 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
 			spin_lock_init(&s_state->lock);
 		}
 
+<<<<<<< HEAD
 		memset(&priv->mfunc.master.cmd_eqe, 0, dev->caps.eqe_size);
+=======
+		memset(&priv->mfunc.master.cmd_eqe, 0, sizeof(struct mlx4_eqe));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		priv->mfunc.master.cmd_eqe.type = MLX4_EVENT_TYPE_CMD;
 		INIT_WORK(&priv->mfunc.master.comm_work,
 			  mlx4_master_comm_channel);
@@ -2243,6 +2247,10 @@ void mlx4_cmd_use_polling(struct mlx4_dev *dev)
 		down(&priv->cmd.event_sem);
 
 	kfree(priv->cmd.context);
+<<<<<<< HEAD
+=======
+	priv->cmd.context = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	up(&priv->cmd.poll_sem);
 }

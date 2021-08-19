@@ -361,7 +361,11 @@ static int send_wqe_overhead(enum mlx4_ib_qp_type type, u32 flags)
 			sizeof (struct mlx4_wqe_raddr_seg);
 	case MLX4_IB_QPT_RC:
 		return sizeof (struct mlx4_wqe_ctrl_seg) +
+<<<<<<< HEAD
 			sizeof (struct mlx4_wqe_atomic_seg) +
+=======
+			sizeof (struct mlx4_wqe_masked_atomic_seg) +
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sizeof (struct mlx4_wqe_raddr_seg);
 	case MLX4_IB_QPT_SMI:
 	case MLX4_IB_QPT_GSI:
@@ -1109,8 +1113,15 @@ struct ib_qp *mlx4_ib_create_qp(struct ib_pd *pd,
 	{
 		err = create_qp_common(to_mdev(pd->device), pd, init_attr,
 				       udata, 0, &qp, gfp);
+<<<<<<< HEAD
 		if (err)
 			return ERR_PTR(err);
+=======
+		if (err) {
+			kfree(qp);
+			return ERR_PTR(err);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		qp->ibqp.qp_num = qp->mqp.qpn;
 		qp->xrcdn = xrcdn;
@@ -1152,7 +1163,12 @@ int mlx4_ib_destroy_qp(struct ib_qp *qp)
 	if (is_qp0(dev, mqp))
 		mlx4_CLOSE_PORT(dev->dev, mqp->port);
 
+<<<<<<< HEAD
 	if (dev->qp1_proxy[mqp->port - 1] == mqp) {
+=======
+	if (mqp->mlx4_ib_qp_type == MLX4_IB_QPT_PROXY_GSI &&
+	    dev->qp1_proxy[mqp->port - 1] == mqp) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_lock(&dev->qp1_proxy_lock[mqp->port - 1]);
 		dev->qp1_proxy[mqp->port - 1] = NULL;
 		mutex_unlock(&dev->qp1_proxy_lock[mqp->port - 1]);
@@ -1465,7 +1481,11 @@ static int __mlx4_ib_modify_qp(struct ib_qp *ibqp,
 			context->mtu_msgmax = (IB_MTU_4096 << 5) |
 					      ilog2(dev->dev->caps.max_gso_sz);
 		else
+<<<<<<< HEAD
 			context->mtu_msgmax = (IB_MTU_4096 << 5) | 12;
+=======
+			context->mtu_msgmax = (IB_MTU_4096 << 5) | 13;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (attr_mask & IB_QP_PATH_MTU) {
 		if (attr->path_mtu < IB_MTU_256 || attr->path_mtu > IB_MTU_4096) {
 			pr_err("path MTU (%u) is invalid\n",
@@ -1994,6 +2014,10 @@ static int build_sriov_qp0_header(struct mlx4_ib_sqp *sqp,
 	int send_size;
 	int header_size;
 	int spc;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	if (wr->opcode != IB_WR_SEND)
@@ -2028,7 +2052,13 @@ static int build_sriov_qp0_header(struct mlx4_ib_sqp *sqp,
 
 	sqp->ud_header.lrh.virtual_lane    = 0;
 	sqp->ud_header.bth.solicited_event = !!(wr->send_flags & IB_SEND_SOLICITED);
+<<<<<<< HEAD
 	ib_get_cached_pkey(ib_dev, sqp->qp.port, 0, &pkey);
+=======
+	err = ib_get_cached_pkey(ib_dev, sqp->qp.port, 0, &pkey);
+	if (err)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sqp->ud_header.bth.pkey = cpu_to_be16(pkey);
 	if (sqp->qp.mlx4_ib_qp_type == MLX4_IB_QPT_TUN_SMI_OWNER)
 		sqp->ud_header.bth.destination_qpn = cpu_to_be32(wr->wr.ud.remote_qpn);
@@ -2167,6 +2197,7 @@ static int build_mlx_header(struct mlx4_ib_sqp *sqp, struct ib_send_wr *wr,
 		sqp->ud_header.grh.flow_label    =
 			ah->av.ib.sl_tclass_flowlabel & cpu_to_be32(0xfffff);
 		sqp->ud_header.grh.hop_limit     = ah->av.ib.hop_limit;
+<<<<<<< HEAD
 		if (is_eth)
 			memcpy(sqp->ud_header.grh.source_gid.raw, sgid.raw, 16);
 		else {
@@ -2185,6 +2216,28 @@ static int build_mlx_header(struct mlx4_ib_sqp *sqp, struct ib_send_wr *wr,
 					  be32_to_cpu(ah->av.ib.port_pd) >> 24,
 					  ah->av.ib.gid_index,
 					  &sqp->ud_header.grh.source_gid);
+=======
+		if (is_eth) {
+			memcpy(sqp->ud_header.grh.source_gid.raw, sgid.raw, 16);
+		} else {
+			if (mlx4_is_mfunc(to_mdev(ib_dev)->dev)) {
+				/* When multi-function is enabled, the ib_core gid
+				 * indexes don't necessarily match the hw ones, so
+				 * we must use our own cache */
+				sqp->ud_header.grh.source_gid.global.subnet_prefix =
+					cpu_to_be64(atomic64_read(&(to_mdev(ib_dev)->sriov.
+								    demux[sqp->qp.port - 1].
+								    subnet_prefix)));
+				sqp->ud_header.grh.source_gid.global.interface_id =
+					to_mdev(ib_dev)->sriov.demux[sqp->qp.port - 1].
+					guid_cache[ah->av.ib.gid_index];
+			} else {
+				ib_get_cached_gid(ib_dev,
+						  be32_to_cpu(ah->av.ib.port_pd) >> 24,
+						  ah->av.ib.gid_index,
+						  &sqp->ud_header.grh.source_gid);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		memcpy(sqp->ud_header.grh.destination_gid.raw,
 		       ah->av.ib.dgid, 16);
@@ -2255,9 +2308,20 @@ static int build_mlx_header(struct mlx4_ib_sqp *sqp, struct ib_send_wr *wr,
 	}
 	sqp->ud_header.bth.solicited_event = !!(wr->send_flags & IB_SEND_SOLICITED);
 	if (!sqp->qp.ibqp.qp_num)
+<<<<<<< HEAD
 		ib_get_cached_pkey(ib_dev, sqp->qp.port, sqp->pkey_index, &pkey);
 	else
 		ib_get_cached_pkey(ib_dev, sqp->qp.port, wr->wr.ud.pkey_index, &pkey);
+=======
+		err = ib_get_cached_pkey(ib_dev, sqp->qp.port, sqp->pkey_index,
+					 &pkey);
+	else
+		err = ib_get_cached_pkey(ib_dev, sqp->qp.port, wr->wr.ud.pkey_index,
+					 &pkey);
+	if (err)
+		return err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sqp->ud_header.bth.pkey = cpu_to_be16(pkey);
 	sqp->ud_header.bth.destination_qpn = cpu_to_be32(wr->wr.ud.remote_qpn);
 	sqp->ud_header.bth.psn = cpu_to_be32((sqp->send_psn++) & ((1 << 24) - 1));

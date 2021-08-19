@@ -483,3 +483,7 @@ module_platform_driver(asoc_mmp_sspa_driver);
 MODULE_AUTHOR("Leo Yan <leoy@marvell.com>");
 MODULE_DESCRIPTION("MMP SSPA SoC Interface");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:mmp-sspa-dai");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

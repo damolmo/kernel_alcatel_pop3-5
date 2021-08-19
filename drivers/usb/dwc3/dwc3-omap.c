@@ -514,8 +514,13 @@ static int dwc3_omap_probe(struct platform_device *pdev)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "missing IRQ resource\n");
 		return -EINVAL;
+=======
+		dev_err(dev, "missing IRQ resource: %d\n", irq);
+		return irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);

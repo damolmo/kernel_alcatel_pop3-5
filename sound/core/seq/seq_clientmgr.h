@@ -59,6 +59,10 @@ struct snd_seq_client {
 	struct list_head ports_list_head;
 	rwlock_t ports_lock;
 	struct mutex ports_mutex;
+<<<<<<< HEAD
+=======
+	struct mutex ioctl_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int convert32;		/* convert 32->64bit */
 
 	/* output pool */

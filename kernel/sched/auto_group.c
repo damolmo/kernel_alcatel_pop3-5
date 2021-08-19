@@ -113,6 +113,7 @@ bool task_wants_autogroup(struct task_struct *p, struct task_group *tg)
 {
 	if (tg != &root_task_group)
 		return false;
+<<<<<<< HEAD
 
 	/*
 	 * We can only assume the task group can't go away on us if
@@ -121,6 +122,13 @@ bool task_wants_autogroup(struct task_struct *p, struct task_group *tg)
 	if (p->flags & PF_EXITING)
 		return false;
 
+=======
+	/*
+	 * If we race with autogroup_move_group() the caller can use the old
+	 * value of signal->autogroup but in this case sched_move_task() will
+	 * be called again before autogroup_kref_put().
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 
@@ -140,6 +148,7 @@ autogroup_move_group(struct task_struct *p, struct autogroup *ag)
 	}
 
 	p->signal->autogroup = autogroup_kref_get(ag);
+<<<<<<< HEAD
 
 	if (!ACCESS_ONCE(sysctl_sched_autogroup_enabled))
 		goto out;
@@ -147,6 +156,19 @@ autogroup_move_group(struct task_struct *p, struct autogroup *ag)
 	for_each_thread(p, t)
 		sched_move_task(t);
 out:
+=======
+	/*
+	 * We can't avoid sched_move_task() after we changed signal->autogroup,
+	 * this process can already run with task_group() == prev->tg or we can
+	 * race with cgroup code which can read autogroup = prev under rq->lock.
+	 * In the latter case for_each_thread() can not miss a migrating thread,
+	 * cpu_cgroup_attach() must not be possible after cgroup_exit() and it
+	 * can't be removed from thread list, we hold ->siglock.
+	 */
+	for_each_thread(p, t)
+		sched_move_task(t);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unlock_task_sighand(p, &flags);
 	autogroup_kref_put(prev);
 }

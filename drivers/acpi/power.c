@@ -132,6 +132,26 @@ void acpi_power_resources_list_free(struct list_head *list)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static bool acpi_power_resource_is_dup(union acpi_object *package,
+				       unsigned int start, unsigned int i)
+{
+	acpi_handle rhandle, dup;
+	unsigned int j;
+
+	/* The caller is expected to check the package element types */
+	rhandle = package->package.elements[i].reference.handle;
+	for (j = start; j < i; j++) {
+		dup = package->package.elements[j].reference.handle;
+		if (dup == rhandle)
+			return true;
+	}
+
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int acpi_extract_power_resources(union acpi_object *package, unsigned int start,
 				 struct list_head *list)
 {
@@ -151,6 +171,14 @@ int acpi_extract_power_resources(union acpi_object *package, unsigned int start,
 			err = -ENODEV;
 			break;
 		}
+<<<<<<< HEAD
+=======
+
+		/* Some ACPI tables contain duplicate power resource references */
+		if (acpi_power_resource_is_dup(package, start, i))
+			continue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = acpi_add_power_resource(rhandle);
 		if (err)
 			break;
@@ -201,6 +229,10 @@ static int acpi_power_get_list_state(struct list_head *list, int *state)
 		return -EINVAL;
 
 	/* The state of the list is 'on' IFF all resources are 'on'. */
+<<<<<<< HEAD
+=======
+	cur_state = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry(entry, list, node) {
 		struct acpi_power_resource *resource = entry->resource;
 		acpi_handle handle = resource->device.handle;

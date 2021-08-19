@@ -18,6 +18,10 @@
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/magic.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* This is the range of ioctl() numbers we claim as ours */
 #define AUTOFS_IOC_FIRST     AUTOFS_IOC_READY
@@ -79,9 +83,19 @@ struct autofs_info {
 };
 
 #define AUTOFS_INF_EXPIRING	(1<<0) /* dentry is in the process of expiring */
+<<<<<<< HEAD
 #define AUTOFS_INF_NO_RCU	(1<<1) /* the dentry is being considered
 					* for expiry, so RCU_walk is
 					* not permitted
+=======
+#define AUTOFS_INF_WANT_EXPIRE	(1<<1) /* the dentry is being considered
+					* for expiry, so RCU_walk is
+					* not permitted.  If it progresses to
+					* actual expiry attempt, the flag is
+					* not cleared when EXPIRING is set -
+					* in that case it gets cleared only
+					* when it comes to clearing EXPIRING.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					*/
 #define AUTOFS_INF_PENDING	(1<<2) /* dentry pending mount */
 
@@ -131,7 +145,12 @@ struct autofs_sb_info {
 
 static inline struct autofs_sb_info *autofs4_sbi(struct super_block *sb)
 {
+<<<<<<< HEAD
 	return (struct autofs_sb_info *)(sb->s_fs_info);
+=======
+	return sb->s_magic != AUTOFS_SUPER_MAGIC ?
+		NULL : (struct autofs_sb_info *)(sb->s_fs_info);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline struct autofs_info *autofs4_dentry_ino(struct dentry *dentry)

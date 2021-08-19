@@ -539,6 +539,12 @@ static int vnt_start(struct ieee80211_hw *hw)
 		goto free_all;
 	}
 
+<<<<<<< HEAD
+=======
+	if (vnt_key_init_table(priv))
+		goto free_all;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	priv->int_interval = 1;  /* bInterval is set to 1 */
 
 	vnt_int_start_interrupt(priv);
@@ -971,6 +977,10 @@ vt6656_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	priv = hw->priv;
 	priv->hw = hw;
 	priv->usb = udev;
+<<<<<<< HEAD
+=======
+	priv->intf = intf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vnt_set_options(priv);
 

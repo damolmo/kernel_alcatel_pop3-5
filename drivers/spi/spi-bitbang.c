@@ -462,7 +462,11 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 	if (ret)
 		spi_master_put(master);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_start);
 

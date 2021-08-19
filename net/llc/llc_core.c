@@ -73,8 +73,13 @@ struct llc_sap *llc_sap_find(unsigned char sap_value)
 
 	rcu_read_lock_bh();
 	sap = __llc_sap_find(sap_value);
+<<<<<<< HEAD
 	if (sap)
 		llc_sap_hold(sap);
+=======
+	if (!sap || !llc_sap_hold_safe(sap))
+		sap = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rcu_read_unlock_bh();
 	return sap;
 }
@@ -127,9 +132,13 @@ void llc_sap_close(struct llc_sap *sap)
 	list_del_rcu(&sap->node);
 	spin_unlock_bh(&llc_sap_list_lock);
 
+<<<<<<< HEAD
 	synchronize_rcu();
 
 	kfree(sap);
+=======
+	kfree_rcu(sap, rcu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct packet_type llc_packet_type __read_mostly = {

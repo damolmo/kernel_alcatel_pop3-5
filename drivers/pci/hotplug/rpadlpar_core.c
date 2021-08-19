@@ -55,6 +55,10 @@ static struct device_node *find_vio_slot_node(char *drc_name)
 		if ((rc == 0) && (!strcmp(drc_name, name)))
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return dn;
 }
@@ -78,6 +82,10 @@ static struct device_node *find_php_slot_pci_node(char *drc_name,
 	return np;
 }
 
+<<<<<<< HEAD
+=======
+/* Returns a device_node with its reference count incremented */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct device_node *find_dlpar_node(char *drc_name, int *node_type)
 {
 	struct device_node *dn;
@@ -258,8 +266,18 @@ static int dlpar_add_phb(char *drc_name, struct device_node *dn)
 
 static int dlpar_add_vio_slot(char *drc_name, struct device_node *dn)
 {
+<<<<<<< HEAD
 	if (vio_find_node(dn))
 		return -EINVAL;
+=======
+	struct vio_dev *vio_dev;
+
+	vio_dev = vio_find_node(dn);
+	if (vio_dev) {
+		put_device(&vio_dev->dev);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!vio_register_device_node(dn)) {
 		printk(KERN_ERR
@@ -309,6 +327,10 @@ int dlpar_add_slot(char *drc_name)
 			rc = dlpar_add_phb(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	printk(KERN_INFO "%s: slot %s added\n", DLPAR_MODULE_NAME, drc_name);
 exit:
@@ -335,6 +357,12 @@ static int dlpar_remove_vio_slot(char *drc_name, struct device_node *dn)
 		return -EINVAL;
 
 	vio_unregister_device(vio_dev);
+<<<<<<< HEAD
+=======
+
+	put_device(&vio_dev->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -439,6 +467,10 @@ int dlpar_remove_slot(char *drc_name)
 			rc = dlpar_remove_pci_slot(drc_name, dn);
 			break;
 	}
+<<<<<<< HEAD
+=======
+	of_node_put(dn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vm_unmap_aliases();
 
 	printk(KERN_INFO "%s: slot %s removed\n", DLPAR_MODULE_NAME, drc_name);

@@ -564,6 +564,10 @@ static int tegra_sflash_resume(struct device *dev)
 
 	ret = pm_runtime_get_sync(dev);
 	if (ret < 0) {
+<<<<<<< HEAD
+=======
+		pm_runtime_put_noidle(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(dev, "pm runtime failed, e = %d\n", ret);
 		return ret;
 	}

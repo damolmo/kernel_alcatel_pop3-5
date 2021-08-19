@@ -117,12 +117,25 @@ static int v2_read_file_info(struct super_block *sb, int type)
 	qinfo = info->dqi_priv;
 	if (version == 0) {
 		/* limits are stored as unsigned 32-bit data */
+<<<<<<< HEAD
 		info->dqi_max_spc_limit = 0xffffffffULL << QUOTABLOCK_BITS;
 		info->dqi_max_ino_limit = 0xffffffff;
 	} else {
 		/* used space is stored as unsigned 64-bit value in bytes */
 		info->dqi_max_spc_limit = 0xffffffffffffffffULL; /* 2^64-1 */
 		info->dqi_max_ino_limit = 0xffffffffffffffffULL;
+=======
+		info->dqi_max_spc_limit = 0xffffffffLL << QUOTABLOCK_BITS;
+		info->dqi_max_ino_limit = 0xffffffff;
+	} else {
+		/*
+		 * Used space is stored as unsigned 64-bit value in bytes but
+		 * quota core supports only signed 64-bit values so use that
+		 * as a limit
+		 */
+		info->dqi_max_spc_limit = 0x7fffffffffffffffLL; /* 2^63-1 */
+		info->dqi_max_ino_limit = 0x7fffffffffffffffLL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	info->dqi_bgrace = le32_to_cpu(dinfo.dqi_bgrace);
 	info->dqi_igrace = le32_to_cpu(dinfo.dqi_igrace);
@@ -260,6 +273,10 @@ static void v2r1_mem2diskdqb(void *dp, struct dquot *dquot)
 	d->dqb_curspace = cpu_to_le64(m->dqb_curspace);
 	d->dqb_btime = cpu_to_le64(m->dqb_btime);
 	d->dqb_id = cpu_to_le32(from_kqid(&init_user_ns, dquot->dq_id));
+<<<<<<< HEAD
+=======
+	d->dqb_pad = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (qtree_entry_unused(info, dp))
 		d->dqb_itime = cpu_to_le64(1);
 }

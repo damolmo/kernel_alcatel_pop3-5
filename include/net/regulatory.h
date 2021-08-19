@@ -78,7 +78,11 @@ struct regulatory_request {
 	int wiphy_idx;
 	enum nl80211_reg_initiator initiator;
 	enum nl80211_user_reg_hint_type user_reg_hint_type;
+<<<<<<< HEAD
 	char alpha2[2];
+=======
+	char alpha2[3];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	enum nl80211_dfs_regions dfs_region;
 	bool intersect;
 	bool processed;

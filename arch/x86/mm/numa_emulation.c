@@ -60,7 +60,11 @@ static int __init emu_setup_memblk(struct numa_meminfo *ei,
 	eb->nid = nid;
 
 	if (emu_nid_to_phys[nid] == NUMA_NO_NODE)
+<<<<<<< HEAD
 		emu_nid_to_phys[nid] = nid;
+=======
+		emu_nid_to_phys[nid] = pb->nid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pb->start += size;
 	if (pb->start >= pb->end) {

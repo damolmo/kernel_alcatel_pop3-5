@@ -331,6 +331,11 @@ static int drbd_thread_setup(void *arg)
 		 thi->name[0],
 		 resource->name);
 
+<<<<<<< HEAD
+=======
+	allow_kernel_signal(DRBD_SIGKILL);
+	allow_kernel_signal(SIGXCPU);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 restart:
 	retval = thi->function(thi);
 
@@ -792,7 +797,10 @@ int __drbd_send_protocol(struct drbd_connection *connection, enum drbd_packet cm
 
 	if (nc->tentative && connection->agreed_pro_version < 92) {
 		rcu_read_unlock();
+<<<<<<< HEAD
 		mutex_unlock(&sock->mutex);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		drbd_err(connection, "--dry-run is not supported by peer");
 		return -EOPNOTSUPP;
 	}
@@ -1802,7 +1810,11 @@ int drbd_send(struct drbd_connection *connection, struct socket *sock,
  * do we need to block DRBD_SIG if sock == &meta.socket ??
  * otherwise wake_asender() might interrupt some send_*Ack !
  */
+<<<<<<< HEAD
 		rv = kernel_sendmsg(sock, &msg, &iov, 1, size);
+=======
+		rv = kernel_sendmsg(sock, &msg, &iov, 1, iov.iov_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (rv == -EAGAIN) {
 			if (we_should_drop_the_connection(connection, sock))
 				break;

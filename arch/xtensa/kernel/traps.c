@@ -280,7 +280,11 @@ do_unaligned_user (struct pt_regs *regs)
 	info.si_errno = 0;
 	info.si_code = BUS_ADRALN;
 	info.si_addr = (void *) regs->excvaddr;
+<<<<<<< HEAD
 	force_sig_info(SIGSEGV, &info, current);
+=======
+	force_sig_info(SIGBUS, &info, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 }
 #endif

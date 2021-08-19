@@ -147,6 +147,7 @@ void peak_usb_get_ts_tv(struct peak_time_ref *time_ref, u32 ts,
 	/* protect from getting timeval before setting now */
 	if (time_ref->tv_host.tv_sec > 0) {
 		u64 delta_us;
+<<<<<<< HEAD
 
 		delta_us = ts - time_ref->ts_dev_2;
 		if (ts < time_ref->ts_dev_2)
@@ -155,6 +156,57 @@ void peak_usb_get_ts_tv(struct peak_time_ref *time_ref, u32 ts,
 		delta_us += time_ref->ts_total;
 
 		delta_us *= time_ref->adapter->us_per_ts_scale;
+=======
+		s64 delta_ts = 0;
+
+		/* General case: dev_ts_1 < dev_ts_2 < ts, with:
+		 *
+		 * - dev_ts_1 = previous sync timestamp
+		 * - dev_ts_2 = last sync timestamp
+		 * - ts = event timestamp
+		 * - ts_period = known sync period (theoretical)
+		 *             ~ dev_ts2 - dev_ts1
+		 * *but*:
+		 *
+		 * - time counters wrap (see adapter->ts_used_bits)
+		 * - sometimes, dev_ts_1 < ts < dev_ts2
+		 *
+		 * "normal" case (sync time counters increase):
+		 * must take into account case when ts wraps (tsw)
+		 *
+		 *      < ts_period > <          >
+		 *     |             |            |
+		 *  ---+--------+----+-------0-+--+-->
+		 *     ts_dev_1 |    ts_dev_2  |
+		 *              ts             tsw
+		 */
+		if (time_ref->ts_dev_1 < time_ref->ts_dev_2) {
+			/* case when event time (tsw) wraps */
+			if (ts < time_ref->ts_dev_1)
+				delta_ts = BIT_ULL(time_ref->adapter->ts_used_bits);
+
+		/* Otherwise, sync time counter (ts_dev_2) has wrapped:
+		 * handle case when event time (tsn) hasn't.
+		 *
+		 *      < ts_period > <          >
+		 *     |             |            |
+		 *  ---+--------+--0-+---------+--+-->
+		 *     ts_dev_1 |    ts_dev_2  |
+		 *              tsn            ts
+		 */
+		} else if (time_ref->ts_dev_1 < ts) {
+			delta_ts = -BIT_ULL(time_ref->adapter->ts_used_bits);
+		}
+
+		/* add delay between last sync and event timestamps */
+		delta_ts += (signed int)(ts - time_ref->ts_dev_2);
+
+		/* add time from beginning to last sync */
+		delta_ts += time_ref->ts_total;
+
+		/* convert ticks number into microseconds */
+		delta_us = delta_ts * time_ref->adapter->us_per_ts_scale;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		delta_us >>= time_ref->adapter->us_per_ts_shift;
 
 		*tv = time_ref->tv_host_0;
@@ -572,16 +624,26 @@ static int peak_usb_ndo_stop(struct net_device *netdev)
 	dev->state &= ~PCAN_USB_STATE_STARTED;
 	netif_stop_queue(netdev);
 
+<<<<<<< HEAD
+=======
+	close_candev(netdev);
+
+	dev->can.state = CAN_STATE_STOPPED;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* unlink all pending urbs and free used memory */
 	peak_usb_unlink_all_urbs(dev);
 
 	if (dev->adapter->dev_stop)
 		dev->adapter->dev_stop(dev);
 
+<<<<<<< HEAD
 	close_candev(netdev);
 
 	dev->can.state = CAN_STATE_STOPPED;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* can set bus off now */
 	if (dev->adapter->dev_set_bus) {
 		int err = dev->adapter->dev_set_bus(dev, 0);
@@ -732,7 +794,11 @@ static int peak_usb_create_dev(struct peak_usb_adapter *peak_usb_adapter,
 	dev = netdev_priv(netdev);
 
 	/* allocate a buffer large enough to send commands */
+<<<<<<< HEAD
 	dev->cmd_buf = kmalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
+=======
+	dev->cmd_buf = kzalloc(PCAN_USB_MAX_CMD_LEN, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!dev->cmd_buf) {
 		err = -ENOMEM;
 		goto lbl_free_candev;
@@ -795,7 +861,11 @@ static int peak_usb_create_dev(struct peak_usb_adapter *peak_usb_adapter,
 	if (dev->adapter->dev_set_bus) {
 		err = dev->adapter->dev_set_bus(dev, 0);
 		if (err)
+<<<<<<< HEAD
 			goto lbl_unregister_candev;
+=======
+			goto adap_dev_free;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* get device number early */
@@ -807,6 +877,13 @@ static int peak_usb_create_dev(struct peak_usb_adapter *peak_usb_adapter,
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+adap_dev_free:
+	if (dev->adapter->dev_free)
+		dev->adapter->dev_free(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 lbl_unregister_candev:
 	unregister_candev(netdev);
 
@@ -826,6 +903,7 @@ lbl_free_candev:
 static void peak_usb_disconnect(struct usb_interface *intf)
 {
 	struct peak_usb_device *dev;
+<<<<<<< HEAD
 
 	/* unregister as many netdev devices as siblings */
 	for (dev = usb_get_intfdata(intf); dev; dev = dev->prev_siblings) {
@@ -837,12 +915,30 @@ static void peak_usb_disconnect(struct usb_interface *intf)
 
 		unregister_netdev(netdev);
 		free_candev(netdev);
+=======
+	struct peak_usb_device *dev_prev_siblings;
+
+	/* unregister as many netdev devices as siblings */
+	for (dev = usb_get_intfdata(intf); dev; dev = dev_prev_siblings) {
+		struct net_device *netdev = dev->netdev;
+		char name[IFNAMSIZ];
+
+		dev_prev_siblings = dev->prev_siblings;
+		dev->state &= ~PCAN_USB_STATE_CONNECTED;
+		strlcpy(name, netdev->name, IFNAMSIZ);
+
+		unregister_netdev(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		kfree(dev->cmd_buf);
 		dev->next_siblings = NULL;
 		if (dev->adapter->dev_free)
 			dev->adapter->dev_free(dev);
 
+<<<<<<< HEAD
+=======
+		free_candev(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_info(&intf->dev, "%s removed\n", name);
 	}
 

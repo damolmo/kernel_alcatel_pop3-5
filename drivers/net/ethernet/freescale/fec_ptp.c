@@ -412,9 +412,22 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 	u32 remainder;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
 	ns = timecounter_read(&adapter->tc);
 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+=======
+	mutex_lock(&adapter->ptp_clk_mutex);
+	/* Check the ptp clock */
+	if (!adapter->ptp_clk_on) {
+		mutex_unlock(&adapter->ptp_clk_mutex);
+		return -EINVAL;
+	}
+	spin_lock_irqsave(&adapter->tmreg_lock, flags);
+	ns = timecounter_read(&adapter->tc);
+	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+	mutex_unlock(&adapter->ptp_clk_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ts->tv_sec = div_u64_rem(ns, 1000000000ULL, &remainder);
 	ts->tv_nsec = remainder;
@@ -620,6 +633,19 @@ void fec_ptp_init(struct platform_device *pdev)
 	schedule_delayed_work(&fep->time_keep, HZ);
 }
 
+<<<<<<< HEAD
+=======
+void fec_ptp_stop(struct platform_device *pdev)
+{
+	struct net_device *ndev = platform_get_drvdata(pdev);
+	struct fec_enet_private *fep = netdev_priv(ndev);
+
+	cancel_delayed_work_sync(&fep->time_keep);
+	if (fep->ptp_clock)
+		ptp_clock_unregister(fep->ptp_clock);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * fec_ptp_check_pps_event
  * @fep: the fec_enet_private structure handle

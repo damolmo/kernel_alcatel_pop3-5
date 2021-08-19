@@ -28,12 +28,20 @@ struct lockref {
 #endif
 		struct {
 			spinlock_t lock;
+<<<<<<< HEAD
 			unsigned int count;
+=======
+			int count;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		};
 	};
 };
 
 extern void lockref_get(struct lockref *);
+<<<<<<< HEAD
+=======
+extern int lockref_put_return(struct lockref *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int lockref_get_not_zero(struct lockref *);
 extern int lockref_get_or_lock(struct lockref *);
 extern int lockref_put_or_lock(struct lockref *);

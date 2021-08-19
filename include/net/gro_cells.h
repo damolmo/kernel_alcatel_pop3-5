@@ -20,18 +20,35 @@ static inline void gro_cells_receive(struct gro_cells *gcells, struct sk_buff *s
 	struct gro_cell *cell = gcells->cells;
 	struct net_device *dev = skb->dev;
 
+<<<<<<< HEAD
 	if (!cell || skb_cloned(skb) || !(dev->features & NETIF_F_GRO)) {
 		netif_rx(skb);
 		return;
+=======
+	rcu_read_lock();
+	if (unlikely(!(dev->flags & IFF_UP)))
+		goto drop;
+
+	if (!cell || skb_cloned(skb) || !(dev->features & NETIF_F_GRO)) {
+		netif_rx(skb);
+		goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (skb_rx_queue_recorded(skb))
 		cell += skb_get_rx_queue(skb) & gcells->gro_cells_mask;
 
 	if (skb_queue_len(&cell->napi_skbs) > netdev_max_backlog) {
+<<<<<<< HEAD
 		atomic_long_inc(&dev->rx_dropped);
 		kfree_skb(skb);
 		return;
+=======
+drop:
+		atomic_long_inc(&dev->rx_dropped);
+		kfree_skb(skb);
+		goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* We run in BH context */
@@ -42,6 +59,12 @@ static inline void gro_cells_receive(struct gro_cells *gcells, struct sk_buff *s
 		napi_schedule(&cell->napi);
 
 	spin_unlock(&cell->napi_skbs.lock);
+<<<<<<< HEAD
+=======
+
+unlock:
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* called unser BH context */
@@ -97,6 +120,10 @@ static inline void gro_cells_destroy(struct gro_cells *gcells)
 	if (!cell)
 		return;
 	for (i = 0; i <= gcells->gro_cells_mask; i++,cell++) {
+<<<<<<< HEAD
+=======
+		napi_disable(&cell->napi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		netif_napi_del(&cell->napi);
 		skb_queue_purge(&cell->napi_skbs);
 	}

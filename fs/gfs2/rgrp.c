@@ -645,7 +645,14 @@ static void __rs_deltree(struct gfs2_blkreserv *rs)
 	RB_CLEAR_NODE(&rs->rs_node);
 
 	if (rs->rs_free) {
+<<<<<<< HEAD
 		struct gfs2_bitmap *bi = rbm_bi(&rs->rs_rbm);
+=======
+		u64 last_block = gfs2_rbm_to_block(&rs->rs_rbm) +
+				 rs->rs_free - 1;
+		struct gfs2_rbm last_rbm = { .rgd = rs->rs_rbm.rgd, };
+		struct gfs2_bitmap *start, *last;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* return reserved blocks to the rgrp */
 		BUG_ON(rs->rs_rbm.rgd->rd_reserved < rs->rs_free);
@@ -656,7 +663,17 @@ static void __rs_deltree(struct gfs2_blkreserv *rs)
 		   it will force the number to be recalculated later. */
 		rgd->rd_extfail_pt += rs->rs_free;
 		rs->rs_free = 0;
+<<<<<<< HEAD
 		clear_bit(GBF_FULL, &bi->bi_flags);
+=======
+		if (gfs2_rbm_from_block(&last_rbm, last_block))
+			return;
+		start = rbm_bi(&rs->rs_rbm);
+		last = rbm_bi(&last_rbm);
+		do
+			clear_bit(GBF_FULL, &start->bi_flags);
+		while (start++ != last);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -732,13 +749,23 @@ void gfs2_clear_rgrpd(struct gfs2_sbd *sdp)
 			spin_lock(&gl->gl_spin);
 			gl->gl_object = NULL;
 			spin_unlock(&gl->gl_spin);
+<<<<<<< HEAD
+=======
+			gfs2_rgrp_brelse(rgd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			gfs2_glock_add_to_lru(gl);
 			gfs2_glock_put(gl);
 		}
 
 		gfs2_free_clones(rgd);
+<<<<<<< HEAD
 		kfree(rgd->rd_bits);
 		return_all_reservations(rgd);
+=======
+		return_all_reservations(rgd);
+		kfree(rgd->rd_bits);
+		rgd->rd_bits = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kmem_cache_free(gfs2_rgrpd_cachep, rgd);
 	}
 }
@@ -932,9 +959,12 @@ static int read_rindex_entry(struct gfs2_inode *ip)
 	if (error)
 		goto fail;
 
+<<<<<<< HEAD
 	rgd->rd_gl->gl_object = rgd;
 	rgd->rd_gl->gl_vm.start = rgd->rd_addr * bsize;
 	rgd->rd_gl->gl_vm.end = rgd->rd_gl->gl_vm.start + (rgd->rd_length * bsize) - 1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
 	rgd->rd_flags &= ~GFS2_RDF_UPTODATE;
 	if (rgd->rd_data > sdp->sd_max_rg_data)
@@ -942,14 +972,28 @@ static int read_rindex_entry(struct gfs2_inode *ip)
 	spin_lock(&sdp->sd_rindex_spin);
 	error = rgd_insert(rgd);
 	spin_unlock(&sdp->sd_rindex_spin);
+<<<<<<< HEAD
 	if (!error)
 		return 0;
+=======
+	if (!error) {
+		rgd->rd_gl->gl_object = rgd;
+		rgd->rd_gl->gl_vm.start = (rgd->rd_addr * bsize) & PAGE_MASK;
+		rgd->rd_gl->gl_vm.end = PAGE_ALIGN((rgd->rd_addr +
+						    rgd->rd_length) * bsize) - 1;
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	error = 0; /* someone else read in the rgrp; free it and ignore it */
 	gfs2_glock_put(rgd->rd_gl);
 
 fail:
 	kfree(rgd->rd_bits);
+<<<<<<< HEAD
+=======
+	rgd->rd_bits = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kmem_cache_free(gfs2_rgrpd_cachep, rgd);
 	return error;
 }
@@ -973,6 +1017,14 @@ static int gfs2_ri_update(struct gfs2_inode *ip)
 	if (error < 0)
 		return error;
 
+<<<<<<< HEAD
+=======
+	if (RB_EMPTY_ROOT(&sdp->sd_rindex_tree)) {
+		fs_err(sdp, "no resource groups found in the file system.\n");
+		return -ENOENT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sdp->sd_rindex_uptodate = 1;
 	return 0;
 }
@@ -1106,7 +1158,11 @@ static u32 count_unlinked(struct gfs2_rgrpd *rgd)
  * @rgd: the struct gfs2_rgrpd describing the RG to read in
  *
  * Read in all of a Resource Group's header and bitmap blocks.
+<<<<<<< HEAD
  * Caller must eventually call gfs2_rgrp_relse() to free the bitmaps.
+=======
+ * Caller must eventually call gfs2_rgrp_brelse() to free the bitmaps.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Returns: errno
  */
@@ -1191,7 +1247,11 @@ static int update_rgrp_lvb(struct gfs2_rgrpd *rgd)
 	rl_flags = be32_to_cpu(rgd->rd_rgl->rl_flags);
 	rl_flags &= ~GFS2_RDF_MASK;
 	rgd->rd_flags &= GFS2_RDF_MASK;
+<<<<<<< HEAD
 	rgd->rd_flags |= (rl_flags | GFS2_RDF_UPTODATE | GFS2_RDF_CHECK);
+=======
+	rgd->rd_flags |= (rl_flags | GFS2_RDF_CHECK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rgd->rd_rgl->rl_unlinked == 0)
 		rgd->rd_flags &= ~GFS2_RDF_CHECK;
 	rgd->rd_free = be32_to_cpu(rgd->rd_rgl->rl_free);
@@ -1212,6 +1272,7 @@ int gfs2_rgrp_go_lock(struct gfs2_holder *gh)
 }
 
 /**
+<<<<<<< HEAD
  * gfs2_rgrp_go_unlock - Release RG bitmaps read in with gfs2_rgrp_bh_get()
  * @gh: The glock holder for the resource group
  *
@@ -1220,6 +1281,15 @@ int gfs2_rgrp_go_lock(struct gfs2_holder *gh)
 void gfs2_rgrp_go_unlock(struct gfs2_holder *gh)
 {
 	struct gfs2_rgrpd *rgd = gh->gh_gl->gl_object;
+=======
+ * gfs2_rgrp_brelse - Release RG bitmaps read in with gfs2_rgrp_bh_get()
+ * @rgd: The resource group
+ *
+ */
+
+void gfs2_rgrp_brelse(struct gfs2_rgrpd *rgd)
+{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int x, length = rgd->rd_length;
 
 	for (x = 0; x < length; x++) {
@@ -1232,6 +1302,25 @@ void gfs2_rgrp_go_unlock(struct gfs2_holder *gh)
 
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * gfs2_rgrp_go_unlock - Unlock a rgrp glock
+ * @gh: The glock holder for the resource group
+ *
+ */
+
+void gfs2_rgrp_go_unlock(struct gfs2_holder *gh)
+{
+	struct gfs2_rgrpd *rgd = gh->gh_gl->gl_object;
+	int demote_requested = test_bit(GLF_DEMOTE, &gh->gh_gl->gl_flags) |
+		test_bit(GLF_PENDING_DEMOTE, &gh->gh_gl->gl_flags);
+
+	if (rgd && demote_requested)
+		gfs2_rgrp_brelse(rgd);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int gfs2_rgrp_send_discards(struct gfs2_sbd *sdp, u64 offset,
 			     struct buffer_head *bh,
 			     const struct gfs2_bitmap *bi, unsigned minlen, u64 *ptrimmed)
@@ -1327,6 +1416,12 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
+=======
+	if (!test_bit(SDF_JOURNAL_LIVE, &sdp->sd_flags))
+		return -EROFS;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!blk_queue_discard(q))
 		return -EOPNOTSUPP;
 

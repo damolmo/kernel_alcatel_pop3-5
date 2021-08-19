@@ -73,7 +73,12 @@
 			ICP_QAT_HW_CIPHER_KEY_CONVERT, \
 			ICP_QAT_HW_CIPHER_DECRYPT)
 
+<<<<<<< HEAD
 static atomic_t active_dev;
+=======
+static DEFINE_MUTEX(algs_lock);
+static unsigned int active_devs;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct qat_alg_buf {
 	uint32_t len;
@@ -731,6 +736,14 @@ static int qat_alg_dec(struct aead_request *areq)
 	struct icp_qat_fw_la_bulk_req *msg;
 	int digst_size = crypto_aead_crt(aead_tfm)->authsize;
 	int ret, ctr = 0;
+<<<<<<< HEAD
+=======
+	u32 cipher_len;
+
+	cipher_len = areq->cryptlen - digst_size;
+	if (cipher_len % AES_BLOCK_SIZE != 0)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = qat_alg_sgl_to_bufl(ctx->inst, areq->assoc, areq->src, areq->dst,
 				  areq->iv, AES_BLOCK_SIZE, qat_req);
@@ -745,7 +758,11 @@ static int qat_alg_dec(struct aead_request *areq)
 	qat_req->req.comn_mid.src_data_addr = qat_req->buf.blp;
 	qat_req->req.comn_mid.dest_data_addr = qat_req->buf.bloutp;
 	cipher_param = (void *)&qat_req->req.serv_specif_rqpars;
+<<<<<<< HEAD
 	cipher_param->cipher_length = areq->cryptlen - digst_size;
+=======
+	cipher_param->cipher_length = cipher_len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cipher_param->cipher_offset = areq->assoclen + AES_BLOCK_SIZE;
 	memcpy(cipher_param->u.cipher_IV_array, areq->iv, AES_BLOCK_SIZE);
 	auth_param = (void *)((uint8_t *)cipher_param + sizeof(*cipher_param));
@@ -775,6 +792,12 @@ static int qat_alg_enc_internal(struct aead_request *areq, uint8_t *iv,
 	struct icp_qat_fw_la_bulk_req *msg;
 	int ret, ctr = 0;
 
+<<<<<<< HEAD
+=======
+	if (areq->cryptlen % AES_BLOCK_SIZE != 0)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = qat_alg_sgl_to_bufl(ctx->inst, areq->assoc, areq->src, areq->dst,
 				  iv, AES_BLOCK_SIZE, qat_req);
 	if (unlikely(ret))
@@ -955,27 +978,54 @@ static struct crypto_alg qat_algs[] = { {
 
 int qat_algs_register(void)
 {
+<<<<<<< HEAD
 	if (atomic_add_return(1, &active_dev) == 1) {
+=======
+	int ret = 0;
+
+	mutex_lock(&algs_lock);
+	if (++active_devs == 1) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int i;
 
 		for (i = 0; i < ARRAY_SIZE(qat_algs); i++)
 			qat_algs[i].cra_flags =	CRYPTO_ALG_TYPE_AEAD |
 						CRYPTO_ALG_ASYNC;
+<<<<<<< HEAD
 		return crypto_register_algs(qat_algs, ARRAY_SIZE(qat_algs));
 	}
 	return 0;
+=======
+		ret = crypto_register_algs(qat_algs, ARRAY_SIZE(qat_algs));
+	}
+	mutex_unlock(&algs_lock);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int qat_algs_unregister(void)
 {
+<<<<<<< HEAD
 	if (atomic_sub_return(1, &active_dev) == 0)
 		return crypto_unregister_algs(qat_algs, ARRAY_SIZE(qat_algs));
 	return 0;
+=======
+	int ret = 0;
+
+	mutex_lock(&algs_lock);
+	if (--active_devs == 0)
+		ret = crypto_unregister_algs(qat_algs, ARRAY_SIZE(qat_algs));
+	mutex_unlock(&algs_lock);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int qat_algs_init(void)
 {
+<<<<<<< HEAD
 	atomic_set(&active_dev, 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	crypto_get_default_rng();
 	return 0;
 }

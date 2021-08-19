@@ -168,8 +168,13 @@ void kvm_inject_dabt(struct kvm_vcpu *vcpu, unsigned long addr)
 {
 	if (!(vcpu->arch.hcr_el2 & HCR_RW))
 		inject_abt32(vcpu, false, addr);
+<<<<<<< HEAD
 
 	inject_abt64(vcpu, false, addr);
+=======
+	else
+		inject_abt64(vcpu, false, addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -184,8 +189,13 @@ void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr)
 {
 	if (!(vcpu->arch.hcr_el2 & HCR_RW))
 		inject_abt32(vcpu, true, addr);
+<<<<<<< HEAD
 
 	inject_abt64(vcpu, true, addr);
+=======
+	else
+		inject_abt64(vcpu, true, addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -198,6 +208,11 @@ void kvm_inject_undefined(struct kvm_vcpu *vcpu)
 {
 	if (!(vcpu->arch.hcr_el2 & HCR_RW))
 		inject_undef32(vcpu);
+<<<<<<< HEAD
 
 	inject_undef64(vcpu);
+=======
+	else
+		inject_undef64(vcpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

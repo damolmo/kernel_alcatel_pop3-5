@@ -136,7 +136,10 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	BUG_ON(index >= 4096);
 
 	vpn = hpt_vpn(ea, vsid, ssize);
+<<<<<<< HEAD
 	hash = hpt_hash(vpn, shift, ssize);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hpte_slot_array = get_hpte_slot_array(pmdp);
 	if (psize == MMU_PAGE_4K) {
 		/*
@@ -151,6 +154,10 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	valid = hpte_valid(hpte_slot_array, index);
 	if (valid) {
 		/* update the hpte bits */
+<<<<<<< HEAD
+=======
+		hash = hpt_hash(vpn, shift, ssize);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hidx =  hpte_hash_index(hpte_slot_array, index);
 		if (hidx & _PTEIDX_SECONDARY)
 			hash = ~hash;
@@ -176,6 +183,10 @@ int __hash_page_thp(unsigned long ea, unsigned long access, unsigned long vsid,
 	if (!valid) {
 		unsigned long hpte_group;
 
+<<<<<<< HEAD
+=======
+		hash = hpt_hash(vpn, shift, ssize);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* insert new entry */
 		pa = pmd_pfn(__pmd(old_pmd)) << PAGE_SHIFT;
 		new_pmd |= _PAGE_HASHPTE;

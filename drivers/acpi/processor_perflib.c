@@ -165,7 +165,11 @@ int acpi_processor_ppc_has_changed(struct acpi_processor *pr, int event_flag)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (ignore_ppc) {
+=======
+	if (ignore_ppc || !pr->performance) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * Only when it is notification event, the _OST object
 		 * will be evaluated. Otherwise it is skipped.

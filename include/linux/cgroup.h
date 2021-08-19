@@ -615,8 +615,11 @@ struct cgroup_subsys {
 	void (*css_free)(struct cgroup_subsys_state *css);
 	void (*css_reset)(struct cgroup_subsys_state *css);
 
+<<<<<<< HEAD
 	int (*allow_attach)(struct cgroup_subsys_state *css,
 			    struct cgroup_taskset *tset);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int (*can_attach)(struct cgroup_subsys_state *css,
 			  struct cgroup_taskset *tset);
 	void (*cancel_attach)(struct cgroup_subsys_state *css,
@@ -913,6 +916,7 @@ int cgroup_transfer_tasks(struct cgroup *to, struct cgroup *from);
 struct cgroup_subsys_state *css_tryget_online_from_dir(struct dentry *dentry,
 						       struct cgroup_subsys *ss);
 
+<<<<<<< HEAD
 /*
  * Default Android check for whether the current process is allowed to move a
  * task across cgroups, either because CAP_SYS_NICE is set or because the uid
@@ -924,6 +928,8 @@ int subsys_cgroup_allow_attach(struct cgroup_subsys_state *css,
 			       struct cgroup_taskset *tset);
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else /* !CONFIG_CGROUPS */
 
 static inline int cgroup_init_early(void) { return 0; }
@@ -945,11 +951,14 @@ static inline int cgroup_attach_task_all(struct task_struct *from,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int subsys_cgroup_allow_attach(struct cgroup_subsys_state *css,
 					     void *tset)
 {
 	return -EINVAL;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* !CONFIG_CGROUPS */
 
 #endif /* _LINUX_CGROUP_H */

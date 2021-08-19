@@ -515,8 +515,12 @@ dtb-$(CONFIG_MACH_DOVE) += dove-cm-a510.dtb \
 	dove-d2plug.dtb \
 	dove-d3plug.dtb \
 	dove-dove-db.dtb
+<<<<<<< HEAD
 dtb-$(CONFIG_ARCH_MEDIATEK) += bx2701-evb1.dtb \
 	mt6589-aquaris5.dtb
+=======
+dtb-$(CONFIG_ARCH_MEDIATEK) += mt6589-aquaris5.dtb
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE_NAMES))
 ifneq ($(DTB_NAMES),)

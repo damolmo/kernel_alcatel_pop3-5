@@ -29,6 +29,10 @@
 #include <linux/module.h>
 #include <linux/math64.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -2927,7 +2931,11 @@ static int snd_hdsp_get_dds_offset(struct snd_kcontrol *kcontrol, struct snd_ctl
 {
 	struct hdsp *hdsp = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	ucontrol->value.enumerated.item[0] = hdsp_dds_offset(hdsp);
+=======
+	ucontrol->value.integer.value[0] = hdsp_dds_offset(hdsp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -2939,7 +2947,11 @@ static int snd_hdsp_put_dds_offset(struct snd_kcontrol *kcontrol, struct snd_ctl
 
 	if (!snd_hdsp_use_is_exclusive(hdsp))
 		return -EBUSY;
+<<<<<<< HEAD
 	val = ucontrol->value.enumerated.item[0];
+=======
+	val = ucontrol->value.integer.value[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irq(&hdsp->lock);
 	if (val != hdsp_dds_offset(hdsp))
 		change = (hdsp_set_dds_offset(hdsp, val) == 0) ? 1 : 0;
@@ -4129,6 +4141,7 @@ static int snd_hdsp_channel_info(struct snd_pcm_substream *substream,
 				    struct snd_pcm_channel_info *info)
 {
 	struct hdsp *hdsp = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int mapped_channel;
 
 	if (snd_BUG_ON(info->channel >= hdsp->max_channels))
@@ -4138,6 +4151,18 @@ static int snd_hdsp_channel_info(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	info->offset = mapped_channel * HDSP_CHANNEL_BUFFER_BYTES;
+=======
+	unsigned int channel = info->channel;
+
+	if (snd_BUG_ON(channel >= hdsp->max_channels))
+		return -EINVAL;
+	channel = array_index_nospec(channel, hdsp->max_channels);
+
+	if (hdsp->channel_map[channel] < 0)
+		return -EINVAL;
+
+	info->offset = hdsp->channel_map[channel] * HDSP_CHANNEL_BUFFER_BYTES;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	info->first = 0;
 	info->step = 32;
 	return 0;
@@ -5378,7 +5403,12 @@ static int snd_hdsp_free(struct hdsp *hdsp)
 	if (hdsp->port)
 		pci_release_regions(hdsp->pci);
 
+<<<<<<< HEAD
 	pci_disable_device(hdsp->pci);
+=======
+	if (pci_is_enabled(hdsp->pci))
+		pci_disable_device(hdsp->pci);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

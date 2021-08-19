@@ -337,7 +337,11 @@ static void scsi_host_dev_release(struct device *dev)
 
 	kfree(shost->shost_data);
 
+<<<<<<< HEAD
 	if (parent)
+=======
+	if (shost->shost_state != SHOST_CREATED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		put_device(parent);
 	kfree(shost);
 }

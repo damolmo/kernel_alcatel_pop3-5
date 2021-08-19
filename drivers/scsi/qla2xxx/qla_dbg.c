@@ -67,10 +67,17 @@
  * |                              |                    | 0xd031-0xd0ff	|
  * |                              |                    | 0xd101-0xd1fe	|
  * |                              |                    | 0xd214-0xd2fe	|
+<<<<<<< HEAD
  * | Target Mode		  |	  0xe079       |		|
  * | Target Mode Management	  |	  0xf072       | 0xf002		|
  * |                              |                    | 0xf046-0xf049  |
  * | Target Mode Task Management  |	  0x1000b      |		|
+=======
+ * | Target Mode		  |	  0xe080       |		|
+ * | Target Mode Management	  |	  0xf096       | 0xf002		|
+ * |                              |                    | 0xf046-0xf049  |
+ * | Target Mode Task Management  |	  0x1000d      |		|
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * ----------------------------------------------------------------------
  */
 

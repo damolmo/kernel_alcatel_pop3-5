@@ -126,6 +126,7 @@ static void async_ctrl_callback(struct urb *urb)
 
 static int get_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = usb_control_msg(pegasus->usb, usb_rcvctrlpipe(pegasus->usb, 0),
@@ -147,11 +148,50 @@ static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
 	if (ret < 0)
 		netif_dbg(pegasus, drv, pegasus->net,
 			  "%s returned %d\n", __func__, ret);
+=======
+	u8 *buf;
+	int ret;
+
+	buf = kmalloc(size, GFP_NOIO);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usb_control_msg(pegasus->usb, usb_rcvctrlpipe(pegasus->usb, 0),
+			      PEGASUS_REQ_GET_REGS, PEGASUS_REQT_READ, 0,
+			      indx, buf, size, 1000);
+	if (ret < 0)
+		netif_dbg(pegasus, drv, pegasus->net,
+			  "%s returned %d\n", __func__, ret);
+	else if (ret <= size)
+		memcpy(data, buf, ret);
+	kfree(buf);
+	return ret;
+}
+
+static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+			 const void *data)
+{
+	u8 *buf;
+	int ret;
+
+	buf = kmemdup(data, size, GFP_NOIO);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usb_control_msg(pegasus->usb, usb_sndctrlpipe(pegasus->usb, 0),
+			      PEGASUS_REQ_SET_REGS, PEGASUS_REQT_WRITE, 0,
+			      indx, buf, size, 100);
+	if (ret < 0)
+		netif_dbg(pegasus, drv, pegasus->net,
+			  "%s returned %d\n", __func__, ret);
+	kfree(buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
 static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = usb_control_msg(pegasus->usb, usb_sndctrlpipe(pegasus->usb, 0),
@@ -160,6 +200,22 @@ static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
 	if (ret < 0)
 		netif_dbg(pegasus, drv, pegasus->net,
 			  "%s returned %d\n", __func__, ret);
+=======
+	u8 *buf;
+	int ret;
+
+	buf = kmemdup(&data, 1, GFP_NOIO);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usb_control_msg(pegasus->usb, usb_sndctrlpipe(pegasus->usb, 0),
+			      PEGASUS_REQ_SET_REG, PEGASUS_REQT_WRITE, data,
+			      indx, buf, 1, 1000);
+	if (ret < 0)
+		netif_dbg(pegasus, drv, pegasus->net,
+			  "%s returned %d\n", __func__, ret);
+	kfree(buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -264,7 +320,11 @@ static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
 static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
 {
 	int i;
+<<<<<<< HEAD
 	__u8 tmp;
+=======
+	__u8 tmp = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__le16 retdatai;
 	int ret;
 

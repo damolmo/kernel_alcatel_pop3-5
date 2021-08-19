@@ -201,6 +201,7 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig,
 
 asmlinkage long sys_getdomainname(char __user *name, int len)
 {
+<<<<<<< HEAD
  	int nlen, err;
  	
 	if (len < 0)
@@ -218,6 +219,29 @@ asmlinkage long sys_getdomainname(char __user *name, int len)
 		err = 0;
 
 out:
+=======
+	int nlen, err;
+	char tmp[__NEW_UTS_LEN + 1];
+
+	if (len < 0)
+		return -EINVAL;
+
+	down_read(&uts_sem);
+
+	nlen = strlen(utsname()->domainname) + 1;
+	err = -EINVAL;
+	if (nlen > len)
+		goto out_unlock;
+	memcpy(tmp, utsname()->domainname, nlen);
+
+	up_read(&uts_sem);
+
+	if (copy_to_user(name, tmp, nlen))
+		return -EFAULT;
+	return 0;
+
+out_unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	up_read(&uts_sem);
 	return err;
 }

@@ -168,7 +168,12 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 		       cmd->command_size))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	reloc_info = kmalloc(sizeof(struct qxl_reloc_info) * cmd->relocs_num, GFP_KERNEL);
+=======
+	reloc_info = kmalloc_array(cmd->relocs_num,
+				   sizeof(struct qxl_reloc_info), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!reloc_info)
 		return -ENOMEM;
 
@@ -264,11 +269,16 @@ static int qxl_process_single_command(struct qxl_device *qdev,
 			apply_surf_reloc(qdev, &reloc_info[i]);
 	}
 
+<<<<<<< HEAD
 	ret = qxl_push_command_ring_release(qdev, release, cmd->type, true);
 	if (ret)
 		qxl_release_backoff_reserve_list(release);
 	else
 		qxl_release_fence_buffer_objects(release);
+=======
+	qxl_release_fence_buffer_objects(release);
+	ret = qxl_push_command_ring_release(qdev, release, cmd->type, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out_free_bos:
 	for (j = 0; j < num_relocs; j++) {

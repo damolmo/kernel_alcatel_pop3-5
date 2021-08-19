@@ -213,12 +213,17 @@ int nfs3_proc_setacls(struct inode *inode, struct posix_acl *acl,
 
 int nfs3_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 {
+<<<<<<< HEAD
 	struct posix_acl *alloc = NULL, *dfacl = NULL;
+=======
+	struct posix_acl *orig = acl, *dfacl = NULL, *alloc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int status;
 
 	if (S_ISDIR(inode->i_mode)) {
 		switch(type) {
 		case ACL_TYPE_ACCESS:
+<<<<<<< HEAD
 			alloc = dfacl = get_acl(inode, ACL_TYPE_DEFAULT);
 			if (IS_ERR(alloc))
 				goto fail;
@@ -229,11 +234,26 @@ int nfs3_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 			alloc = acl = get_acl(inode, ACL_TYPE_ACCESS);
 			if (IS_ERR(alloc))
 				goto fail;
+=======
+			alloc = get_acl(inode, ACL_TYPE_DEFAULT);
+			if (IS_ERR(alloc))
+				goto fail;
+			dfacl = alloc;
+			break;
+
+		case ACL_TYPE_DEFAULT:
+			alloc = get_acl(inode, ACL_TYPE_ACCESS);
+			if (IS_ERR(alloc))
+				goto fail;
+			dfacl = acl;
+			acl = alloc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 	}
 
 	if (acl == NULL) {
+<<<<<<< HEAD
 		alloc = acl = posix_acl_from_mode(inode->i_mode, GFP_KERNEL);
 		if (IS_ERR(alloc))
 			goto fail;
@@ -244,6 +264,24 @@ int nfs3_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 
 fail:
 	return PTR_ERR(alloc);
+=======
+		alloc = posix_acl_from_mode(inode->i_mode, GFP_KERNEL);
+		if (IS_ERR(alloc))
+			goto fail;
+		acl = alloc;
+	}
+	status = __nfs3_proc_setacls(inode, acl, dfacl);
+out:
+	if (acl != orig)
+		posix_acl_release(acl);
+	if (dfacl != orig)
+		posix_acl_release(dfacl);
+	return status;
+
+fail:
+	status = PTR_ERR(alloc);
+	goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 const struct xattr_handler *nfs3_xattr_handlers[] = {

@@ -183,7 +183,11 @@
    USB 2.0 spec says bulk packet size is always 512 bytes
  */
 #define EM28XX_BULK_PACKET_MULTIPLIER 384
+<<<<<<< HEAD
 #define EM28XX_DVB_BULK_PACKET_MULTIPLIER 384
+=======
+#define EM28XX_DVB_BULK_PACKET_MULTIPLIER 94
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define EM28XX_INTERLACED_DEFAULT 1
 

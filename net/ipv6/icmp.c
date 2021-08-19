@@ -91,6 +91,7 @@ static void icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	struct net *net = dev_net(skb->dev);
 
 	if (type == ICMPV6_PKT_TOOBIG)
+<<<<<<< HEAD
 		ip6_update_pmtu(skb, net, info, 0, 0, INVALID_UID);
 	else if (type == NDISC_REDIRECT)
 		ip6_redirect(skb, net, skb->dev->ifindex, 0);
@@ -98,6 +99,16 @@ static void icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 	if (!(type & ICMPV6_INFOMSG_MASK))
 		if (icmp6->icmp6_type == ICMPV6_ECHO_REQUEST)
 			ping_err(skb, offset, info);
+=======
+		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
+	else if (type == NDISC_REDIRECT)
+		ip6_redirect(skb, net, skb->dev->ifindex, 0,
+			     sock_net_uid(net, NULL));
+
+	if (!(type & ICMPV6_INFOMSG_MASK))
+		if (icmp6->icmp6_type == ICMPV6_ECHO_REQUEST)
+			ping_err(skb, offset, ntohl(info));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int icmpv6_rcv(struct sk_buff *skb);
@@ -208,7 +219,11 @@ static bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
 			struct inet_peer *peer;
 
 			peer = inet_getpeer_v6(net->ipv6.peers,
+<<<<<<< HEAD
 					       &rt->rt6i_dst.addr, 1);
+=======
+					       &fl6->daddr, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			res = inet_peer_xrlim_allow(peer, tmo);
 			if (peer)
 				inet_putpeer(peer);
@@ -475,6 +490,10 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
 	fl6.flowi6_oif = iif;
 	fl6.fl6_icmp_type = type;
 	fl6.fl6_icmp_code = code;
+<<<<<<< HEAD
+=======
+	fl6.flowi6_uid = sock_net_uid(net, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
 
 	sk = icmpv6_xmit_lock(net);
@@ -578,6 +597,10 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
 	fl6.flowi6_oif = skb->dev->ifindex;
 	fl6.fl6_icmp_type = ICMPV6_ECHO_REPLY;
 	fl6.flowi6_mark = mark;
+<<<<<<< HEAD
+=======
+	fl6.flowi6_uid = sock_net_uid(net, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
 
 	sk = icmpv6_xmit_lock(net);

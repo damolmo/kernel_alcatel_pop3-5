@@ -38,10 +38,15 @@ int __init dlm_memory_init(void)
 
 void dlm_memory_exit(void)
 {
+<<<<<<< HEAD
 	if (lkb_cache)
 		kmem_cache_destroy(lkb_cache);
 	if (rsb_cache)
 		kmem_cache_destroy(rsb_cache);
+=======
+	kmem_cache_destroy(lkb_cache);
+	kmem_cache_destroy(rsb_cache);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 char *dlm_allocate_lvb(struct dlm_ls *ls)
@@ -86,8 +91,12 @@ void dlm_free_lkb(struct dlm_lkb *lkb)
 		struct dlm_user_args *ua;
 		ua = lkb->lkb_ua;
 		if (ua) {
+<<<<<<< HEAD
 			if (ua->lksb.sb_lvbptr)
 				kfree(ua->lksb.sb_lvbptr);
+=======
+			kfree(ua->lksb.sb_lvbptr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			kfree(ua);
 		}
 	}

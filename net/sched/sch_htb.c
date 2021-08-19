@@ -600,6 +600,10 @@ static int htb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		htb_activate(q, cl);
 	}
 
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen++;
 	return NET_XMIT_SUCCESS;
 }
@@ -889,6 +893,10 @@ static struct sk_buff *htb_dequeue(struct Qdisc *sch)
 ok:
 		qdisc_bstats_update(sch, skb);
 		qdisc_unthrottled(sch);
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen--;
 		return skb;
 	}
@@ -955,6 +963,10 @@ static unsigned int htb_drop(struct Qdisc *sch)
 			unsigned int len;
 			if (cl->un.leaf.q->ops->drop &&
 			    (len = cl->un.leaf.q->ops->drop(cl->un.leaf.q))) {
+<<<<<<< HEAD
+=======
+				sch->qstats.backlog -= len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sch->q.qlen--;
 				if (!cl->un.leaf.q->q.qlen)
 					htb_deactivate(q, cl);
@@ -984,12 +996,19 @@ static void htb_reset(struct Qdisc *sch)
 			}
 			cl->prio_activity = 0;
 			cl->cmode = HTB_CAN_SEND;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	qdisc_watchdog_cancel(&q->watchdog);
 	__skb_queue_purge(&q->direct_queue);
 	sch->q.qlen = 0;
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memset(q->hlevel, 0, sizeof(q->hlevel));
 	memset(q->row_mask, 0, sizeof(q->row_mask));
 	for (i = 0; i < TC_HTB_NUMPRIO; i++)
@@ -1022,6 +1041,12 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt)
 	int err;
 	int i;
 
+<<<<<<< HEAD
+=======
+	qdisc_watchdog_init(&q->watchdog, sch);
+	INIT_WORK(&q->work, htb_work_func);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!opt)
 		return -EINVAL;
 
@@ -1042,8 +1067,11 @@ static int htb_init(struct Qdisc *sch, struct nlattr *opt)
 	for (i = 0; i < TC_HTB_NUMPRIO; i++)
 		INIT_LIST_HEAD(q->drops + i);
 
+<<<<<<< HEAD
 	qdisc_watchdog_init(&q->watchdog, sch);
 	INIT_WORK(&q->work, htb_work_func);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__skb_queue_head_init(&q->direct_queue);
 
 	if (tb[TCA_HTB_DIRECT_QLEN])
@@ -1165,6 +1193,7 @@ static int htb_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 				     cl->common.classid)) == NULL)
 		return -ENOBUFS;
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = cl->un.leaf.q;
 	cl->un.leaf.q = new;
@@ -1173,6 +1202,9 @@ static int htb_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 		qdisc_reset(*old);
 	}
 	sch_tree_unlock(sch);
+=======
+	*old = qdisc_replace(sch, new, &cl->un.leaf.q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1274,7 +1306,10 @@ static int htb_delete(struct Qdisc *sch, unsigned long arg)
 {
 	struct htb_sched *q = qdisc_priv(sch);
 	struct htb_class *cl = (struct htb_class *)arg;
+<<<<<<< HEAD
 	unsigned int qlen;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct Qdisc *new_q = NULL;
 	int last_child = 0;
 
@@ -1294,9 +1329,17 @@ static int htb_delete(struct Qdisc *sch, unsigned long arg)
 	sch_tree_lock(sch);
 
 	if (!cl->level) {
+<<<<<<< HEAD
 		qlen = cl->un.leaf.q->q.qlen;
 		qdisc_reset(cl->un.leaf.q);
 		qdisc_tree_decrease_qlen(cl->un.leaf.q, qlen);
+=======
+		unsigned int qlen = cl->un.leaf.q->q.qlen;
+		unsigned int backlog = cl->un.leaf.q->qstats.backlog;
+
+		qdisc_reset(cl->un.leaf.q);
+		qdisc_tree_reduce_backlog(cl->un.leaf.q, qlen, backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* delete from hash and active; remainder in destroy_class */
@@ -1430,10 +1473,18 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
 		sch_tree_lock(sch);
 		if (parent && !parent->level) {
 			unsigned int qlen = parent->un.leaf.q->q.qlen;
+<<<<<<< HEAD
 
 			/* turn parent into inner node */
 			qdisc_reset(parent->un.leaf.q);
 			qdisc_tree_decrease_qlen(parent->un.leaf.q, qlen);
+=======
+			unsigned int backlog = parent->un.leaf.q->qstats.backlog;
+
+			/* turn parent into inner node */
+			qdisc_reset(parent->un.leaf.q);
+			qdisc_tree_reduce_backlog(parent->un.leaf.q, qlen, backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			qdisc_destroy(parent->un.leaf.q);
 			if (parent->prio_activity)
 				htb_deactivate(q, parent);

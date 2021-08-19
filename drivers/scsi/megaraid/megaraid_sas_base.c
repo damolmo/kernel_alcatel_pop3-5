@@ -1614,6 +1614,7 @@ megasas_queue_command(struct Scsi_Host *shost, struct scsi_cmnd *scmd)
 		goto out_done;
 	}
 
+<<<<<<< HEAD
 	switch (scmd->cmnd[0]) {
 	case SYNCHRONIZE_CACHE:
 		/*
@@ -1624,6 +1625,15 @@ megasas_queue_command(struct Scsi_Host *shost, struct scsi_cmnd *scmd)
 		goto out_done;
 	default:
 		break;
+=======
+	/*
+	 * FW takes care of flush cache on its own for Virtual Disk.
+	 * No need to send it down for VD. For JBOD send SYNCHRONIZE_CACHE to FW.
+	 */
+	if ((scmd->cmnd[0] == SYNCHRONIZE_CACHE) && MEGASAS_IS_LOGICAL(scmd)) {
+		scmd->result = DID_OK << 16;
+		goto out_done;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (instance->instancet->build_and_issue_cmd(instance, scmd)) {
@@ -2629,6 +2639,10 @@ megasas_fw_crash_buffer_show(struct device *cdev,
 	u32 size;
 	unsigned long buff_addr;
 	unsigned long dmachunk = CRASH_DMA_BUF_SIZE;
+<<<<<<< HEAD
+=======
+	unsigned long chunk_left_bytes;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long src_addr;
 	unsigned long flags;
 	u32 buff_offset;
@@ -2655,6 +2669,11 @@ megasas_fw_crash_buffer_show(struct device *cdev,
 	}
 
 	size = (instance->fw_crash_buffer_size * dmachunk) - buff_offset;
+<<<<<<< HEAD
+=======
+	chunk_left_bytes = dmachunk - (buff_offset % dmachunk);
+	size = (size > chunk_left_bytes) ? chunk_left_bytes : size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	size = (size >= PAGE_SIZE) ? (PAGE_SIZE - 1) : size;
 
 	src_addr = (unsigned long)instance->crash_buf[buff_offset / dmachunk] +
@@ -3476,12 +3495,20 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 		/*
 		 * The cur_state should not last for more than max_wait secs
 		 */
+<<<<<<< HEAD
 		for (i = 0; i < (max_wait * 1000); i++) {
+=======
+		for (i = 0; i < max_wait * 50; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			curr_abs_state = instance->instancet->
 				read_fw_status_reg(instance->reg_set);
 
 			if (abs_state == curr_abs_state) {
+<<<<<<< HEAD
 				msleep(1);
+=======
+				msleep(20);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			} else
 				break;
 		}
@@ -3746,6 +3773,10 @@ int megasas_alloc_cmds(struct megasas_instance *instance)
 	if (megasas_create_frame_pool(instance)) {
 		printk(KERN_DEBUG "megasas: Error creating frame DMA pool\n");
 		megasas_free_cmds(instance);
+<<<<<<< HEAD
+=======
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -4340,7 +4371,11 @@ static int megasas_init_fw(struct megasas_instance *instance)
 	/* Find first memory bar */
 	bar_list = pci_select_bars(instance->pdev, IORESOURCE_MEM);
 	instance->bar = find_first_bit(&bar_list, sizeof(unsigned long));
+<<<<<<< HEAD
 	if (pci_request_selected_regions(instance->pdev, instance->bar,
+=======
+	if (pci_request_selected_regions(instance->pdev, 1<<instance->bar,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					 "megasas: LSI")) {
 		printk(KERN_DEBUG "megasas: IO memory region busy!\n");
 		return -EBUSY;
@@ -4631,7 +4666,11 @@ fail_ready_state:
 	iounmap(instance->reg_set);
 
       fail_ioremap:
+<<<<<<< HEAD
 	pci_release_selected_regions(instance->pdev, instance->bar);
+=======
+	pci_release_selected_regions(instance->pdev, 1<<instance->bar);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return -EINVAL;
 }
@@ -4652,7 +4691,11 @@ static void megasas_release_mfi(struct megasas_instance *instance)
 
 	iounmap(instance->reg_set);
 
+<<<<<<< HEAD
 	pci_release_selected_regions(instance->pdev, instance->bar);
+=======
+	pci_release_selected_regions(instance->pdev, 1<<instance->bar);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -4771,6 +4814,17 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 		prev_aen.word = instance->aen_cmd->frame->dcmd.mbox.w[1];
 		prev_aen.members.locale = le16_to_cpu(prev_aen.members.locale);
 
+<<<<<<< HEAD
+=======
+		if ((curr_aen.members.class < MFI_EVT_CLASS_DEBUG) ||
+		    (curr_aen.members.class > MFI_EVT_CLASS_DEAD)) {
+			dev_info(&instance->pdev->dev,
+				 "%s %d out of range class %d send by application\n",
+				 __func__, __LINE__, curr_aen.members.class);
+			return 0;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * A class whose enum value is smaller is inclusive of all
 		 * higher values. If a PROGRESS (= -1) was previously
@@ -6096,12 +6150,20 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	}
 
 	for (i = 0; i < ioc->sge_count; i++) {
+<<<<<<< HEAD
 		if (kbuff_arr[i])
+=======
+		if (kbuff_arr[i]) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dma_free_coherent(&instance->pdev->dev,
 					  le32_to_cpu(kern_sge32[i].length),
 					  kbuff_arr[i],
 					  le32_to_cpu(kern_sge32[i].phys_addr));
 			kbuff_arr[i] = NULL;
+<<<<<<< HEAD
+=======
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (instance->ctrl_context && cmd->mpt_pthr_cmd_blocked)
@@ -6297,6 +6359,12 @@ static int megasas_mgmt_compat_ioctl_fw(struct file *file, unsigned long arg)
 	int i;
 	int error = 0;
 	compat_uptr_t ptr;
+<<<<<<< HEAD
+=======
+	u32 local_sense_off;
+	u32 local_sense_len;
+	u32 user_sense_off;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (clear_user(ioc, sizeof(*ioc)))
 		return -EFAULT;
@@ -6309,16 +6377,35 @@ static int megasas_mgmt_compat_ioctl_fw(struct file *file, unsigned long arg)
 	    copy_in_user(&ioc->sge_count, &cioc->sge_count, sizeof(u32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
+=======
+	if (local_sense_off != user_sense_off)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * The sense_ptr is used in megasas_mgmt_fw_ioctl only when
 	 * sense_len is not null, so prepare the 64bit value under
 	 * the same condition.
 	 */
+<<<<<<< HEAD
 	if (ioc->sense_len) {
 		void __user **sense_ioc_ptr =
 			(void __user **)(ioc->frame.raw + ioc->sense_off);
 		compat_uptr_t *sense_cioc_ptr =
 			(compat_uptr_t *)(cioc->frame.raw + cioc->sense_off);
+=======
+	if (get_user(local_sense_off, &ioc->sense_off) ||
+		get_user(local_sense_len, &ioc->sense_len) ||
+		get_user(user_sense_off, &cioc->sense_off))
+		return -EFAULT;
+
+	if (local_sense_len) {
+		void __user **sense_ioc_ptr =
+			(void __user **)((u8 *)((unsigned long)&ioc->frame.raw) + local_sense_off);
+		compat_uptr_t *sense_cioc_ptr =
+			(compat_uptr_t *)(((unsigned long)&cioc->frame.raw) + user_sense_off);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (get_user(ptr, sense_cioc_ptr) ||
 		    put_user(compat_ptr(ptr), sense_ioc_ptr))
 			return -EFAULT;

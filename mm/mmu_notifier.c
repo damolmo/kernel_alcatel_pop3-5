@@ -244,7 +244,11 @@ static int do_mmu_notifier_register(struct mmu_notifier *mn,
 	 * thanks to mm_take_all_locks().
 	 */
 	spin_lock(&mm->mmu_notifier_mm->lock);
+<<<<<<< HEAD
 	hlist_add_head(&mn->hlist, &mm->mmu_notifier_mm->list);
+=======
+	hlist_add_head_rcu(&mn->hlist, &mm->mmu_notifier_mm->list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&mm->mmu_notifier_mm->lock);
 
 	mm_drop_all_locks(mm);

@@ -834,7 +834,11 @@ static int ov772x_set_params(struct ov772x_priv *priv,
 	 * set COM8
 	 */
 	if (priv->band_filter) {
+<<<<<<< HEAD
 		ret = ov772x_mask_set(client, COM8, BNDF_ON_OFF, 1);
+=======
+		ret = ov772x_mask_set(client, COM8, BNDF_ON_OFF, BNDF_ON_OFF);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!ret)
 			ret = ov772x_mask_set(client, BDBASE,
 					      0xff, 256 - priv->band_filter);

@@ -60,7 +60,11 @@ static inline __wsum sctp_csum_combine(__wsum csum, __wsum csum2,
 static inline __le32 sctp_compute_cksum(const struct sk_buff *skb,
 					unsigned int offset)
 {
+<<<<<<< HEAD
 	struct sctphdr *sh = sctp_hdr(skb);
+=======
+	struct sctphdr *sh = (struct sctphdr *)(skb->data + offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         __le32 ret, old = sh->checksum;
 	const struct skb_checksum_ops ops = {
 		.update  = sctp_csum_update,

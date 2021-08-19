@@ -16,4 +16,9 @@ SECTIONS {
 	__kcrctab_unused	: { *(SORT(___kcrctab_unused+*)) }
 	__kcrctab_unused_gpl	: { *(SORT(___kcrctab_unused_gpl+*)) }
 	__kcrctab_gpl_future	: { *(SORT(___kcrctab_gpl_future+*)) }
+<<<<<<< HEAD
+=======
+
+	__jump_table		0 : ALIGN(8) { KEEP(*(__jump_table)) }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

@@ -186,7 +186,11 @@ static void __init rbtx4939_update_ioc_pen(void)
 
 #define RBTX4939_MAX_7SEGLEDS	8
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LEDS_CLASS)
+=======
+#if IS_BUILTIN(CONFIG_LEDS_CLASS)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static u8 led_val[RBTX4939_MAX_7SEGLEDS];
 struct rbtx4939_led_data {
 	struct led_classdev cdev;
@@ -262,7 +266,11 @@ static inline void rbtx4939_led_setup(void)
 
 static void __rbtx4939_7segled_putc(unsigned int pos, unsigned char val)
 {
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LEDS_CLASS)
+=======
+#if IS_BUILTIN(CONFIG_LEDS_CLASS)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long flags;
 	local_irq_save(flags);
 	/* bit7: reserved for LED class */

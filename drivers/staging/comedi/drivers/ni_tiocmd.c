@@ -94,7 +94,11 @@ static int ni_tio_input_inttrig(struct comedi_device *dev,
 	unsigned long flags;
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (trig_num != cmd->start_src)
+=======
+	if (trig_num != cmd->start_arg)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	spin_lock_irqsave(&counter->lock, flags);

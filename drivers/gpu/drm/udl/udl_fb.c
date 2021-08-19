@@ -256,10 +256,22 @@ static int udl_fb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 {
 	unsigned long start = vma->vm_start;
 	unsigned long size = vma->vm_end - vma->vm_start;
+<<<<<<< HEAD
 	unsigned long offset = vma->vm_pgoff << PAGE_SHIFT;
 	unsigned long page, pos;
 
 	if (offset + size > info->fix.smem_len)
+=======
+	unsigned long offset;
+	unsigned long page, pos;
+
+	if (vma->vm_pgoff > (~0UL >> PAGE_SHIFT))
+		return -EINVAL;
+
+	offset = vma->vm_pgoff << PAGE_SHIFT;
+
+	if (offset > info->fix.smem_len || size > info->fix.smem_len - offset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	pos = (unsigned long)info->fix.smem_start + offset;
@@ -336,7 +348,11 @@ static int udl_fb_open(struct fb_info *info, int user)
 
 		struct fb_deferred_io *fbdefio;
 
+<<<<<<< HEAD
 		fbdefio = kmalloc(sizeof(struct fb_deferred_io), GFP_KERNEL);
+=======
+		fbdefio = kzalloc(sizeof(struct fb_deferred_io), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (fbdefio) {
 			fbdefio->delay = DL_DEFIO_WRITE_DELAY;
@@ -546,7 +562,11 @@ static int udlfb_create(struct drm_fb_helper *helper,
 
 	return ret;
 out_gfree:
+<<<<<<< HEAD
 	drm_gem_object_unreference(&ufbdev->ufb.obj->base);
+=======
+	drm_gem_object_unreference_unlocked(&ufbdev->ufb.obj->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }
@@ -589,6 +609,7 @@ int udl_fbdev_init(struct drm_device *dev)
 
 	ret = drm_fb_helper_init(dev, &ufbdev->helper,
 				 1, 1);
+<<<<<<< HEAD
 	if (ret) {
 		kfree(ufbdev);
 		return ret;
@@ -596,12 +617,34 @@ int udl_fbdev_init(struct drm_device *dev)
 	}
 
 	drm_fb_helper_single_add_all_connectors(&ufbdev->helper);
+=======
+	if (ret)
+		goto free;
+
+	ret = drm_fb_helper_single_add_all_connectors(&ufbdev->helper);
+	if (ret)
+		goto fini;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+<<<<<<< HEAD
 	drm_fb_helper_initial_config(&ufbdev->helper, bpp_sel);
 	return 0;
+=======
+	ret = drm_fb_helper_initial_config(&ufbdev->helper, bpp_sel);
+	if (ret)
+		goto fini;
+
+	return 0;
+
+fini:
+	drm_fb_helper_fini(&ufbdev->helper);
+free:
+	kfree(ufbdev);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void udl_fbdev_cleanup(struct drm_device *dev)

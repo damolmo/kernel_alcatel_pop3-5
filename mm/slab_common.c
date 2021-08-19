@@ -229,7 +229,11 @@ struct kmem_cache *find_mergeable(size_t size, size_t align,
 {
 	struct kmem_cache *s;
 
+<<<<<<< HEAD
 	if (slab_nomerge || (flags & SLAB_NEVER_MERGE))
+=======
+	if (slab_nomerge)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 
 	if (ctor)
@@ -240,6 +244,12 @@ struct kmem_cache *find_mergeable(size_t size, size_t align,
 	size = ALIGN(size, align);
 	flags = kmem_cache_flags(size, flags, name, NULL);
 
+<<<<<<< HEAD
+=======
+	if (flags & SLAB_NEVER_MERGE)
+		return NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry(s, &slab_caches, list) {
 		if (slab_unmergeable(s))
 			continue;
@@ -1040,7 +1050,11 @@ void kzfree(const void *p)
 	if (unlikely(ZERO_OR_NULL_PTR(mem)))
 		return;
 	ks = ksize(mem);
+<<<<<<< HEAD
 	memset(mem, 0, ks);
+=======
+	memzero_explicit(mem, ks);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(mem);
 }
 EXPORT_SYMBOL(kzfree);

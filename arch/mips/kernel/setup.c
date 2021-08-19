@@ -427,6 +427,13 @@ static void __init bootmem_init(void)
 			continue;
 		default:
 			/* Not usable memory */
+<<<<<<< HEAD
+=======
+			if (start > min_low_pfn && end < max_low_pfn)
+				reserve_bootmem(boot_mem_map.map[i].addr,
+						boot_mem_map.map[i].size,
+						BOOTMEM_DEFAULT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 

@@ -85,6 +85,7 @@ config FSL_IFC
 	bool
 	depends on FSL_SOC
 
+<<<<<<< HEAD
 config MTK_SMI
 	bool "MTK SMI"
 	depends on ARCH_MEDIATEK || COMPILE_TEST
@@ -103,4 +104,6 @@ config MTK_SMI_V1
 	  the clocks for each local arbiter. It also help bandwidth control
 	  for different scenario.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif

@@ -15,6 +15,10 @@
 #include <linux/debugfs.h>
 #include <linux/mm.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/seq_file.h>
 
 #include <asm/pgtable.h>
@@ -371,6 +375,10 @@ void ptdump_walk_pgd_level(struct seq_file *m, pgd_t *pgd)
 		} else
 			note_page(m, &st, __pgprot(0), 1);
 
+<<<<<<< HEAD
+=======
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		start++;
 	}
 

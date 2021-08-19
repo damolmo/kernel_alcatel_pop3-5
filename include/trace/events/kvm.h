@@ -183,7 +183,11 @@ TRACE_EVENT(kvm_ack_irq,
 	{ KVM_TRACE_MMIO_WRITE, "write" }
 
 TRACE_EVENT(kvm_mmio,
+<<<<<<< HEAD
 	TP_PROTO(int type, int len, u64 gpa, u64 val),
+=======
+	TP_PROTO(int type, int len, u64 gpa, void *val),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	TP_ARGS(type, len, gpa, val),
 
 	TP_STRUCT__entry(
@@ -197,7 +201,14 @@ TRACE_EVENT(kvm_mmio,
 		__entry->type		= type;
 		__entry->len		= len;
 		__entry->gpa		= gpa;
+<<<<<<< HEAD
 		__entry->val		= val;
+=======
+		__entry->val		= 0;
+		if (val)
+			memcpy(&__entry->val, val,
+			       min_t(u32, sizeof(__entry->val), len));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	),
 
 	TP_printk("mmio %s len %u gpa 0x%llx val 0x%llx",

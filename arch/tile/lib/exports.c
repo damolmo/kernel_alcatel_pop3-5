@@ -18,8 +18,11 @@
 
 /* arch/tile/lib/usercopy.S */
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 EXPORT_SYMBOL(strnlen_user_asm);
 EXPORT_SYMBOL(strncpy_from_user_asm);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL(clear_user_asm);
 EXPORT_SYMBOL(flush_user_asm);
 EXPORT_SYMBOL(finv_user_asm);

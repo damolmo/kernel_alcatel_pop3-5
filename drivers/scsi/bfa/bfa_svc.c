@@ -365,8 +365,13 @@ bfa_plog_str(struct bfa_plog_s *plog, enum bfa_plog_mid mid,
 		lp.eid = event;
 		lp.log_type = BFA_PL_LOG_TYPE_STRING;
 		lp.misc = misc;
+<<<<<<< HEAD
 		strncpy(lp.log_entry.string_log, log_str,
 			BFA_PL_STRING_LOG_SZ - 1);
+=======
+		strlcpy(lp.log_entry.string_log, log_str,
+			BFA_PL_STRING_LOG_SZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		lp.log_entry.string_log[BFA_PL_STRING_LOG_SZ - 1] = '\0';
 		bfa_plog_add(plog, &lp);
 	}

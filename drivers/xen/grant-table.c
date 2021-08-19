@@ -322,7 +322,11 @@ static void gnttab_handle_deferred(unsigned long unused)
 			if (entry->page) {
 				pr_debug("freeing g.e. %#x (pfn %#lx)\n",
 					 entry->ref, page_to_pfn(entry->page));
+<<<<<<< HEAD
 				__free_page(entry->page);
+=======
+				put_page(entry->page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			} else
 				pr_info("freeing g.e. %#x\n", entry->ref);
 			kfree(entry);
@@ -378,7 +382,11 @@ void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
 	if (gnttab_end_foreign_access_ref(ref, readonly)) {
 		put_free_entry(ref);
 		if (page != 0)
+<<<<<<< HEAD
 			free_page(page);
+=======
+			put_page(virt_to_page(page));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		gnttab_add_deferred(ref, readonly,
 				    page ? virt_to_page(page) : NULL);

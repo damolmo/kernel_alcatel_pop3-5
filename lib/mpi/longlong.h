@@ -671,7 +671,27 @@ do {						\
 	**************  MIPS/64  **************
 	***************************************/
 #if (defined(__mips) && __mips >= 3) && W_TYPE_SIZE == 64
+<<<<<<< HEAD
 #if __GNUC__ >= 4 && __GNUC_MINOR__ >= 4
+=======
+#if defined(__mips_isa_rev) && __mips_isa_rev >= 6
+/*
+ * GCC ends up emitting a __multi3 intrinsic call for MIPS64r6 with the plain C
+ * code below, so we special case MIPS64r6 until the compiler can do better.
+ */
+#define umul_ppmm(w1, w0, u, v)						\
+do {									\
+	__asm__ ("dmulu %0,%1,%2"					\
+		 : "=d" ((UDItype)(w0))					\
+		 : "d" ((UDItype)(u)),					\
+		   "d" ((UDItype)(v)));					\
+	__asm__ ("dmuhu %0,%1,%2"					\
+		 : "=d" ((UDItype)(w1))					\
+		 : "d" ((UDItype)(u)),					\
+		   "d" ((UDItype)(v)));					\
+} while (0)
+#elif (__GNUC__ >= 5) || (__GNUC__ >= 4 && __GNUC_MINOR__ >= 4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define umul_ppmm(w1, w0, u, v) \
 do {									\
 	typedef unsigned int __ll_UTItype __attribute__((mode(TI)));	\
@@ -740,22 +760,37 @@ do {									\
 do { \
 	if (__builtin_constant_p(bh) && (bh) == 0) \
 		__asm__ ("{a%I4|add%I4c} %1,%3,%4\n\t{aze|addze} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "%r" ((USItype)(ah)), \
 		"%r" ((USItype)(al)), \
 		"rI" ((USItype)(bl))); \
 	else if (__builtin_constant_p(bh) && (bh) == ~(USItype) 0) \
 		__asm__ ("{a%I4|add%I4c} %1,%3,%4\n\t{ame|addme} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "%r" ((USItype)(ah)), \
 		"%r" ((USItype)(al)), \
 		"rI" ((USItype)(bl))); \
 	else \
 		__asm__ ("{a%I5|add%I5c} %1,%4,%5\n\t{ae|adde} %0,%2,%3" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "%r" ((USItype)(ah)), \
 		"r" ((USItype)(bh)), \
 		"%r" ((USItype)(al)), \
@@ -765,36 +800,61 @@ do { \
 do { \
 	if (__builtin_constant_p(ah) && (ah) == 0) \
 		__asm__ ("{sf%I3|subf%I3c} %1,%4,%3\n\t{sfze|subfze} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "r" ((USItype)(bh)), \
 		"rI" ((USItype)(al)), \
 		"r" ((USItype)(bl))); \
 	else if (__builtin_constant_p(ah) && (ah) == ~(USItype) 0) \
 		__asm__ ("{sf%I3|subf%I3c} %1,%4,%3\n\t{sfme|subfme} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "r" ((USItype)(bh)), \
 		"rI" ((USItype)(al)), \
 		"r" ((USItype)(bl))); \
 	else if (__builtin_constant_p(bh) && (bh) == 0) \
 		__asm__ ("{sf%I3|subf%I3c} %1,%4,%3\n\t{ame|addme} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "r" ((USItype)(ah)), \
 		"rI" ((USItype)(al)), \
 		"r" ((USItype)(bl))); \
 	else if (__builtin_constant_p(bh) && (bh) == ~(USItype) 0) \
 		__asm__ ("{sf%I3|subf%I3c} %1,%4,%3\n\t{aze|addze} %0,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "r" ((USItype)(ah)), \
 		"rI" ((USItype)(al)), \
 		"r" ((USItype)(bl))); \
 	else \
 		__asm__ ("{sf%I4|subf%I4c} %1,%5,%4\n\t{sfe|subfe} %0,%3,%2" \
+<<<<<<< HEAD
 		: "=r" ((USItype)(sh)), \
 		"=&r" ((USItype)(sl)) \
+=======
+		: "=r" (sh), \
+		"=&r" (sl) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "r" ((USItype)(ah)), \
 		"r" ((USItype)(bh)), \
 		"rI" ((USItype)(al)), \
@@ -805,7 +865,11 @@ do { \
 do { \
 	USItype __m0 = (m0), __m1 = (m1); \
 	__asm__ ("mulhwu %0,%1,%2" \
+<<<<<<< HEAD
 	: "=r" ((USItype) ph) \
+=======
+	: "=r" (ph) \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	: "%r" (__m0), \
 	"r" (__m1)); \
 	(pl) = __m0 * __m1; \

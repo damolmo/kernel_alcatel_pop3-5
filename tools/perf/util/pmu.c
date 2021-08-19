@@ -221,13 +221,20 @@ static int pmu_aliases_parse(char *dir, struct list_head *head)
 {
 	struct dirent *evt_ent;
 	DIR *event_dir;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	event_dir = opendir(dir);
 	if (!event_dir)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	while (!ret && (evt_ent = readdir(event_dir))) {
+=======
+	while ((evt_ent = readdir(event_dir))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		char path[PATH_MAX];
 		char *name = evt_ent->d_name;
 		FILE *file;
@@ -243,17 +250,32 @@ static int pmu_aliases_parse(char *dir, struct list_head *head)
 
 		snprintf(path, PATH_MAX, "%s/%s", dir, name);
 
+<<<<<<< HEAD
 		ret = -EINVAL;
 		file = fopen(path, "r");
 		if (!file)
 			break;
 
 		ret = perf_pmu__new_alias(head, dir, name, file);
+=======
+		file = fopen(path, "r");
+		if (!file) {
+			pr_debug("Cannot open %s\n", path);
+			continue;
+		}
+
+		if (perf_pmu__new_alias(head, dir, name, file) < 0)
+			pr_debug("Cannot set up %s\n", name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fclose(file);
 	}
 
 	closedir(event_dir);
+<<<<<<< HEAD
 	return ret;
+=======
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

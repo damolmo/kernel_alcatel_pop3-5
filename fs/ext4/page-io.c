@@ -5,6 +5,10 @@
  *
  * Written by Theodore Ts'o, 2010.
  */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/fs.h>
 #include <linux/time.h>
 #include <linux/jbd2.h>
@@ -25,6 +29,10 @@
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/ratelimit.h>
+<<<<<<< HEAD
+=======
+#include <linux/backing-dev.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "ext4_jbd2.h"
 #include "xattr.h"
@@ -428,6 +436,10 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 	struct buffer_head *bh, *head;
 	int ret = 0;
 	int nr_submitted = 0;
+<<<<<<< HEAD
+=======
+	int nr_to_submit = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	blocksize = 1 << inode->i_blkbits;
 
@@ -480,14 +492,37 @@ int ext4_bio_write_page(struct ext4_io_submit *io,
 			unmap_underlying_metadata(bh->b_bdev, bh->b_blocknr);
 		}
 		set_buffer_async_write(bh);
+<<<<<<< HEAD
+=======
+		nr_to_submit++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} while ((bh = bh->b_this_page) != head);
 
 	bh = head = page_buffers(page);
 
+<<<<<<< HEAD
 	if (ext4_encrypted_inode(inode) && S_ISREG(inode->i_mode)) {
 		data_page = ext4_encrypt(inode, page);
 		if (IS_ERR(data_page)) {
 			ret = PTR_ERR(data_page);
+=======
+	if (ext4_encrypted_inode(inode) && S_ISREG(inode->i_mode) &&
+	    nr_to_submit) {
+		gfp_t gfp_flags = GFP_NOFS;
+
+	retry_encrypt:
+		data_page = ext4_encrypt(inode, page, gfp_flags);
+		if (IS_ERR(data_page)) {
+			ret = PTR_ERR(data_page);
+			if (ret == -ENOMEM && wbc->sync_mode == WB_SYNC_ALL) {
+				if (io->io_bio) {
+					ext4_io_submit(io);
+					congestion_wait(BLK_RW_ASYNC, HZ/50);
+				}
+				gfp_flags |= __GFP_NOFAIL;
+				goto retry_encrypt;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			data_page = NULL;
 			goto out;
 		}

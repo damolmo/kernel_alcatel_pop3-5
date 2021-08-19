@@ -332,8 +332,13 @@ static int bcm63xx_spi_probe(struct platform_device *pdev)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "no irq\n");
 		return -ENXIO;
+=======
+		dev_err(dev, "no irq: %d\n", irq);
+		return irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	clk = devm_clk_get(dev, "spi");

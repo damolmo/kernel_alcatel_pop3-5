@@ -65,8 +65,15 @@ enum {
 
 #ifdef CONFIG_CMA
 #  define is_migrate_cma(migratetype) unlikely((migratetype) == MIGRATE_CMA)
+<<<<<<< HEAD
 #else
 #  define is_migrate_cma(migratetype) false
+=======
+#  define is_migrate_cma_page(_page) (get_pageblock_migratetype(_page) == MIGRATE_CMA)
+#else
+#  define is_migrate_cma(migratetype) false
+#  define is_migrate_cma_page(_page) false
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #define for_each_migratetype_order(order, type) \

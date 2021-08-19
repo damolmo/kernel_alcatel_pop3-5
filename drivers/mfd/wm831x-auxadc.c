@@ -98,11 +98,18 @@ static int wm831x_auxadc_read_irq(struct wm831x *wm831x,
 	wait_for_completion_timeout(&req->done, msecs_to_jiffies(500));
 
 	mutex_lock(&wm831x->auxadc_lock);
+<<<<<<< HEAD
 
 	list_del(&req->list);
 	ret = req->val;
 
 out:
+=======
+	ret = req->val;
+
+out:
+	list_del(&req->list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&wm831x->auxadc_lock);
 
 	kfree(req);

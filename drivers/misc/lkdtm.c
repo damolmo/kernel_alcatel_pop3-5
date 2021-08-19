@@ -47,11 +47,24 @@
 #include <linux/vmalloc.h>
 #include <linux/mman.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
+=======
+#include <linux/list.h>
+#include <linux/sched.h>
+#include <linux/uaccess.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_IDE
 #include <linux/ide.h>
 #endif
 
+<<<<<<< HEAD
+=======
+struct lkdtm_list {
+	struct list_head node;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Make sure our attempts to over run the kernel stack doesn't trigger
  * a compiler warning when CONFIG_FRAME_WARN is set. Then make sure we
@@ -88,6 +101,12 @@ enum ctype {
 	CT_EXCEPTION,
 	CT_LOOP,
 	CT_OVERFLOW,
+<<<<<<< HEAD
+=======
+	CT_CORRUPT_LIST_ADD,
+	CT_CORRUPT_LIST_DEL,
+	CT_CORRUPT_USER_DS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	CT_CORRUPT_STACK,
 	CT_UNALIGNED_LOAD_STORE_WRITE,
 	CT_OVERWRITE_ALLOCATION,
@@ -103,6 +122,10 @@ enum ctype {
 	CT_EXEC_USERSPACE,
 	CT_ACCESS_USERSPACE,
 	CT_WRITE_RO,
+<<<<<<< HEAD
+=======
+	CT_WRITE_RO_AFTER_INIT,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	CT_WRITE_KERN,
 };
 
@@ -125,6 +148,12 @@ static char* cp_type[] = {
 	"EXCEPTION",
 	"LOOP",
 	"OVERFLOW",
+<<<<<<< HEAD
+=======
+	"CORRUPT_LIST_ADD",
+	"CORRUPT_LIST_DEL",
+	"CORRUPT_USER_DS",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	"CORRUPT_STACK",
 	"UNALIGNED_LOAD_STORE_WRITE",
 	"OVERWRITE_ALLOCATION",
@@ -140,6 +169,10 @@ static char* cp_type[] = {
 	"EXEC_USERSPACE",
 	"ACCESS_USERSPACE",
 	"WRITE_RO",
+<<<<<<< HEAD
+=======
+	"WRITE_RO_AFTER_INIT",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	"WRITE_KERN",
 };
 
@@ -162,6 +195,10 @@ static DEFINE_SPINLOCK(lock_me_up);
 static u8 data_area[EXEC_SIZE];
 
 static const unsigned long rodata = 0xAA55AA55;
+<<<<<<< HEAD
+=======
+static unsigned long ro_after_init __ro_after_init = 0x55AA5500;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 module_param(recur_count, int, 0644);
 MODULE_PARM_DESC(recur_count, " Recursion level for the stack overflow test");
@@ -497,11 +534,36 @@ static void lkdtm_do_action(enum ctype which)
 		break;
 	}
 	case CT_WRITE_RO: {
+<<<<<<< HEAD
 		unsigned long *ptr;
 
 		ptr = (unsigned long *)&rodata;
 
 		pr_info("attempting bad write at %p\n", ptr);
+=======
+		/* Explicitly cast away "const" for the test. */
+		unsigned long *ptr = (unsigned long *)&rodata;
+
+		pr_info("attempting bad rodata write at %p\n", ptr);
+		*ptr ^= 0xabcd1234;
+
+		break;
+	}
+	case CT_WRITE_RO_AFTER_INIT: {
+		unsigned long *ptr = &ro_after_init;
+
+		/*
+		 * Verify we were written to during init. Since an Oops
+		 * is considered a "success", a failure is to just skip the
+		 * real test.
+		 */
+		if ((*ptr & 0xAA) != 0xAA) {
+			pr_info("%p was NOT written during init!?\n", ptr);
+			break;
+		}
+
+		pr_info("attempting bad ro_after_init write at %p\n", ptr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*ptr ^= 0xabcd1234;
 
 		break;
@@ -522,6 +584,78 @@ static void lkdtm_do_action(enum ctype which)
 		do_overwritten();
 		break;
 	}
+<<<<<<< HEAD
+=======
+	case CT_CORRUPT_LIST_ADD: {
+		/*
+		 * Initially, an empty list via LIST_HEAD:
+		 *	test_head.next = &test_head
+		 *	test_head.prev = &test_head
+		 */
+		LIST_HEAD(test_head);
+		struct lkdtm_list good, bad;
+		void *target[2] = { };
+		void *redirection = &target;
+
+		pr_info("attempting good list addition\n");
+
+		/*
+		 * Adding to the list performs these actions:
+		 *	test_head.next->prev = &good.node
+		 *	good.node.next = test_head.next
+		 *	good.node.prev = test_head
+		 *	test_head.next = good.node
+		 */
+		list_add(&good.node, &test_head);
+
+		pr_info("attempting corrupted list addition\n");
+		/*
+		 * In simulating this "write what where" primitive, the "what" is
+		 * the address of &bad.node, and the "where" is the address held
+		 * by "redirection".
+		 */
+		test_head.next = redirection;
+		list_add(&bad.node, &test_head);
+
+		if (target[0] == NULL && target[1] == NULL)
+			pr_err("Overwrite did not happen, but no BUG?!\n");
+		else
+			pr_err("list_add() corruption not detected!\n");
+		break;
+	}
+	case CT_CORRUPT_LIST_DEL: {
+		LIST_HEAD(test_head);
+		struct lkdtm_list item;
+		void *target[2] = { };
+		void *redirection = &target;
+
+		list_add(&item.node, &test_head);
+
+		pr_info("attempting good list removal\n");
+		list_del(&item.node);
+
+		pr_info("attempting corrupted list removal\n");
+		list_add(&item.node, &test_head);
+
+		/* As with the list_add() test above, this corrupts "next". */
+		item.node.next = redirection;
+		list_del(&item.node);
+
+		if (target[0] == NULL && target[1] == NULL)
+			pr_err("Overwrite did not happen, but no BUG?!\n");
+		else
+			pr_err("list_del() corruption not detected!\n");
+		break;
+	}
+	case CT_CORRUPT_USER_DS: {
+		pr_info("setting bad task size limit\n");
+		set_fs(KERNEL_DS);
+
+		/* Make sure we do not keep running with a KERNEL_DS! */
+		force_sig(SIGKILL, current);
+		break;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case CT_NONE:
 	default:
 		break;
@@ -811,6 +945,12 @@ static int __init lkdtm_module_init(void)
 	int n_debugfs_entries = 1; /* Assume only the direct entry */
 	int i;
 
+<<<<<<< HEAD
+=======
+	/* Make sure we can write to __ro_after_init values during __init */
+	ro_after_init |= 0xAA;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Register debugfs interface */
 	lkdtm_debugfs_root = debugfs_create_dir("provoke-crash", NULL);
 	if (!lkdtm_debugfs_root) {

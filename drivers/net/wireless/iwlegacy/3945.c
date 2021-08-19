@@ -1019,12 +1019,20 @@ il3945_hw_txq_ctx_free(struct il_priv *il)
 	int txq_id;
 
 	/* Tx queues */
+<<<<<<< HEAD
 	if (il->txq)
+=======
+	if (il->txq) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (txq_id = 0; txq_id < il->hw_params.max_txq_num; txq_id++)
 			if (txq_id == IL39_CMD_QUEUE_NUM)
 				il_cmd_queue_free(il);
 			else
 				il_tx_queue_free(il, txq_id);
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* free tx queue structure */
 	il_free_txq_mem(il);

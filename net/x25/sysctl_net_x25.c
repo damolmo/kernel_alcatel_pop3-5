@@ -73,9 +73,18 @@ static struct ctl_table x25_table[] = {
 	{ 0, },
 };
 
+<<<<<<< HEAD
 void __init x25_register_sysctl(void)
 {
 	x25_table_header = register_net_sysctl(&init_net, "net/x25", x25_table);
+=======
+int __init x25_register_sysctl(void)
+{
+	x25_table_header = register_net_sysctl(&init_net, "net/x25", x25_table);
+	if (!x25_table_header)
+		return -ENOMEM;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void x25_unregister_sysctl(void)

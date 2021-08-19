@@ -177,6 +177,13 @@ enum pci_dev_flags {
 	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
 	/* Do not use bus resets for device */
 	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 6),
+<<<<<<< HEAD
+=======
+	/* Do not use PM reset even if device advertises NoSoftRst- */
+	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+	/* Get VPD from function 0 VPD */
+	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 enum pci_irq_reroute_variant {
@@ -351,6 +358,12 @@ struct pci_dev {
 	unsigned int	__aer_firmware_first:1;
 	unsigned int	broken_intx_masking:1;
 	unsigned int	io_window_1k:1;	/* Intel P2P bridge 1K I/O windows */
+<<<<<<< HEAD
+=======
+	unsigned int	irq_managed:1;
+	unsigned int	has_secondary_link:1;
+	unsigned int	non_compliant_bars:1;	/* broken BARs; ignore them */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pci_dev_flags_t dev_flags;
 	atomic_t	enable_cnt;	/* pci_enable_device has been called */
 
@@ -1660,6 +1673,10 @@ int pci_num_vf(struct pci_dev *dev);
 int pci_vfs_assigned(struct pci_dev *dev);
 int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs);
 int pci_sriov_get_totalvfs(struct pci_dev *dev);
+<<<<<<< HEAD
+=======
+resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 static inline int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn)
 { return -ENODEV; }
@@ -1671,6 +1688,11 @@ static inline int pci_sriov_set_totalvfs(struct pci_dev *dev, u16 numvfs)
 { return 0; }
 static inline int pci_sriov_get_totalvfs(struct pci_dev *dev)
 { return 0; }
+<<<<<<< HEAD
+=======
+static inline resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno)
+{ return 0; }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #if defined(CONFIG_HOTPLUG_PCI) || defined(CONFIG_HOTPLUG_PCI_MODULE)
@@ -1723,6 +1745,23 @@ static inline int pci_pcie_type(const struct pci_dev *dev)
 	return (pcie_caps_reg(dev) & PCI_EXP_FLAGS_TYPE) >> 4;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct pci_dev *pcie_find_root_port(struct pci_dev *dev)
+{
+	while (1) {
+		if (!pci_is_pcie(dev))
+			break;
+		if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+			return dev;
+		if (!dev->bus->self)
+			break;
+		dev = dev->bus->self;
+	}
+	return NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void pci_request_acs(void);
 bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
 bool pci_acs_path_enabled(struct pci_dev *start,

@@ -8,7 +8,11 @@ ccflags-y	:= -Wno-sign-compare
 
 obj-y    := entry.o traps.o process.o osf_sys.o irq.o \
 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
+<<<<<<< HEAD
 	    alpha_ksyms.o systbls.o err_common.o io.o
+=======
+	    systbls.o err_common.o io.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 obj-$(CONFIG_VGA_HOSE)	+= console.o
 obj-$(CONFIG_SMP)	+= smp.o

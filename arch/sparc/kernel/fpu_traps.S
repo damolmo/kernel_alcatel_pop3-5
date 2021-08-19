@@ -100,8 +100,13 @@ do_fpdis:
 	fmuld		%f0, %f2, %f26
 	faddd		%f0, %f2, %f28
 	fmuld		%f0, %f2, %f30
+<<<<<<< HEAD
 	b,pt		%xcc, fpdis_exit
 	 nop
+=======
+	ba,a,pt		%xcc, fpdis_exit
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 2:	andcc		%g5, FPRS_DU, %g0
 	bne,pt		%icc, 3f
 	 fzero		%f32
@@ -144,8 +149,13 @@ do_fpdis:
 	fmuld		%f32, %f34, %f58
 	faddd		%f32, %f34, %f60
 	fmuld		%f32, %f34, %f62
+<<<<<<< HEAD
 	ba,pt		%xcc, fpdis_exit
 	 nop
+=======
+	ba,a,pt		%xcc, fpdis_exit
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 3:	mov		SECONDARY_CONTEXT, %g3
 	add		%g6, TI_FPREGS, %g1
 
@@ -197,8 +207,12 @@ fpdis_exit2:
 fp_other_bounce:
 	call		do_fpother
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.size		fp_other_bounce,.-fp_other_bounce
 
 	.align		32

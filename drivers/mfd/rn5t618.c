@@ -28,6 +28,10 @@ static bool rn5t618_volatile_reg(struct device *dev, unsigned int reg)
 	case RN5T618_WATCHDOGCNT:
 	case RN5T618_DCIRQ:
 	case RN5T618_ILIMDATAH ... RN5T618_AIN0DATAL:
+<<<<<<< HEAD
+=======
+	case RN5T618_ADCCNT3:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case RN5T618_IR_ADC1 ... RN5T618_IR_ADC3:
 	case RN5T618_IR_GPR:
 	case RN5T618_IR_GPF:

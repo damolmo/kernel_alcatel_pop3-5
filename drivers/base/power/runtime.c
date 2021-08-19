@@ -888,13 +888,21 @@ int __pm_runtime_idle(struct device *dev, int rpmflags)
 	unsigned long flags;
 	int retval;
 
+<<<<<<< HEAD
 	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rpmflags & RPM_GET_PUT) {
 		if (!atomic_dec_and_test(&dev->power.usage_count))
 			return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&dev->power.lock, flags);
 	retval = rpm_idle(dev, rpmflags);
 	spin_unlock_irqrestore(&dev->power.lock, flags);
@@ -920,13 +928,21 @@ int __pm_runtime_suspend(struct device *dev, int rpmflags)
 	unsigned long flags;
 	int retval;
 
+<<<<<<< HEAD
 	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rpmflags & RPM_GET_PUT) {
 		if (!atomic_dec_and_test(&dev->power.usage_count))
 			return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&dev->power.lock, flags);
 	retval = rpm_suspend(dev, rpmflags);
 	spin_unlock_irqrestore(&dev->power.lock, flags);
@@ -951,7 +967,12 @@ int __pm_runtime_resume(struct device *dev, int rpmflags)
 	unsigned long flags;
 	int retval;
 
+<<<<<<< HEAD
 	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe);
+=======
+	might_sleep_if(!(rpmflags & RPM_ASYNC) && !dev->power.irq_safe &&
+			dev->power.runtime_status != RPM_ACTIVE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (rpmflags & RPM_GET_PUT)
 		atomic_inc(&dev->power.usage_count);
@@ -1474,11 +1495,24 @@ int pm_runtime_force_resume(struct device *dev)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = callback(dev);
 	if (ret)
 		goto out;
 
 	pm_runtime_set_active(dev);
+=======
+	ret = pm_runtime_set_active(dev);
+	if (ret)
+		goto out;
+
+	ret = callback(dev);
+	if (ret) {
+		pm_runtime_set_suspended(dev);
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_runtime_mark_last_busy(dev);
 out:
 	pm_runtime_enable(dev);

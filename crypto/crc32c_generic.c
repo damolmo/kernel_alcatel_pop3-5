@@ -172,4 +172,7 @@ MODULE_DESCRIPTION("CRC32c (Castagnoli) calculations wrapper for lib/crc32c");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_CRYPTO("crc32c");
 MODULE_ALIAS_CRYPTO("crc32c-generic");
+<<<<<<< HEAD
 MODULE_SOFTDEP("pre: crc32c");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -229,12 +229,19 @@ static void ipte_lock_simple(struct kvm_vcpu *vcpu)
 		goto out;
 	ic = &vcpu->kvm->arch.sca->ipte_control;
 	do {
+<<<<<<< HEAD
 		old = *ic;
 		barrier();
 		while (old.k) {
 			cond_resched();
 			old = *ic;
 			barrier();
+=======
+		old = READ_ONCE(*ic);
+		while (old.k) {
+			cond_resched();
+			old = READ_ONCE(*ic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		new = old;
 		new.k = 1;
@@ -253,8 +260,12 @@ static void ipte_unlock_simple(struct kvm_vcpu *vcpu)
 		goto out;
 	ic = &vcpu->kvm->arch.sca->ipte_control;
 	do {
+<<<<<<< HEAD
 		old = *ic;
 		barrier();
+=======
+		old = READ_ONCE(*ic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		new = old;
 		new.k = 0;
 	} while (cmpxchg(&ic->val, old.val, new.val) != old.val);
@@ -269,12 +280,19 @@ static void ipte_lock_siif(struct kvm_vcpu *vcpu)
 
 	ic = &vcpu->kvm->arch.sca->ipte_control;
 	do {
+<<<<<<< HEAD
 		old = *ic;
 		barrier();
 		while (old.kg) {
 			cond_resched();
 			old = *ic;
 			barrier();
+=======
+		old = READ_ONCE(*ic);
+		while (old.kg) {
+			cond_resched();
+			old = READ_ONCE(*ic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		new = old;
 		new.k = 1;
@@ -288,8 +306,12 @@ static void ipte_unlock_siif(struct kvm_vcpu *vcpu)
 
 	ic = &vcpu->kvm->arch.sca->ipte_control;
 	do {
+<<<<<<< HEAD
 		old = *ic;
 		barrier();
+=======
+		old = READ_ONCE(*ic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		new = old;
 		new.kh--;
 		if (!new.kh)

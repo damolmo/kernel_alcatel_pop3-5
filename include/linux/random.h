@@ -23,6 +23,7 @@ extern const struct file_operations random_fops, urandom_fops;
 #endif
 
 unsigned int get_random_int(void);
+<<<<<<< HEAD
 unsigned long randomize_range(unsigned long start, unsigned long end, unsigned long len);
 
 u32 prandom_u32(void);
@@ -76,6 +77,17 @@ static inline void prandom_seed_state(struct rnd_state *state, u64 seed)
 	state->s3 = __seed(i,  16U);
 	state->s4 = __seed(i, 128U);
 }
+=======
+unsigned long get_random_long(void);
+unsigned long randomize_range(unsigned long start, unsigned long end, unsigned long len);
+
+/*
+ * This is designed to be standalone for just prandom
+ * users, but for now we include it from <linux/random.h>
+ * for legacy reasons.
+ */
+#include <linux/prandom.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_ARCH_RANDOM
 # include <asm/archrandom.h>
@@ -106,10 +118,13 @@ static inline int arch_has_random_seed(void)
 }
 #endif
 
+<<<<<<< HEAD
 /* Pseudo random number generator from numerical recipes. */
 static inline u32 next_pseudo_random32(u32 seed)
 {
 	return seed * 1664525 + 1013904223;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _LINUX_RANDOM_H */

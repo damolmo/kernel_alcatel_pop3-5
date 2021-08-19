@@ -45,7 +45,11 @@ struct proto udplitev6_prot = {
 	.getsockopt	   = udpv6_getsockopt,
 	.sendmsg	   = udpv6_sendmsg,
 	.recvmsg	   = udpv6_recvmsg,
+<<<<<<< HEAD
 	.backlog_rcv	   = udpv6_queue_rcv_skb,
+=======
+	.backlog_rcv	   = __udpv6_queue_rcv_skb,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.hash		   = udp_lib_hash,
 	.unhash		   = udp_lib_unhash,
 	.get_port	   = udp_v6_get_port,

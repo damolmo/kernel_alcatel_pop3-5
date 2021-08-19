@@ -445,26 +445,42 @@ int vnic_dev_soft_reset_done(struct vnic_dev *vdev, int *done)
 
 int vnic_dev_hang_notify(struct vnic_dev *vdev)
 {
+<<<<<<< HEAD
 	u64 a0, a1;
+=======
+	u64 a0 = 0, a1 = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int wait = 1000;
 	return vnic_dev_cmd(vdev, CMD_HANG_NOTIFY, &a0, &a1, wait);
 }
 
 int vnic_dev_mac_addr(struct vnic_dev *vdev, u8 *mac_addr)
 {
+<<<<<<< HEAD
 	u64 a0, a1;
+=======
+	u64 a[2] = {};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int wait = 1000;
 	int err, i;
 
 	for (i = 0; i < ETH_ALEN; i++)
 		mac_addr[i] = 0;
 
+<<<<<<< HEAD
 	err = vnic_dev_cmd(vdev, CMD_MAC_ADDR, &a0, &a1, wait);
+=======
+	err = vnic_dev_cmd(vdev, CMD_MAC_ADDR, &a[0], &a[1], wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err)
 		return err;
 
 	for (i = 0; i < ETH_ALEN; i++)
+<<<<<<< HEAD
 		mac_addr[i] = ((u8 *)&a0)[i];
+=======
+		mac_addr[i] = ((u8 *)&a)[i];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -489,12 +505,17 @@ void vnic_dev_packet_filter(struct vnic_dev *vdev, int directed, int multicast,
 
 void vnic_dev_add_addr(struct vnic_dev *vdev, u8 *addr)
 {
+<<<<<<< HEAD
 	u64 a0 = 0, a1 = 0;
+=======
+	u64 a[2] = {};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int wait = 1000;
 	int err;
 	int i;
 
 	for (i = 0; i < ETH_ALEN; i++)
+<<<<<<< HEAD
 		((u8 *)&a0)[i] = addr[i];
 
 	err = vnic_dev_cmd(vdev, CMD_ADDR_ADD, &a0, &a1, wait);
@@ -503,16 +524,28 @@ void vnic_dev_add_addr(struct vnic_dev *vdev, u8 *addr)
 			"Can't add addr [%02x:%02x:%02x:%02x:%02x:%02x], %d\n",
 			addr[0], addr[1], addr[2], addr[3], addr[4], addr[5],
 			err);
+=======
+		((u8 *)&a)[i] = addr[i];
+
+	err = vnic_dev_cmd(vdev, CMD_ADDR_ADD, &a[0], &a[1], wait);
+	if (err)
+		pr_err("Can't add addr [%pM], %d\n", addr, err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void vnic_dev_del_addr(struct vnic_dev *vdev, u8 *addr)
 {
+<<<<<<< HEAD
 	u64 a0 = 0, a1 = 0;
+=======
+	u64 a[2] = {};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int wait = 1000;
 	int err;
 	int i;
 
 	for (i = 0; i < ETH_ALEN; i++)
+<<<<<<< HEAD
 		((u8 *)&a0)[i] = addr[i];
 
 	err = vnic_dev_cmd(vdev, CMD_ADDR_DEL, &a0, &a1, wait);
@@ -521,6 +554,13 @@ void vnic_dev_del_addr(struct vnic_dev *vdev, u8 *addr)
 			"Can't del addr [%02x:%02x:%02x:%02x:%02x:%02x], %d\n",
 			addr[0], addr[1], addr[2], addr[3], addr[4], addr[5],
 			err);
+=======
+		((u8 *)&a)[i] = addr[i];
+
+	err = vnic_dev_cmd(vdev, CMD_ADDR_DEL, &a[0], &a[1], wait);
+	if (err)
+		pr_err("Can't del addr [%pM], %d\n", addr, err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int vnic_dev_notify_set(struct vnic_dev *vdev, u16 intr)

@@ -293,6 +293,12 @@ static int stv06xx_start(struct gspca_dev *gspca_dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (alt->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 	err = stv06xx_write_bridge(sd, STV_ISO_SIZE_L, packet_size);
 	if (err < 0)
@@ -317,11 +323,29 @@ out:
 
 static int stv06xx_isoc_init(struct gspca_dev *gspca_dev)
 {
+<<<<<<< HEAD
 	struct usb_host_interface *alt;
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	/* Start isoc bandwidth "negotiation" at max isoc bandwidth */
 	alt = &gspca_dev->dev->actconfig->intf_cache[0]->altsetting[1];
+=======
+	struct usb_interface_cache *intfc;
+	struct usb_host_interface *alt;
+	struct sd *sd = (struct sd *) gspca_dev;
+
+	intfc = gspca_dev->dev->actconfig->intf_cache[0];
+
+	if (intfc->num_altsetting < 2)
+		return -ENODEV;
+
+	alt = &intfc->altsetting[1];
+
+	if (alt->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+	/* Start isoc bandwidth "negotiation" at max isoc bandwidth */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alt->endpoint[0].desc.wMaxPacketSize =
 		cpu_to_le16(sd->sensor->max_packet_size[gspca_dev->curr_mode]);
 
@@ -334,6 +358,13 @@ static int stv06xx_isoc_nego(struct gspca_dev *gspca_dev)
 	struct usb_host_interface *alt;
 	struct sd *sd = (struct sd *) gspca_dev;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Existence of altsetting and endpoint was verified in
+	 * stv06xx_isoc_init()
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alt = &gspca_dev->dev->actconfig->intf_cache[0]->altsetting[1];
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 	min_packet_size = sd->sensor->min_packet_size[gspca_dev->curr_mode];
@@ -524,12 +555,27 @@ static int sd_int_pkt_scan(struct gspca_dev *gspca_dev,
 static int stv06xx_config(struct gspca_dev *gspca_dev,
 			  const struct usb_device_id *id);
 
+<<<<<<< HEAD
+=======
+static void stv06xx_probe_error(struct gspca_dev *gspca_dev)
+{
+	struct sd *sd = (struct sd *)gspca_dev;
+
+	kfree(sd->sensor_priv);
+	sd->sensor_priv = NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* sub-driver description */
 static const struct sd_desc sd_desc = {
 	.name = MODULE_NAME,
 	.config = stv06xx_config,
 	.init = stv06xx_init,
 	.init_controls = stv06xx_init_controls,
+<<<<<<< HEAD
+=======
+	.probe_error = stv06xx_probe_error,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.start = stv06xx_start,
 	.stopN = stv06xx_stopN,
 	.pkt_scan = stv06xx_pkt_scan,

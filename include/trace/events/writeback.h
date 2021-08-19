@@ -18,6 +18,11 @@
 		{I_FREEING,		"I_FREEING"},		\
 		{I_CLEAR,		"I_CLEAR"},		\
 		{I_SYNC,		"I_SYNC"},		\
+<<<<<<< HEAD
+=======
+		{I_DIRTY_TIME,		"I_DIRTY_TIME"},	\
+		{I_DIRTY_TIME_EXPIRED,	"I_DIRTY_TIME_EXPIRED"}, \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		{I_REFERENCED,		"I_REFERENCED"}		\
 	)
 
@@ -68,6 +73,10 @@ DECLARE_EVENT_CLASS(writeback_dirty_inode_template,
 	TP_STRUCT__entry (
 		__array(char, name, 32)
 		__field(unsigned long, ino)
+<<<<<<< HEAD
+=======
+		__field(unsigned long, state)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__field(unsigned long, flags)
 	),
 
@@ -78,16 +87,37 @@ DECLARE_EVENT_CLASS(writeback_dirty_inode_template,
 		strncpy(__entry->name,
 			bdi->dev ? dev_name(bdi->dev) : "(unknown)", 32);
 		__entry->ino		= inode->i_ino;
+<<<<<<< HEAD
 		__entry->flags		= flags;
 	),
 
 	TP_printk("bdi %s: ino=%lu flags=%s",
 		__entry->name,
 		__entry->ino,
+=======
+		__entry->state		= inode->i_state;
+		__entry->flags		= flags;
+	),
+
+	TP_printk("bdi %s: ino=%lu state=%s flags=%s",
+		__entry->name,
+		__entry->ino,
+		show_inode_state(__entry->state),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		show_inode_state(__entry->flags)
 	)
 );
 
+<<<<<<< HEAD
+=======
+DEFINE_EVENT(writeback_dirty_inode_template, writeback_mark_inode_dirty,
+
+	TP_PROTO(struct inode *inode, int flags),
+
+	TP_ARGS(inode, flags)
+);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 DEFINE_EVENT(writeback_dirty_inode_template, writeback_dirty_inode_start,
 
 	TP_PROTO(struct inode *inode, int flags),
@@ -598,6 +628,55 @@ DEFINE_EVENT(writeback_single_inode_template, writeback_single_inode,
 	TP_ARGS(inode, wbc, nr_to_write)
 );
 
+<<<<<<< HEAD
+=======
+DECLARE_EVENT_CLASS(writeback_lazytime_template,
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode),
+
+	TP_STRUCT__entry(
+		__field(	dev_t,	dev			)
+		__field(unsigned long,	ino			)
+		__field(unsigned long,	state			)
+		__field(	__u16, mode			)
+		__field(unsigned long, dirtied_when		)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->state	= inode->i_state;
+		__entry->mode	= inode->i_mode;
+		__entry->dirtied_when = inode->dirtied_when;
+	),
+
+	TP_printk("dev %d,%d ino %lu dirtied %lu state %s mode 0%o",
+		  MAJOR(__entry->dev), MINOR(__entry->dev),
+		  __entry->ino, __entry->dirtied_when,
+		  show_inode_state(__entry->state), __entry->mode)
+);
+
+DEFINE_EVENT(writeback_lazytime_template, writeback_lazytime,
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode)
+);
+
+DEFINE_EVENT(writeback_lazytime_template, writeback_lazytime_iput,
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode)
+);
+
+DEFINE_EVENT(writeback_lazytime_template, writeback_dirty_inode_enqueue,
+
+	TP_PROTO(struct inode *inode),
+
+	TP_ARGS(inode)
+);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _TRACE_WRITEBACK_H */
 
 /* This part must be outside protection */

@@ -46,8 +46,16 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
+=======
+#include <linux/nospec.h>
+
+#include <asm/uaccess.h>
+
+#include <rdma/ib.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <rdma/ib_cm.h>
 #include <rdma/ib_user_cm.h>
 #include <rdma/ib_marshall.h>
@@ -1104,6 +1112,12 @@ static ssize_t ib_ucm_write(struct file *filp, const char __user *buf,
 	struct ib_ucm_cmd_hdr hdr;
 	ssize_t result;
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON_ONCE(!ib_safe_file_access(filp)))
+		return -EACCES;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (len < sizeof(hdr))
 		return -EINVAL;
 
@@ -1112,6 +1126,10 @@ static ssize_t ib_ucm_write(struct file *filp, const char __user *buf,
 
 	if (hdr.cmd >= ARRAY_SIZE(ucm_cmd_table))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	hdr.cmd = array_index_nospec(hdr.cmd, ARRAY_SIZE(ucm_cmd_table));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (hdr.in + sizeof(hdr) > len)
 		return -EINVAL;

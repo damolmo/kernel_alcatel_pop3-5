@@ -187,6 +187,7 @@ static int proc_keys_show(struct seq_file *m, void *v)
 	struct timespec now;
 	unsigned long timo;
 	key_ref_t key_ref, skey_ref;
+<<<<<<< HEAD
 	char xbuf[12];
 	int rc;
 
@@ -194,6 +195,15 @@ static int proc_keys_show(struct seq_file *m, void *v)
 		.index_key.type		= key->type,
 		.index_key.description	= key->description,
 		.cred			= current_cred(),
+=======
+	char xbuf[16];
+	short state;
+	int rc;
+
+	struct keyring_search_context ctx = {
+		.index_key		= key->index_key,
+		.cred			= m->file->f_cred,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.match_data.cmp		= lookup_user_key_possessed,
 		.match_data.raw_data	= key,
 		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
@@ -213,11 +223,15 @@ static int proc_keys_show(struct seq_file *m, void *v)
 		}
 	}
 
+<<<<<<< HEAD
 	/* check whether the current task is allowed to view the key (assuming
 	 * non-possession)
 	 * - the caller holds a spinlock, and thus the RCU read lock, making our
 	 *   access to __current_cred() safe
 	 */
+=======
+	/* check whether the current task is allowed to view the key */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rc = key_task_permission(key_ref, ctx.cred, KEY_NEED_VIEW);
 	if (rc < 0)
 		return 0;
@@ -246,17 +260,30 @@ static int proc_keys_show(struct seq_file *m, void *v)
 			sprintf(xbuf, "%luw", timo / (60*60*24*7));
 	}
 
+<<<<<<< HEAD
+=======
+	state = key_read_state(key);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define showflag(KEY, LETTER, FLAG) \
 	(test_bit(FLAG,	&(KEY)->flags) ? LETTER : '-')
 
 	seq_printf(m, "%08x %c%c%c%c%c%c%c %5d %4s %08x %5d %5d %-9.9s ",
 		   key->serial,
+<<<<<<< HEAD
 		   showflag(key, 'I', KEY_FLAG_INSTANTIATED),
+=======
+		   state != KEY_IS_UNINSTANTIATED ? 'I' : '-',
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		   showflag(key, 'R', KEY_FLAG_REVOKED),
 		   showflag(key, 'D', KEY_FLAG_DEAD),
 		   showflag(key, 'Q', KEY_FLAG_IN_QUOTA),
 		   showflag(key, 'U', KEY_FLAG_USER_CONSTRUCT),
+<<<<<<< HEAD
 		   showflag(key, 'N', KEY_FLAG_NEGATIVE),
+=======
+		   state < 0 ? 'N' : '-',
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		   showflag(key, 'i', KEY_FLAG_INVALIDATED),
 		   atomic_read(&key->usage),
 		   xbuf,

@@ -18,6 +18,12 @@
 #define ACPI_SMBUS_HC_CLASS		"smbus"
 #define ACPI_SMBUS_HC_DEVICE_NAME	"cmi"
 
+<<<<<<< HEAD
+=======
+/* SMBUS HID definition as supported by Microsoft Windows */
+#define ACPI_SMBUS_MS_HID		"SMB0001"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ACPI_MODULE_NAME("smbus_cmi");
 
 struct smbus_methods_t {
@@ -51,6 +57,10 @@ static const struct smbus_methods_t ibm_smbus_methods = {
 static const struct acpi_device_id acpi_smbus_cmi_ids[] = {
 	{"SMBUS01", (kernel_ulong_t)&smbus_methods},
 	{ACPI_SMBUS_IBM_HID, (kernel_ulong_t)&ibm_smbus_methods},
+<<<<<<< HEAD
+=======
+	{ACPI_SMBUS_MS_HID, (kernel_ulong_t)&smbus_methods},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{"", 0}
 };
 MODULE_DEVICE_TABLE(acpi, acpi_smbus_cmi_ids);
@@ -148,6 +158,10 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 			mt_params[3].type = ACPI_TYPE_INTEGER;
 			mt_params[3].integer.value = len;
 			mt_params[4].type = ACPI_TYPE_BUFFER;
+<<<<<<< HEAD
+=======
+			mt_params[4].buffer.length = len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mt_params[4].buffer.pointer = data->block + 1;
 		}
 		break;
@@ -359,6 +373,10 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 {
 	struct acpi_smbus_cmi *smbus_cmi;
 	const struct acpi_device_id *id;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	smbus_cmi = kzalloc(sizeof(struct acpi_smbus_cmi), GFP_KERNEL);
 	if (!smbus_cmi)
@@ -380,8 +398,15 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 	acpi_walk_namespace(ACPI_TYPE_METHOD, smbus_cmi->handle, 1,
 			    acpi_smbus_cmi_query_methods, NULL, smbus_cmi, NULL);
 
+<<<<<<< HEAD
 	if (smbus_cmi->cap_info == 0)
 		goto err;
+=======
+	if (smbus_cmi->cap_info == 0) {
+		ret = -ENODEV;
+		goto err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	snprintf(smbus_cmi->adapter.name, sizeof(smbus_cmi->adapter.name),
 		"SMBus CMI adapter %s",
@@ -392,7 +417,12 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 	smbus_cmi->adapter.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
 	smbus_cmi->adapter.dev.parent = &device->dev;
 
+<<<<<<< HEAD
 	if (i2c_add_adapter(&smbus_cmi->adapter)) {
+=======
+	ret = i2c_add_adapter(&smbus_cmi->adapter);
+	if (ret) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(&device->dev, "Couldn't register adapter!\n");
 		goto err;
 	}
@@ -402,7 +432,11 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 err:
 	kfree(smbus_cmi);
 	device->driver_data = NULL;
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int acpi_smbus_cmi_remove(struct acpi_device *device)

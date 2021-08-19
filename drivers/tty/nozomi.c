@@ -823,7 +823,11 @@ static int receive_data(enum port_type index, struct nozomi *dc)
 	struct tty_struct *tty = tty_port_tty_get(&port->port);
 	int i, ret;
 
+<<<<<<< HEAD
 	read_mem32((u32 *) &size, addr, 4);
+=======
+	size = __le32_to_cpu(readl(addr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*  DBG1( "%d bytes port: %d", size, index); */
 
 	if (tty && test_bit(TTY_THROTTLED, &tty->flags)) {

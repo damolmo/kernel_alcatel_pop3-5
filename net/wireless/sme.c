@@ -432,7 +432,11 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
 	if (wdev->current_bss)
 		return -EALREADY;
 
+<<<<<<< HEAD
 	if (WARN_ON(wdev->conn))
+=======
+	if (wdev->conn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINPROGRESS;
 
 	wdev->conn = kzalloc(sizeof(*wdev->conn), GFP_KERNEL);
@@ -879,7 +883,11 @@ void __cfg80211_disconnected(struct net_device *dev, const u8 *ie,
 }
 
 void cfg80211_disconnected(struct net_device *dev, u16 reason,
+<<<<<<< HEAD
 			   const u8 *ie, size_t ie_len, bool locally_generated, gfp_t gfp)
+=======
+			   const u8 *ie, size_t ie_len, gfp_t gfp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	struct cfg80211_registered_device *rdev = wiphy_to_rdev(wdev->wiphy);
@@ -895,7 +903,10 @@ void cfg80211_disconnected(struct net_device *dev, u16 reason,
 	ev->dc.ie_len = ie_len;
 	memcpy((void *)ev->dc.ie, ie, ie_len);
 	ev->dc.reason = reason;
+<<<<<<< HEAD
 	ev->dc.locally_generated = locally_generated;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_irqsave(&wdev->event_lock, flags);
 	list_add_tail(&ev->list, &wdev->event_list);

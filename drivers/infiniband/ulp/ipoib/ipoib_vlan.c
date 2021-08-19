@@ -86,8 +86,11 @@ int __ipoib_vlan_add(struct ipoib_dev_priv *ppriv, struct ipoib_dev_priv *priv,
 
 	priv->parent = ppriv->dev;
 
+<<<<<<< HEAD
 	ipoib_create_debug_files(priv->dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* RTNL childs don't need proprietary sysfs entries */
 	if (type == IPOIB_LEGACY_CHILD) {
 		if (ipoib_cm_add_mode_attr(priv->dev))
@@ -109,7 +112,10 @@ int __ipoib_vlan_add(struct ipoib_dev_priv *ppriv, struct ipoib_dev_priv *priv,
 
 sysfs_failed:
 	result = -ENOMEM;
+<<<<<<< HEAD
 	ipoib_delete_debug_files(priv->dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unregister_netdevice(priv->dev);
 
 register_failed:
@@ -165,11 +171,19 @@ int ipoib_vlan_add(struct net_device *pdev, unsigned short pkey)
 out:
 	up_write(&ppriv->vlan_rwsem);
 
+<<<<<<< HEAD
 	if (result)
 		free_netdev(priv->dev);
 
 	rtnl_unlock();
 
+=======
+	rtnl_unlock();
+
+	if (result)
+		free_netdev(priv->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return result;
 }
 
@@ -190,7 +204,10 @@ int ipoib_vlan_delete(struct net_device *pdev, unsigned short pkey)
 	list_for_each_entry_safe(priv, tpriv, &ppriv->child_intfs, list) {
 		if (priv->pkey == pkey &&
 		    priv->child_type == IPOIB_LEGACY_CHILD) {
+<<<<<<< HEAD
 			unregister_netdevice(priv->dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			list_del(&priv->list);
 			dev = priv->dev;
 			break;
@@ -198,6 +215,14 @@ int ipoib_vlan_delete(struct net_device *pdev, unsigned short pkey)
 	}
 	up_write(&ppriv->vlan_rwsem);
 
+<<<<<<< HEAD
+=======
+	if (dev) {
+		ipoib_dbg(ppriv, "delete child vlan %s\n", dev->name);
+		unregister_netdevice(dev);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rtnl_unlock();
 
 	if (dev) {

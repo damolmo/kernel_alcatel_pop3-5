@@ -81,10 +81,21 @@
 #define SECTOR_TO_BLOCK_SHIFT 3
 
 /*
+<<<<<<< HEAD
  *  3 for btree insert +
  *  2 for btree lookup used within space map
  */
 #define THIN_MAX_CONCURRENT_LOCKS 5
+=======
+ * For btree insert:
+ *  3 for btree insert +
+ *  2 for btree lookup used within space map
+ * For btree remove:
+ *  2 for shadow spine +
+ *  4 for rebalance 3 child node
+ */
+#define THIN_MAX_CONCURRENT_LOCKS 6
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* This should be plenty */
 #define SPACE_MAP_ROOT_SIZE 128
@@ -187,6 +198,15 @@ struct dm_pool_metadata {
 	bool read_only:1;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * We reserve a section of the metadata for commit overhead.
+	 * All reported space does *not* include this.
+	 */
+	dm_block_t metadata_reserve;
+
+	/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * Set if a transaction has to be aborted but the attempt to roll back
 	 * to the previous (good) transaction failed.  The only pool metadata
 	 * operation possible in this state is the closing of the device.
@@ -484,11 +504,19 @@ static int __write_initial_superblock(struct dm_pool_metadata *pmd)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	r = save_sm_roots(pmd);
 	if (r < 0)
 		return r;
 
 	r = dm_tm_pre_commit(pmd->tm);
+=======
+	r = dm_tm_pre_commit(pmd->tm);
+	if (r < 0)
+		return r;
+
+	r = save_sm_roots(pmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (r < 0)
 		return r;
 
@@ -687,12 +715,25 @@ static int __create_persistent_data_objects(struct dm_pool_metadata *pmd, bool f
 					  THIN_MAX_CONCURRENT_LOCKS);
 	if (IS_ERR(pmd->bm)) {
 		DMERR("could not create block manager");
+<<<<<<< HEAD
 		return PTR_ERR(pmd->bm);
 	}
 
 	r = __open_or_format_metadata(pmd, format_device);
 	if (r)
 		dm_block_manager_destroy(pmd->bm);
+=======
+		r = PTR_ERR(pmd->bm);
+		pmd->bm = NULL;
+		return r;
+	}
+
+	r = __open_or_format_metadata(pmd, format_device);
+	if (r) {
+		dm_block_manager_destroy(pmd->bm);
+		pmd->bm = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return r;
 }
@@ -820,6 +861,23 @@ static int __commit_transaction(struct dm_pool_metadata *pmd)
 	return dm_tm_commit(pmd->tm, sblock);
 }
 
+<<<<<<< HEAD
+=======
+static void __set_metadata_reserve(struct dm_pool_metadata *pmd)
+{
+	int r;
+	dm_block_t total;
+	dm_block_t max_blocks = 4096; /* 16M */
+
+	r = dm_sm_get_nr_blocks(pmd->metadata_sm, &total);
+	if (r) {
+		DMERR("could not get size of metadata device");
+		pmd->metadata_reserve = max_blocks;
+	} else
+		pmd->metadata_reserve = min(max_blocks, div_u64(total, 10));
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
 					       sector_t data_block_size,
 					       bool format_device)
@@ -854,6 +912,11 @@ struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
 		return ERR_PTR(r);
 	}
 
+<<<<<<< HEAD
+=======
+	__set_metadata_reserve(pmd);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return pmd;
 }
 
@@ -1295,8 +1358,13 @@ static int __release_metadata_snap(struct dm_pool_metadata *pmd)
 		return r;
 
 	disk_super = dm_block_data(copy);
+<<<<<<< HEAD
 	dm_sm_dec_block(pmd->metadata_sm, le64_to_cpu(disk_super->data_mapping_root));
 	dm_sm_dec_block(pmd->metadata_sm, le64_to_cpu(disk_super->device_details_root));
+=======
+	dm_btree_del(&pmd->info, le64_to_cpu(disk_super->data_mapping_root));
+	dm_btree_del(&pmd->details_info, le64_to_cpu(disk_super->device_details_root));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dm_sm_dec_block(pmd->metadata_sm, held_root);
 
 	return dm_tm_unlock(pmd->tm, copy);
@@ -1621,6 +1689,16 @@ int dm_pool_get_free_metadata_block_count(struct dm_pool_metadata *pmd,
 	down_read(&pmd->root_lock);
 	if (!pmd->fail_io)
 		r = dm_sm_get_nr_free(pmd->metadata_sm, result);
+<<<<<<< HEAD
+=======
+
+	if (!r) {
+		if (*result < pmd->metadata_reserve)
+			*result = 0;
+		else
+			*result -= pmd->metadata_reserve;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	up_read(&pmd->root_lock);
 
 	return r;
@@ -1742,8 +1820,16 @@ int dm_pool_resize_metadata_dev(struct dm_pool_metadata *pmd, dm_block_t new_cou
 	int r = -EINVAL;
 
 	down_write(&pmd->root_lock);
+<<<<<<< HEAD
 	if (!pmd->fail_io)
 		r = __resize_space_map(pmd->metadata_sm, new_count);
+=======
+	if (!pmd->fail_io) {
+		r = __resize_space_map(pmd->metadata_sm, new_count);
+		if (!r)
+			__set_metadata_reserve(pmd);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	up_write(&pmd->root_lock);
 
 	return r;

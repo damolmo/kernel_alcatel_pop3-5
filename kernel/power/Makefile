@@ -1,6 +1,7 @@
 
 ccflags-$(CONFIG_PM_DEBUG)	:= -DDEBUG
 
+<<<<<<< HEAD
 tuxonice_core-y := tuxonice_modules.o
 
 obj-$(CONFIG_TOI)		+= tuxonice_builtin.o
@@ -32,6 +33,8 @@ obj-$(CONFIG_TOI_CLUSTER)	+= tuxonice_cluster.o
 
 obj-$(CONFIG_TOI_USERUI)	+= tuxonice_userui.o
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-y				+= qos.o
 obj-$(CONFIG_PM)		+= main.o
 obj-$(CONFIG_VT_CONSOLE_SLEEP)	+= console.o
@@ -42,7 +45,10 @@ obj-$(CONFIG_HIBERNATION)	+= hibernate.o snapshot.o swap.o user.o \
 				   block_io.o
 obj-$(CONFIG_PM_AUTOSLEEP)	+= autosleep.o
 obj-$(CONFIG_PM_WAKELOCKS)	+= wakelock.o
+<<<<<<< HEAD
 obj-$(CONFIG_SUSPEND_TIME)	+= suspend_time.o
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 obj-$(CONFIG_MAGIC_SYSRQ)	+= poweroff.o
 

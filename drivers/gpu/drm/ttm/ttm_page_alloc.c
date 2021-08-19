@@ -612,7 +612,11 @@ static void ttm_page_pool_fill_locked(struct ttm_page_pool *pool,
 		} else {
 			pr_err("Failed to fill pool (%p)\n", pool);
 			/* If we have any pages left put them to the pool. */
+<<<<<<< HEAD
 			list_for_each_entry(p, &pool->list, lru) {
+=======
+			list_for_each_entry(p, &new_pages, lru) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				++cpages;
 			}
 			list_splice(&new_pages, &pool->list);
@@ -818,6 +822,11 @@ int ttm_page_alloc_init(struct ttm_mem_global *glob, unsigned max_pages)
 	pr_info("Initializing pool allocator\n");
 
 	_manager = kzalloc(sizeof(*_manager), GFP_KERNEL);
+<<<<<<< HEAD
+=======
+	if (!_manager)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ttm_page_pool_init_locked(&_manager->wc_pool, GFP_HIGHUSER, "wc");
 

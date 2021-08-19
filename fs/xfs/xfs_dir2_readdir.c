@@ -422,6 +422,10 @@ xfs_dir2_leaf_readbuf(
 
 	/*
 	 * Do we need more readahead?
+<<<<<<< HEAD
+=======
+	 * Each loop tries to process 1 full dir blk; last may be partial.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 */
 	blk_start_plug(&plug);
 	for (mip->ra_index = mip->ra_offset = i = 0;
@@ -432,7 +436,12 @@ xfs_dir2_leaf_readbuf(
 		 * Read-ahead a contiguous directory block.
 		 */
 		if (i > mip->ra_current &&
+<<<<<<< HEAD
 		    map[mip->ra_index].br_blockcount >= geo->fsbcount) {
+=======
+		    (map[mip->ra_index].br_blockcount - mip->ra_offset) >=
+		    geo->fsbcount) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			xfs_dir3_data_readahead(dp,
 				map[mip->ra_index].br_startoff + mip->ra_offset,
 				XFS_FSB_TO_DADDR(dp->i_mount,
@@ -453,14 +462,29 @@ xfs_dir2_leaf_readbuf(
 		}
 
 		/*
+<<<<<<< HEAD
 		 * Advance offset through the mapping table.
 		 */
 		for (j = 0; j < geo->fsbcount; j += length ) {
+=======
+		 * Advance offset through the mapping table, processing a full
+		 * dir block even if it is fragmented into several extents.
+		 * But stop if we have consumed all valid mappings, even if
+		 * it's not yet a full directory block.
+		 */
+		for (j = 0;
+		     j < geo->fsbcount && mip->ra_index < mip->map_valid;
+		     j += length ) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/*
 			 * The rest of this extent but not more than a dir
 			 * block.
 			 */
+<<<<<<< HEAD
 			length = min_t(int, geo->fsbcount,
+=======
+			length = min_t(int, geo->fsbcount - j,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					map[mip->ra_index].br_blockcount -
 							mip->ra_offset);
 			mip->ra_offset += length;

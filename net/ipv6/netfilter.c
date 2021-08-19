@@ -27,6 +27,10 @@ int ip6_route_me_harder(struct sk_buff *skb)
 	struct flowi6 fl6 = {
 		.flowi6_oif = skb->sk ? skb->sk->sk_bound_dev_if : 0,
 		.flowi6_mark = skb->mark,
+<<<<<<< HEAD
+=======
+		.flowi6_uid = sock_net_uid(net, skb->sk),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.daddr = iph->daddr,
 		.saddr = iph->saddr,
 	};

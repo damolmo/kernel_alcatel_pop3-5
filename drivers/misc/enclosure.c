@@ -320,6 +320,10 @@ int enclosure_add_device(struct enclosure_device *edev, int component,
 			 struct device *dev)
 {
 	struct enclosure_component *cdev;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!edev || component >= edev->components)
 		return -EINVAL;
@@ -329,12 +333,26 @@ int enclosure_add_device(struct enclosure_device *edev, int component,
 	if (cdev->dev == dev)
 		return -EEXIST;
 
+<<<<<<< HEAD
 	if (cdev->dev)
 		enclosure_remove_links(cdev);
 
 	put_device(cdev->dev);
 	cdev->dev = get_device(dev);
 	return enclosure_add_links(cdev);
+=======
+	if (cdev->dev) {
+		enclosure_remove_links(cdev);
+		put_device(cdev->dev);
+	}
+	cdev->dev = get_device(dev);
+	err = enclosure_add_links(cdev);
+	if (err) {
+		put_device(cdev->dev);
+		cdev->dev = NULL;
+	}
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(enclosure_add_device);
 
@@ -358,10 +376,16 @@ int enclosure_remove_device(struct enclosure_device *edev, struct device *dev)
 		cdev = &edev->component[i];
 		if (cdev->dev == dev) {
 			enclosure_remove_links(cdev);
+<<<<<<< HEAD
 			device_del(&cdev->cdev);
 			put_device(dev);
 			cdev->dev = NULL;
 			return device_add(&cdev->cdev);
+=======
+			put_device(dev);
+			cdev->dev = NULL;
+			return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	return -ENODEV;

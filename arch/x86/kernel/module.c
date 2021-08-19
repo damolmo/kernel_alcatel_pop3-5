@@ -121,6 +121,10 @@ int apply_relocate(Elf32_Shdr *sechdrs,
 			*location += sym->st_value;
 			break;
 		case R_386_PC32:
+<<<<<<< HEAD
+=======
+		case R_386_PLT32:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* Add the value, subtract its position */
 			*location += sym->st_value - (uint32_t)location;
 			break;
@@ -167,19 +171,40 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 		case R_X86_64_NONE:
 			break;
 		case R_X86_64_64:
+<<<<<<< HEAD
 			*(u64 *)loc = val;
 			break;
 		case R_X86_64_32:
+=======
+			if (*(u64 *)loc != 0)
+				goto invalid_relocation;
+			*(u64 *)loc = val;
+			break;
+		case R_X86_64_32:
+			if (*(u32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*(u32 *)loc = val;
 			if (val != *(u32 *)loc)
 				goto overflow;
 			break;
 		case R_X86_64_32S:
+<<<<<<< HEAD
+=======
+			if (*(s32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*(s32 *)loc = val;
 			if ((s64)val != *(s32 *)loc)
 				goto overflow;
 			break;
 		case R_X86_64_PC32:
+<<<<<<< HEAD
+=======
+		case R_X86_64_PLT32:
+			if (*(u32 *)loc != 0)
+				goto invalid_relocation;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			val -= (u64)loc;
 			*(u32 *)loc = val;
 #if 0
@@ -195,6 +220,14 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
 	}
 	return 0;
 
+<<<<<<< HEAD
+=======
+invalid_relocation:
+	pr_err("x86/modules: Skipping invalid relocation target, existing value is nonzero for type %d, loc %p, val %Lx\n",
+	       (int)ELF64_R_TYPE(rel[i].r_info), loc, val);
+	return -ENOEXEC;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 overflow:
 	pr_err("overflow in relocation type %d val %Lx\n",
 	       (int)ELF64_R_TYPE(rel[i].r_info), val);

@@ -129,12 +129,20 @@ static inline u32 usbtll_read(void __iomem *base, u32 reg)
 	return readl_relaxed(base + reg);
 }
 
+<<<<<<< HEAD
 static inline void usbtll_writeb(void __iomem *base, u8 reg, u8 val)
+=======
+static inline void usbtll_writeb(void __iomem *base, u32 reg, u8 val)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	writeb_relaxed(val, base + reg);
 }
 
+<<<<<<< HEAD
 static inline u8 usbtll_readb(void __iomem *base, u8 reg)
+=======
+static inline u8 usbtll_readb(void __iomem *base, u32 reg)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return readb_relaxed(base + reg);
 }
@@ -269,6 +277,11 @@ static int usbtll_omap_probe(struct platform_device *pdev)
 
 		if (IS_ERR(tll->ch_clk[i]))
 			dev_dbg(dev, "can't get clock : %s\n", clkname);
+<<<<<<< HEAD
+=======
+		else
+			clk_prepare(tll->ch_clk[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	pm_runtime_put_sync(dev);
@@ -301,9 +314,18 @@ static int usbtll_omap_remove(struct platform_device *pdev)
 	tll_dev = NULL;
 	spin_unlock(&tll_lock);
 
+<<<<<<< HEAD
 	for (i = 0; i < tll->nch; i++)
 		if (!IS_ERR(tll->ch_clk[i]))
 			clk_put(tll->ch_clk[i]);
+=======
+	for (i = 0; i < tll->nch; i++) {
+		if (!IS_ERR(tll->ch_clk[i])) {
+			clk_unprepare(tll->ch_clk[i]);
+			clk_put(tll->ch_clk[i]);
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pm_runtime_disable(&pdev->dev);
 	return 0;
@@ -371,8 +393,13 @@ int omap_tll_init(struct usbhs_omap_platform_data *pdata)
 				 * and use SDR Mode
 				 */
 				reg &= ~(OMAP_TLL_CHANNEL_CONF_UTMIAUTOIDLE
+<<<<<<< HEAD
 					| OMAP_TLL_CHANNEL_CONF_ULPINOBITSTUFF
 					| OMAP_TLL_CHANNEL_CONF_ULPIDDRMODE);
+=======
+					| OMAP_TLL_CHANNEL_CONF_ULPIDDRMODE);
+				reg |= OMAP_TLL_CHANNEL_CONF_ULPINOBITSTUFF;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			} else if (pdata->port_mode[i] ==
 					OMAP_EHCI_PORT_MODE_HSIC) {
 				/*
@@ -421,7 +448,11 @@ int omap_tll_enable(struct usbhs_omap_platform_data *pdata)
 			if (IS_ERR(tll->ch_clk[i]))
 				continue;
 
+<<<<<<< HEAD
 			r = clk_prepare_enable(tll->ch_clk[i]);
+=======
+			r = clk_enable(tll->ch_clk[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (r) {
 				dev_err(tll_dev,
 				 "Error enabling ch %d clock: %d\n", i, r);
@@ -449,7 +480,11 @@ int omap_tll_disable(struct usbhs_omap_platform_data *pdata)
 	for (i = 0; i < tll->nch; i++) {
 		if (omap_usb_mode_needs_tll(pdata->port_mode[i])) {
 			if (!IS_ERR(tll->ch_clk[i]))
+<<<<<<< HEAD
 				clk_disable_unprepare(tll->ch_clk[i]);
+=======
+				clk_disable(tll->ch_clk[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 

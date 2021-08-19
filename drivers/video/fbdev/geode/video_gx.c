@@ -127,7 +127,11 @@ void gx_set_dclk_frequency(struct fb_info *info)
 	int timeout = 1000;
 
 	/* Rev. 1 Geode GXs use a 14 MHz reference clock instead of 48 MHz. */
+<<<<<<< HEAD
 	if (cpu_data(0).x86_mask == 1) {
+=======
+	if (cpu_data(0).x86_stepping == 1) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pll_table = gx_pll_table_14MHz;
 		pll_table_len = ARRAY_SIZE(gx_pll_table_14MHz);
 	} else {

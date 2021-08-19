@@ -84,7 +84,11 @@ static unsigned int iio_event_poll(struct file *filep,
 	unsigned int events = 0;
 
 	if (!indio_dev->info)
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		return events;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	poll_wait(filep, &ev_int->wait, wait);
 

@@ -1062,6 +1062,11 @@ static int ace_setup(struct ace_device *ace)
 	return 0;
 
 err_read:
+<<<<<<< HEAD
+=======
+	/* prevent double queue cleanup */
+	ace->gd->queue = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	put_disk(ace->gd);
 err_alloc_disk:
 	blk_cleanup_queue(ace->queue);

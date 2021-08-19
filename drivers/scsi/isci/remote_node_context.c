@@ -66,6 +66,12 @@ const char *rnc_state_name(enum scis_sds_remote_node_context_states state)
 {
 	static const char * const strings[] = RNC_STATES;
 
+<<<<<<< HEAD
+=======
+	if (state >= ARRAY_SIZE(strings))
+		return "UNKNOWN";
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return strings[state];
 }
 #undef C

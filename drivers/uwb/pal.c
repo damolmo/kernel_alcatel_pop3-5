@@ -97,6 +97,11 @@ static bool uwb_rc_class_device_exists(struct uwb_rc *target_rc)
 
 	dev = class_find_device(&uwb_rc_class, NULL, target_rc,	find_rc);
 
+<<<<<<< HEAD
+=======
+	put_device(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return (dev != NULL);
 }
 

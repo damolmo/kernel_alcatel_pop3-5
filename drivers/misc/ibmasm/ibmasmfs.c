@@ -507,6 +507,7 @@ static int remote_settings_file_close(struct inode *inode, struct file *file)
 static ssize_t remote_settings_file_read(struct file *file, char __user *buf, size_t count, loff_t *offset)
 {
 	void __iomem *address = (void __iomem *)file->private_data;
+<<<<<<< HEAD
 	unsigned char *page;
 	int retval;
 	int len = 0;
@@ -536,6 +537,16 @@ static ssize_t remote_settings_file_read(struct file *file, char __user *buf, si
 exit:
 	free_page((unsigned long)page);
 	return retval;
+=======
+	int len = 0;
+	unsigned int value;
+	char lbuf[20];
+
+	value = readl(address);
+	len = snprintf(lbuf, sizeof(lbuf), "%d\n", value);
+
+	return simple_read_from_buffer(buf, count, offset, lbuf, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static ssize_t remote_settings_file_write(struct file *file, const char __user *ubuff, size_t count, loff_t *offset)

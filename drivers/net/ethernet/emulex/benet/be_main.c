@@ -26,7 +26,10 @@
 #include <net/vxlan.h>
 
 MODULE_VERSION(DRV_VER);
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(pci, be_dev_ids);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_DESCRIPTION(DRV_DESC " " DRV_VER);
 MODULE_AUTHOR("Emulex Corporation");
 MODULE_LICENSE("GPL");
@@ -3602,8 +3605,17 @@ int be_update_queues(struct be_adapter *adapter)
 	struct net_device *netdev = adapter->netdev;
 	int status;
 
+<<<<<<< HEAD
 	if (netif_running(netdev))
 		be_close(netdev);
+=======
+	if (netif_running(netdev)) {
+		/* device cannot transmit now, avoid dev_watchdog timeouts */
+		netif_carrier_off(netdev);
+
+		be_close(netdev);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	be_cancel_worker(adapter);
 

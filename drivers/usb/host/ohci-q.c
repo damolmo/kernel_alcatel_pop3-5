@@ -183,7 +183,10 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 {
 	int	branch;
 
+<<<<<<< HEAD
 	ed->state = ED_OPER;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ed->ed_prev = NULL;
 	ed->ed_next = NULL;
 	ed->hwNextED = 0;
@@ -259,6 +262,11 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 	/* the HC may not see the schedule updates yet, but if it does
 	 * then they'll be properly ordered.
 	 */
+<<<<<<< HEAD
+=======
+
+	ed->state = ED_OPER;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1022,6 +1030,11 @@ ed_idle:
 		 * have modified this list.  normally it's just prepending
 		 * entries (which we'd ignore), but paranoia won't hurt.
 		 */
+<<<<<<< HEAD
+=======
+		*last = ed->ed_next;
+		ed->ed_next = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		modified = 0;
 
 		/* unlink urbs as requested, but rescan the list after
@@ -1080,6 +1093,7 @@ rescan_this:
 			goto rescan_this;
 
 		/*
+<<<<<<< HEAD
 		 * If no TDs are queued, take ED off the ed_rm_list.
 		 * Otherwise, if the HC is running, reschedule.
 		 * If not, leave it on the list for further dequeues.
@@ -1094,6 +1108,23 @@ rescan_this:
 			ed_schedule(ohci, ed);
 		} else {
 			last = &ed->ed_next;
+=======
+		 * If no TDs are queued, ED is now idle.
+		 * Otherwise, if the HC is running, reschedule.
+		 * If the HC isn't running, add ED back to the
+		 * start of the list for later processing.
+		 */
+		if (list_empty(&ed->td_list)) {
+			list_del(&ed->in_use_list);
+		} else if (ohci->rh_state == OHCI_RH_RUNNING) {
+			ed_schedule(ohci, ed);
+		} else {
+			ed->ed_next = ohci->ed_rm_list;
+			ohci->ed_rm_list = ed;
+			/* Don't loop on the same ED */
+			if (last == &ohci->ed_rm_list)
+				last = &ed->ed_next;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (modified)

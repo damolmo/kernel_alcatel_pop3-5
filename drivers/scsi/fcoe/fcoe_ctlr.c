@@ -264,9 +264,15 @@ static void fcoe_sysfs_fcf_del(struct fcoe_fcf *new)
 		WARN_ON(!fcf_dev);
 		new->fcf_dev = NULL;
 		fcoe_fcf_device_delete(fcf_dev);
+<<<<<<< HEAD
 		kfree(new);
 		mutex_unlock(&cdev->lock);
 	}
+=======
+		mutex_unlock(&cdev->lock);
+	}
+	kfree(new);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -752,9 +758,15 @@ int fcoe_ctlr_els_send(struct fcoe_ctlr *fip, struct fc_lport *lport,
 	case ELS_LOGO:
 		if (fip->mode == FIP_MODE_VN2VN) {
 			if (fip->state != FIP_ST_VNMP_UP)
+<<<<<<< HEAD
 				return -EINVAL;
 			if (ntoh24(fh->fh_d_id) == FC_FID_FLOGI)
 				return -EINVAL;
+=======
+				goto drop;
+			if (ntoh24(fh->fh_d_id) == FC_FID_FLOGI)
+				goto drop;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			if (fip->state != FIP_ST_ENABLED)
 				return 0;
@@ -1973,7 +1985,11 @@ EXPORT_SYMBOL_GPL(fcoe_wwn_from_mac);
  */
 static inline struct fcoe_rport *fcoe_ctlr_rport(struct fc_rport_priv *rdata)
 {
+<<<<<<< HEAD
 	return (struct fcoe_rport *)(rdata + 1);
+=======
+	return container_of(rdata, struct fcoe_rport, rdata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -2233,7 +2249,11 @@ static void fcoe_ctlr_vn_start(struct fcoe_ctlr *fip)
  */
 static int fcoe_ctlr_vn_parse(struct fcoe_ctlr *fip,
 			      struct sk_buff *skb,
+<<<<<<< HEAD
 			      struct fc_rport_priv *rdata)
+=======
+			      struct fcoe_rport *frport)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct fip_header *fiph;
 	struct fip_desc *desc = NULL;
@@ -2241,16 +2261,22 @@ static int fcoe_ctlr_vn_parse(struct fcoe_ctlr *fip,
 	struct fip_wwn_desc *wwn = NULL;
 	struct fip_vn_desc *vn = NULL;
 	struct fip_size_desc *size = NULL;
+<<<<<<< HEAD
 	struct fcoe_rport *frport;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	size_t rlen;
 	size_t dlen;
 	u32 desc_mask = 0;
 	u32 dtype;
 	u8 sub;
 
+<<<<<<< HEAD
 	memset(rdata, 0, sizeof(*rdata) + sizeof(*frport));
 	frport = fcoe_ctlr_rport(rdata);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fiph = (struct fip_header *)skb->data;
 	frport->flags = ntohs(fiph->fip_flags);
 
@@ -2313,15 +2339,26 @@ static int fcoe_ctlr_vn_parse(struct fcoe_ctlr *fip,
 			if (dlen != sizeof(struct fip_wwn_desc))
 				goto len_err;
 			wwn = (struct fip_wwn_desc *)desc;
+<<<<<<< HEAD
 			rdata->ids.node_name = get_unaligned_be64(&wwn->fd_wwn);
+=======
+			frport->rdata.ids.node_name =
+				get_unaligned_be64(&wwn->fd_wwn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case FIP_DT_VN_ID:
 			if (dlen != sizeof(struct fip_vn_desc))
 				goto len_err;
 			vn = (struct fip_vn_desc *)desc;
 			memcpy(frport->vn_mac, vn->fd_mac, ETH_ALEN);
+<<<<<<< HEAD
 			rdata->ids.port_id = ntoh24(vn->fd_fc_id);
 			rdata->ids.port_name = get_unaligned_be64(&vn->fd_wwpn);
+=======
+			frport->rdata.ids.port_id = ntoh24(vn->fd_fc_id);
+			frport->rdata.ids.port_name =
+				get_unaligned_be64(&vn->fd_wwpn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case FIP_DT_FC4F:
 			if (dlen != sizeof(struct fip_fc4_feat))
@@ -2664,16 +2701,24 @@ static int fcoe_ctlr_vn_recv(struct fcoe_ctlr *fip, struct sk_buff *skb)
 {
 	struct fip_header *fiph;
 	enum fip_vn2vn_subcode sub;
+<<<<<<< HEAD
 	struct {
 		struct fc_rport_priv rdata;
 		struct fcoe_rport frport;
 	} buf;
+=======
+	struct fcoe_rport frport = { };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int rc;
 
 	fiph = (struct fip_header *)skb->data;
 	sub = fiph->fip_subcode;
 
+<<<<<<< HEAD
 	rc = fcoe_ctlr_vn_parse(fip, skb, &buf.rdata);
+=======
+	rc = fcoe_ctlr_vn_parse(fip, skb, &frport);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rc) {
 		LIBFCOE_FIP_DBG(fip, "vn_recv vn_parse error %d\n", rc);
 		goto drop;
@@ -2682,6 +2727,7 @@ static int fcoe_ctlr_vn_recv(struct fcoe_ctlr *fip, struct sk_buff *skb)
 	mutex_lock(&fip->ctlr_mutex);
 	switch (sub) {
 	case FIP_SC_VN_PROBE_REQ:
+<<<<<<< HEAD
 		fcoe_ctlr_vn_probe_req(fip, &buf.rdata);
 		break;
 	case FIP_SC_VN_PROBE_REP:
@@ -2695,6 +2741,21 @@ static int fcoe_ctlr_vn_recv(struct fcoe_ctlr *fip, struct sk_buff *skb)
 		break;
 	case FIP_SC_VN_BEACON:
 		fcoe_ctlr_vn_beacon(fip, &buf.rdata);
+=======
+		fcoe_ctlr_vn_probe_req(fip, &frport.rdata);
+		break;
+	case FIP_SC_VN_PROBE_REP:
+		fcoe_ctlr_vn_probe_reply(fip, &frport.rdata);
+		break;
+	case FIP_SC_VN_CLAIM_NOTIFY:
+		fcoe_ctlr_vn_claim_notify(fip, &frport.rdata);
+		break;
+	case FIP_SC_VN_CLAIM_REP:
+		fcoe_ctlr_vn_claim_resp(fip, &frport.rdata);
+		break;
+	case FIP_SC_VN_BEACON:
+		fcoe_ctlr_vn_beacon(fip, &frport.rdata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		LIBFCOE_FIP_DBG(fip, "vn_recv unknown subcode %d\n", sub);

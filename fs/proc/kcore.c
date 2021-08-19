@@ -430,6 +430,10 @@ static void elf_kcore_store_hdr(char *bufp, int nphdr, int dataoff)
 static ssize_t
 read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 {
+<<<<<<< HEAD
+=======
+	char *buf = file->private_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ssize_t acc = 0;
 	size_t size, tsz;
 	size_t elf_buflen;
@@ -500,6 +504,7 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 			if (clear_user(buffer, tsz))
 				return -EFAULT;
 		} else if (is_vmalloc_or_module_addr((void *)start)) {
+<<<<<<< HEAD
 			char * elf_buf;
 
 			elf_buf = kzalloc(tsz, GFP_KERNEL);
@@ -526,6 +531,23 @@ read_kcore(struct file *file, char __user *buffer, size_t buflen, loff_t *fpos)
 				if (n) { 
 					if (clear_user(buffer + tsz - n,
 								n))
+=======
+			vread(buf, (char *)start, tsz);
+			/* we have to zero-fill user buffer even if no read */
+			if (copy_to_user(buffer, buf, tsz))
+				return -EFAULT;
+		} else {
+			if (kern_addr_valid(start)) {
+				/*
+				 * Using bounce buffer to bypass the
+				 * hardened user copy kernel text checks.
+				 */
+				if (probe_kernel_read(buf, (void *) start, tsz)) {
+					if (clear_user(buffer, tsz))
+						return -EFAULT;
+				} else {
+					if (copy_to_user(buffer, buf, tsz))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						return -EFAULT;
 				}
 			} else {
@@ -549,6 +571,14 @@ static int open_kcore(struct inode *inode, struct file *filp)
 {
 	if (!capable(CAP_SYS_RAWIO))
 		return -EPERM;
+<<<<<<< HEAD
+=======
+
+	filp->private_data = kmalloc(PAGE_SIZE, GFP_KERNEL);
+	if (!filp->private_data)
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (kcore_need_update)
 		kcore_update_ram();
 	if (i_size_read(inode) != proc_root_kcore->size) {
@@ -559,10 +589,22 @@ static int open_kcore(struct inode *inode, struct file *filp)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int release_kcore(struct inode *inode, struct file *file)
+{
+	kfree(file->private_data);
+	return 0;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static const struct file_operations proc_kcore_operations = {
 	.read		= read_kcore,
 	.open		= open_kcore,
+<<<<<<< HEAD
+=======
+	.release	= release_kcore,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.llseek		= default_llseek,
 };
 

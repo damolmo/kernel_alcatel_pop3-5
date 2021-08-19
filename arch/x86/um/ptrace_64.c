@@ -120,7 +120,11 @@ int poke_user(struct task_struct *child, long addr, long data)
 	else if ((addr >= offsetof(struct user, u_debugreg[0])) &&
 		(addr <= offsetof(struct user, u_debugreg[7]))) {
 		addr -= offsetof(struct user, u_debugreg[0]);
+<<<<<<< HEAD
 		addr = addr >> 2;
+=======
+		addr = addr >> 3;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if ((addr == 4) || (addr == 5))
 			return -EIO;
 		child->thread.arch.debugregs[addr] = data;

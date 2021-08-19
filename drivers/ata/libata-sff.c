@@ -703,6 +703,13 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 	unsigned int offset;
 	unsigned char *buf;
 
+<<<<<<< HEAD
+=======
+	if (!qc->cursg) {
+		qc->curbytes = qc->nbytes;
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (qc->curbytes == qc->nbytes - qc->sect_size)
 		ap->hsm_task_state = HSM_ST_LAST;
 
@@ -742,6 +749,11 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 
 	if (qc->cursg_ofs == qc->cursg->length) {
 		qc->cursg = sg_next(qc->cursg);
+<<<<<<< HEAD
+=======
+		if (!qc->cursg)
+			ap->hsm_task_state = HSM_ST_LAST;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		qc->cursg_ofs = 0;
 	}
 }
@@ -997,12 +1009,18 @@ static inline int ata_hsm_ok_in_wq(struct ata_port *ap,
 static void ata_hsm_qc_complete(struct ata_queued_cmd *qc, int in_wq)
 {
 	struct ata_port *ap = qc->ap;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (ap->ops->error_handler) {
 		if (in_wq) {
 			spin_lock_irqsave(ap->lock, flags);
 
+=======
+
+	if (ap->ops->error_handler) {
+		if (in_wq) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* EH might have kicked in while host lock is
 			 * released.
 			 */
@@ -1014,8 +1032,11 @@ static void ata_hsm_qc_complete(struct ata_queued_cmd *qc, int in_wq)
 				} else
 					ata_port_freeze(ap);
 			}
+<<<<<<< HEAD
 
 			spin_unlock_irqrestore(ap->lock, flags);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			if (likely(!(qc->err_mask & AC_ERR_HSM)))
 				ata_qc_complete(qc);
@@ -1024,10 +1045,15 @@ static void ata_hsm_qc_complete(struct ata_queued_cmd *qc, int in_wq)
 		}
 	} else {
 		if (in_wq) {
+<<<<<<< HEAD
 			spin_lock_irqsave(ap->lock, flags);
 			ata_sff_irq_on(ap);
 			ata_qc_complete(qc);
 			spin_unlock_irqrestore(ap->lock, flags);
+=======
+			ata_sff_irq_on(ap);
+			ata_qc_complete(qc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else
 			ata_qc_complete(qc);
 	}
@@ -1048,9 +1074,16 @@ int ata_sff_hsm_move(struct ata_port *ap, struct ata_queued_cmd *qc,
 {
 	struct ata_link *link = qc->dev->link;
 	struct ata_eh_info *ehi = &link->eh_info;
+<<<<<<< HEAD
 	unsigned long flags = 0;
 	int poll_next;
 
+=======
+	int poll_next;
+
+	lockdep_assert_held(ap->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	WARN_ON_ONCE((qc->flags & ATA_QCFLAG_ACTIVE) == 0);
 
 	/* Make sure ata_sff_qc_issue() does not throw things
@@ -1112,6 +1145,7 @@ fsm_start:
 			}
 		}
 
+<<<<<<< HEAD
 		/* Send the CDB (atapi) or the first data block (ata pio out).
 		 * During the state transition, interrupt handler shouldn't
 		 * be invoked before the data transfer is complete and
@@ -1120,6 +1154,8 @@ fsm_start:
 		if (in_wq)
 			spin_lock_irqsave(ap->lock, flags);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (qc->tf.protocol == ATA_PROT_PIO) {
 			/* PIO data out protocol.
 			 * send first data block.
@@ -1135,9 +1171,12 @@ fsm_start:
 			/* send CDB */
 			atapi_send_cdb(ap, qc);
 
+<<<<<<< HEAD
 		if (in_wq)
 			spin_unlock_irqrestore(ap->lock, flags);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* if polling, ata_sff_pio_task() handles the rest.
 		 * otherwise, interrupt handler takes over from here.
 		 */
@@ -1361,12 +1400,21 @@ static void ata_sff_pio_task(struct work_struct *work)
 	u8 status;
 	int poll_next;
 
+<<<<<<< HEAD
+=======
+	spin_lock_irq(ap->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BUG_ON(ap->sff_pio_task_link == NULL);
 	/* qc can be NULL if timeout occurred */
 	qc = ata_qc_from_tag(ap, link->active_tag);
 	if (!qc) {
 		ap->sff_pio_task_link = NULL;
+<<<<<<< HEAD
 		return;
+=======
+		goto out_unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 fsm_start:
@@ -1381,11 +1429,22 @@ fsm_start:
 	 */
 	status = ata_sff_busy_wait(ap, ATA_BUSY, 5);
 	if (status & ATA_BUSY) {
+<<<<<<< HEAD
 		ata_msleep(ap, 2);
 		status = ata_sff_busy_wait(ap, ATA_BUSY, 10);
 		if (status & ATA_BUSY) {
 			ata_sff_queue_pio_task(link, ATA_SHORT_PAUSE);
 			return;
+=======
+		spin_unlock_irq(ap->lock);
+		ata_msleep(ap, 2);
+		spin_lock_irq(ap->lock);
+
+		status = ata_sff_busy_wait(ap, ATA_BUSY, 10);
+		if (status & ATA_BUSY) {
+			ata_sff_queue_pio_task(link, ATA_SHORT_PAUSE);
+			goto out_unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1402,6 +1461,11 @@ fsm_start:
 	 */
 	if (poll_next)
 		goto fsm_start;
+<<<<<<< HEAD
+=======
+out_unlock:
+	spin_unlock_irq(ap->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1490,7 +1554,10 @@ unsigned int ata_sff_qc_issue(struct ata_queued_cmd *qc)
 		break;
 
 	default:
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return AC_ERR_SYSTEM;
 	}
 
@@ -2746,12 +2813,23 @@ static void ata_bmdma_fill_sg_dumb(struct ata_queued_cmd *qc)
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
  */
+<<<<<<< HEAD
 void ata_bmdma_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
 		return;
 
 	ata_bmdma_fill_sg(qc);
+=======
+enum ata_completion_errors ata_bmdma_qc_prep(struct ata_queued_cmd *qc)
+{
+	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+		return AC_ERR_OK;
+
+	ata_bmdma_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(ata_bmdma_qc_prep);
 
@@ -2764,12 +2842,23 @@ EXPORT_SYMBOL_GPL(ata_bmdma_qc_prep);
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
  */
+<<<<<<< HEAD
 void ata_bmdma_dumb_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
 		return;
 
 	ata_bmdma_fill_sg_dumb(qc);
+=======
+enum ata_completion_errors ata_bmdma_dumb_qc_prep(struct ata_queued_cmd *qc)
+{
+	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+		return AC_ERR_OK;
+
+	ata_bmdma_fill_sg_dumb(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(ata_bmdma_dumb_qc_prep);
 

@@ -58,8 +58,17 @@ static int create_composite_quirk(struct snd_usb_audio *chip,
 		err = snd_usb_create_quirk(chip, iface, driver, quirk);
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
 		if (quirk->ifnum != probed_ifnum)
 			usb_driver_claim_interface(driver, iface, (void *)-1L);
+=======
+		if (quirk->ifnum != probed_ifnum) {
+			err = usb_driver_claim_interface(driver, iface,
+							 USB_AUDIO_IFACE_UNUSED);
+			if (err < 0)
+				return err;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return 0;
 }
@@ -165,6 +174,14 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	}
 	alts = &iface->altsetting[fp->altset_idx];
 	altsd = get_iface_desc(alts);
+<<<<<<< HEAD
+=======
+	if (altsd->bNumEndpoints < 1) {
+		err = -EINVAL;
+		goto error;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fp->protocol = altsd->bInterfaceProtocol;
 
 	if (fp->datainterval == 0)
@@ -176,7 +193,11 @@ static int create_fixed_stream_quirk(struct snd_usb_audio *chip,
 	snd_usb_init_sample_rate(chip, fp->iface, alts, fp, fp->rate_max);
 	return 0;
 
+<<<<<<< HEAD
 error:
+=======
+ error:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_del(&fp->list); /* unlink for avoiding double-free */
 	kfree(fp);
 	kfree(rate_table);
@@ -382,8 +403,17 @@ static int create_autodetect_quirks(struct snd_usb_audio *chip,
 			continue;
 
 		err = create_autodetect_quirk(chip, iface, driver);
+<<<<<<< HEAD
 		if (err >= 0)
 			usb_driver_claim_interface(driver, iface, (void *)-1L);
+=======
+		if (err >= 0) {
+			err = usb_driver_claim_interface(driver, iface,
+							 USB_AUDIO_IFACE_UNUSED);
+			if (err < 0)
+				return err;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -1104,6 +1134,12 @@ void snd_usb_set_format_quirk(struct snd_usb_substream *subs,
 	case USB_ID(0x041e, 0x3f19): /* E-Mu 0204 USB */
 		set_format_emu_quirk(subs, fmt);
 		break;
+<<<<<<< HEAD
+=======
+	case USB_ID(0x534d, 0x2109): /* MacroSilicon MS2109 */
+		subs->stream_offset_adj = 2;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -1111,11 +1147,38 @@ bool snd_usb_get_sample_rate_quirk(struct snd_usb_audio *chip)
 {
 	/* devices which do not support reading the sample rate. */
 	switch (chip->usb_id) {
+<<<<<<< HEAD
 	case USB_ID(0x045E, 0x075D): /* MS Lifecam Cinema  */
 	case USB_ID(0x045E, 0x076D): /* MS Lifecam HD-5000 */
 	case USB_ID(0x045E, 0x0772): /* MS Lifecam Studio */
 	case USB_ID(0x045E, 0x0779): /* MS Lifecam HD-3000 */
 	case USB_ID(0x04D8, 0xFEEA): /* Benchmark DAC1 Pre */
+=======
+	case USB_ID(0x041E, 0x4080): /* Creative Live Cam VF0610 */
+	case USB_ID(0x045E, 0x075D): /* MS Lifecam Cinema  */
+	case USB_ID(0x045E, 0x076D): /* MS Lifecam HD-5000 */
+	case USB_ID(0x045E, 0x076E): /* MS Lifecam HD-5001 */
+	case USB_ID(0x045E, 0x076F): /* MS Lifecam HD-6000 */
+	case USB_ID(0x045E, 0x0772): /* MS Lifecam Studio */
+	case USB_ID(0x045E, 0x0779): /* MS Lifecam HD-3000 */
+	case USB_ID(0x047F, 0x02F7): /* Plantronics BT-600 */
+	case USB_ID(0x047F, 0x0415): /* Plantronics BT-300 */
+	case USB_ID(0x047F, 0xAA05): /* Plantronics DA45 */
+	case USB_ID(0x04D8, 0xFEEA): /* Benchmark DAC1 Pre */
+	case USB_ID(0x0556, 0x0014): /* Phoenix Audio TMX320VC */
+	case USB_ID(0x05a7, 0x1020): /* Bose Companion 5 */
+	case USB_ID(0x05A3, 0x9420): /* ELP HD USB Camera */
+	case USB_ID(0x074D, 0x3553): /* Outlaw RR2150 (Micronas UAC3553B) */
+	case USB_ID(0x1395, 0x740a): /* Sennheiser DECT */
+	case USB_ID(0x1901, 0x0191): /* GE B850V3 CP2114 audio interface */
+	case USB_ID(0x1de7, 0x0013): /* Phoenix Audio MT202exe */
+	case USB_ID(0x1de7, 0x0014): /* Phoenix Audio TMX320 */
+	case USB_ID(0x1de7, 0x0114): /* Phoenix Audio MT202pcs */
+	case USB_ID(0x21B4, 0x0081): /* AudioQuest DragonFly */
+	case USB_ID(0x2912, 0x30c8): /* Audioengine D1 */
+	case USB_ID(0x413c, 0xa506): /* Dell AE515 sound bar */
+	case USB_ID(0x046d, 0x084c): /* Logitech ConferenceCam Connect */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return true;
 	}
 	return false;
@@ -1127,6 +1190,10 @@ bool snd_usb_get_sample_rate_quirk(struct snd_usb_audio *chip)
 static bool is_marantz_denon_dac(unsigned int id)
 {
 	switch (id) {
+<<<<<<< HEAD
+=======
+	case USB_ID(0x154e, 0x1002): /* Denon DCD-1500RE */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case USB_ID(0x154e, 0x1003): /* Denon DA-300USB */
 	case USB_ID(0x154e, 0x3005): /* Marantz HD-DAC1 */
 	case USB_ID(0x154e, 0x3006): /* Marantz SA-14S1 */
@@ -1195,8 +1262,17 @@ void snd_usb_set_interface_quirk(struct usb_device *dev)
 	 * "Playback Design" products need a 50ms delay after setting the
 	 * USB interface.
 	 */
+<<<<<<< HEAD
 	if (le16_to_cpu(dev->descriptor.idVendor) == 0x23ba)
 		mdelay(50);
+=======
+	switch (le16_to_cpu(dev->descriptor.idVendor)) {
+	case 0x23ba: /* Playback Design */
+	case 0x0644: /* TEAC Corp. */
+		mdelay(50);
+		break;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void snd_usb_ctl_msg_quirk(struct usb_device *dev, unsigned int pipe,
@@ -1211,6 +1287,17 @@ void snd_usb_ctl_msg_quirk(struct usb_device *dev, unsigned int pipe,
 	    (requesttype & USB_TYPE_MASK) == USB_TYPE_CLASS)
 		mdelay(20);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * "TEAC Corp." products need a 20ms delay after each
+	 * class compliant request
+	 */
+	if ((le16_to_cpu(dev->descriptor.idVendor) == 0x0644) &&
+	    (requesttype & USB_TYPE_MASK) == USB_TYPE_CLASS)
+		mdelay(20);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Marantz/Denon devices with USB DAC functionality need a delay
 	 * after each class compliant request
 	 */
@@ -1259,12 +1346,25 @@ u64 snd_usb_interface_dsd_format_quirks(struct snd_usb_audio *chip,
 	case USB_ID(0x20b1, 0x3008): /* iFi Audio micro/nano iDSD */
 	case USB_ID(0x20b1, 0x2008): /* Matrix Audio X-Sabre */
 	case USB_ID(0x20b1, 0x300a): /* Matrix Audio Mini-i Pro */
+<<<<<<< HEAD
+=======
+	case USB_ID(0x22d9, 0x0416): /* OPPO HA-1 */
+	case USB_ID(0x2772, 0x0230): /* Pro-Ject Pre Box S2 Digital */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (fp->altsetting == 2)
 			return SNDRV_PCM_FMTBIT_DSD_U32_BE;
 		break;
 
+<<<<<<< HEAD
 	case USB_ID(0x20b1, 0x2009): /* DIYINHK DSD DXD 384kHz USB to I2S/DSD */
 	case USB_ID(0x20b1, 0x2023): /* JLsounds I2SoverUSB */
+=======
+	case USB_ID(0x20b1, 0x000a): /* Gustard DAC-X20U */
+	case USB_ID(0x20b1, 0x2009): /* DIYINHK DSD DXD 384kHz USB to I2S/DSD */
+	case USB_ID(0x20b1, 0x2023): /* JLsounds I2SoverUSB */
+	case USB_ID(0x20b1, 0x3023): /* Aune X1S 32BIT/384 DSD DAC */
+	case USB_ID(0x2616, 0x0106): /* PS Audio NuWave DAC */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (fp->altsetting == 3)
 			return SNDRV_PCM_FMTBIT_DSD_U32_BE;
 		break;

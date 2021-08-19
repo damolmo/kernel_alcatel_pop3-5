@@ -52,7 +52,11 @@ static int patch_alt_instruction(unsigned int *src, unsigned int *dest,
 		unsigned int *target = (unsigned int *)branch_target(src);
 
 		/* Branch within the section doesn't need translating */
+<<<<<<< HEAD
 		if (target < alt_start || target >= alt_end) {
+=======
+		if (target < alt_start || target > alt_end) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			instr = translate_branch(dest, src);
 			if (!instr)
 				return 1;

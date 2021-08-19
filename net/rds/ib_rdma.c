@@ -663,12 +663,23 @@ static int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
 		wait_clean_list_grace();
 
 		list_to_llist_nodes(pool, &unmap_list, &clean_nodes, &clean_tail);
+<<<<<<< HEAD
 		if (ibmr_ret)
 			*ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
 
 		/* more than one entry in llist nodes */
 		if (clean_nodes->next)
 			llist_add_batch(clean_nodes->next, clean_tail, &pool->clean_list);
+=======
+		if (ibmr_ret) {
+			*ibmr_ret = llist_entry(clean_nodes, struct rds_ib_mr, llnode);
+			clean_nodes = clean_nodes->next;
+		}
+		/* more than one entry in llist nodes */
+		if (clean_nodes)
+			llist_add_batch(clean_nodes, clean_tail,
+					&pool->clean_list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	}
 
@@ -759,8 +770,15 @@ void *rds_ib_get_mr(struct scatterlist *sg, unsigned long nents,
 	}
 
 	ibmr = rds_ib_alloc_fmr(rds_ibdev);
+<<<<<<< HEAD
 	if (IS_ERR(ibmr))
 		return ibmr;
+=======
+	if (IS_ERR(ibmr)) {
+		rds_ib_dev_put(rds_ibdev);
+		return ibmr;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = rds_ib_map_fmr(rds_ibdev, ibmr, sg, nents);
 	if (ret == 0)

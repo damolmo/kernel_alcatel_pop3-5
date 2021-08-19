@@ -478,10 +478,15 @@ static int ni6501_alloc_usb_buffers(struct comedi_device *dev)
 
 	size = le16_to_cpu(devpriv->ep_tx->wMaxPacketSize);
 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!devpriv->usb_tx_buf) {
 		kfree(devpriv->usb_rx_buf);
 		return -ENOMEM;
 	}
+=======
+	if (!devpriv->usb_tx_buf)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -533,6 +538,12 @@ static int ni6501_auto_attach(struct comedi_device *dev,
 	if (!devpriv)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	sema_init(&devpriv->sem, 1);
+	usb_set_intfdata(intf, devpriv);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = ni6501_find_endpoints(dev);
 	if (ret)
 		return ret;
@@ -541,9 +552,12 @@ static int ni6501_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	sema_init(&devpriv->sem, 1);
 	usb_set_intfdata(intf, devpriv);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = comedi_alloc_subdevices(dev, 2);
 	if (ret)
 		return ret;

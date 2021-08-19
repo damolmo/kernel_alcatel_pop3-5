@@ -199,6 +199,7 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	if (!val) {
 		if (pci_is_enabled(pdev))
 			pci_disable_device(pdev);
@@ -206,6 +207,18 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
 			result = -EIO;
 	} else
 		result = pci_enable_device(pdev);
+=======
+	device_lock(dev);
+	if (dev->driver)
+		result = -EBUSY;
+	else if (val)
+		result = pci_enable_device(pdev);
+	else if (pci_is_enabled(pdev))
+		pci_disable_device(pdev);
+	else
+		result = -EIO;
+	device_unlock(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return result < 0 ? result : count;
 }
@@ -359,7 +372,11 @@ static ssize_t remove_store(struct device *dev, struct device_attribute *attr,
 		pci_stop_and_remove_bus_device_locked(to_pci_dev(dev));
 	return count;
 }
+<<<<<<< HEAD
 static struct device_attribute dev_remove_attr = __ATTR(remove,
+=======
+static struct device_attribute dev_remove_attr = __ATTR_IGNORE_LOCKDEP(remove,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 							(S_IWUSR|S_IWGRP),
 							NULL, remove_store);
 
@@ -513,7 +530,11 @@ static ssize_t driver_override_store(struct device *dev,
 				     const char *buf, size_t count)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 	char *driver_override, *old = pdev->driver_override, *cp;
+=======
+	char *driver_override, *old, *cp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We need to keep extra room for a newline */
 	if (count >= (PAGE_SIZE - 1))
@@ -527,12 +548,21 @@ static ssize_t driver_override_store(struct device *dev,
 	if (cp)
 		*cp = '\0';
 
+<<<<<<< HEAD
+=======
+	device_lock(dev);
+	old = pdev->driver_override;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (strlen(driver_override)) {
 		pdev->driver_override = driver_override;
 	} else {
 		kfree(driver_override);
 		pdev->driver_override = NULL;
 	}
+<<<<<<< HEAD
+=======
+	device_unlock(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree(old);
 
@@ -543,8 +573,17 @@ static ssize_t driver_override_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
+<<<<<<< HEAD
 
 	return snprintf(buf, PAGE_SIZE, "%s\n", pdev->driver_override);
+=======
+	ssize_t len;
+
+	device_lock(dev);
+	len = snprintf(buf, PAGE_SIZE, "%s\n", pdev->driver_override);
+	device_unlock(dev);
+	return len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 static DEVICE_ATTR_RW(driver_override);
 
@@ -964,15 +1003,28 @@ void pci_remove_legacy_files(struct pci_bus *b)
 int pci_mmap_fits(struct pci_dev *pdev, int resno, struct vm_area_struct *vma,
 		  enum pci_mmap_api mmap_api)
 {
+<<<<<<< HEAD
 	unsigned long nr, start, size, pci_start;
+=======
+	unsigned long nr, start, size;
+	resource_size_t pci_start = 0, pci_end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (pci_resource_len(pdev, resno) == 0)
 		return 0;
 	nr = vma_pages(vma);
 	start = vma->vm_pgoff;
 	size = ((pci_resource_len(pdev, resno) - 1) >> PAGE_SHIFT) + 1;
+<<<<<<< HEAD
 	pci_start = (mmap_api == PCI_MMAP_PROCFS) ?
 			pci_resource_start(pdev, resno) >> PAGE_SHIFT : 0;
+=======
+	if (mmap_api == PCI_MMAP_PROCFS) {
+		pci_resource_to_user(pdev, resno, &pdev->resource[resno],
+				     &pci_start, &pci_end);
+		pci_start >>= PAGE_SHIFT;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (start >= pci_start && start < pci_start + size &&
 			start + nr <= pci_start + size)
 		return 1;
@@ -1004,6 +1056,12 @@ static int pci_mmap_resource(struct kobject *kobj, struct bin_attribute *attr,
 	if (i >= PCI_ROM_RESOURCE)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (res->flags & IORESOURCE_MEM && iomem_is_exclusive(res->start))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!pci_mmap_fits(pdev, i, vma, PCI_MMAP_SYSFS)) {
 		WARN(1, "process \"%s\" tried to map 0x%08lx bytes at page 0x%08lx on %s BAR %d (start 0x%16Lx, size 0x%16Lx)\n",
 			current->comm, vma->vm_end-vma->vm_start, vma->vm_pgoff,
@@ -1020,10 +1078,13 @@ static int pci_mmap_resource(struct kobject *kobj, struct bin_attribute *attr,
 	pci_resource_to_user(pdev, i, res, &start, &end);
 	vma->vm_pgoff += start >> PAGE_SHIFT;
 	mmap_type = res->flags & IORESOURCE_MEM ? pci_mmap_mem : pci_mmap_io;
+<<<<<<< HEAD
 
 	if (res->flags & IORESOURCE_MEM && iomem_is_exclusive(start))
 		return -EINVAL;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return pci_mmap_page_range(pdev, vma, mmap_type, write_combine);
 }
 
@@ -1363,10 +1424,17 @@ int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
 	if (!sysfs_initialized)
 		return -EACCES;
 
+<<<<<<< HEAD
 	if (pdev->cfg_size < PCI_CFG_SPACE_EXP_SIZE)
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pci_config_attr);
 	else
 		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+=======
+	if (pdev->cfg_size > PCI_CFG_SPACE_SIZE)
+		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+	else
+		retval = sysfs_create_bin_file(&pdev->dev.kobj, &pci_config_attr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (retval)
 		goto err;
 
@@ -1418,10 +1486,17 @@ err_rom_file:
 err_resource_files:
 	pci_remove_resource_files(pdev);
 err_config_file:
+<<<<<<< HEAD
 	if (pdev->cfg_size < PCI_CFG_SPACE_EXP_SIZE)
 		sysfs_remove_bin_file(&pdev->dev.kobj, &pci_config_attr);
 	else
 		sysfs_remove_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+=======
+	if (pdev->cfg_size > PCI_CFG_SPACE_SIZE)
+		sysfs_remove_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+	else
+		sysfs_remove_bin_file(&pdev->dev.kobj, &pci_config_attr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err:
 	return retval;
 }
@@ -1455,10 +1530,17 @@ void pci_remove_sysfs_dev_files(struct pci_dev *pdev)
 
 	pci_remove_capabilities_sysfs(pdev);
 
+<<<<<<< HEAD
 	if (pdev->cfg_size < PCI_CFG_SPACE_EXP_SIZE)
 		sysfs_remove_bin_file(&pdev->dev.kobj, &pci_config_attr);
 	else
 		sysfs_remove_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+=======
+	if (pdev->cfg_size > PCI_CFG_SPACE_SIZE)
+		sysfs_remove_bin_file(&pdev->dev.kobj, &pcie_config_attr);
+	else
+		sysfs_remove_bin_file(&pdev->dev.kobj, &pci_config_attr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pci_remove_resource_files(pdev);
 

@@ -79,7 +79,11 @@ ext4_unaligned_aio(struct inode *inode, struct iov_iter *from, loff_t pos)
 	struct super_block *sb = inode->i_sb;
 	int blockmask = sb->s_blocksize - 1;
 
+<<<<<<< HEAD
 	if (pos >= i_size_read(inode))
+=======
+	if (pos >= ALIGN(i_size_read(inode), sb->s_blocksize))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	if ((pos | iov_iter_alignment(from)) & blockmask)
@@ -191,12 +195,18 @@ errout:
 	return ret;
 }
 
+<<<<<<< HEAD
 
 static const struct vm_operations_struct ext4_file_vm_ops = {
 	.fault		= filemap_fault,
 #if 0
 	.map_pages	= filemap_map_pages,
 #endif
+=======
+static const struct vm_operations_struct ext4_file_vm_ops = {
+	.fault		= filemap_fault,
+	.map_pages	= filemap_map_pages,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.page_mkwrite   = ext4_page_mkwrite,
 	.remap_pages	= generic_file_remap_pages,
 };
@@ -320,6 +330,7 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 		int i, num;
 		unsigned long nr_pages;
 
+<<<<<<< HEAD
 		num = min_t(pgoff_t, end - index, PAGEVEC_SIZE);
 		nr_pages = pagevec_lookup(&pvec, inode->i_mapping, index,
 					  (pgoff_t)num);
@@ -348,22 +359,43 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 			found = 1;
 			break;
 		}
+=======
+		num = min_t(pgoff_t, end - index, PAGEVEC_SIZE - 1) + 1;
+		nr_pages = pagevec_lookup(&pvec, inode->i_mapping, index,
+					  (pgoff_t)num);
+		if (nr_pages == 0)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		for (i = 0; i < nr_pages; i++) {
 			struct page *page = pvec.pages[i];
 			struct buffer_head *bh, *head;
 
 			/*
+<<<<<<< HEAD
 			 * If the current offset is not beyond the end of given
 			 * range, it will be a hole.
 			 */
 			if (lastoff < endoff && whence == SEEK_HOLE &&
 			    page->index > end) {
+=======
+			 * If current offset is smaller than the page offset,
+			 * there is a hole at this offset.
+			 */
+			if (whence == SEEK_HOLE && lastoff < endoff &&
+			    lastoff < page_offset(pvec.pages[i])) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				found = 1;
 				*offset = lastoff;
 				goto out;
 			}
 
+<<<<<<< HEAD
+=======
+			if (page->index > end)
+				goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			lock_page(page);
 
 			if (unlikely(page->mapping != inode->i_mapping)) {
@@ -380,6 +412,11 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 				lastoff = page_offset(page);
 				bh = head = page_buffers(page);
 				do {
+<<<<<<< HEAD
+=======
+					if (lastoff + bh->b_size <= startoff)
+						goto next;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					if (buffer_uptodate(bh) ||
 					    buffer_unwritten(bh)) {
 						if (whence == SEEK_DATA)
@@ -394,6 +431,10 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 						unlock_page(page);
 						goto out;
 					}
+<<<<<<< HEAD
+=======
+next:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					lastoff += bh->b_size;
 					bh = bh->b_this_page;
 				} while (bh != head);
@@ -403,6 +444,7 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 			unlock_page(page);
 		}
 
+<<<<<<< HEAD
 		/*
 		 * The no. of pages is less than our desired, that would be a
 		 * hole in there.
@@ -412,11 +454,23 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
 			*offset = lastoff;
 			break;
 		}
+=======
+		/* The no. of pages is less than our desired, we are done. */
+		if (nr_pages < num)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		index = pvec.pages[i - 1]->index + 1;
 		pagevec_release(&pvec);
 	} while (index <= end);
 
+<<<<<<< HEAD
+=======
+	if (whence == SEEK_HOLE && lastoff < endoff) {
+		found = 1;
+		*offset = lastoff;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	pagevec_release(&pvec);
 	return found;
@@ -438,7 +492,11 @@ static loff_t ext4_seek_data(struct file *file, loff_t offset, loff_t maxsize)
 	mutex_lock(&inode->i_mutex);
 
 	isize = i_size_read(inode);
+<<<<<<< HEAD
 	if (offset >= isize) {
+=======
+	if (offset < 0 || offset >= isize) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_unlock(&inode->i_mutex);
 		return -ENXIO;
 	}
@@ -511,7 +569,11 @@ static loff_t ext4_seek_hole(struct file *file, loff_t offset, loff_t maxsize)
 	mutex_lock(&inode->i_mutex);
 
 	isize = i_size_read(inode);
+<<<<<<< HEAD
 	if (offset >= isize) {
+=======
+	if (offset < 0 || offset >= isize) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_unlock(&inode->i_mutex);
 		return -ENXIO;
 	}
@@ -628,9 +690,13 @@ const struct inode_operations ext4_file_inode_operations = {
 	.listxattr	= ext4_listxattr,
 	.removexattr	= generic_removexattr,
 	.get_acl	= ext4_get_acl,
+<<<<<<< HEAD
 #if 0
 	.set_acl	= ext4_set_acl,
 #endif
+=======
+	.set_acl	= ext4_set_acl,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.fiemap		= ext4_fiemap,
 };
 

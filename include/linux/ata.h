@@ -484,8 +484,13 @@ enum ata_tf_protocols {
 };
 
 enum ata_ioctls {
+<<<<<<< HEAD
 	ATA_IOC_GET_IO32	= 0x309,
 	ATA_IOC_SET_IO32	= 0x324,
+=======
+	ATA_IOC_GET_IO32	= 0x309, /* HDIO_GET_32BIT */
+	ATA_IOC_SET_IO32	= 0x324, /* HDIO_SET_32BIT */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* core structures */

@@ -58,7 +58,11 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
 	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
 	if (!trig_info) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto error_put_trigger;
+=======
+		goto error_free_trigger;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	iio_trigger_set_drvdata(trig, trig_info);
 	trig_info->irq = irq;
@@ -83,8 +87,13 @@ error_release_irq:
 	free_irq(irq, trig);
 error_free_trig_info:
 	kfree(trig_info);
+<<<<<<< HEAD
 error_put_trigger:
 	iio_trigger_put(trig);
+=======
+error_free_trigger:
+	iio_trigger_free(trig);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 error_ret:
 	return ret;
 }
@@ -99,7 +108,11 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
 	iio_trigger_unregister(trig);
 	free_irq(trig_info->irq, trig);
 	kfree(trig_info);
+<<<<<<< HEAD
 	iio_trigger_put(trig);
+=======
+	iio_trigger_free(trig);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

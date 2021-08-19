@@ -44,9 +44,14 @@ vis1:	ldub		[%g6 + TI_FPSAVED], %g3
 
 	 stx		%g3, [%g6 + TI_GSR]
 2:	add		%g6, %g1, %g3
+<<<<<<< HEAD
 	cmp		%o5, FPRS_DU
 	be,pn		%icc, 6f
 	 sll		%g1, 3, %g1
+=======
+	mov		FPRS_DU | FPRS_DL | FPRS_FEF, %o5
+	sll		%g1, 3, %g1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stb		%o5, [%g3 + TI_FPSAVED]
 	rd		%gsr, %g2
 	add		%g6, %g1, %g3
@@ -80,6 +85,7 @@ vis1:	ldub		[%g6 + TI_FPSAVED], %g3
 	.align		32
 80:	jmpl		%g7 + %g0, %g0
 	 nop
+<<<<<<< HEAD
 
 6:	ldub		[%g3 + TI_FPSAVED], %o5
 	or		%o5, FPRS_DU, %o5
@@ -142,3 +148,5 @@ VISenterhalf:
 4:	and		%o5, FPRS_DU, %o5
 	jmpl		%g7 + %g0, %g0
 	 wr		%o5, FPRS_FEF, %fprs
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

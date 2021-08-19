@@ -244,14 +244,22 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] = 
 		 * We currently ignore Sync packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		},
 		[DCCP_PKT_SYNCACK] = {
 		/*
 		 * We currently ignore SyncAck packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		},
 	},
 	[CT_DCCP_ROLE_SERVER] = {
@@ -372,14 +380,22 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] = 
 		 * We currently ignore Sync packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		},
 		[DCCP_PKT_SYNCACK] = {
 		/*
 		 * We currently ignore SyncAck packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		},
 	},
 };

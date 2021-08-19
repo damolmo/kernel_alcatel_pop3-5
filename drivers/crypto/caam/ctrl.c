@@ -209,12 +209,25 @@ static int instantiate_rng(struct device *ctrldev, int state_handle_mask,
 		 * without any error (HW optimizations for later
 		 * CAAM eras), then try again.
 		 */
+<<<<<<< HEAD
 		rdsta_val =
 			rd_reg32(&ctrl->r4tst[0].rdsta) & RDSTA_IFMASK;
 		if (status || !(rdsta_val & (1 << sh_idx)))
 			ret = -EAGAIN;
 		if (ret)
 			break;
+=======
+		if (ret)
+			break;
+
+		rdsta_val =
+			rd_reg32(&ctrl->r4tst[0].rdsta) & RDSTA_IFMASK;
+		if (status || !(rdsta_val & (1 << sh_idx))) {
+			ret = -EAGAIN;
+			break;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_info(ctrldev, "Instantiated RNG4 SH%d\n", sh_idx);
 		/* Clear the contents before recreating the descriptor */
 		memset(desc, 0x00, CAAM_CMD_SZ * 7);
@@ -263,7 +276,12 @@ static int deinstantiate_rng(struct device *ctrldev, int state_handle_mask)
 			/* Try to run it through DECO0 */
 			ret = run_descriptor_deco0(ctrldev, desc, &status);
 
+<<<<<<< HEAD
 			if (ret || status) {
+=======
+			if (ret ||
+			    (status && status != JRSTA_SSRC_JUMP_HALT_CC)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				dev_err(ctrldev,
 					"Failed to deinstantiate RNG4 SH%d\n",
 					sh_idx);

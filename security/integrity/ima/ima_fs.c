@@ -26,6 +26,7 @@
 #include "ima.h"
 
 static int valid_policy = 1;
+<<<<<<< HEAD
 #define TMPBUFLEN 12
 static ssize_t ima_show_htable_value(char __user *buf, size_t count,
 				     loff_t *ppos, atomic_long_t *val)
@@ -34,6 +35,16 @@ static ssize_t ima_show_htable_value(char __user *buf, size_t count,
 	ssize_t len;
 
 	len = scnprintf(tmpbuf, TMPBUFLEN, "%li\n", atomic_long_read(val));
+=======
+
+static ssize_t ima_show_htable_value(char __user *buf, size_t count,
+				     loff_t *ppos, atomic_long_t *val)
+{
+	char tmpbuf[32];	/* greater than largest 'long' string value */
+	ssize_t len;
+
+	len = scnprintf(tmpbuf, sizeof(tmpbuf), "%li\n", atomic_long_read(val));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return simple_read_from_buffer(buf, count, ppos, tmpbuf, len);
 }
 

@@ -311,6 +311,7 @@ static int acpi_processor_get_info(struct acpi_device *device)
 		pr->throttling.duty_width = acpi_gbl_FADT.duty_width;
 
 		pr->pblk = object.processor.pblk_address;
+<<<<<<< HEAD
 
 		/*
 		 * We don't care about error returns - we just try to mark
@@ -320,6 +321,8 @@ static int acpi_processor_get_info(struct acpi_device *device)
 		 * (In particular, allocating the IO range for Cardbus)
 		 */
 		request_region(pr->throttling.address, 6, "ACPI CPU throttle");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*

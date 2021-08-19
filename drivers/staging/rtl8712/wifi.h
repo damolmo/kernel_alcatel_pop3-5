@@ -498,7 +498,11 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 /* block-ack parameters */
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
+<<<<<<< HEAD
 #define IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK 0xFFA0
+=======
+#define IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK 0xFFC0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define IEEE80211_DELBA_PARAM_TID_MASK 0xF000
 #define IEEE80211_DELBA_PARAM_INITIATOR_MASK 0x0800
 
@@ -592,6 +596,7 @@ struct ieee80211_ht_addt_info {
 #define IEEE80211_HT_IE_NON_GF_STA_PRSNT	0x0004
 #define IEEE80211_HT_IE_NON_HT_STA_PRSNT	0x0010
 
+<<<<<<< HEAD
 /* block-ack parameters */
 #define IEEE80211_ADDBA_PARAM_POLICY_MASK 0x0002
 #define IEEE80211_ADDBA_PARAM_TID_MASK 0x003C
@@ -599,6 +604,8 @@ struct ieee80211_ht_addt_info {
 #define IEEE80211_DELBA_PARAM_TID_MASK 0xF000
 #define IEEE80211_DELBA_PARAM_INITIATOR_MASK 0x0800
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * A-PMDU buffer sizes
  * According to IEEE802.11n spec size varies from 8K to 64K (in powers of 2)

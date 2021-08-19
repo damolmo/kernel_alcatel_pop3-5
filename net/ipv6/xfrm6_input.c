@@ -21,8 +21,15 @@ int xfrm6_extract_input(struct xfrm_state *x, struct sk_buff *skb)
 	return xfrm6_extract_header(skb);
 }
 
+<<<<<<< HEAD
 int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi)
 {
+=======
+int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi,
+		  struct ip6_tnl *t)
+{
+	XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = t;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	XFRM_SPI_SKB_CB(skb)->family = AF_INET6;
 	XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
 	return xfrm_input(skb, nexthdr, spi, 0);
@@ -47,6 +54,7 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
 	return -1;
 }
 
+<<<<<<< HEAD
 int xfrm6_rcv(struct sk_buff *skb)
 {
 	return xfrm6_rcv_spi(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
@@ -54,6 +62,20 @@ int xfrm6_rcv(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(xfrm6_rcv);
 
+=======
+int xfrm6_rcv_tnl(struct sk_buff *skb, struct ip6_tnl *t)
+{
+	return xfrm6_rcv_spi(skb, skb_network_header(skb)[IP6CB(skb)->nhoff],
+			     0, t);
+}
+EXPORT_SYMBOL(xfrm6_rcv_tnl);
+
+int xfrm6_rcv(struct sk_buff *skb)
+{
+	return xfrm6_rcv_tnl(skb, NULL);
+}
+EXPORT_SYMBOL(xfrm6_rcv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int xfrm6_input_addr(struct sk_buff *skb, xfrm_address_t *daddr,
 		     xfrm_address_t *saddr, u8 proto)
 {

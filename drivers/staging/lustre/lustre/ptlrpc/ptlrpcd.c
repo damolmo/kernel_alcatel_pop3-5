@@ -410,6 +410,10 @@ static int ptlrpcd(void *arg)
 		return rc;
 
 	/*
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * This mainloop strongly resembles ptlrpc_set_wait() except that our
 	 * set never completes.  ptlrpcd_check() calls ptlrpc_check_set() when
 	 * there are requests in the set. New requests come in on the set's

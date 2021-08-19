@@ -96,7 +96,11 @@ static int check_free_space(struct bsd_acct_struct *acct)
 {
 	struct kstatfs sbuf;
 
+<<<<<<< HEAD
 	if (time_is_before_jiffies(acct->needcheck))
+=======
+	if (time_is_after_jiffies(acct->needcheck))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	/* May block */

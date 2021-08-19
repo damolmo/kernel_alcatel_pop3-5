@@ -38,11 +38,14 @@ static struct ion_platform_heap dummy_heaps[] = {
 			.name	= "system",
 		},
 		{
+<<<<<<< HEAD
 			.id	= ION_HEAP_TYPE_SYSTEM_CONTIG,
 			.type	= ION_HEAP_TYPE_SYSTEM_CONTIG,
 			.name	= "system contig",
 		},
 		{
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			.id	= ION_HEAP_TYPE_CARVEOUT,
 			.type	= ION_HEAP_TYPE_CARVEOUT,
 			.name	= "carveout",
@@ -74,6 +77,7 @@ static int __init ion_dummy_init(void)
 		return -ENOMEM;
 
 
+<<<<<<< HEAD
 	/* Allocate a dummy carveout heap */
 	carveout_ptr = alloc_pages_exact(
 				dummy_heaps[ION_HEAP_TYPE_CARVEOUT].size,
@@ -102,6 +106,32 @@ static int __init ion_dummy_init(void)
 
 		if (heap_data->type == ION_HEAP_TYPE_CHUNK && !heap_data->base)
 			continue;
+=======
+	for (i = 0; i < dummy_ion_pdata.nr; i++) {
+		struct ion_platform_heap *heap_data = &dummy_ion_pdata.heaps[i];
+
+		if (heap_data->type == ION_HEAP_TYPE_CARVEOUT) {
+			/* Allocate a dummy carveout heap */
+			carveout_ptr = alloc_pages_exact(heap_data->size,
+							 GFP_KERNEL);
+			if (!carveout_ptr) {
+				pr_err("ion_dummy: Could not allocate carveout\n");
+				continue;
+			}
+			heap_data->base = virt_to_phys(carveout_ptr);
+		}
+
+		if (heap_data->type == ION_HEAP_TYPE_CHUNK) {
+			/* Allocate a dummy chunk heap */
+			chunk_ptr = alloc_pages_exact(heap_data->size,
+							GFP_KERNEL);
+			if (!chunk_ptr) {
+				pr_err("ion_dummy: Could not allocate chunk\n");
+				continue;
+			}
+			heap_data->base = virt_to_phys(chunk_ptr);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		heaps[i] = ion_heap_create(heap_data);
 		if (IS_ERR_OR_NULL(heaps[i])) {
@@ -113,6 +143,7 @@ static int __init ion_dummy_init(void)
 	return 0;
 err:
 	for (i = 0; i < dummy_ion_pdata.nr; i++) {
+<<<<<<< HEAD
 		if (heaps[i])
 			ion_heap_destroy(heaps[i]);
 	}
@@ -128,6 +159,29 @@ err:
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
 		chunk_ptr = NULL;
 	}
+=======
+		struct ion_platform_heap *heap_data = &dummy_ion_pdata.heaps[i];
+
+		if (!IS_ERR_OR_NULL(heaps[i]))
+			ion_heap_destroy(heaps[i]);
+
+		if (heap_data->type == ION_HEAP_TYPE_CARVEOUT) {
+			if (carveout_ptr) {
+				free_pages_exact(carveout_ptr,
+						 heap_data->size);
+			}
+			carveout_ptr = NULL;
+		}
+		if (heap_data->type == ION_HEAP_TYPE_CHUNK) {
+			if (chunk_ptr) {
+				free_pages_exact(chunk_ptr, heap_data->size);
+			}
+			chunk_ptr = NULL;
+		}
+	}
+	kfree(heaps);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 device_initcall(ion_dummy_init);
@@ -138,6 +192,7 @@ static void __exit ion_dummy_exit(void)
 
 	ion_device_destroy(idev);
 
+<<<<<<< HEAD
 	for (i = 0; i < dummy_ion_pdata.nr; i++)
 		ion_heap_destroy(heaps[i]);
 	kfree(heaps);
@@ -152,5 +207,28 @@ static void __exit ion_dummy_exit(void)
 				dummy_heaps[ION_HEAP_TYPE_CHUNK].size);
 		chunk_ptr = NULL;
 	}
+=======
+	for (i = 0; i < dummy_ion_pdata.nr; i++) {
+		struct ion_platform_heap *heap_data = &dummy_ion_pdata.heaps[i];
+
+		if (!IS_ERR_OR_NULL(heaps[i]))
+			ion_heap_destroy(heaps[i]);
+
+		if (heap_data->type == ION_HEAP_TYPE_CARVEOUT) {
+			if (carveout_ptr) {
+				free_pages_exact(carveout_ptr,
+						 heap_data->size);
+			}
+			carveout_ptr = NULL;
+		}
+		if (heap_data->type == ION_HEAP_TYPE_CHUNK) {
+			if (chunk_ptr) {
+				free_pages_exact(chunk_ptr, heap_data->size);
+			}
+			chunk_ptr = NULL;
+		}
+	}
+	kfree(heaps);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 __exitcall(ion_dummy_exit);

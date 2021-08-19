@@ -32,6 +32,10 @@
 
 /* RM RSTST offsets */
 #define AM43XX_RM_GFX_RSTST_OFFSET			0x0014
+<<<<<<< HEAD
+=======
+#define AM43XX_RM_PER_RSTST_OFFSET			0x0014
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define AM43XX_RM_WKUP_RSTST_OFFSET			0x0014
 
 /* CM instances */

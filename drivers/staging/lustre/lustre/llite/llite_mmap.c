@@ -407,15 +407,22 @@ static int ll_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf)
 		result = VM_FAULT_LOCKED;
 		break;
 	case -ENODATA:
+<<<<<<< HEAD
+=======
+	case -EAGAIN:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -EFAULT:
 		result = VM_FAULT_NOPAGE;
 		break;
 	case -ENOMEM:
 		result = VM_FAULT_OOM;
 		break;
+<<<<<<< HEAD
 	case -EAGAIN:
 		result = VM_FAULT_RETRY;
 		break;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		result = VM_FAULT_SIGBUS;
 		break;

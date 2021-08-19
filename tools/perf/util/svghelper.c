@@ -333,7 +333,11 @@ static char *cpu_model(void)
 	if (file) {
 		while (fgets(buf, 255, file)) {
 			if (strstr(buf, "model name")) {
+<<<<<<< HEAD
 				strncpy(cpu_m, &buf[13], 255);
+=======
+				strlcpy(cpu_m, &buf[13], 255);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				break;
 			}
 		}

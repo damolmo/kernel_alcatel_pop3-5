@@ -76,6 +76,11 @@ int af_alg_register_type(const struct af_alg_type *type)
 		goto unlock;
 
 	type->ops->owner = THIS_MODULE;
+<<<<<<< HEAD
+=======
+	if (type->ops_nokey)
+		type->ops_nokey->owner = THIS_MODULE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	node->type = type;
 	list_add(&node->list, &alg_types);
 	err = 0;
@@ -119,12 +124,44 @@ static void alg_do_release(const struct af_alg_type *type, void *private)
 
 int af_alg_release(struct socket *sock)
 {
+<<<<<<< HEAD
 	if (sock->sk)
 		sock_put(sock->sk);
+=======
+	if (sock->sk) {
+		sock_put(sock->sk);
+		sock->sk = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL_GPL(af_alg_release);
 
+<<<<<<< HEAD
+=======
+void af_alg_release_parent(struct sock *sk)
+{
+	struct alg_sock *ask = alg_sk(sk);
+	unsigned int nokey = ask->nokey_refcnt;
+	bool last = nokey && !ask->refcnt;
+
+	sk = ask->parent;
+	ask = alg_sk(sk);
+
+	local_bh_disable();
+	bh_lock_sock(sk);
+	ask->nokey_refcnt -= nokey;
+	if (!last)
+		last = !--ask->refcnt;
+	bh_unlock_sock(sk);
+	local_bh_enable();
+
+	if (last)
+		sock_put(sk);
+}
+EXPORT_SYMBOL_GPL(af_alg_release_parent);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 {
 	struct sock *sk = sock->sk;
@@ -132,6 +169,10 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	struct sockaddr_alg *sa = (void *)uaddr;
 	const struct af_alg_type *type;
 	void *private;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (sock->state == SS_CONNECTED)
 		return -EINVAL;
@@ -157,16 +198,33 @@ static int alg_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 		return PTR_ERR(private);
 	}
 
+<<<<<<< HEAD
 	lock_sock(sk);
+=======
+	err = -EBUSY;
+	lock_sock(sk);
+	if (ask->refcnt | ask->nokey_refcnt)
+		goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	swap(ask->type, type);
 	swap(ask->private, private);
 
+<<<<<<< HEAD
+=======
+	err = 0;
+
+unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	release_sock(sk);
 
 	alg_do_release(type, private);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int alg_setkey(struct sock *sk, char __user *ukey,
@@ -199,11 +257,23 @@ static int alg_setsockopt(struct socket *sock, int level, int optname,
 	struct sock *sk = sock->sk;
 	struct alg_sock *ask = alg_sk(sk);
 	const struct af_alg_type *type;
+<<<<<<< HEAD
 	int err = -ENOPROTOOPT;
 
 	lock_sock(sk);
 	type = ask->type;
 
+=======
+	int err = -EBUSY;
+
+	lock_sock(sk);
+	if (ask->refcnt)
+		goto unlock;
+
+	type = ask->type;
+
+	err = -ENOPROTOOPT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (level != SOL_ALG || !type)
 		goto unlock;
 
@@ -228,6 +298,10 @@ int af_alg_accept(struct sock *sk, struct socket *newsock)
 	struct alg_sock *ask = alg_sk(sk);
 	const struct af_alg_type *type;
 	struct sock *sk2;
+<<<<<<< HEAD
+=======
+	unsigned int nokey;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 
 	lock_sock(sk);
@@ -247,6 +321,7 @@ int af_alg_accept(struct sock *sk, struct socket *newsock)
 	security_sk_clone(sk, sk2);
 
 	err = type->accept(ask->private, sk2);
+<<<<<<< HEAD
 	if (err) {
 		sk_free(sk2);
 		goto unlock;
@@ -257,10 +332,34 @@ int af_alg_accept(struct sock *sk, struct socket *newsock)
 	sock_hold(sk);
 	alg_sk(sk2)->parent = sk;
 	alg_sk(sk2)->type = type;
+=======
+
+	nokey = err == -ENOKEY;
+	if (nokey && type->accept_nokey)
+		err = type->accept_nokey(ask->private, sk2);
+
+	if (err)
+		goto unlock;
+
+	sk2->sk_family = PF_ALG;
+
+	if (nokey || !ask->refcnt++)
+		sock_hold(sk);
+	ask->nokey_refcnt += nokey;
+	alg_sk(sk2)->parent = sk;
+	alg_sk(sk2)->type = type;
+	alg_sk(sk2)->nokey_refcnt = nokey;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	newsock->ops = type->ops;
 	newsock->state = SS_CONNECTED;
 
+<<<<<<< HEAD
+=======
+	if (nokey)
+		newsock->ops = type->ops_nokey;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = 0;
 
 unlock:

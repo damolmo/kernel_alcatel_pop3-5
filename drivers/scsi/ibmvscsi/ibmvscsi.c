@@ -93,7 +93,11 @@ static int max_requests = IBMVSCSI_MAX_REQUESTS_DEFAULT;
 static int max_events = IBMVSCSI_MAX_REQUESTS_DEFAULT + 2;
 static int fast_fail = 1;
 static int client_reserve = 1;
+<<<<<<< HEAD
 static char partition_name[97] = "UNKNOWN";
+=======
+static char partition_name[96] = "UNKNOWN";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static unsigned int partition_number = -1;
 
 static struct scsi_transport_template *ibmvscsi_transport_template;
@@ -261,7 +265,11 @@ static void gather_partition_info(void)
 
 	ppartition_name = of_get_property(rootdn, "ibm,partition-name", NULL);
 	if (ppartition_name)
+<<<<<<< HEAD
 		strncpy(partition_name, ppartition_name,
+=======
+		strlcpy(partition_name, ppartition_name,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sizeof(partition_name));
 	p_number_ptr = of_get_property(rootdn, "ibm,partition-no", NULL);
 	if (p_number_ptr)
@@ -427,6 +435,11 @@ static int ibmvscsi_reenable_crq_queue(struct crq_queue *queue,
 	int rc = 0;
 	struct vio_dev *vdev = to_vio_dev(hostdata->dev);
 
+<<<<<<< HEAD
+=======
+	set_adapter_info(hostdata);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Re-enable the CRQ */
 	do {
 		if (rc)

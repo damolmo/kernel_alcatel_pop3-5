@@ -888,7 +888,11 @@ err_put:
 	free_port_list_attributes(device);
 
 err_unregister:
+<<<<<<< HEAD
 	device_unregister(class_dev);
+=======
+	device_del(class_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 err:
 	return ret;

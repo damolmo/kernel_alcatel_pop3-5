@@ -947,12 +947,21 @@ out:
 	spin_unlock_irqrestore(&info->v2p_lock, flags);
 
 out_free:
+<<<<<<< HEAD
 	mutex_lock(&tpg->tv_tpg_mutex);
 	tpg->tv_tpg_fe_count--;
 	mutex_unlock(&tpg->tv_tpg_mutex);
 
 	if (err)
 		kfree(new);
+=======
+	if (err) {
+		mutex_lock(&tpg->tv_tpg_mutex);
+		tpg->tv_tpg_fe_count--;
+		mutex_unlock(&tpg->tv_tpg_mutex);
+		kfree(new);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return err;
 }

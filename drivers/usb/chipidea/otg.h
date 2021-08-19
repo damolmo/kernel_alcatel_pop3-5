@@ -20,7 +20,12 @@ void ci_handle_vbus_change(struct ci_hdrc *ci);
 static inline void ci_otg_queue_work(struct ci_hdrc *ci)
 {
 	disable_irq_nosync(ci->irq);
+<<<<<<< HEAD
 	queue_work(ci->wq, &ci->work);
+=======
+	if (queue_work(ci->wq, &ci->work) == false)
+		enable_irq(ci->irq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif /* __DRIVERS_USB_CHIPIDEA_OTG_H */

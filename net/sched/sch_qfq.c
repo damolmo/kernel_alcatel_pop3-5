@@ -221,9 +221,16 @@ static struct qfq_class *qfq_find_class(struct Qdisc *sch, u32 classid)
 static void qfq_purge_queue(struct qfq_class *cl)
 {
 	unsigned int len = cl->qdisc->q.qlen;
+<<<<<<< HEAD
 
 	qdisc_reset(cl->qdisc);
 	qdisc_tree_decrease_qlen(cl->qdisc, len);
+=======
+	unsigned int backlog = cl->qdisc->qstats.backlog;
+
+	qdisc_reset(cl->qdisc);
+	qdisc_tree_reduce_backlog(cl->qdisc, len, backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct nla_policy qfq_policy[TCA_QFQ_MAX + 1] = {
@@ -619,11 +626,15 @@ static int qfq_graft_class(struct Qdisc *sch, unsigned long arg,
 			new = &noop_qdisc;
 	}
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	qfq_purge_queue(cl);
 	*old = cl->qdisc;
 	cl->qdisc = new;
 	sch_tree_unlock(sch);
+=======
+	*old = qdisc_replace(sch, new, &cl->qdisc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1155,6 +1166,10 @@ static struct sk_buff *qfq_dequeue(struct Qdisc *sch)
 	if (!skb)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen--;
 	qdisc_bstats_update(sch, skb);
 
@@ -1255,6 +1270,10 @@ static int qfq_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	}
 
 	bstats_update(&cl->bstats, skb);
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	++sch->q.qlen;
 
 	agg = cl->agg;
@@ -1521,6 +1540,10 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
 			qdisc_reset(cl->qdisc);
 		}
 	}
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen = 0;
 }
 

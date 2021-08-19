@@ -4363,12 +4363,15 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	sli_cfg_mbx = (struct lpfc_sli_config_mbox *)
 			phba->mbox_ext_buf_ctx.mbx_dmabuf->virt;
 
+<<<<<<< HEAD
 	dd_data = kmalloc(sizeof(struct bsg_job_data), GFP_KERNEL);
 	if (!dd_data) {
 		rc = -ENOMEM;
 		goto job_error;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pbuf = (uint8_t *)dmabuf->virt;
 	size = job->request_payload.payload_len;
 	sg_copy_to_buffer(job->request_payload.sg_list,
@@ -4405,6 +4408,16 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 				"2968 SLI_CONFIG ext-buffer wr all %d "
 				"ebuffers received\n",
 				phba->mbox_ext_buf_ctx.numBuf);
+<<<<<<< HEAD
+=======
+
+		dd_data = kmalloc(sizeof(struct bsg_job_data), GFP_KERNEL);
+		if (!dd_data) {
+			rc = -ENOMEM;
+			goto job_error;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* mailbox command structure for base driver */
 		pmboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 		if (!pmboxq) {
@@ -4452,6 +4465,11 @@ lpfc_bsg_write_ebuf_set(struct lpfc_hba *phba, struct fc_bsg_job *job,
 	return SLI_CONFIG_HANDLED;
 
 job_error:
+<<<<<<< HEAD
+=======
+	if (pmboxq)
+		mempool_free(pmboxq, phba->mbox_mem_pool);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lpfc_bsg_dma_page_free(phba, dmabuf);
 	kfree(dd_data);
 

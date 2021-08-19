@@ -41,4 +41,8 @@ ENTRY(memchr)
 	ret
 2:	mov	x0, #0
 	ret
+<<<<<<< HEAD
 ENDPROC(memchr)
+=======
+ENDPIPROC(memchr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

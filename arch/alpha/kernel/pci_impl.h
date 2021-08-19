@@ -143,7 +143,12 @@ struct pci_iommu_arena
 };
 
 #if defined(CONFIG_ALPHA_SRM) && \
+<<<<<<< HEAD
     (defined(CONFIG_ALPHA_CIA) || defined(CONFIG_ALPHA_LCA))
+=======
+    (defined(CONFIG_ALPHA_CIA) || defined(CONFIG_ALPHA_LCA) || \
+     defined(CONFIG_ALPHA_AVANTI))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # define NEED_SRM_SAVE_RESTORE
 #else
 # undef NEED_SRM_SAVE_RESTORE

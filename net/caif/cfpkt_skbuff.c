@@ -81,11 +81,15 @@ static struct cfpkt *cfpkt_create_pfx(u16 len, u16 pfx)
 {
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	if (likely(in_interrupt()))
 		skb = alloc_skb(len + pfx, GFP_ATOMIC);
 	else
 		skb = alloc_skb(len + pfx, GFP_KERNEL);
 
+=======
+	skb = alloc_skb(len + pfx, GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (unlikely(skb == NULL))
 		return NULL;
 
@@ -286,7 +290,11 @@ int cfpkt_setlen(struct cfpkt *pkt, u16 len)
 		else
 			skb_trim(skb, len);
 
+<<<<<<< HEAD
 			return cfpkt_getlen(pkt);
+=======
+		return cfpkt_getlen(pkt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Need to expand SKB */

@@ -105,7 +105,11 @@ static int plat_nand_probe(struct platform_device *pdev)
 	if (!err)
 		return err;
 
+<<<<<<< HEAD
 	nand_release(&data->mtd);
+=======
+	nand_cleanup(&data->chip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	if (pdata->ctrl.remove)
 		pdata->ctrl.remove(pdev);

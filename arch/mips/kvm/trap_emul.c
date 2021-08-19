@@ -449,7 +449,11 @@ static int kvm_trap_emul_set_one_reg(struct kvm_vcpu *vcpu,
 		kvm_mips_write_count(vcpu, v);
 		break;
 	case KVM_REG_MIPS_CP0_COMPARE:
+<<<<<<< HEAD
 		kvm_mips_write_compare(vcpu, v);
+=======
+		kvm_mips_write_compare(vcpu, v, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case KVM_REG_MIPS_CP0_CAUSE:
 		/*

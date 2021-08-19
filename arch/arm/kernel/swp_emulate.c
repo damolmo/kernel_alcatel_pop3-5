@@ -141,11 +141,21 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 
 	while (1) {
 		unsigned long temp;
+<<<<<<< HEAD
 
+=======
+		unsigned int __ua_flags;
+
+		__ua_flags = uaccess_save_and_enable();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (type == TYPE_SWPB)
 			__user_swpb_asm(*data, address, res, temp);
 		else
 			__user_swp_asm(*data, address, res, temp);
+<<<<<<< HEAD
+=======
+		uaccess_restore(__ua_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (likely(res != -EAGAIN) || signal_pending(current))
 			break;

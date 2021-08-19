@@ -106,6 +106,7 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 {
 	struct nvec_chip *nvec = dev_get_drvdata(pdev->dev.parent);
 	struct serio *ser_dev;
+<<<<<<< HEAD
 	char mouse_reset[] = { NVEC_PS2, SEND_COMMAND, PSMOUSE_RST, 3 };
 
 	ser_dev = devm_kzalloc(&pdev->dev, sizeof(struct serio), GFP_KERNEL);
@@ -113,6 +114,14 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	ser_dev->id.type = SERIO_PS_PSTHRU;
+=======
+
+	ser_dev = kzalloc(sizeof(struct serio), GFP_KERNEL);
+	if (ser_dev == NULL)
+		return -ENOMEM;
+
+	ser_dev->id.type = SERIO_8042;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ser_dev->write = ps2_sendcommand;
 	ser_dev->start = ps2_startstreaming;
 	ser_dev->stop = ps2_stopstreaming;
@@ -127,9 +136,12 @@ static int nvec_mouse_probe(struct platform_device *pdev)
 
 	serio_register_port(ser_dev);
 
+<<<<<<< HEAD
 	/* mouse reset */
 	nvec_write_async(nvec, mouse_reset, sizeof(mouse_reset));
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -169,8 +181,13 @@ static int nvec_mouse_resume(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static const SIMPLE_DEV_PM_OPS(nvec_mouse_pm_ops, nvec_mouse_suspend,
 				nvec_mouse_resume);
+=======
+static SIMPLE_DEV_PM_OPS(nvec_mouse_pm_ops, nvec_mouse_suspend,
+			 nvec_mouse_resume);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct platform_driver nvec_mouse_driver = {
 	.probe  = nvec_mouse_probe,

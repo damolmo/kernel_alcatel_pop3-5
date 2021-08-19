@@ -17,13 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/cpu.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/cpu_pm.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <linux/hardirq.h>
+<<<<<<< HEAD
 #include <linux/cpu.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/fpsimd.h>
 #include <asm/cputype.h>
@@ -157,8 +164,16 @@ void fpsimd_thread_switch(struct task_struct *next)
 
 void fpsimd_flush_thread(void)
 {
+<<<<<<< HEAD
 	memset(&current->thread.fpsimd_state, 0, sizeof(struct fpsimd_state));
 	set_thread_flag(TIF_FOREIGN_FPSTATE);
+=======
+	preempt_disable();
+	memset(&current->thread.fpsimd_state, 0, sizeof(struct fpsimd_state));
+	fpsimd_flush_task_state(current);
+	set_thread_flag(TIF_FOREIGN_FPSTATE);
+	preempt_enable();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -288,7 +303,11 @@ static struct notifier_block fpsimd_cpu_pm_notifier_block = {
 	.notifier_call = fpsimd_cpu_pm_notifier,
 };
 
+<<<<<<< HEAD
 static void fpsimd_pm_init(void)
+=======
+static void __init fpsimd_pm_init(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	cpu_pm_register_notifier(&fpsimd_cpu_pm_notifier_block);
 }
@@ -331,6 +350,7 @@ static inline void fpsimd_hotplug_init(void) { }
  */
 static int __init fpsimd_init(void)
 {
+<<<<<<< HEAD
 	u64 pfr = read_cpuid(ID_AA64PFR0_EL1);
 
 	if (pfr & (0xf << 16)) {
@@ -346,6 +366,17 @@ static int __init fpsimd_init(void)
 
 	fpsimd_pm_init();
 	fpsimd_hotplug_init();
+=======
+	if (elf_hwcap & HWCAP_FP) {
+		fpsimd_pm_init();
+		fpsimd_hotplug_init();
+	} else {
+		pr_notice("Floating-point is not implemented\n");
+	}
+
+	if (!(elf_hwcap & HWCAP_ASIMD))
+		pr_notice("Advanced SIMD is not implemented\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

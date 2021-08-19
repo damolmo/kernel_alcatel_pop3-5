@@ -25,7 +25,11 @@ int udp_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		size_t len, int noblock, int flags, int *addr_len);
 int udp_sendpage(struct sock *sk, struct page *page, int offset, size_t size,
 		 int flags);
+<<<<<<< HEAD
 int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
+=======
+int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void udp_destroy_sock(struct sock *sk);
 
 #ifdef CONFIG_PROC_FS

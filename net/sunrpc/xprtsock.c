@@ -2229,6 +2229,13 @@ static int xs_tcp_finish_connecting(struct rpc_xprt *xprt, struct socket *sock)
 		/* SYN_SENT! */
 		if (xprt->reestablish_timeout < XS_TCP_INIT_REEST_TO)
 			xprt->reestablish_timeout = XS_TCP_INIT_REEST_TO;
+<<<<<<< HEAD
+=======
+		break;
+	case -EADDRNOTAVAIL:
+		/* Source port number is unavailable. Try a new one! */
+		transport->srcport = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	return ret;
@@ -2305,6 +2312,10 @@ static void xs_tcp_setup_socket(struct work_struct *work)
 	case -ECONNREFUSED:
 	case -ECONNRESET:
 	case -ENETUNREACH:
+<<<<<<< HEAD
+=======
+	case -EHOSTUNREACH:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -ENOBUFS:
 		/* retry with existing socket, after a delay */
 		goto out;

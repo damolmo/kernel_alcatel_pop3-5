@@ -316,7 +316,11 @@ static int enic_grxclsrule(struct enic *enic, struct ethtool_rxnfc *cmd)
 	n = htbl_fltr_search(enic, (u16)fsp->location);
 	if (!n)
 		return -EINVAL;
+<<<<<<< HEAD
 	switch (n->keys.ip_proto) {
+=======
+	switch (n->keys.basic.ip_proto) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case IPPROTO_TCP:
 		fsp->flow_type = TCP_V4_FLOW;
 		break;
@@ -328,6 +332,7 @@ static int enic_grxclsrule(struct enic *enic, struct ethtool_rxnfc *cmd)
 		break;
 	}
 
+<<<<<<< HEAD
 	fsp->h_u.tcp_ip4_spec.ip4src = n->keys.src;
 	fsp->m_u.tcp_ip4_spec.ip4src = (__u32)~0;
 
@@ -338,6 +343,18 @@ static int enic_grxclsrule(struct enic *enic, struct ethtool_rxnfc *cmd)
 	fsp->m_u.tcp_ip4_spec.psrc = (__u16)~0;
 
 	fsp->h_u.tcp_ip4_spec.pdst = n->keys.port16[1];
+=======
+	fsp->h_u.tcp_ip4_spec.ip4src = n->keys.addrs.src;
+	fsp->m_u.tcp_ip4_spec.ip4src = (__u32)~0;
+
+	fsp->h_u.tcp_ip4_spec.ip4dst = n->keys.addrs.dst;
+	fsp->m_u.tcp_ip4_spec.ip4dst = (__u32)~0;
+
+	fsp->h_u.tcp_ip4_spec.psrc = n->keys.ports.port16[0];
+	fsp->m_u.tcp_ip4_spec.psrc = (__u16)~0;
+
+	fsp->h_u.tcp_ip4_spec.pdst = n->keys.ports.port16[1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fsp->m_u.tcp_ip4_spec.pdst = (__u16)~0;
 
 	fsp->ring_cookie = n->rq_id;

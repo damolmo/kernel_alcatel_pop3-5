@@ -26,14 +26,25 @@
 #include <linux/stat.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 #include <asm/debug-monitors.h>
 #include <asm/cputype.h>
+=======
+#include <asm/cpufeature.h>
+#include <asm/cputype.h>
+#include <asm/debug-monitors.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/system_misc.h>
 
 /* Determine debug architecture. */
 u8 debug_monitors_arch(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(ID_AA64DFR0_EL1) & 0xf;
+=======
+	return cpuid_feature_extract_field(read_system_reg(SYS_ID_AA64DFR0_EL1),
+						ID_AA64DFR0_DEBUGVER_SHIFT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -134,7 +145,11 @@ static int os_lock_notify(struct notifier_block *self,
 				    unsigned long action, void *data)
 {
 	int cpu = (unsigned long)data;
+<<<<<<< HEAD
 	if (action == CPU_ONLINE)
+=======
+	if ((action & ~CPU_TASKS_FROZEN) == CPU_ONLINE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		smp_call_function_single(cpu, clear_os_lock, NULL, 1);
 	return NOTIFY_OK;
 }
@@ -150,7 +165,10 @@ static int debug_monitors_init(void)
 	/* Clear the OS lock. */
 	on_each_cpu(clear_os_lock, NULL, 1);
 	isb();
+<<<<<<< HEAD
 	local_dbg_enable();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Register hotplug handler. */
 	__register_cpu_notifier(&os_lock_nb);
@@ -184,6 +202,7 @@ static void clear_regs_spsr_ss(struct pt_regs *regs)
 
 /* EL1 Single Step Handler hooks */
 static LIST_HEAD(step_hook);
+<<<<<<< HEAD
 static DEFINE_RWLOCK(step_hook_lock);
 
 void register_step_hook(struct step_hook *hook)
@@ -191,13 +210,29 @@ void register_step_hook(struct step_hook *hook)
 	write_lock(&step_hook_lock);
 	list_add(&hook->node, &step_hook);
 	write_unlock(&step_hook_lock);
+=======
+static DEFINE_SPINLOCK(step_hook_lock);
+
+void register_step_hook(struct step_hook *hook)
+{
+	spin_lock(&step_hook_lock);
+	list_add_rcu(&hook->node, &step_hook);
+	spin_unlock(&step_hook_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void unregister_step_hook(struct step_hook *hook)
 {
+<<<<<<< HEAD
 	write_lock(&step_hook_lock);
 	list_del(&hook->node);
 	write_unlock(&step_hook_lock);
+=======
+	spin_lock(&step_hook_lock);
+	list_del_rcu(&hook->node);
+	spin_unlock(&step_hook_lock);
+	synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -211,15 +246,25 @@ static int call_step_hook(struct pt_regs *regs, unsigned int esr)
 	struct step_hook *hook;
 	int retval = DBG_HOOK_ERROR;
 
+<<<<<<< HEAD
 	read_lock(&step_hook_lock);
 
 	list_for_each_entry(hook, &step_hook, node)	{
+=======
+	rcu_read_lock();
+
+	list_for_each_entry_rcu(hook, &step_hook, node)	{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = hook->fn(regs, esr);
 		if (retval == DBG_HOOK_HANDLED)
 			break;
 	}
 
+<<<<<<< HEAD
 	read_unlock(&step_hook_lock);
+=======
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return retval;
 }
@@ -384,13 +429,21 @@ void user_rewind_single_step(struct task_struct *task)
 	 * If single step is active for this thread, then set SPSR.SS
 	 * to 1 to avoid returning to the active-pending state.
 	 */
+<<<<<<< HEAD
 	if (test_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP))
+=======
+	if (test_tsk_thread_flag(task, TIF_SINGLESTEP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_regs_spsr_ss(task_pt_regs(task));
 }
 
 void user_fastforward_single_step(struct task_struct *task)
 {
+<<<<<<< HEAD
 	if (test_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP))
+=======
+	if (test_tsk_thread_flag(task, TIF_SINGLESTEP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clear_regs_spsr_ss(task_pt_regs(task));
 }
 
@@ -419,8 +472,15 @@ int kernel_active_single_step(void)
 /* ptrace API */
 void user_enable_single_step(struct task_struct *task)
 {
+<<<<<<< HEAD
 	set_ti_thread_flag(task_thread_info(task), TIF_SINGLESTEP);
 	set_regs_spsr_ss(task_pt_regs(task));
+=======
+	struct thread_info *ti = task_thread_info(task);
+
+	if (!test_and_set_ti_thread_flag(ti, TIF_SINGLESTEP))
+		set_regs_spsr_ss(task_pt_regs(task));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void user_disable_single_step(struct task_struct *task)

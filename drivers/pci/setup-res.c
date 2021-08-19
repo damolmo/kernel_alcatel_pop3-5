@@ -33,7 +33,10 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 	u16 cmd;
 	u32 new, check, mask;
 	int reg;
+<<<<<<< HEAD
 	enum pci_bar_type type;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct resource *res = dev->resource + resno;
 
 	/*
@@ -55,6 +58,7 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 		return;
 
 	pcibios_resource_to_bus(dev->bus, &region, res);
+<<<<<<< HEAD
 
 	new = region.start | (res->flags & PCI_REGION_FLAG_MASK);
 	if (res->flags & IORESOURCE_IO)
@@ -70,6 +74,36 @@ void pci_update_resource(struct pci_dev *dev, int resno)
 			return;
 		new |= PCI_ROM_ADDRESS_ENABLE;
 	}
+=======
+	new = region.start;
+
+	if (res->flags & IORESOURCE_IO) {
+		mask = (u32)PCI_BASE_ADDRESS_IO_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_IO_MASK;
+	} else if (resno == PCI_ROM_RESOURCE) {
+		mask = (u32)PCI_ROM_ADDRESS_MASK;
+	} else {
+		mask = (u32)PCI_BASE_ADDRESS_MEM_MASK;
+		new |= res->flags & ~PCI_BASE_ADDRESS_MEM_MASK;
+	}
+
+	if (resno < PCI_ROM_RESOURCE) {
+		reg = PCI_BASE_ADDRESS_0 + 4 * resno;
+	} else if (resno == PCI_ROM_RESOURCE) {
+
+		/*
+		 * Apparently some Matrox devices have ROM BARs that read
+		 * as zero when disabled, so don't update ROM BARs unless
+		 * they're enabled.  See https://lkml.org/lkml/2005/8/30/138.
+		 */
+		if (!(res->flags & IORESOURCE_ROM_ENABLE))
+			return;
+
+		reg = dev->rom_base_reg;
+		new |= PCI_ROM_ADDRESS_ENABLE;
+	} else
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * We can't update a 64-bit BAR atomically, so when possible,

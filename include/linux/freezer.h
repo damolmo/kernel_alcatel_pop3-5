@@ -68,9 +68,12 @@ static inline bool try_to_freeze(void)
 
 extern bool freeze_task(struct task_struct *p);
 extern bool set_freezable(void);
+<<<<<<< HEAD
 #if defined(CONFIG_MICROTRUST_TEE_SUPPORT)
 extern bool set_nofreezable(void);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_CGROUP_FREEZER
 extern bool cgroup_freezing(struct task_struct *task);
@@ -315,9 +318,13 @@ static inline void freezer_do_not_count(void) {}
 static inline void freezer_count(void) {}
 static inline int freezer_should_skip(struct task_struct *p) { return 0; }
 static inline void set_freezable(void) {}
+<<<<<<< HEAD
 #if defined(CONFIG_MICROTRUST_TEE_SUPPORT)
 static inline void set_nofreezable(void) {}
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define freezable_schedule()  schedule()
 
 #define freezable_schedule_unsafe()  schedule()

@@ -249,7 +249,11 @@ static bool ixgbevf_clean_tx_irq(struct ixgbevf_q_vector *q_vector,
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* if DD is not set pending work has not been completed */
 		if (!(eop_desc->wb.status & cpu_to_le32(IXGBE_TXD_STAT_DD)))
@@ -622,6 +626,11 @@ static int ixgbevf_poll(struct napi_struct *napi, int budget)
 	ixgbevf_for_each_ring(ring, q_vector->tx)
 		clean_complete &= ixgbevf_clean_tx_irq(q_vector, ring);
 
+<<<<<<< HEAD
+=======
+	if (budget <= 0)
+		return budget;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_NET_RX_BUSY_POLL
 	if (!ixgbevf_qv_lock_napi(q_vector))
 		return budget;
@@ -1465,11 +1474,14 @@ static int ixgbevf_write_uc_addr_list(struct net_device *netdev)
 	struct ixgbe_hw *hw = &adapter->hw;
 	int count = 0;
 
+<<<<<<< HEAD
 	if ((netdev_uc_count(netdev)) > 10) {
 		pr_err("Too many unicast filters - No Space\n");
 		return -ENOSPC;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!netdev_uc_empty(netdev)) {
 		struct netdev_hw_addr *ha;
 		netdev_for_each_uc_addr(ha, netdev) {

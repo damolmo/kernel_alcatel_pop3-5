@@ -104,15 +104,19 @@ static __be32 nfsacld_proc_setacl(struct svc_rqst * rqstp,
 		goto out;
 
 	inode = fh->fh_dentry->d_inode;
+<<<<<<< HEAD
 	if (!IS_POSIXACL(inode) || !inode->i_op->set_acl) {
 		error = -EOPNOTSUPP;
 		goto out_errno;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	error = fh_want_write(fh);
 	if (error)
 		goto out_errno;
 
+<<<<<<< HEAD
 	error = inode->i_op->set_acl(inode, argp->acl_access, ACL_TYPE_ACCESS);
 	if (error)
 		goto out_drop_write;
@@ -120,6 +124,18 @@ static __be32 nfsacld_proc_setacl(struct svc_rqst * rqstp,
 				     ACL_TYPE_DEFAULT);
 	if (error)
 		goto out_drop_write;
+=======
+	fh_lock(fh);
+
+	error = set_posix_acl(inode, ACL_TYPE_ACCESS, argp->acl_access);
+	if (error)
+		goto out_drop_lock;
+	error = set_posix_acl(inode, ACL_TYPE_DEFAULT, argp->acl_default);
+	if (error)
+		goto out_drop_lock;
+
+	fh_unlock(fh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	fh_drop_write(fh);
 
@@ -131,7 +147,12 @@ out:
 	posix_acl_release(argp->acl_access);
 	posix_acl_release(argp->acl_default);
 	return nfserr;
+<<<<<<< HEAD
 out_drop_write:
+=======
+out_drop_lock:
+	fh_unlock(fh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fh_drop_write(fh);
 out_errno:
 	nfserr = nfserrno(error);

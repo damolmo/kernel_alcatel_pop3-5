@@ -38,7 +38,11 @@
 #include <linux/if_vlan.h>
 #include <linux/jiffies.h>
 
+<<<<<<< HEAD
 #include <linux/clocksource.h>
+=======
+#include <linux/timecounter.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/net_tstamp.h>
 #include <linux/ptp_clock_kernel.h>
 
@@ -301,6 +305,10 @@ enum ixgbe_ring_f_enum {
 };
 
 #define IXGBE_MAX_RSS_INDICES  16
+<<<<<<< HEAD
+=======
+#define IXGBE_MAX_RSS_INDICES_X550 63
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define IXGBE_MAX_VMDQ_INDICES 64
 #define IXGBE_MAX_FDIR_INDICES 63	/* based on q_vector limit */
 #define IXGBE_MAX_FCOE_INDICES  8

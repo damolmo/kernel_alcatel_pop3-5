@@ -287,6 +287,7 @@ static inline void extent_buffer_get(struct extent_buffer *eb)
 	atomic_inc(&eb->refs);
 }
 
+<<<<<<< HEAD
 int memcmp_extent_buffer(struct extent_buffer *eb, const void *ptrv,
 			  unsigned long start,
 			  unsigned long len);
@@ -295,6 +296,15 @@ void read_extent_buffer(struct extent_buffer *eb, void *dst,
 			unsigned long len);
 int read_extent_buffer_to_user(struct extent_buffer *eb, void __user *dst,
 			       unsigned long start,
+=======
+int memcmp_extent_buffer(const struct extent_buffer *eb, const void *ptrv,
+			 unsigned long start, unsigned long len);
+void read_extent_buffer(const struct extent_buffer *eb, void *dst,
+			unsigned long start,
+			unsigned long len);
+int read_extent_buffer_to_user(const struct extent_buffer *eb,
+			       void __user *dst, unsigned long start,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       unsigned long len);
 void write_extent_buffer(struct extent_buffer *eb, const void *src,
 			 unsigned long start, unsigned long len);
@@ -313,10 +323,17 @@ int set_extent_buffer_uptodate(struct extent_buffer *eb);
 int clear_extent_buffer_uptodate(struct extent_buffer *eb);
 int extent_buffer_uptodate(struct extent_buffer *eb);
 int extent_buffer_under_io(struct extent_buffer *eb);
+<<<<<<< HEAD
 int map_private_extent_buffer(struct extent_buffer *eb, unsigned long offset,
 		      unsigned long min_len, char **map,
 		      unsigned long *map_start,
 		      unsigned long *map_len);
+=======
+int map_private_extent_buffer(const struct extent_buffer *eb,
+			      unsigned long offset, unsigned long min_len,
+			      char **map, unsigned long *map_start,
+			      unsigned long *map_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int extent_range_clear_dirty_for_io(struct inode *inode, u64 start, u64 end);
 int extent_range_redirty_for_io(struct inode *inode, u64 start, u64 end);
 int extent_clear_unlock_delalloc(struct inode *inode, u64 start, u64 end,

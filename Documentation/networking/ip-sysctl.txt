@@ -223,6 +223,17 @@ tcp_base_mss - INTEGER
 	Path MTU discovery (MTU probing).  If MTU probing is enabled,
 	this is the initial MSS used by the connection.
 
+<<<<<<< HEAD
+=======
+tcp_min_snd_mss - INTEGER
+	TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+	as described in RFC 1122 and RFC 6691.
+	If this ADVMSS option is smaller than tcp_min_snd_mss,
+	it is silently capped to tcp_min_snd_mss.
+
+	Default : 48 (at least 8 bytes of payload per segment)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 tcp_congestion_control - STRING
 	Set the congestion control algorithm to be used for new
 	connections. The algorithm "reno" is always available, but
@@ -789,12 +800,21 @@ icmp_ratelimit - INTEGER
 icmp_msgs_per_sec - INTEGER
 	Limit maximal number of ICMP packets sent per second from this host.
 	Only messages whose type matches icmp_ratemask (see below) are
+<<<<<<< HEAD
 	controlled by this limit.
+=======
+	controlled by this limit. For security reasons, the precise count
+	of messages per second is randomized.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	Default: 1000
 
 icmp_msgs_burst - INTEGER
 	icmp_msgs_per_sec controls number of ICMP packets sent per second,
 	while icmp_msgs_burst controls the burst size of these packets.
+<<<<<<< HEAD
+=======
+	For security reasons, the precise burst size is randomized.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	Default: 50
 
 icmp_ratemask - INTEGER
@@ -1276,11 +1296,28 @@ accept_ra_pinfo - BOOLEAN
 	Functional default: enabled if accept_ra is enabled.
 			    disabled if accept_ra is disabled.
 
+<<<<<<< HEAD
 accept_ra_rt_info_max_plen - INTEGER
 	Maximum prefix length of Route Information in RA.
 
 	Route Information w/ prefix larger than or equal to this
 	variable shall be ignored.
+=======
+accept_ra_rt_info_min_plen - INTEGER
+	Minimum prefix length of Route Information in RA.
+
+	Route Information w/ prefix smaller than this variable shall
+	be ignored.
+
+	Functional default: 0 if accept_ra_rtr_pref is enabled.
+			    -1 if accept_ra_rtr_pref is disabled.
+
+accept_ra_rt_info_max_plen - INTEGER
+	Maximum prefix length of Route Information in RA.
+
+	Route Information w/ prefix larger than this variable shall
+	be ignored.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	Functional default: 0 if accept_ra_rtr_pref is enabled.
 			    -1 if accept_ra_rtr_pref is disabled.
@@ -1378,6 +1415,16 @@ router_solicitations - INTEGER
 	routers are present.
 	Default: 3
 
+<<<<<<< HEAD
+=======
+use_oif_addrs_only - BOOLEAN
+	When enabled, the candidate source addresses for destinations
+	routed via this interface are restricted to the set of addresses
+	configured on this interface (vis. RFC 6724, section 4).
+
+	Default: false
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 use_tempaddr - INTEGER
 	Preference for Privacy Extensions (RFC3041).
 	  <= 0 : disable Privacy Extensions

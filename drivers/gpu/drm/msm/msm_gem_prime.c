@@ -55,3 +55,13 @@ void msm_gem_prime_unpin(struct drm_gem_object *obj)
 	if (!obj->import_attach)
 		msm_gem_put_pages(obj);
 }
+<<<<<<< HEAD
+=======
+
+struct reservation_object *msm_gem_prime_res_obj(struct drm_gem_object *obj)
+{
+	struct msm_gem_object *msm_obj = to_msm_bo(obj);
+
+	return msm_obj->resv;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

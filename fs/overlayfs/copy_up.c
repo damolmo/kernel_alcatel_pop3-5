@@ -22,9 +22,16 @@
 
 int ovl_copy_xattr(struct dentry *old, struct dentry *new)
 {
+<<<<<<< HEAD
 	ssize_t list_size, size;
 	char *buf, *name, *value;
 	int error;
+=======
+	ssize_t list_size, size, value_size = 0;
+	char *buf, *name, *value = NULL;
+	int error = 0;
+	size_t slen;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!old->d_inode->i_op->getxattr ||
 	    !new->d_inode->i_op->getxattr)
@@ -41,6 +48,7 @@ int ovl_copy_xattr(struct dentry *old, struct dentry *new)
 	if (!buf)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	error = -ENOMEM;
 	value = kmalloc(XATTR_SIZE_MAX, GFP_KERNEL);
 	if (!value)
@@ -64,6 +72,53 @@ int ovl_copy_xattr(struct dentry *old, struct dentry *new)
 	}
 
 out_free_value:
+=======
+	list_size = vfs_listxattr(old, buf, list_size);
+	if (list_size <= 0) {
+		error = list_size;
+		goto out;
+	}
+
+	for (name = buf; list_size; name += slen) {
+		slen = strnlen(name, list_size) + 1;
+
+		/* underlying fs providing us with an broken xattr list? */
+		if (WARN_ON(slen > list_size)) {
+			error = -EIO;
+			break;
+		}
+		list_size -= slen;
+
+		if (ovl_is_private_xattr(name))
+			continue;
+retry:
+		size = vfs_getxattr(old, name, value, value_size);
+		if (size == -ERANGE)
+			size = vfs_getxattr(old, name, NULL, 0);
+
+		if (size < 0) {
+			error = size;
+			break;
+		}
+
+		if (size > value_size) {
+			void *new;
+
+			new = krealloc(value, size, GFP_KERNEL);
+			if (!new) {
+				error = -ENOMEM;
+				break;
+			}
+			value = new;
+			value_size = size;
+			goto retry;
+		}
+
+		error = vfs_setxattr(new, name, value, size, 0);
+		if (error)
+			break;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(value);
 out:
 	kfree(buf);
@@ -116,6 +171,11 @@ static int ovl_copy_up_data(struct path *old, struct path *new, loff_t len)
 		len -= bytes;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!error)
+		error = vfs_fsync(new_file, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fput(new_file);
 out_fput:
 	fput(old_file);

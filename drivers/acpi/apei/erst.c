@@ -1023,7 +1023,11 @@ skip:
 	/* The record may be cleared by others, try read next record */
 	if (len == -ENOENT)
 		goto skip;
+<<<<<<< HEAD
 	else if (len < sizeof(*rcd)) {
+=======
+	else if (len < 0 || len < sizeof(*rcd)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rc = -EIO;
 		goto out;
 	}

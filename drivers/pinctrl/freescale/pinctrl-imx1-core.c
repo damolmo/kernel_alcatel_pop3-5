@@ -435,7 +435,11 @@ static void imx1_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
 	const char *name;
 	int i, ret;
 
+<<<<<<< HEAD
 	if (group > info->ngroups)
+=======
+	if (group >= info->ngroups)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	seq_puts(s, "\n");

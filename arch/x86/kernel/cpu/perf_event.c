@@ -25,6 +25,10 @@
 #include <linux/cpu.h>
 #include <linux/bitops.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/apic.h>
 #include <asm/stacktrace.h>
@@ -32,6 +36,10 @@
 #include <asm/smp.h>
 #include <asm/alternative.h>
 #include <asm/tlbflush.h>
+<<<<<<< HEAD
+=======
+#include <asm/mmu_context.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/timer.h>
 #include <asm/desc.h>
 #include <asm/ldt.h>
@@ -64,7 +72,11 @@ u64 x86_perf_event_update(struct perf_event *event)
 	int shift = 64 - x86_pmu.cntval_bits;
 	u64 prev_raw_count, new_raw_count;
 	int idx = hwc->idx;
+<<<<<<< HEAD
 	s64 delta;
+=======
+	u64 delta;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (idx == INTEL_PMC_IDX_FIXED_BTS)
 		return 0;
@@ -184,8 +196,13 @@ static void release_pmc_hardware(void) {}
 
 static bool check_hw_exists(void)
 {
+<<<<<<< HEAD
 	u64 val, val_fail, val_new= ~0;
 	int i, reg, reg_fail, ret = 0;
+=======
+	u64 val, val_fail = -1, val_new= ~0;
+	int i, reg, reg_fail = -1, ret = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int bios_fail = 0;
 
 	/*
@@ -274,17 +291,32 @@ set_ext_hw_attr(struct hw_perf_event *hwc, struct perf_event *event)
 
 	config = attr->config;
 
+<<<<<<< HEAD
 	cache_type = (config >>  0) & 0xff;
 	if (cache_type >= PERF_COUNT_HW_CACHE_MAX)
 		return -EINVAL;
+=======
+	cache_type = (config >> 0) & 0xff;
+	if (cache_type >= PERF_COUNT_HW_CACHE_MAX)
+		return -EINVAL;
+	cache_type = array_index_nospec(cache_type, PERF_COUNT_HW_CACHE_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cache_op = (config >>  8) & 0xff;
 	if (cache_op >= PERF_COUNT_HW_CACHE_OP_MAX)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	cache_op = array_index_nospec(cache_op, PERF_COUNT_HW_CACHE_OP_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cache_result = (config >> 16) & 0xff;
 	if (cache_result >= PERF_COUNT_HW_CACHE_RESULT_MAX)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	cache_result = array_index_nospec(cache_result, PERF_COUNT_HW_CACHE_RESULT_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	val = hw_cache_event_ids[cache_type][cache_op][cache_result];
 
@@ -320,6 +352,11 @@ int x86_setup_perfctr(struct perf_event *event)
 	if (attr->config >= x86_pmu.max_events)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	attr->config = array_index_nospec((unsigned long)attr->config, x86_pmu.max_events);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * The generic map:
 	 */
@@ -1388,6 +1425,10 @@ static void __init filter_events(struct attribute **attrs)
 {
 	struct device_attribute *d;
 	struct perf_pmu_events_attr *pmu_attr;
+<<<<<<< HEAD
+=======
+	int offset = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i, j;
 
 	for (i = 0; attrs[i]; i++) {
@@ -1396,7 +1437,11 @@ static void __init filter_events(struct attribute **attrs)
 		/* str trumps id */
 		if (pmu_attr->event_str)
 			continue;
+<<<<<<< HEAD
 		if (x86_pmu.event_map(i))
+=======
+		if (x86_pmu.event_map(i + offset))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 
 		for (j = i; attrs[j]; j++)
@@ -1404,6 +1449,17 @@ static void __init filter_events(struct attribute **attrs)
 
 		/* Check the shifted attr. */
 		i--;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * event_map() is index based, the attrs array is organized
+		 * by increasing event index. If we shift the events, then
+		 * we need to compensate for the event_map(), otherwise
+		 * we are looking up the wrong event in the map
+		 */
+		offset++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -1987,6 +2043,7 @@ static unsigned long get_segment_base(unsigned int segment)
 	int idx = segment >> 3;
 
 	if ((segment & SEGMENT_TI_MASK) == SEGMENT_LDT) {
+<<<<<<< HEAD
 		if (idx > LDT_ENTRIES)
 			return 0;
 
@@ -1994,14 +2051,34 @@ static unsigned long get_segment_base(unsigned int segment)
 			return 0;
 
 		desc = current->active_mm->context.ldt;
+=======
+		struct ldt_struct *ldt;
+
+		if (idx > LDT_ENTRIES)
+			return 0;
+
+		/* IRQs are off, so this synchronizes with smp_store_release */
+		ldt = lockless_dereference(current->active_mm->context.ldt);
+		if (!ldt || idx > ldt->size)
+			return 0;
+
+		desc = &ldt->entries[idx];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		if (idx > GDT_ENTRIES)
 			return 0;
 
+<<<<<<< HEAD
 		desc = raw_cpu_ptr(gdt_page.gdt);
 	}
 
 	return get_desc_base(desc + idx);
+=======
+		desc = raw_cpu_ptr(gdt_page.gdt) + idx;
+	}
+
+	return get_desc_base(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_COMPAT

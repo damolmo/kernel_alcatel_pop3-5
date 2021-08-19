@@ -293,7 +293,11 @@ static gpt_entry *alloc_read_gpt_entries(struct parsed_partitions *state,
 	if (!gpt)
 		return NULL;
 
+<<<<<<< HEAD
 	count = le32_to_cpu(gpt->num_partition_entries) *
+=======
+	count = (size_t)le32_to_cpu(gpt->num_partition_entries) *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
                 le32_to_cpu(gpt->sizeof_partition_entry);
 	if (!count)
 		return NULL;
@@ -352,7 +356,11 @@ static int is_gpt_valid(struct parsed_partitions *state, u64 lba,
 			gpt_header **gpt, gpt_entry **ptes)
 {
 	u32 crc, origcrc;
+<<<<<<< HEAD
 	u64 lastlba;
+=======
+	u64 lastlba, pt_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!ptes)
 		return 0;
@@ -434,13 +442,29 @@ static int is_gpt_valid(struct parsed_partitions *state, u64 lba,
 		goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Sanity check partition table size */
+	pt_size = (u64)le32_to_cpu((*gpt)->num_partition_entries) *
+		le32_to_cpu((*gpt)->sizeof_partition_entry);
+	if (pt_size > KMALLOC_MAX_SIZE) {
+		pr_debug("GUID Partition Table is too large: %llu > %lu bytes\n",
+			 (unsigned long long)pt_size, KMALLOC_MAX_SIZE);
+		goto fail;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(*ptes = alloc_read_gpt_entries(state, *gpt)))
 		goto fail;
 
 	/* Check the GUID Partition Entry Array CRC */
+<<<<<<< HEAD
 	crc = efi_crc32((const unsigned char *) (*ptes),
 			le32_to_cpu((*gpt)->num_partition_entries) *
 			le32_to_cpu((*gpt)->sizeof_partition_entry));
+=======
+	crc = efi_crc32((const unsigned char *) (*ptes), pt_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (crc != le32_to_cpu((*gpt)->partition_entry_array_crc32)) {
 		pr_debug("GUID Partitition Entry Array CRC check failed.\n");

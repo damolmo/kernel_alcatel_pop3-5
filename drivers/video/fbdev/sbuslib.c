@@ -105,11 +105,19 @@ int sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,
 		struct fbtype __user *f = (struct fbtype __user *) arg;
 
 		if (put_user(type, &f->fb_type) ||
+<<<<<<< HEAD
 		    __put_user(info->var.yres, &f->fb_height) ||
 		    __put_user(info->var.xres, &f->fb_width) ||
 		    __put_user(fb_depth, &f->fb_depth) ||
 		    __put_user(0, &f->fb_cmsize) ||
 		    __put_user(fb_size, &f->fb_cmsize))
+=======
+		    put_user(info->var.yres, &f->fb_height) ||
+		    put_user(info->var.xres, &f->fb_width) ||
+		    put_user(fb_depth, &f->fb_depth) ||
+		    put_user(0, &f->fb_cmsize) ||
+		    put_user(fb_size, &f->fb_cmsize))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EFAULT;
 		return 0;
 	}
@@ -121,6 +129,7 @@ int sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,
 		unsigned char __user *ured;
 		unsigned char __user *ugreen;
 		unsigned char __user *ublue;
+<<<<<<< HEAD
 		int index, count, i;
 
 		if (get_user(index, &c->index) ||
@@ -128,6 +137,15 @@ int sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,
 		    __get_user(ured, &c->red) ||
 		    __get_user(ugreen, &c->green) ||
 		    __get_user(ublue, &c->blue))
+=======
+		unsigned int index, count, i;
+
+		if (get_user(index, &c->index) ||
+		    get_user(count, &c->count) ||
+		    get_user(ured, &c->red) ||
+		    get_user(ugreen, &c->green) ||
+		    get_user(ublue, &c->blue))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EFAULT;
 
 		cmap.len = 1;
@@ -160,6 +178,7 @@ int sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,
 		unsigned char __user *ugreen;
 		unsigned char __user *ublue;
 		struct fb_cmap *cmap = &info->cmap;
+<<<<<<< HEAD
 		int index, count, i;
 		u8 red, green, blue;
 
@@ -171,6 +190,19 @@ int sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,
 			return -EFAULT;
 
 		if (index + count > cmap->len)
+=======
+		unsigned int index, count, i;
+		u8 red, green, blue;
+
+		if (get_user(index, &c->index) ||
+		    get_user(count, &c->count) ||
+		    get_user(ured, &c->red) ||
+		    get_user(ugreen, &c->green) ||
+		    get_user(ublue, &c->blue))
+			return -EFAULT;
+
+		if (index > cmap->len || count > cmap->len - index)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EINVAL;
 
 		for (i = 0; i < count; i++) {

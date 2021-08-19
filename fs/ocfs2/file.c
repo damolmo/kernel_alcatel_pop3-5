@@ -1151,6 +1151,16 @@ int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
 		dquot_initialize(inode);
 	size_change = S_ISREG(inode->i_mode) && attr->ia_valid & ATTR_SIZE;
 	if (size_change) {
+<<<<<<< HEAD
+=======
+		/*
+		 * Here we should wait dio to finish before inode lock
+		 * to avoid a deadlock between ocfs2_setattr() and
+		 * ocfs2_dio_end_io_write()
+		 */
+		inode_dio_wait(inode);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status = ocfs2_rw_lock(inode, 1);
 		if (status < 0) {
 			mlog_errno(status);
@@ -1170,8 +1180,11 @@ int ocfs2_setattr(struct dentry *dentry, struct iattr *attr)
 		if (status)
 			goto bail_unlock;
 
+<<<<<<< HEAD
 		inode_dio_wait(inode);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (i_size_read(inode) >= attr->ia_size) {
 			if (ocfs2_should_order_data(inode)) {
 				status = ocfs2_begin_ordered_truncate(inode,
@@ -1249,18 +1262,29 @@ bail_unlock_rw:
 	if (size_change)
 		ocfs2_rw_unlock(inode, 1);
 bail:
+<<<<<<< HEAD
 	brelse(bh);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Release quota pointers in case we acquired them */
 	for (qtype = 0; qtype < OCFS2_MAXQUOTAS; qtype++)
 		dqput(transfer_to[qtype]);
 
 	if (!status && attr->ia_valid & ATTR_MODE) {
+<<<<<<< HEAD
 		status = posix_acl_chmod(inode, inode->i_mode);
+=======
+		status = ocfs2_acl_chmod(inode, bh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (status < 0)
 			mlog_errno(status);
 	}
 
+<<<<<<< HEAD
+=======
+	brelse(bh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return status;
 }
 
@@ -1515,7 +1539,12 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 				       u64 start, u64 len)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	u64 tmpend, end = start + len;
+=======
+	u64 tmpend = 0;
+	u64 end = start + len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	unsigned int csize = osb->s_clustersize;
 	handle_t *handle;
@@ -1547,6 +1576,7 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * We want to get the byte offset of the end of the 1st cluster.
 	 */
 	tmpend = (u64)osb->s_clustersize + (start & ~(osb->s_clustersize - 1));
@@ -1559,6 +1589,33 @@ static int ocfs2_zero_partial_clusters(struct inode *inode,
 	ret = ocfs2_zero_range_for_truncate(inode, handle, start, tmpend);
 	if (ret)
 		mlog_errno(ret);
+=======
+	 * If start is on a cluster boundary and end is somewhere in another
+	 * cluster, we have not COWed the cluster starting at start, unless
+	 * end is also within the same cluster. So, in this case, we skip this
+	 * first call to ocfs2_zero_range_for_truncate() truncate and move on
+	 * to the next one.
+	 */
+	if ((start & (csize - 1)) != 0) {
+		/*
+		 * We want to get the byte offset of the end of the 1st
+		 * cluster.
+		 */
+		tmpend = (u64)osb->s_clustersize +
+			(start & ~(osb->s_clustersize - 1));
+		if (tmpend > end)
+			tmpend = end;
+
+		trace_ocfs2_zero_partial_clusters_range1(
+			(unsigned long long)start,
+			(unsigned long long)tmpend);
+
+		ret = ocfs2_zero_range_for_truncate(inode, handle, start,
+						    tmpend);
+		if (ret)
+			mlog_errno(ret);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tmpend < end) {
 		/*

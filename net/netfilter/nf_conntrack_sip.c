@@ -1434,9 +1434,18 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 		handler = &sip_handlers[i];
 		if (handler->request == NULL)
 			continue;
+<<<<<<< HEAD
 		if (*datalen < handler->len ||
 		    strncasecmp(*dptr, handler->method, handler->len))
 			continue;
+=======
+		if (*datalen < handler->len + 2 ||
+		    strncasecmp(*dptr, handler->method, handler->len))
+			continue;
+		if ((*dptr)[handler->len] != ' ' ||
+		    !isalpha((*dptr)[handler->len+1]))
+			continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (ct_sip_get_header(ct, *dptr, 0, *datalen, SIP_HDR_CSEQ,
 				      &matchoff, &matchlen) <= 0) {

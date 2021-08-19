@@ -63,6 +63,11 @@ int nft_reject_dump(struct sk_buff *skb, const struct nft_expr *expr)
 		if (nla_put_u8(skb, NFTA_REJECT_ICMP_CODE, priv->icmp_code))
 			goto nla_put_failure;
 		break;
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;

@@ -1207,8 +1207,19 @@ static int igb_alloc_q_vector(struct igb_adapter *adapter,
 
 	/* allocate q_vector and rings */
 	q_vector = adapter->q_vector[v_idx];
+<<<<<<< HEAD
 	if (!q_vector)
 		q_vector = kzalloc(size, GFP_KERNEL);
+=======
+	if (!q_vector) {
+		q_vector = kzalloc(size, GFP_KERNEL);
+	} else if (size > ksize(q_vector)) {
+		kfree_rcu(q_vector, rcu);
+		q_vector = kzalloc(size, GFP_KERNEL);
+	} else {
+		memset(q_vector, 0, size);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!q_vector)
 		return -ENOMEM;
 
@@ -1667,7 +1678,12 @@ static void igb_check_swap_media(struct igb_adapter *adapter)
 	if ((hw->phy.media_type == e1000_media_type_copper) &&
 	    (!(connsw & E1000_CONNSW_AUTOSENSE_EN))) {
 		swap_now = true;
+<<<<<<< HEAD
 	} else if (!(connsw & E1000_CONNSW_SERDESD)) {
+=======
+	} else if ((hw->phy.media_type != e1000_media_type_copper) &&
+		   !(connsw & E1000_CONNSW_SERDESD)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* copper signal takes time to appear */
 		if (adapter->copper_tries < 4) {
 			adapter->copper_tries++;
@@ -2860,8 +2876,20 @@ static void igb_probe_vfs(struct igb_adapter *adapter)
 	if ((hw->mac.type == e1000_i210) || (hw->mac.type == e1000_i211))
 		return;
 
+<<<<<<< HEAD
 	pci_sriov_set_totalvfs(pdev, 7);
 	igb_pci_enable_sriov(pdev, max_vfs);
+=======
+	/* Of the below we really only want the effect of getting
+	 * IGB_FLAG_HAS_MSIX set (if available), without which
+	 * igb_enable_sriov() has no effect.
+	 */
+	igb_set_interrupt_capability(adapter, true);
+	igb_reset_interrupt_capability(adapter);
+
+	pci_sriov_set_totalvfs(pdev, 7);
+	igb_enable_sriov(pdev, max_vfs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* CONFIG_PCI_IOV */
 }
@@ -2902,6 +2930,17 @@ static void igb_init_queue_configuration(struct igb_adapter *adapter)
 
 	adapter->rss_queues = min_t(u32, max_rss_queues, num_online_cpus());
 
+<<<<<<< HEAD
+=======
+	igb_set_flag_queue_pairs(adapter, max_rss_queues);
+}
+
+void igb_set_flag_queue_pairs(struct igb_adapter *adapter,
+			      const u32 max_rss_queues)
+{
+	struct e1000_hw *hw = &adapter->hw;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Determine if we need to pair queues. */
 	switch (hw->mac.type) {
 	case e1000_82575:
@@ -2927,6 +2966,11 @@ static void igb_init_queue_configuration(struct igb_adapter *adapter)
 		 */
 		if (adapter->rss_queues > (max_rss_queues / 2))
 			adapter->flags |= IGB_FLAG_QUEUE_PAIRS;
+<<<<<<< HEAD
+=======
+		else
+			adapter->flags &= ~IGB_FLAG_QUEUE_PAIRS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 }
@@ -2987,6 +3031,11 @@ static int igb_sw_init(struct igb_adapter *adapter)
 	/* Setup and initialize a copy of the hw vlan table array */
 	adapter->shadow_vfta = kcalloc(E1000_VLAN_FILTER_TBL_SIZE, sizeof(u32),
 				       GFP_ATOMIC);
+<<<<<<< HEAD
+=======
+	if (!adapter->shadow_vfta)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* This call may decrease the number of queues */
 	if (igb_init_interrupt_scheme(adapter, true)) {
@@ -3156,7 +3205,13 @@ static int __igb_close(struct net_device *netdev, bool suspending)
 
 static int igb_close(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	return __igb_close(netdev, false);
+=======
+	if (netif_device_present(netdev) || netdev->dismantle)
+		return __igb_close(netdev, false);
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -5129,9 +5184,24 @@ static void igb_reset_task(struct work_struct *work)
 	struct igb_adapter *adapter;
 	adapter = container_of(work, struct igb_adapter, reset_task);
 
+<<<<<<< HEAD
 	igb_dump(adapter);
 	netdev_err(adapter->netdev, "Reset adapter\n");
 	igb_reinit_locked(adapter);
+=======
+	rtnl_lock();
+	/* If we're already down or resetting, just bail */
+	if (test_bit(__IGB_DOWN, &adapter->state) ||
+	    test_bit(__IGB_RESETTING, &adapter->state)) {
+		rtnl_unlock();
+		return;
+	}
+
+	igb_dump(adapter);
+	netdev_err(adapter->netdev, "Reset adapter\n");
+	igb_reinit_locked(adapter);
+	rtnl_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -6367,7 +6437,11 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector)
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* if DD is not set pending work has not been completed */
 		if (!(eop_desc->wb.status & cpu_to_le32(E1000_TXD_STAT_DD)))
@@ -7310,22 +7384,32 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 	struct e1000_hw *hw = &adapter->hw;
 	u32 ctrl, rctl, status;
 	u32 wufc = runtime ? E1000_WUFC_LNKC : adapter->wol;
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	int retval = 0;
 #endif
 
+=======
+	bool wake;
+
+	rtnl_lock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_device_detach(netdev);
 
 	if (netif_running(netdev))
 		__igb_close(netdev, true);
 
 	igb_clear_interrupt_scheme(adapter);
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM
 	retval = pci_save_state(pdev);
 	if (retval)
 		return retval;
 #endif
+=======
+	rtnl_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	status = rd32(E1000_STATUS);
 	if (status & E1000_STATUS_LU)
@@ -7343,10 +7427,13 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 		}
 
 		ctrl = rd32(E1000_CTRL);
+<<<<<<< HEAD
 		/* advertise wake from D3Cold */
 		#define E1000_CTRL_ADVD3WUC 0x00100000
 		/* phy power management enable */
 		#define E1000_CTRL_EN_PHY_PWR_MGMT 0x00200000
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ctrl |= E1000_CTRL_ADVD3WUC;
 		wr32(E1000_CTRL, ctrl);
 
@@ -7360,12 +7447,23 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 		wr32(E1000_WUFC, 0);
 	}
 
+<<<<<<< HEAD
 	*enable_wake = wufc || adapter->en_mng_pt;
 	if (!*enable_wake)
+=======
+	wake = wufc || adapter->en_mng_pt;
+	if (!wake)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		igb_power_down_link(adapter);
 	else
 		igb_power_up_link(adapter);
 
+<<<<<<< HEAD
+=======
+	if (enable_wake)
+		*enable_wake = wake;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Release control of h/w to f/w.  If f/w is AMT enabled, this
 	 * would have already happened in close and is redundant.
 	 */
@@ -7380,6 +7478,7 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
 #ifdef CONFIG_PM_SLEEP
 static int igb_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	int retval;
 	bool wake;
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -7396,6 +7495,9 @@ static int igb_suspend(struct device *dev)
 	}
 
 	return 0;
+=======
+	return __igb_shutdown(to_pci_dev(dev), NULL, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif /* CONFIG_PM_SLEEP */
 
@@ -7438,6 +7540,7 @@ static int igb_resume(struct device *dev)
 
 	wr32(E1000_WUS, ~0);
 
+<<<<<<< HEAD
 	if (netdev->flags & IFF_UP) {
 		rtnl_lock();
 		err = __igb_open(netdev, true);
@@ -7448,6 +7551,17 @@ static int igb_resume(struct device *dev)
 
 	netif_device_attach(netdev);
 	return 0;
+=======
+	rtnl_lock();
+	if (!err && netif_running(netdev))
+		err = __igb_open(netdev, true);
+
+	if (!err)
+		netif_device_attach(netdev);
+	rtnl_unlock();
+
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_PM_RUNTIME
@@ -7465,6 +7579,7 @@ static int igb_runtime_idle(struct device *dev)
 
 static int igb_runtime_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	int retval;
 	bool wake;
@@ -7481,6 +7596,9 @@ static int igb_runtime_suspend(struct device *dev)
 	}
 
 	return 0;
+=======
+	return __igb_shutdown(to_pci_dev(dev), NULL, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int igb_runtime_resume(struct device *dev)

@@ -40,6 +40,10 @@ static struct usb_device_id ath9k_hif_usb_ids[] = {
 	{ USB_DEVICE(0x0cf3, 0xb003) }, /* Ubiquiti WifiStation Ext */
 	{ USB_DEVICE(0x0cf3, 0xb002) }, /* Ubiquiti WifiStation */
 	{ USB_DEVICE(0x057c, 0x8403) }, /* AVM FRITZ!WLAN 11N v2 USB */
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(0x1eda, 0x2315) }, /* AirTies */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	{ USB_DEVICE(0x0cf3, 0x7015),
 	  .driver_info = AR9287_USB },  /* Atheros */
@@ -447,10 +451,26 @@ static void hif_usb_stop(void *hif_handle)
 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
 
 	/* The pending URBs have to be canceled. */
+<<<<<<< HEAD
 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
 				 &hif_dev->tx.tx_pending, list) {
 		usb_kill_urb(tx_buf->urb);
 	}
+=======
+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+				 &hif_dev->tx.tx_pending, list) {
+		usb_get_urb(tx_buf->urb);
+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+		usb_kill_urb(tx_buf->urb);
+		list_del(&tx_buf->list);
+		usb_free_urb(tx_buf->urb);
+		kfree(tx_buf->buf);
+		kfree(tx_buf);
+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	}
+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
 }
@@ -610,6 +630,14 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
 			hif_dev->remain_skb = nskb;
 			spin_unlock(&hif_dev->rx_lock);
 		} else {
+<<<<<<< HEAD
+=======
+			if (pool_index == MAX_PKT_NUM_IN_TRANSFER) {
+				dev_err(&hif_dev->udev->dev,
+					"ath9k_htc: over RX MAX_PKT_NUM\n");
+				goto err;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			nskb = __dev_alloc_skb(pkt_len + 32, GFP_ATOMIC);
 			if (!nskb) {
 				dev_err(&hif_dev->udev->dev,
@@ -751,27 +779,55 @@ static void ath9k_hif_usb_dealloc_tx_urbs(struct hif_device_usb *hif_dev)
 	struct tx_buf *tx_buf = NULL, *tx_buf_tmp = NULL;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
 				 &hif_dev->tx.tx_buf, list) {
+=======
+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+				 &hif_dev->tx.tx_buf, list) {
+		usb_get_urb(tx_buf->urb);
+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		usb_kill_urb(tx_buf->urb);
 		list_del(&tx_buf->list);
 		usb_free_urb(tx_buf->urb);
 		kfree(tx_buf->buf);
 		kfree(tx_buf);
+<<<<<<< HEAD
 	}
+=======
+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	}
+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
 	hif_dev->tx.flags |= HIF_USB_TX_FLUSH;
 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
 
+<<<<<<< HEAD
 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
 				 &hif_dev->tx.tx_pending, list) {
+=======
+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+				 &hif_dev->tx.tx_pending, list) {
+		usb_get_urb(tx_buf->urb);
+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		usb_kill_urb(tx_buf->urb);
 		list_del(&tx_buf->list);
 		usb_free_urb(tx_buf->urb);
 		kfree(tx_buf->buf);
 		kfree(tx_buf);
+<<<<<<< HEAD
 	}
+=======
+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+	}
+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
 }
@@ -971,7 +1027,11 @@ err:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static void ath9k_hif_usb_dealloc_urbs(struct hif_device_usb *hif_dev)
+=======
+void ath9k_hif_usb_dealloc_urbs(struct hif_device_usb *hif_dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	usb_kill_anchored_urbs(&hif_dev->regout_submitted);
 	ath9k_hif_usb_dealloc_reg_in_urbs(hif_dev);
@@ -1137,12 +1197,22 @@ err_fw:
 static int send_eject_command(struct usb_interface *interface)
 {
 	struct usb_device *udev = interface_to_usbdev(interface);
+<<<<<<< HEAD
 	struct usb_host_interface *iface_desc = &interface->altsetting[0];
+=======
+	struct usb_host_interface *iface_desc = interface->cur_altsetting;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct usb_endpoint_descriptor *endpoint;
 	unsigned char *cmd;
 	u8 bulk_out_ep;
 	int r;
 
+<<<<<<< HEAD
+=======
+	if (iface_desc->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Find bulk out endpoint */
 	for (r = 1; r >= 0; r--) {
 		endpoint = &iface_desc->endpoint[r].desc;
@@ -1275,8 +1345,14 @@ static void ath9k_hif_usb_disconnect(struct usb_interface *interface)
 
 	if (hif_dev->flags & HIF_USB_READY) {
 		ath9k_htc_hw_deinit(hif_dev->htc_handle, unplugged);
+<<<<<<< HEAD
 		ath9k_htc_hw_free(hif_dev->htc_handle);
 		ath9k_hif_usb_dev_deinit(hif_dev);
+=======
+		ath9k_hif_usb_dev_deinit(hif_dev);
+		ath9k_destoy_wmi(hif_dev->htc_handle->drv_priv);
+		ath9k_htc_hw_free(hif_dev->htc_handle);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	usb_set_intfdata(interface, NULL);

@@ -26,9 +26,13 @@
 #include <linux/smpboot.h>
 #include <linux/tick.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #include "mt_sched_mon.h"
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CREATE_TRACE_POINTS
 #include <trace/events/irq.h>
 
@@ -116,6 +120,7 @@ void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
 		trace_softirqs_off(ip);
 	raw_local_irq_restore(flags);
 
+<<<<<<< HEAD
 	if (preempt_count() == cnt) {
 		trace_preempt_off(CALLER_ADDR0, get_parent_ip(CALLER_ADDR1));
 #ifdef CONFIG_MTPROF
@@ -123,6 +128,10 @@ void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
 #endif
 	}
 
+=======
+	if (preempt_count() == cnt)
+		trace_preempt_off(CALLER_ADDR0, get_parent_ip(CALLER_ADDR1));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(__local_bh_disable_ip);
 #endif /* CONFIG_TRACE_IRQFLAGS */
@@ -273,6 +282,7 @@ restart:
 		kstat_incr_softirqs_this_cpu(vec_nr);
 
 		trace_softirq_entry(vec_nr);
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_SoftIRQ_start(vec_nr);
 #endif
@@ -280,6 +290,9 @@ restart:
 #ifdef CONFIG_MTPROF
 		mt_trace_SoftIRQ_end(vec_nr);
 #endif
+=======
+		h->action(h);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		trace_softirq_exit(vec_nr);
 		if (unlikely(prev_count != preempt_count())) {
 			pr_err("huh, entered softirq %u %s %p with preempt_count %08x, exited with %08x?\n",
@@ -511,6 +524,7 @@ static void tasklet_action(struct softirq_action *a)
 				if (!test_and_clear_bit(TASKLET_STATE_SCHED,
 							&t->state))
 					BUG();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 				mt_trace_tasklet_start(t->func);
 #endif
@@ -518,6 +532,9 @@ static void tasklet_action(struct softirq_action *a)
 #ifdef CONFIG_MTPROF
 				mt_trace_tasklet_end(t->func);
 #endif
+=======
+				t->func(t->data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				tasklet_unlock(t);
 				continue;
 			}

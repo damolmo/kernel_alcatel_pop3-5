@@ -23,13 +23,20 @@
 #include <linux/sysrq.h>
 #include <linux/init.h>
 #include <linux/nmi.h>
+<<<<<<< HEAD
+=======
+#include <linux/console.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define PANIC_TIMER_STEP 100
 #define PANIC_BLINK_SPD 18
 
+<<<<<<< HEAD
 /* Machine specific panic information string */
 char *mach_panic_string;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int panic_on_oops = CONFIG_PANIC_ON_OOPS_VALUE;
 static unsigned long tainted_mask;
 static int pause_on_oops;
@@ -85,6 +92,10 @@ void panic(const char *fmt, ...)
 	 * after the panic_lock is acquired) from invoking panic again.
 	 */
 	local_irq_disable();
+<<<<<<< HEAD
+=======
+	preempt_disable_notrace();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * It's possible to come here directly from a panic-assertion and
@@ -148,6 +159,20 @@ void panic(const char *fmt, ...)
 
 	bust_spinlocks(0);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We may have ended up stopping the CPU holding the lock (in
+	 * smp_send_stop()) while still having some valuable data in the console
+	 * buffer.  Try to acquire the lock then release it regardless of the
+	 * result.  The release will also print the buffers out.  Locks debug
+	 * should be disabled to avoid reporting bad unlock balance when
+	 * panic() is not being callled from OOPS.
+	 */
+	debug_locks_off();
+	console_flush_on_panic();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!panic_blink)
 		panic_blink = no_blink;
 
@@ -156,7 +181,11 @@ void panic(const char *fmt, ...)
 		 * Delay timeout seconds before rebooting the machine.
 		 * We can't use the "normal" timers since we just panicked.
 		 */
+<<<<<<< HEAD
 		pr_emerg("Rebooting in %d seconds..", panic_timeout);
+=======
+		pr_emerg("Rebooting in %d seconds..\n", panic_timeout);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		for (i = 0; i < panic_timeout * 1000; i += PANIC_TIMER_STEP) {
 			touch_nmi_watchdog();
@@ -399,11 +428,14 @@ late_initcall(init_oops_id);
 void print_oops_end_marker(void)
 {
 	init_oops_id();
+<<<<<<< HEAD
 
 	if (mach_panic_string)
 		printk(KERN_WARNING "Board Information: %s\n",
 		       mach_panic_string);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pr_warn("---[ end trace %016llx ]---\n", (unsigned long long)oops_id);
 }
 
@@ -484,11 +516,16 @@ EXPORT_SYMBOL(warn_slowpath_null);
  */
 __visible void __stack_chk_fail(void)
 {
+<<<<<<< HEAD
 /*
 	panic("stack-protector: Kernel stack is corrupted in: %p\n",
 		__builtin_return_address(0));
 */
 	BUG();
+=======
+	panic("stack-protector: Kernel stack is corrupted in: %p\n",
+		__builtin_return_address(0));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(__stack_chk_fail);
 

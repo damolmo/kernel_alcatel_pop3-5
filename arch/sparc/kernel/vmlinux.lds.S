@@ -33,6 +33,13 @@ ENTRY(_start)
 jiffies = jiffies_64;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SPARC64
+ASSERT((swapper_tsb == 0x0000000000408000), "Error: sparc64 early assembler too large")
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 SECTIONS
 {
 #ifdef CONFIG_SPARC64

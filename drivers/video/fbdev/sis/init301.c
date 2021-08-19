@@ -522,9 +522,13 @@ SiS_PanelDelay(struct SiS_Private *SiS_Pr, unsigned short DelayTime)
 	    SiS_DDC2Delay(SiS_Pr, 0x4000);
 	 }
 
+<<<<<<< HEAD
       } else if((SiS_Pr->SiS_IF_DEF_LVDS == 1) /* ||
 	 (SiS_Pr->SiS_CustomT == CUT_COMPAQ1280) ||
 	 (SiS_Pr->SiS_CustomT == CUT_CLEVO1400) */ ) {			/* 315 series, LVDS; Special */
+=======
+      } else if (SiS_Pr->SiS_IF_DEF_LVDS == 1) {			/* 315 series, LVDS; Special */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	 if(SiS_Pr->SiS_IF_DEF_CH70xx == 0) {
 	    PanelID = SiS_GetReg(SiS_Pr->SiS_P3d4,0x36);
@@ -2151,17 +2155,27 @@ SiS_GetVCLK2Ptr(struct SiS_Private *SiS_Pr, unsigned short ModeNo, unsigned shor
 		unsigned short RefreshRateTableIndex)
 {
   unsigned short CRT2Index, VCLKIndex = 0, VCLKIndexGEN = 0, VCLKIndexGENCRT = 0;
+<<<<<<< HEAD
   unsigned short modeflag, resinfo, tempbx;
   const unsigned char *CHTVVCLKPtr = NULL;
 
   if(ModeNo <= 0x13) {
      modeflag = SiS_Pr->SiS_SModeIDTable[ModeIdIndex].St_ModeFlag;
+=======
+  unsigned short resinfo, tempbx;
+  const unsigned char *CHTVVCLKPtr = NULL;
+
+  if(ModeNo <= 0x13) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
      resinfo = SiS_Pr->SiS_SModeIDTable[ModeIdIndex].St_ResInfo;
      CRT2Index = SiS_Pr->SiS_SModeIDTable[ModeIdIndex].St_CRT2CRTC;
      VCLKIndexGEN = (SiS_GetRegByte((SiS_Pr->SiS_P3ca+0x02)) >> 2) & 0x03;
      VCLKIndexGENCRT = VCLKIndexGEN;
   } else {
+<<<<<<< HEAD
      modeflag = SiS_Pr->SiS_EModeIDTable[ModeIdIndex].Ext_ModeFlag;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
      resinfo = SiS_Pr->SiS_EModeIDTable[ModeIdIndex].Ext_RESINFO;
      CRT2Index = SiS_Pr->SiS_RefIndex[RefreshRateTableIndex].Ext_CRT2CRTC;
      VCLKIndexGEN = SiS_Pr->SiS_RefIndex[RefreshRateTableIndex].Ext_CRTVCLK;
@@ -7270,7 +7284,11 @@ SiS_ShiftXPos(struct SiS_Private *SiS_Pr, int shift)
 static void
 SiS_SetGroup4_C_ELV(struct SiS_Private *SiS_Pr, unsigned short ModeNo, unsigned short ModeIdIndex)
 {
+<<<<<<< HEAD
    unsigned short temp, temp1, resinfo = 0;
+=======
+   unsigned short temp, temp1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
    unsigned char  *ROMAddr = SiS_Pr->VirtualRomBase;
 
    if(!(SiS_Pr->SiS_VBType & VB_SIS30xCLV)) return;
@@ -7282,10 +7300,13 @@ SiS_SetGroup4_C_ELV(struct SiS_Private *SiS_Pr, unsigned short ModeNo, unsigned 
       if(!(ROMAddr[0x61] & 0x04)) return;
    }
 
+<<<<<<< HEAD
    if(ModeNo > 0x13) {
       resinfo = SiS_Pr->SiS_EModeIDTable[ModeIdIndex].Ext_RESINFO;
    }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
    SiS_SetRegOR(SiS_Pr->SiS_Part4Port,0x3a,0x08);
    temp = SiS_GetReg(SiS_Pr->SiS_Part4Port,0x3a);
    if(!(temp & 0x01)) {

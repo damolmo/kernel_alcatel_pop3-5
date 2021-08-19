@@ -54,10 +54,24 @@ struct ssm2602_priv {
  * using 2 wire for device control, so we cache them instead.
  * There is no point in caching the reset register
  */
+<<<<<<< HEAD
 static const u16 ssm2602_reg[SSM2602_CACHEREGNUM] = {
 	0x0097, 0x0097, 0x0079, 0x0079,
 	0x000a, 0x0008, 0x009f, 0x000a,
 	0x0000, 0x0000
+=======
+static const struct reg_default ssm2602_reg[SSM2602_CACHEREGNUM] = {
+	{ .reg = 0x00, .def = 0x0097 },
+	{ .reg = 0x01, .def = 0x0097 },
+	{ .reg = 0x02, .def = 0x0079 },
+	{ .reg = 0x03, .def = 0x0079 },
+	{ .reg = 0x04, .def = 0x000a },
+	{ .reg = 0x05, .def = 0x0008 },
+	{ .reg = 0x06, .def = 0x009f },
+	{ .reg = 0x07, .def = 0x000a },
+	{ .reg = 0x08, .def = 0x0000 },
+	{ .reg = 0x09, .def = 0x0000 }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 
@@ -620,8 +634,13 @@ const struct regmap_config ssm2602_regmap_config = {
 	.volatile_reg = ssm2602_register_volatile,
 
 	.cache_type = REGCACHE_RBTREE,
+<<<<<<< HEAD
 	.reg_defaults_raw = ssm2602_reg,
 	.num_reg_defaults_raw = ARRAY_SIZE(ssm2602_reg),
+=======
+	.reg_defaults = ssm2602_reg,
+	.num_reg_defaults = ARRAY_SIZE(ssm2602_reg),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 EXPORT_SYMBOL_GPL(ssm2602_regmap_config);
 

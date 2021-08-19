@@ -117,11 +117,20 @@ EXPORT_SYMBOL_GPL(usbip_event_add);
 int usbip_event_happened(struct usbip_device *ud)
 {
 	int happened = 0;
+<<<<<<< HEAD
 
 	spin_lock(&ud->lock);
 	if (ud->event != 0)
 		happened = 1;
 	spin_unlock(&ud->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&ud->lock, flags);
+	if (ud->event != 0)
+		happened = 1;
+	spin_unlock_irqrestore(&ud->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return happened;
 }

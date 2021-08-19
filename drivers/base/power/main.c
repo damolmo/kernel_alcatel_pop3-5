@@ -37,6 +37,7 @@
 #include "../base.h"
 #include "power.h"
 
+<<<<<<< HEAD
 #define HIB_DPM_DEBUG 0
 #define _TAG_HIB_M "HIB/DPM"
 #if (HIB_DPM_DEBUG)
@@ -48,6 +49,8 @@
 #undef hib_warn
 #define hib_warn(fmt, ...)  pr_warn("[%s][%s]" fmt, _TAG_HIB_M, __func__, ##__VA_ARGS__)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef int (*pm_callback_t)(struct device *);
 
 /*
@@ -70,12 +73,15 @@ struct suspend_stats suspend_stats;
 static DEFINE_MUTEX(dpm_list_mtx);
 static pm_message_t pm_transition;
 
+<<<<<<< HEAD
 static void dpm_drv_timeout(unsigned long data);
 struct dpm_drv_wd_data {
 	struct device *dev;
 	struct task_struct *tsk;
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int async_error;
 
 static char *pm_verb(int event)
@@ -385,7 +391,11 @@ static void dpm_show_time(ktime_t starttime, pm_message_t state, char *info)
 	usecs = usecs64;
 	if (usecs == 0)
 		usecs = 1;
+<<<<<<< HEAD
 	hib_log("PM: %s%s%s of devices complete after %ld.%03ld msecs\n",
+=======
+	pr_info("PM: %s%s%s of devices complete after %ld.%03ld msecs\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		info ?: "", info ? " " : "", pm_verb(state.event),
 		usecs / USEC_PER_MSEC, usecs % USEC_PER_MSEC);
 }
@@ -846,6 +856,7 @@ static void async_resume(void *data, async_cookie_t cookie)
 }
 
 /**
+<<<<<<< HEAD
  *	dpm_drv_timeout - Driver suspend / resume watchdog handler
  *	@data: struct device which timed out
  *
@@ -870,6 +881,8 @@ static void dpm_drv_timeout(unsigned long data)
 }
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * dpm_resume - Execute "resume" callbacks for non-sysdev devices.
  * @state: PM transition of the system being carried out.
  *
@@ -925,7 +938,10 @@ void dpm_resume(pm_message_t state)
 	cpufreq_resume();
 	trace_suspend_resume(TPS("dpm_resume"), state.event, false);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(dpm_resume);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * device_complete - Complete a PM transition for given device.
@@ -1006,7 +1022,10 @@ void dpm_complete(pm_message_t state)
 	mutex_unlock(&dpm_list_mtx);
 	trace_suspend_resume(TPS("dpm_complete"), state.event, false);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(dpm_complete);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * dpm_resume_end - Execute "resume" callbacks and complete system transition.
@@ -1061,6 +1080,11 @@ static int __device_suspend_noirq(struct device *dev, pm_message_t state, bool a
 	char *info = NULL;
 	int error = 0;
 
+<<<<<<< HEAD
+=======
+	dpm_wait_for_children(dev, async);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (async_error)
 		goto Complete;
 
@@ -1072,8 +1096,11 @@ static int __device_suspend_noirq(struct device *dev, pm_message_t state, bool a
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Complete;
 
+<<<<<<< HEAD
 	dpm_wait_for_children(dev, async);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dev->pm_domain) {
 		info = "noirq power domain ";
 		callback = pm_noirq_op(&dev->pm_domain->ops, state);
@@ -1203,6 +1230,11 @@ static int __device_suspend_late(struct device *dev, pm_message_t state, bool as
 
 	__pm_runtime_disable(dev, false);
 
+<<<<<<< HEAD
+=======
+	dpm_wait_for_children(dev, async);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (async_error)
 		goto Complete;
 
@@ -1214,8 +1246,11 @@ static int __device_suspend_late(struct device *dev, pm_message_t state, bool as
 	if (dev->power.syscore || dev->power.direct_complete)
 		goto Complete;
 
+<<<<<<< HEAD
 	dpm_wait_for_children(dev, async);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dev->pm_domain) {
 		info = "late power domain ";
 		callback = pm_late_early_op(&dev->pm_domain->ops, state);
@@ -1295,14 +1330,23 @@ int dpm_suspend_late(pm_message_t state)
 		error = device_suspend_late(dev);
 
 		mutex_lock(&dpm_list_mtx);
+<<<<<<< HEAD
+=======
+		if (!list_empty(&dev->power.entry))
+			list_move(&dev->power.entry, &dpm_late_early_list);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (error) {
 			pm_dev_err(dev, state, " late", error);
 			dpm_save_failed_dev(dev_name(dev));
 			put_device(dev);
 			break;
 		}
+<<<<<<< HEAD
 		if (!list_empty(&dev->power.entry))
 			list_move(&dev->power.entry, &dpm_late_early_list);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		put_device(dev);
 
 		if (async_error)
@@ -1380,13 +1424,17 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
 	pm_callback_t callback = NULL;
 	char *info = NULL;
 	int error = 0;
+<<<<<<< HEAD
 	struct timer_list timer;
 	struct dpm_drv_wd_data data;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char suspend_abort[MAX_SUSPEND_ABORT_LEN];
 	DECLARE_DPM_WATCHDOG_ON_STACK(wd);
 
 	dpm_wait_for_children(dev, async);
 
+<<<<<<< HEAD
 	if (async_error)
 		goto Complete;
 
@@ -1398,19 +1446,44 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
 	 */
 	if (pm_runtime_barrier(dev) && device_may_wakeup(dev))
 		pm_wakeup_event(dev, 0);
+=======
+	if (async_error) {
+		dev->power.direct_complete = false;
+		goto Complete;
+	}
+
+	/*
+	 * Wait for possible runtime PM transitions of the device in progress
+	 * to complete and if there's a runtime resume request pending for it,
+	 * resume it before proceeding with invoking the system-wide suspend
+	 * callbacks for it.
+	 *
+	 * If the system-wide suspend callbacks below change the configuration
+	 * of the device, they must disable runtime PM for it or otherwise
+	 * ensure that its runtime-resume callbacks will not be confused by that
+	 * change in case they are invoked going forward.
+	 */
+	pm_runtime_barrier(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (pm_wakeup_pending()) {
 		pm_get_active_wakeup_sources(suspend_abort,
 			MAX_SUSPEND_ABORT_LEN);
 		log_suspend_abort_reason(suspend_abort);
+<<<<<<< HEAD
 		async_error = -EBUSY;
 		hib_log("async_error(%d) not zero due pm_wakeup_pending return non zero!!\n", async_error);
+=======
+		dev->power.direct_complete = false;
+		async_error = -EBUSY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto Complete;
 	}
 
 	if (dev->power.syscore)
 		goto Complete;
 
+<<<<<<< HEAD
 	data.dev = dev;
 	data.tsk = get_current();
 	init_timer_on_stack(&timer);
@@ -1418,6 +1491,11 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
 	timer.function = dpm_drv_timeout;
 	timer.data = (unsigned long)&data;
 	add_timer(&timer);
+=======
+	/* Avoid direct_complete to let wakeup_path propagate. */
+	if (device_may_wakeup(dev) || dev->power.wakeup_path)
+		dev->power.direct_complete = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dev->power.direct_complete) {
 		if (pm_runtime_status_suspended(dev)) {
@@ -1498,9 +1576,12 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
 	device_unlock(dev);
 	dpm_watchdog_clear(&wd);
 
+<<<<<<< HEAD
 	del_timer_sync(&timer);
 	destroy_timer_on_stack(&timer);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  Complete:
 	complete_all(&dev->power.completion);
 	if (error)
@@ -1529,7 +1610,10 @@ static int device_suspend(struct device *dev)
 
 	if (pm_async_enabled && dev->power.async_suspend) {
 		get_device(dev);
+<<<<<<< HEAD
 		hib_log("using async mode (check value of \"/sys/power/pm_async\"\n");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		async_schedule(async_suspend, dev);
 		return 0;
 	}
@@ -1566,17 +1650,25 @@ int dpm_suspend(pm_message_t state)
 		if (error) {
 			pm_dev_err(dev, state, "", error);
 			dpm_save_failed_dev(dev_name(dev));
+<<<<<<< HEAD
 			hib_log("Device %s failed to %s: error %d\n", dev_name(dev), pm_verb(state.event), error);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			put_device(dev);
 			break;
 		}
 		if (!list_empty(&dev->power.entry))
 			list_move(&dev->power.entry, &dpm_suspended_list);
 		put_device(dev);
+<<<<<<< HEAD
 		if (async_error) {
 			hib_log("async_error(%d)\n", async_error);
 			break;
 		}
+=======
+		if (async_error)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	mutex_unlock(&dpm_list_mtx);
 	async_synchronize_full();
@@ -1588,10 +1680,15 @@ int dpm_suspend(pm_message_t state)
 	} else
 		dpm_show_time(starttime, state, NULL);
 	trace_suspend_resume(TPS("dpm_suspend"), state.event, false);
+<<<<<<< HEAD
 	hib_log("return error(%d)\n", error);
 	return error;
 }
 EXPORT_SYMBOL_GPL(dpm_suspend);
+=======
+	return error;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * device_prepare - Prepare a device for system power transition.
@@ -1711,7 +1808,10 @@ int dpm_prepare(pm_message_t state)
 	trace_suspend_resume(TPS("dpm_prepare"), state.event, false);
 	return error;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(dpm_prepare);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * dpm_suspend_start - Prepare devices for PM transition and suspend them.

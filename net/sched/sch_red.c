@@ -97,6 +97,10 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 
 	ret = qdisc_enqueue(skb, child);
 	if (likely(ret == NET_XMIT_SUCCESS)) {
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen++;
 	} else if (net_xmit_drop_count(ret)) {
 		q->stats.pdrop++;
@@ -118,6 +122,10 @@ static struct sk_buff *red_dequeue(struct Qdisc *sch)
 	skb = child->dequeue(child);
 	if (skb) {
 		qdisc_bstats_update(sch, skb);
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen--;
 	} else {
 		if (!red_is_idling(&q->vars))
@@ -143,6 +151,10 @@ static unsigned int red_drop(struct Qdisc *sch)
 	if (child->ops->drop && (len = child->ops->drop(child)) > 0) {
 		q->stats.other++;
 		qdisc_qstats_drop(sch);
+<<<<<<< HEAD
+=======
+		sch->qstats.backlog -= len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen--;
 		return len;
 	}
@@ -158,6 +170,10 @@ static void red_reset(struct Qdisc *sch)
 	struct red_sched_data *q = qdisc_priv(sch);
 
 	qdisc_reset(q->qdisc);
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen = 0;
 	red_restart(&q->vars);
 }
@@ -184,6 +200,10 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt)
 	struct Qdisc *child = NULL;
 	int err;
 	u32 max_P;
+<<<<<<< HEAD
+=======
+	u8 *stab;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (opt == NULL)
 		return -EINVAL;
@@ -199,6 +219,13 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt)
 	max_P = tb[TCA_RED_MAX_P] ? nla_get_u32(tb[TCA_RED_MAX_P]) : 0;
 
 	ctl = nla_data(tb[TCA_RED_PARMS]);
+<<<<<<< HEAD
+=======
+	stab = nla_data(tb[TCA_RED_STAB]);
+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog,
+			      ctl->Scell_log, stab))
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ctl->limit > 0) {
 		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, ctl->limit);
@@ -210,7 +237,12 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt)
 	q->flags = ctl->flags;
 	q->limit = ctl->limit;
 	if (child) {
+<<<<<<< HEAD
 		qdisc_tree_decrease_qlen(q->qdisc, q->qdisc->q.qlen);
+=======
+		qdisc_tree_reduce_backlog(q->qdisc, q->qdisc->q.qlen,
+					  q->qdisc->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		qdisc_destroy(q->qdisc);
 		q->qdisc = child;
 	}
@@ -218,7 +250,11 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt)
 	red_set_parms(&q->parms,
 		      ctl->qth_min, ctl->qth_max, ctl->Wlog,
 		      ctl->Plog, ctl->Scell_log,
+<<<<<<< HEAD
 		      nla_data(tb[TCA_RED_STAB]),
+=======
+		      stab,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		      max_P);
 	red_set_vars(&q->vars);
 
@@ -313,12 +349,16 @@ static int red_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	if (new == NULL)
 		new = &noop_qdisc;
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = q->qdisc;
 	q->qdisc = new;
 	qdisc_tree_decrease_qlen(*old, (*old)->q.qlen);
 	qdisc_reset(*old);
 	sch_tree_unlock(sch);
+=======
+	*old = qdisc_replace(sch, new, &q->qdisc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

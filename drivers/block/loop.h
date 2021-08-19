@@ -60,6 +60,10 @@ struct loop_device {
 	wait_queue_head_t	lo_event;
 	/* wait queue for incoming requests */
 	wait_queue_head_t	lo_req_wait;
+<<<<<<< HEAD
+=======
+	bool			sysfs_inited;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct request_queue	*lo_queue;
 	struct gendisk		*lo_disk;

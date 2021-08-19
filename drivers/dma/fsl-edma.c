@@ -661,6 +661,16 @@ static irqreturn_t fsl_edma_tx_handler(int irq, void *dev_id)
 			fsl_chan = &fsl_edma->chans[ch];
 
 			spin_lock(&fsl_chan->vchan.lock);
+<<<<<<< HEAD
+=======
+
+			if (!fsl_chan->edesc) {
+				/* terminate_all called before */
+				spin_unlock(&fsl_chan->vchan.lock);
+				continue;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!fsl_chan->edesc->iscyclic) {
 				list_del(&fsl_chan->edesc->vdesc.node);
 				vchan_cookie_complete(&fsl_chan->edesc->vdesc);

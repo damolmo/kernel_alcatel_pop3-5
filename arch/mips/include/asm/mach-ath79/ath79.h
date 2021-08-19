@@ -132,6 +132,10 @@ static inline u32 ath79_pll_rr(unsigned reg)
 static inline void ath79_reset_wr(unsigned reg, u32 val)
 {
 	__raw_writel(val, ath79_reset_base + reg);
+<<<<<<< HEAD
+=======
+	(void) __raw_readl(ath79_reset_base + reg); /* flush */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline u32 ath79_reset_rr(unsigned reg)

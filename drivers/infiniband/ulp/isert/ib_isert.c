@@ -220,7 +220,11 @@ fail:
 static void
 isert_free_rx_descriptors(struct isert_conn *isert_conn)
 {
+<<<<<<< HEAD
 	struct ib_device *ib_dev = isert_conn->conn_cm_id->device;
+=======
+	struct ib_device *ib_dev = isert_conn->conn_device->ib_device;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct iser_rx_desc *rx_desc;
 	int i;
 
@@ -742,9 +746,15 @@ out:
 static void
 isert_connect_release(struct isert_conn *isert_conn)
 {
+<<<<<<< HEAD
 	struct ib_device *ib_dev = isert_conn->conn_cm_id->device;
 	struct isert_device *device = isert_conn->conn_device;
 	int cq_index;
+=======
+	struct isert_device *device = isert_conn->conn_device;
+	int cq_index;
+	struct ib_device *ib_dev = device->ib_device;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_debug("Entering isert_connect_release(): >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
@@ -752,7 +762,12 @@ isert_connect_release(struct isert_conn *isert_conn)
 		isert_conn_free_fastreg_pool(isert_conn);
 
 	isert_free_rx_descriptors(isert_conn);
+<<<<<<< HEAD
 	rdma_destroy_id(isert_conn->conn_cm_id);
+=======
+	if (isert_conn->conn_cm_id)
+		rdma_destroy_id(isert_conn->conn_cm_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (isert_conn->conn_qp) {
 		cq_index = ((struct isert_cq_desc *)
@@ -893,6 +908,7 @@ isert_disconnected_handler(struct rdma_cm_id *cma_id,
 			   enum rdma_cm_event_type event)
 {
 	struct isert_np *isert_np = cma_id->context;
+<<<<<<< HEAD
 	struct isert_conn *isert_conn;
 	bool terminating = false;
 
@@ -900,6 +916,11 @@ isert_disconnected_handler(struct rdma_cm_id *cma_id,
 		return isert_np_cma_handler(cma_id->context, event);
 
 	isert_conn = cma_id->qp->qp_context;
+=======
+	struct isert_conn *isert_conn = cma_id->qp->qp_context;
+	bool terminating = false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&isert_conn->conn_mutex);
 	terminating = (isert_conn->state == ISER_CONN_TERMINATING);
@@ -924,22 +945,43 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
+=======
+static int
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 isert_connect_error(struct rdma_cm_id *cma_id)
 {
 	struct isert_conn *isert_conn = cma_id->qp->qp_context;
 
+<<<<<<< HEAD
 	isert_put_conn(isert_conn);
+=======
+	isert_conn->conn_cm_id = NULL;
+	isert_put_conn(isert_conn);
+
+	return -1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
 isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 {
+<<<<<<< HEAD
+=======
+	struct isert_np *isert_np = cma_id->context;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	pr_debug("isert_cma_handler: event %d status %d conn %p id %p\n",
 		 event->event, event->status, cma_id->context, cma_id);
 
+<<<<<<< HEAD
+=======
+	if (isert_np->np_cm_id == cma_id)
+		return isert_np_cma_handler(cma_id->context, event->event);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (event->event) {
 	case RDMA_CM_EVENT_CONNECT_REQUEST:
 		ret = isert_connect_request(cma_id, event);
@@ -959,7 +1001,11 @@ isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 	case RDMA_CM_EVENT_REJECTED:       /* FALLTHRU */
 	case RDMA_CM_EVENT_UNREACHABLE:    /* FALLTHRU */
 	case RDMA_CM_EVENT_CONNECT_ERROR:
+<<<<<<< HEAD
 		isert_connect_error(cma_id);
+=======
+		ret = isert_connect_error(cma_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		pr_err("Unhandled RDMA CMA event: %d\n", event->event);
@@ -1330,7 +1376,11 @@ sequence_cmd:
 	if (!rc && dump_payload == false && unsol_data)
 		iscsit_set_unsoliticed_dataout(cmd);
 	else if (dump_payload && imm_data)
+<<<<<<< HEAD
 		target_put_sess_cmd(conn->sess->se_sess, &cmd->se_cmd);
+=======
+		target_put_sess_cmd(&cmd->se_cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -1560,7 +1610,11 @@ static void
 isert_rx_completion(struct iser_rx_desc *desc, struct isert_conn *isert_conn,
 		    unsigned long xfer_len)
 {
+<<<<<<< HEAD
 	struct ib_device *ib_dev = isert_conn->conn_cm_id->device;
+=======
+	struct ib_device *ib_dev = isert_conn->conn_device->ib_device;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct iscsi_hdr *hdr;
 	u64 rx_dma;
 	int rx_buflen, outstanding;
@@ -1749,7 +1803,11 @@ isert_put_cmd(struct isert_cmd *isert_cmd, bool comp_err)
 			    cmd->se_cmd.t_state == TRANSPORT_WRITE_PENDING) {
 				struct se_cmd *se_cmd = &cmd->se_cmd;
 
+<<<<<<< HEAD
 				target_put_sess_cmd(se_cmd->se_sess, se_cmd);
+=======
+				target_put_sess_cmd(se_cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 
@@ -1918,7 +1976,11 @@ isert_completion_rdma_read(struct iser_tx_desc *tx_desc,
 	spin_unlock_bh(&cmd->istate_lock);
 
 	if (ret) {
+<<<<<<< HEAD
 		target_put_sess_cmd(se_cmd->se_sess, se_cmd);
+=======
+		target_put_sess_cmd(se_cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		transport_send_check_condition_and_sense(se_cmd,
 							 se_cmd->pi_err, 0);
 	} else {
@@ -3106,9 +3168,22 @@ isert_get_dataout(struct iscsi_conn *conn, struct iscsi_cmd *cmd, bool recovery)
 static int
 isert_immediate_queue(struct iscsi_conn *conn, struct iscsi_cmd *cmd, int state)
 {
+<<<<<<< HEAD
 	int ret;
 
 	switch (state) {
+=======
+	struct isert_cmd *isert_cmd = iscsit_priv_cmd(cmd);
+	int ret = 0;
+
+	switch (state) {
+	case ISTATE_REMOVE:
+		spin_lock_bh(&conn->cmd_lock);
+		list_del_init(&cmd->i_conn_node);
+		spin_unlock_bh(&conn->cmd_lock);
+		isert_put_cmd(isert_cmd, true);
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case ISTATE_SEND_NOPIN_WANT_RESPONSE:
 		ret = isert_put_nopin(cmd, conn, false);
 		break;

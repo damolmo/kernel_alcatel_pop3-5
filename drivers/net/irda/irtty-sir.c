@@ -430,6 +430,7 @@ static int irtty_open(struct tty_struct *tty)
 
 	/* Module stuff handled via irda_ldisc.owner - Jean II */
 
+<<<<<<< HEAD
 	/* First make sure we're not already connected. */
 	if (tty->disc_data != NULL) {
 		priv = tty->disc_data;
@@ -440,6 +441,8 @@ static int irtty_open(struct tty_struct *tty)
 		tty->disc_data = NULL;		/* ### */
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* stop the underlying  driver */
 	irtty_stop_receiver(tty, TRUE);
 	if (tty->ops->stop)

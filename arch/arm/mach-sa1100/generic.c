@@ -31,6 +31,10 @@
 
 #include <mach/hardware.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
+=======
+#include <mach/reset.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "generic.h"
 
@@ -91,6 +95,11 @@ static void sa1100_power_off(void)
 
 void sa11x0_restart(enum reboot_mode mode, const char *cmd)
 {
+<<<<<<< HEAD
+=======
+	clear_reset_status(RESET_STATUS_ALL);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (mode == REBOOT_SOFT) {
 		/* Jump into ROM at address 0 */
 		soft_restart(0);

@@ -60,9 +60,15 @@ static unsigned long mmap_rnd(void)
 	if (current->flags & PF_RANDOMIZE) {
 		/* 8MB for 32bit, 1GB for 64bit */
 		if (is_32bit_task())
+<<<<<<< HEAD
 			rnd = (long)(get_random_int() % (1<<(23-PAGE_SHIFT)));
 		else
 			rnd = (long)(get_random_int() % (1<<(30-PAGE_SHIFT)));
+=======
+			rnd = get_random_long() % (1<<(23-PAGE_SHIFT));
+		else
+			rnd = get_random_long() % (1UL<<(30-PAGE_SHIFT));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return rnd << PAGE_SHIFT;
 }

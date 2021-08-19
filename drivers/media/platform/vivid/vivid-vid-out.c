@@ -171,9 +171,12 @@ static int vid_out_start_streaming(struct vb2_queue *vq, unsigned count)
 	if (vb2_is_streaming(&dev->vb_vid_cap_q))
 		dev->can_loop_video = vivid_vid_can_loop(dev);
 
+<<<<<<< HEAD
 	if (dev->kthread_vid_out)
 		return 0;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->vid_out_seq_count = 0;
 	dprintk(dev, 1, "%s\n", __func__);
 	if (dev->start_streaming_error) {
@@ -980,7 +983,11 @@ int vivid_vid_out_s_fbuf(struct file *file, void *fh,
 		return -EINVAL;
 	}
 	dev->fbuf_out_flags &= ~(chroma_flags | alpha_flags);
+<<<<<<< HEAD
 	dev->fbuf_out_flags = a->flags & (chroma_flags | alpha_flags);
+=======
+	dev->fbuf_out_flags |= a->flags & (chroma_flags | alpha_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

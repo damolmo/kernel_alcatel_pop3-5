@@ -262,6 +262,11 @@ struct scsi_dh_data {
 enum scsi_target_state {
 	STARGET_CREATED = 1,
 	STARGET_RUNNING,
+<<<<<<< HEAD
+=======
+	STARGET_REMOVE,
+	STARGET_CREATED_REMOVE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	STARGET_DEL,
 };
 

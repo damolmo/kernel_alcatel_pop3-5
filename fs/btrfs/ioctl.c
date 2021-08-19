@@ -59,6 +59,10 @@
 #include "props.h"
 #include "sysfs.h"
 #include "qgroup.h"
+<<<<<<< HEAD
+=======
+#include "tree-log.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_64BIT
 /* If we have a 32-bit userspace and 64-bit kernel, then the UAPI
@@ -377,7 +381,10 @@ static noinline int btrfs_ioctl_fitrim(struct file *file, void __user *arg)
 	struct fstrim_range range;
 	u64 minlen = ULLONG_MAX;
 	u64 num_devices = 0;
+<<<<<<< HEAD
 	u64 total_bytes = btrfs_super_total_bytes(fs_info->super_copy);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -401,11 +408,23 @@ static noinline int btrfs_ioctl_fitrim(struct file *file, void __user *arg)
 		return -EOPNOTSUPP;
 	if (copy_from_user(&range, arg, sizeof(range)))
 		return -EFAULT;
+<<<<<<< HEAD
 	if (range.start > total_bytes ||
 	    range.len < fs_info->sb->s_blocksize)
 		return -EINVAL;
 
 	range.len = min(range.len, total_bytes - range.start);
+=======
+
+	/*
+	 * NOTE: Don't truncate the range using super->total_bytes.  Bytenr of
+	 * block group is in the logical address space, which can be any
+	 * sectorsize aligned bytenr in  the range [0, U64_MAX].
+	 */
+	if (range.len < fs_info->sb->s_blocksize)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	range.minlen = max(range.minlen, minlen);
 	ret = btrfs_trim_fs(fs_info->tree_root, &range);
 	if (ret < 0)
@@ -560,6 +579,13 @@ static noinline int create_subvol(struct inode *dir,
 		goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&new_root->objectid_mutex);
+	new_root->highest_objectid = new_dirid;
+	mutex_unlock(&new_root->objectid_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * insert the directory item
 	 */
@@ -579,12 +605,26 @@ static noinline int create_subvol(struct inode *dir,
 
 	btrfs_i_size_write(dir, dir->i_size + namelen * 2);
 	ret = btrfs_update_inode(trans, root, dir);
+<<<<<<< HEAD
 	BUG_ON(ret);
+=======
+	if (ret) {
+		btrfs_abort_transaction(trans, root, ret);
+		goto fail;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = btrfs_add_root_ref(trans, root->fs_info->tree_root,
 				 objectid, root->root_key.objectid,
 				 btrfs_ino(dir), index, name, namelen);
+<<<<<<< HEAD
 	BUG_ON(ret);
+=======
+	if (ret) {
+		btrfs_abort_transaction(trans, root, ret);
+		goto fail;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = btrfs_uuid_tree_add(trans, root->fs_info->uuid_root,
 				  root_item.uuid, BTRFS_UUID_KEY_SUBVOL,
@@ -1627,6 +1667,12 @@ static noinline int btrfs_ioctl_snap_create_transid(struct file *file,
 	int namelen;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	if (!S_ISDIR(file_inode(file)->i_mode))
+		return -ENOTDIR;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = mnt_want_write_file(file);
 	if (ret)
 		goto out;
@@ -1656,7 +1702,11 @@ static noinline int btrfs_ioctl_snap_create_transid(struct file *file,
 
 		src_inode = file_inode(src.file);
 		if (src_inode->i_sb != file_inode(file)->i_sb) {
+<<<<<<< HEAD
 			btrfs_info(BTRFS_I(src_inode)->root->fs_info,
+=======
+			btrfs_info(BTRFS_I(file_inode(file))->root->fs_info,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				   "Snapshot src from another FS");
 			ret = -EXDEV;
 		} else if (!inode_owner_or_capable(src_inode)) {
@@ -1684,6 +1734,12 @@ static noinline int btrfs_ioctl_snap_create(struct file *file,
 	struct btrfs_ioctl_vol_args *vol_args;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!S_ISDIR(file_inode(file)->i_mode))
+		return -ENOTDIR;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vol_args = memdup_user(arg, sizeof(*vol_args));
 	if (IS_ERR(vol_args))
 		return PTR_ERR(vol_args);
@@ -1707,6 +1763,12 @@ static noinline int btrfs_ioctl_snap_create_v2(struct file *file,
 	bool readonly = false;
 	struct btrfs_qgroup_inherit *inherit = NULL;
 
+<<<<<<< HEAD
+=======
+	if (!S_ISDIR(file_inode(file)->i_mode))
+		return -ENOTDIR;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vol_args = memdup_user(arg, sizeof(*vol_args));
 	if (IS_ERR(vol_args))
 		return PTR_ERR(vol_args);
@@ -2224,7 +2286,11 @@ static noinline int btrfs_search_path_in_tree(struct btrfs_fs_info *info,
 	if (!path)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ptr = &name[BTRFS_INO_LOOKUP_PATH_MAX];
+=======
+	ptr = &name[BTRFS_INO_LOOKUP_PATH_MAX - 1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	key.objectid = tree_id;
 	key.type = BTRFS_ROOT_ITEM_KEY;
@@ -2335,6 +2401,12 @@ static noinline int btrfs_ioctl_snap_destroy(struct file *file,
 	int ret;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!S_ISDIR(dir->i_mode))
+		return -ENOTDIR;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vol_args = memdup_user(arg, sizeof(*vol_args));
 	if (IS_ERR(vol_args))
 		return PTR_ERR(vol_args);
@@ -2509,6 +2581,11 @@ static noinline int btrfs_ioctl_snap_destroy(struct file *file,
 out_end_trans:
 	trans->block_rsv = NULL;
 	trans->bytes_reserved = 0;
+<<<<<<< HEAD
+=======
+	if (!err)
+		btrfs_record_snapshot_destroy(trans, dir);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = btrfs_end_transaction(trans, root);
 	if (ret && !err)
 		err = ret;
@@ -2959,7 +3036,11 @@ out_unlock:
 static long btrfs_ioctl_file_extent_same(struct file *file,
 			struct btrfs_ioctl_same_args __user *argp)
 {
+<<<<<<< HEAD
 	struct btrfs_ioctl_same_args *same;
+=======
+	struct btrfs_ioctl_same_args *same = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct btrfs_ioctl_same_extent_info *info;
 	struct inode *src = file_inode(file);
 	u64 off;
@@ -2989,6 +3070,10 @@ static long btrfs_ioctl_file_extent_same(struct file *file,
 
 	if (IS_ERR(same)) {
 		ret = PTR_ERR(same);
+<<<<<<< HEAD
+=======
+		same = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -3059,6 +3144,10 @@ static long btrfs_ioctl_file_extent_same(struct file *file,
 
 out:
 	mnt_drop_write_file(file);
+<<<<<<< HEAD
+=======
+	kfree(same);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -3185,6 +3274,153 @@ static void clone_update_extent_map(struct inode *inode,
 			&BTRFS_I(inode)->runtime_flags);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Make sure we do not end up inserting an inline extent into a file that has
+ * already other (non-inline) extents. If a file has an inline extent it can
+ * not have any other extents and the (single) inline extent must start at the
+ * file offset 0. Failing to respect these rules will lead to file corruption,
+ * resulting in EIO errors on read/write operations, hitting BUG_ON's in mm, etc
+ *
+ * We can have extents that have been already written to disk or we can have
+ * dirty ranges still in delalloc, in which case the extent maps and items are
+ * created only when we run delalloc, and the delalloc ranges might fall outside
+ * the range we are currently locking in the inode's io tree. So we check the
+ * inode's i_size because of that (i_size updates are done while holding the
+ * i_mutex, which we are holding here).
+ * We also check to see if the inode has a size not greater than "datal" but has
+ * extents beyond it, due to an fallocate with FALLOC_FL_KEEP_SIZE (and we are
+ * protected against such concurrent fallocate calls by the i_mutex).
+ *
+ * If the file has no extents but a size greater than datal, do not allow the
+ * copy because we would need turn the inline extent into a non-inline one (even
+ * with NO_HOLES enabled). If we find our destination inode only has one inline
+ * extent, just overwrite it with the source inline extent if its size is less
+ * than the source extent's size, or we could copy the source inline extent's
+ * data into the destination inode's inline extent if the later is greater then
+ * the former.
+ */
+static int clone_copy_inline_extent(struct inode *src,
+				    struct inode *dst,
+				    struct btrfs_trans_handle *trans,
+				    struct btrfs_path *path,
+				    struct btrfs_key *new_key,
+				    const u64 drop_start,
+				    const u64 datal,
+				    const u64 skip,
+				    const u64 size,
+				    char *inline_data)
+{
+	struct btrfs_root *root = BTRFS_I(dst)->root;
+	const u64 aligned_end = ALIGN(new_key->offset + datal,
+				      root->sectorsize);
+	int ret;
+	struct btrfs_key key;
+
+	if (new_key->offset > 0)
+		return -EOPNOTSUPP;
+
+	key.objectid = btrfs_ino(dst);
+	key.type = BTRFS_EXTENT_DATA_KEY;
+	key.offset = 0;
+	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
+	if (ret < 0) {
+		return ret;
+	} else if (ret > 0) {
+		if (path->slots[0] >= btrfs_header_nritems(path->nodes[0])) {
+			ret = btrfs_next_leaf(root, path);
+			if (ret < 0)
+				return ret;
+			else if (ret > 0)
+				goto copy_inline_extent;
+		}
+		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
+		if (key.objectid == btrfs_ino(dst) &&
+		    key.type == BTRFS_EXTENT_DATA_KEY) {
+			ASSERT(key.offset > 0);
+			return -EOPNOTSUPP;
+		}
+	} else if (i_size_read(dst) <= datal) {
+		struct btrfs_file_extent_item *ei;
+		u64 ext_len;
+
+		/*
+		 * If the file size is <= datal, make sure there are no other
+		 * extents following (can happen do to an fallocate call with
+		 * the flag FALLOC_FL_KEEP_SIZE).
+		 */
+		ei = btrfs_item_ptr(path->nodes[0], path->slots[0],
+				    struct btrfs_file_extent_item);
+		/*
+		 * If it's an inline extent, it can not have other extents
+		 * following it.
+		 */
+		if (btrfs_file_extent_type(path->nodes[0], ei) ==
+		    BTRFS_FILE_EXTENT_INLINE)
+			goto copy_inline_extent;
+
+		ext_len = btrfs_file_extent_num_bytes(path->nodes[0], ei);
+		if (ext_len > aligned_end)
+			return -EOPNOTSUPP;
+
+		ret = btrfs_next_item(root, path);
+		if (ret < 0) {
+			return ret;
+		} else if (ret == 0) {
+			btrfs_item_key_to_cpu(path->nodes[0], &key,
+					      path->slots[0]);
+			if (key.objectid == btrfs_ino(dst) &&
+			    key.type == BTRFS_EXTENT_DATA_KEY)
+				return -EOPNOTSUPP;
+		}
+	}
+
+copy_inline_extent:
+	/*
+	 * We have no extent items, or we have an extent at offset 0 which may
+	 * or may not be inlined. All these cases are dealt the same way.
+	 */
+	if (i_size_read(dst) > datal) {
+		/*
+		 * If the destination inode has an inline extent...
+		 * This would require copying the data from the source inline
+		 * extent into the beginning of the destination's inline extent.
+		 * But this is really complex, both extents can be compressed
+		 * or just one of them, which would require decompressing and
+		 * re-compressing data (which could increase the new compressed
+		 * size, not allowing the compressed data to fit anymore in an
+		 * inline extent).
+		 * So just don't support this case for now (it should be rare,
+		 * we are not really saving space when cloning inline extents).
+		 */
+		return -EOPNOTSUPP;
+	}
+
+	btrfs_release_path(path);
+	ret = btrfs_drop_extents(trans, root, dst, drop_start, aligned_end, 1);
+	if (ret)
+		return ret;
+	ret = btrfs_insert_empty_item(trans, root, path, new_key, size);
+	if (ret)
+		return ret;
+
+	if (skip) {
+		const u32 start = btrfs_file_extent_calc_inline_size(0);
+
+		memmove(inline_data + start, inline_data + start + skip, datal);
+	}
+
+	write_extent_buffer(path->nodes[0], inline_data,
+			    btrfs_item_ptr_offset(path->nodes[0],
+						  path->slots[0]),
+			    size);
+	inode_add_bytes(dst, datal);
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * btrfs_clone() - clone a range from inode file to another
  *
@@ -3449,7 +3685,10 @@ process_slot:
 			} else if (type == BTRFS_FILE_EXTENT_INLINE) {
 				u64 skip = 0;
 				u64 trim = 0;
+<<<<<<< HEAD
 				u64 aligned_end = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 				if (off > key.offset) {
 					skip = off - key.offset;
@@ -3467,6 +3706,7 @@ process_slot:
 				size -= skip + trim;
 				datal -= skip + trim;
 
+<<<<<<< HEAD
 				aligned_end = ALIGN(new_key.offset + datal,
 						    root->sectorsize);
 				ret = btrfs_drop_extents(trans, root, inode,
@@ -3503,6 +3743,24 @@ process_slot:
 					    btrfs_item_ptr_offset(leaf, slot),
 					    size);
 				inode_add_bytes(inode, datal);
+=======
+				ret = clone_copy_inline_extent(src, inode,
+							       trans, path,
+							       &new_key,
+							       drop_start,
+							       datal,
+							       skip, size, buf);
+				if (ret) {
+					if (ret != -EOPNOTSUPP)
+						btrfs_abort_transaction(trans,
+									root,
+									ret);
+					btrfs_end_transaction(trans, root);
+					goto out;
+				}
+				leaf = path->nodes[0];
+				slot = path->slots[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 
 			/* If we have an implicit hole (NO_HOLES feature). */
@@ -3528,6 +3786,16 @@ process_slot:
 		}
 		btrfs_release_path(path);
 		key.offset++;
+<<<<<<< HEAD
+=======
+
+		if (fatal_signal_pending(current)) {
+			ret = -EINTR;
+			goto out;
+		}
+
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	ret = 0;
 
@@ -3621,11 +3889,14 @@ static noinline long btrfs_ioctl_clone(struct file *file, unsigned long srcfd,
 	if (!(src_file.file->f_mode & FMODE_READ))
 		goto out_fput;
 
+<<<<<<< HEAD
 	/* don't make the dst file partly checksummed */
 	if ((BTRFS_I(src)->flags & BTRFS_INODE_NODATASUM) !=
 	    (BTRFS_I(inode)->flags & BTRFS_INODE_NODATASUM))
 		goto out_fput;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = -EISDIR;
 	if (S_ISDIR(src->i_mode) || S_ISDIR(inode->i_mode))
 		goto out_fput;
@@ -3646,15 +3917,39 @@ static noinline long btrfs_ioctl_clone(struct file *file, unsigned long srcfd,
 		mutex_lock(&src->i_mutex);
 	}
 
+<<<<<<< HEAD
+=======
+	/* don't make the dst file partly checksummed */
+	if ((BTRFS_I(src)->flags & BTRFS_INODE_NODATASUM) !=
+	    (BTRFS_I(inode)->flags & BTRFS_INODE_NODATASUM)) {
+		ret = -EINVAL;
+		goto out_unlock;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* determine range to clone */
 	ret = -EINVAL;
 	if (off + len > src->i_size || off + len < off)
 		goto out_unlock;
 	if (len == 0)
 		olen = len = src->i_size - off;
+<<<<<<< HEAD
 	/* if we extend to eof, continue to block boundary */
 	if (off + len == src->i_size)
 		len = ALIGN(src->i_size, bs) - off;
+=======
+	/*
+	 * If we extend to eof, continue to block boundary if and only if the
+	 * destination end offset matches the destination file's size, otherwise
+	 * we would be corrupting data by placing the eof block into the middle
+	 * of a file.
+	 */
+	if (off + len == src->i_size) {
+		if (!IS_ALIGNED(len, bs) && destoff + len < inode->i_size)
+			goto out_unlock;
+		len = ALIGN(src->i_size, bs) - off;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (len == 0) {
 		ret = 0;
@@ -3826,6 +4121,13 @@ static long btrfs_ioctl_default_subvol(struct file *file, void __user *argp)
 		ret = PTR_ERR(new_root);
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	if (!is_fstree(new_root->objectid)) {
+		ret = -ENOENT;
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	path = btrfs_alloc_path();
 	if (!path) {
@@ -4834,7 +5136,11 @@ static long btrfs_ioctl_quota_rescan_wait(struct file *file, void __user *arg)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	return btrfs_qgroup_wait_for_completion(root->fs_info);
+=======
+	return btrfs_qgroup_wait_for_completion(root->fs_info, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static long _btrfs_ioctl_set_received_subvol(struct file *file,
@@ -5370,3 +5676,27 @@ long btrfs_ioctl(struct file *file, unsigned int
 
 	return -ENOTTY;
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_COMPAT
+long btrfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	switch (cmd) {
+	case FS_IOC32_GETFLAGS:
+		cmd = FS_IOC_GETFLAGS;
+		break;
+	case FS_IOC32_SETFLAGS:
+		cmd = FS_IOC_SETFLAGS;
+		break;
+	case FS_IOC32_GETVERSION:
+		cmd = FS_IOC_GETVERSION;
+		break;
+	default:
+		return -ENOIOCTLCMD;
+	}
+
+	return btrfs_ioctl(file, cmd, (unsigned long) compat_ptr(arg));
+}
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

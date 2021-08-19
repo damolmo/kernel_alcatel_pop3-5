@@ -35,6 +35,7 @@
 
 #include <video/mipi_display.h>
 
+<<<<<<< HEAD
 /**
  * DOC: dsi helpers
  *
@@ -45,6 +46,8 @@
  * subset of the MIPI DCS command set.
  */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int mipi_dsi_device_match(struct device *dev, struct device_driver *drv)
 {
 	return of_driver_match_device(dev, drv);
@@ -67,6 +70,7 @@ static struct bus_type mipi_dsi_bus_type = {
 	.pm = &mipi_dsi_device_pm_ops,
 };
 
+<<<<<<< HEAD
 static int of_device_match(struct device *dev, void *data)
 {
 	return dev->of_node == data;
@@ -90,6 +94,8 @@ struct mipi_dsi_device *of_find_mipi_dsi_device_by_node(struct device_node *np)
 }
 EXPORT_SYMBOL(of_find_mipi_dsi_device_by_node);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void mipi_dsi_dev_release(struct device *dev)
 {
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(dev);
@@ -231,6 +237,7 @@ int mipi_dsi_detach(struct mipi_dsi_device *dsi)
 }
 EXPORT_SYMBOL(mipi_dsi_detach);
 
+<<<<<<< HEAD
 static ssize_t mipi_dsi_device_transfer(struct mipi_dsi_device *dsi,
 					struct mipi_dsi_msg *msg)
 {
@@ -493,12 +500,25 @@ EXPORT_SYMBOL(mipi_dsi_generic_read);
 ssize_t mipi_dsi_dcs_write_buffer(struct mipi_dsi_device *dsi,
 				  const void *data, size_t len)
 {
+=======
+/**
+ * mipi_dsi_dcs_write - send DCS write command
+ * @dsi: DSI device
+ * @data: pointer to the command followed by parameters
+ * @len: length of @data
+ */
+ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, const void *data,
+			    size_t len)
+{
+	const struct mipi_dsi_host_ops *ops = dsi->host->ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mipi_dsi_msg msg = {
 		.channel = dsi->channel,
 		.tx_buf = data,
 		.tx_len = len
 	};
 
+<<<<<<< HEAD
 	switch (len) {
 	case 0:
 		return -EINVAL;
@@ -511,11 +531,26 @@ ssize_t mipi_dsi_dcs_write_buffer(struct mipi_dsi_device *dsi,
 		msg.type = MIPI_DSI_DCS_SHORT_WRITE_PARAM;
 		break;
 
+=======
+	if (!ops || !ops->transfer)
+		return -ENOSYS;
+
+	switch (len) {
+	case 0:
+		return -EINVAL;
+	case 1:
+		msg.type = MIPI_DSI_DCS_SHORT_WRITE;
+		break;
+	case 2:
+		msg.type = MIPI_DSI_DCS_SHORT_WRITE_PARAM;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		msg.type = MIPI_DSI_DCS_LONG_WRITE;
 		break;
 	}
 
+<<<<<<< HEAD
 	return mipi_dsi_device_transfer(dsi, &msg);
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_write_buffer);
@@ -561,10 +596,17 @@ ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, u8 cmd,
 		kfree(tx);
 
 	return err;
+=======
+	if (dsi->mode_flags & MIPI_DSI_MODE_LPM)
+		msg.flags = MIPI_DSI_MSG_USE_LPM;
+
+	return ops->transfer(dsi->host, &msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_write);
 
 /**
+<<<<<<< HEAD
  * mipi_dsi_dcs_read() - send DCS read request command
  * @dsi: DSI peripheral device
  * @cmd: DCS command
@@ -572,10 +614,23 @@ EXPORT_SYMBOL(mipi_dsi_dcs_write);
  * @len: size of receive buffer
  *
  * Return: The number of bytes read or a negative error code on failure.
+=======
+ * mipi_dsi_dcs_read - send DCS read request command
+ * @dsi: DSI device
+ * @cmd: DCS read command
+ * @data: pointer to read buffer
+ * @len: length of @data
+ *
+ * Function returns number of read bytes or error code.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
 			  size_t len)
 {
+<<<<<<< HEAD
+=======
+	const struct mipi_dsi_host_ops *ops = dsi->host->ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mipi_dsi_msg msg = {
 		.channel = dsi->channel,
 		.type = MIPI_DSI_DCS_READ,
@@ -585,6 +640,7 @@ ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
 		.rx_len = len
 	};
 
+<<<<<<< HEAD
 	return mipi_dsi_device_transfer(dsi, &msg);
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_read);
@@ -906,6 +962,17 @@ int mipi_dsi_dcs_set_address_mode(struct mipi_dsi_device *dsi,
 	return 0;
 }
 EXPORT_SYMBOL(mipi_dsi_dcs_set_address_mode);
+=======
+	if (!ops || !ops->transfer)
+		return -ENOSYS;
+
+	if (dsi->mode_flags & MIPI_DSI_MODE_LPM)
+		msg.flags = MIPI_DSI_MSG_USE_LPM;
+
+	return ops->transfer(dsi->host, &msg);
+}
+EXPORT_SYMBOL(mipi_dsi_dcs_read);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int mipi_dsi_drv_probe(struct device *dev)
 {
@@ -932,6 +999,7 @@ static void mipi_dsi_drv_shutdown(struct device *dev)
 }
 
 /**
+<<<<<<< HEAD
  * mipi_dsi_driver_register_full() - register a driver for DSI devices
  * @drv: DSI driver structure
  * @owner: owner module
@@ -944,6 +1012,14 @@ int mipi_dsi_driver_register_full(struct mipi_dsi_driver *drv,
 	drv->driver.bus = &mipi_dsi_bus_type;
 	drv->driver.owner = owner;
 
+=======
+ * mipi_dsi_driver_register - register a driver for DSI devices
+ * @drv: DSI driver structure
+ */
+int mipi_dsi_driver_register(struct mipi_dsi_driver *drv)
+{
+	drv->driver.bus = &mipi_dsi_bus_type;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (drv->probe)
 		drv->driver.probe = mipi_dsi_drv_probe;
 	if (drv->remove)
@@ -953,6 +1029,7 @@ int mipi_dsi_driver_register_full(struct mipi_dsi_driver *drv,
 
 	return driver_register(&drv->driver);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(mipi_dsi_driver_register_full);
 
 /**
@@ -960,6 +1037,13 @@ EXPORT_SYMBOL(mipi_dsi_driver_register_full);
  * @drv: DSI driver structure
  *
  * Return: 0 on success or a negative error code on failure.
+=======
+EXPORT_SYMBOL(mipi_dsi_driver_register);
+
+/**
+ * mipi_dsi_driver_unregister - unregister a driver for DSI devices
+ * @drv: DSI driver structure
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void mipi_dsi_driver_unregister(struct mipi_dsi_driver *drv)
 {

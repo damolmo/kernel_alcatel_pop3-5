@@ -229,14 +229,22 @@ static int snd_hwdep_dsp_load(struct snd_hwdep *hw,
 	if (copy_from_user(&info, _info, sizeof(info)))
 		return -EFAULT;
 	/* check whether the dsp was already loaded */
+<<<<<<< HEAD
 	if (hw->dsp_loaded & (1 << info.index))
+=======
+	if (hw->dsp_loaded & (1u << info.index))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EBUSY;
 	if (!access_ok(VERIFY_READ, info.image, info.length))
 		return -EFAULT;
 	err = hw->ops.dsp_load(hw, &info);
 	if (err < 0)
 		return err;
+<<<<<<< HEAD
 	hw->dsp_loaded |= (1 << info.index);
+=======
+	hw->dsp_loaded |= (1u << info.index);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

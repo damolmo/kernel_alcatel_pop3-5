@@ -366,8 +366,13 @@ static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
 {
 	unsigned long now = jiffies;
 	
+<<<<<<< HEAD
 	if (neigh->used != now)
 		neigh->used = now;
+=======
+	if (READ_ONCE(neigh->used) != now)
+		WRITE_ONCE(neigh->used, now);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
 		return __neigh_event_send(neigh, skb);
 	return 0;
@@ -389,6 +394,10 @@ static inline int neigh_hh_bridge(struct hh_cache *hh, struct sk_buff *skb)
 
 static inline int neigh_hh_output(const struct hh_cache *hh, struct sk_buff *skb)
 {
+<<<<<<< HEAD
+=======
+	unsigned int hh_alen = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int seq;
 	int hh_len;
 
@@ -396,6 +405,7 @@ static inline int neigh_hh_output(const struct hh_cache *hh, struct sk_buff *skb
 		seq = read_seqbegin(&hh->hh_lock);
 		hh_len = hh->hh_len;
 		if (likely(hh_len <= HH_DATA_MOD)) {
+<<<<<<< HEAD
 			/* this is inlined by gcc */
 			memcpy(skb->data - HH_DATA_MOD, hh->hh_data, HH_DATA_MOD);
 		} else {
@@ -406,6 +416,35 @@ static inline int neigh_hh_output(const struct hh_cache *hh, struct sk_buff *skb
 	} while (read_seqretry(&hh->hh_lock, seq));
 
 	skb_push(skb, hh_len);
+=======
+			hh_alen = HH_DATA_MOD;
+
+			/* skb_push() would proceed silently if we have room for
+			 * the unaligned size but not for the aligned size:
+			 * check headroom explicitly.
+			 */
+			if (likely(skb_headroom(skb) >= HH_DATA_MOD)) {
+				/* this is inlined by gcc */
+				memcpy(skb->data - HH_DATA_MOD, hh->hh_data,
+				       HH_DATA_MOD);
+			}
+		} else {
+			hh_alen = HH_DATA_ALIGN(hh_len);
+
+			if (likely(skb_headroom(skb) >= hh_alen)) {
+				memcpy(skb->data - hh_alen, hh->hh_data,
+				       hh_alen);
+			}
+		}
+	} while (read_seqretry(&hh->hh_lock, seq));
+
+	if (WARN_ON_ONCE(skb_headroom(skb) < hh_alen)) {
+		kfree_skb(skb);
+		return NET_XMIT_DROP;
+	}
+
+	__skb_push(skb, hh_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return dev_queue_xmit(skb);
 }
 

@@ -1600,6 +1600,10 @@ static int sm501fb_start(struct sm501fb_info *info,
 	info->fbmem = ioremap(res->start, resource_size(res));
 	if (info->fbmem == NULL) {
 		dev_err(dev, "cannot remap framebuffer\n");
+<<<<<<< HEAD
+=======
+		ret = -ENXIO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto err_mem_res;
 	}
 

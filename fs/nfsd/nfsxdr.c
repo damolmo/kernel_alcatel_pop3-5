@@ -280,6 +280,10 @@ nfssvc_decode_writeargs(struct svc_rqst *rqstp, __be32 *p,
 					struct nfsd_writeargs *args)
 {
 	unsigned int len, hdr, dlen;
+<<<<<<< HEAD
+=======
+	struct kvec *head = rqstp->rq_arg.head;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int v;
 
 	p = decode_fh(p, &args->fh);
@@ -300,9 +304,16 @@ nfssvc_decode_writeargs(struct svc_rqst *rqstp, __be32 *p,
 	 * Check to make sure that we got the right number of
 	 * bytes.
 	 */
+<<<<<<< HEAD
 	hdr = (void*)p - rqstp->rq_arg.head[0].iov_base;
 	dlen = rqstp->rq_arg.head[0].iov_len + rqstp->rq_arg.page_len
 		- hdr;
+=======
+	hdr = (void*)p - head->iov_base;
+	if (hdr > head->iov_len)
+		return 0;
+	dlen = head->iov_len + rqstp->rq_arg.page_len - hdr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Round the length of the data which was specified up to
@@ -316,7 +327,11 @@ nfssvc_decode_writeargs(struct svc_rqst *rqstp, __be32 *p,
 		return 0;
 
 	rqstp->rq_vec[0].iov_base = (void*)p;
+<<<<<<< HEAD
 	rqstp->rq_vec[0].iov_len = rqstp->rq_arg.head[0].iov_len - hdr;
+=======
+	rqstp->rq_vec[0].iov_len = head->iov_len - hdr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	v = 0;
 	while (len > rqstp->rq_vec[v].iov_len) {
 		len -= rqstp->rq_vec[v].iov_len;

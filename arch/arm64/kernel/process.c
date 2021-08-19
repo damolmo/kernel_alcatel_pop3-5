@@ -44,6 +44,10 @@
 #include <linux/personality.h>
 #include <linux/notifier.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/alternative.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/compat.h>
 #include <asm/cacheflush.h>
 #include <asm/fpsimd.h>
@@ -57,6 +61,7 @@ unsigned long __stack_chk_guard __read_mostly;
 EXPORT_SYMBOL(__stack_chk_guard);
 #endif
 
+<<<<<<< HEAD
 void soft_restart(unsigned long addr)
 {
 	setup_mm_for_reboot();
@@ -65,6 +70,8 @@ void soft_restart(unsigned long addr)
 	BUG();
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Function pointers to optional machine specific functions
  */
@@ -129,17 +136,24 @@ void machine_power_off(void)
 {
 	local_irq_disable();
 	smp_send_stop();
+<<<<<<< HEAD
 	pr_emerg("machine_power_off, pm_power_off(%p)\n", pm_power_off);
 	dump_stack();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pm_power_off)
 		pm_power_off();
 }
 
 /*
  * Restart requires that the secondary CPUs stop performing any activity
+<<<<<<< HEAD
  * while the primary CPU resets the system. Systems with a single CPU can
  * use soft_restart() as their machine descriptor's .restart hook, since that
  * will cause the only available CPU to reset. Systems with multiple CPUs must
+=======
+ * while the primary CPU resets the system. Systems with multiple CPUs must
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * provide a HW restart implementation, to ensure that all CPUs reset at once.
  * This is required so that any code running after reset on the primary CPU
  * doesn't have to co-ordinate with other CPUs to ensure they aren't still
@@ -153,7 +167,10 @@ void machine_restart(char *cmd)
 	smp_send_stop();
 
 	/* Now call the architecture specific reboot code. */
+<<<<<<< HEAD
 	pr_emerg("machine_restart, arm_pm_restart(%p)\n", arm_pm_restart);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (arm_pm_restart)
 		arm_pm_restart(reboot_mode, cmd);
 	else
@@ -304,7 +321,12 @@ void release_thread(struct task_struct *dead_task)
 
 int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
 {
+<<<<<<< HEAD
 	fpsimd_preserve_current_state();
+=======
+	if (current->mm)
+		fpsimd_preserve_current_state();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*dst = *src;
 	return 0;
 }
@@ -319,6 +341,18 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 
 	memset(&p->thread.cpu_context, 0, sizeof(struct cpu_context));
 
+<<<<<<< HEAD
+=======
+	/*
+	 * In case p was allocated the same task_struct pointer as some
+	 * other recently-exited task, make sure p is disassociated from
+	 * any cpu that may have run that now-exited task recently.
+	 * Otherwise we could erroneously skip reloading the FPSIMD
+	 * registers for p.
+	 */
+	fpsimd_flush_task_state(p);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (likely(!(p->flags & PF_KTHREAD))) {
 		*childregs = *current_pt_regs();
 		childregs->regs[0] = 0;
@@ -347,6 +381,12 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 	} else {
 		memset(childregs, 0, sizeof(struct pt_regs));
 		childregs->pstate = PSR_MODE_EL1h;
+<<<<<<< HEAD
+=======
+		if (IS_ENABLED(CONFIG_ARM64_UAO) &&
+		    cpus_have_cap(ARM64_HAS_UAO))
+			childregs->pstate |= PSR_UAO_BIT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		p->thread.cpu_context.x19 = stack_start;
 		p->thread.cpu_context.x20 = stk_sz;
 	}
@@ -361,13 +401,19 @@ int copy_thread(unsigned long clone_flags, unsigned long stack_start,
 
 static void tls_thread_switch(struct task_struct *next)
 {
+<<<<<<< HEAD
 	unsigned long tpidr, tpidrro;
 
 	if (!is_compat_task()) {
+=======
+	if (!is_compat_task()) {
+		unsigned long tpidr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		asm("mrs %0, tpidr_el0" : "=r" (tpidr));
 		current->thread.tp_value = tpidr;
 	}
 
+<<<<<<< HEAD
 	if (is_compat_thread(task_thread_info(next))) {
 		tpidr = 0;
 		tpidrro = next->thread.tp_value;
@@ -380,6 +426,25 @@ static void tls_thread_switch(struct task_struct *next)
 	"	msr	tpidr_el0, %0\n"
 	"	msr	tpidrro_el0, %1"
 	: : "r" (tpidr), "r" (tpidrro));
+=======
+	if (is_compat_thread(task_thread_info(next)))
+		write_sysreg(next->thread.tp_value, tpidrro_el0);
+	else if (!arm64_kernel_unmapped_at_el0())
+		write_sysreg(0, tpidrro_el0);
+
+	write_sysreg(next->thread.tp_value, tpidr_el0);
+}
+
+/* Restore the UAO state depending on next's addr_limit */
+static void uao_thread_switch(struct task_struct *next)
+{
+	if (IS_ENABLED(CONFIG_ARM64_UAO)) {
+		if (task_thread_info(next)->addr_limit == KERNEL_DS)
+			asm(ALTERNATIVE("nop", SET_PSTATE_UAO(1), ARM64_HAS_UAO));
+		else
+			asm(ALTERNATIVE("nop", SET_PSTATE_UAO(0), ARM64_HAS_UAO));
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -394,6 +459,10 @@ struct task_struct *__switch_to(struct task_struct *prev,
 	tls_thread_switch(next);
 	hw_breakpoint_thread_switch(next);
 	contextidr_thread_switch(next);
+<<<<<<< HEAD
+=======
+	uao_thread_switch(next);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Complete any pending TLB or cache maintenance on this CPU in case

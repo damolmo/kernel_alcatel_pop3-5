@@ -71,13 +71,20 @@ static struct gfs2_sbd *init_sbd(struct super_block *sb)
 	if (!sdp)
 		return NULL;
 
+<<<<<<< HEAD
 	sb->s_fs_info = sdp;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sdp->sd_vfs = sb;
 	sdp->sd_lkstats = alloc_percpu(struct gfs2_pcpu_lkstats);
 	if (!sdp->sd_lkstats) {
 		kfree(sdp);
 		return NULL;
 	}
+<<<<<<< HEAD
+=======
+	sb->s_fs_info = sdp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	set_bit(SDF_NOJOURNALID, &sdp->sd_flags);
 	gfs2_tune_init(&sdp->sd_tune);
@@ -161,6 +168,7 @@ static int gfs2_check_sb(struct gfs2_sbd *sdp, int silent)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/*  If format numbers match exactly, we're done.  */
 
 	if (sb->sb_fs_format == GFS2_FORMAT_FS &&
@@ -170,6 +178,21 @@ static int gfs2_check_sb(struct gfs2_sbd *sdp, int silent)
 	fs_warn(sdp, "Unknown on-disk format, unable to mount\n");
 
 	return -EINVAL;
+=======
+	if (sb->sb_fs_format != GFS2_FORMAT_FS ||
+	    sb->sb_multihost_format != GFS2_FORMAT_MULTI) {
+		fs_warn(sdp, "Unknown on-disk format, unable to mount\n");
+		return -EINVAL;
+	}
+
+	if (sb->sb_bsize < 512 || sb->sb_bsize > PAGE_SIZE ||
+	    (sb->sb_bsize & (sb->sb_bsize - 1))) {
+		pr_warn("Invalid superblock size\n");
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void end_bio_io_page(struct bio *bio, int error)
@@ -924,7 +947,11 @@ fail:
 }
 
 static const match_table_t nolock_tokens = {
+<<<<<<< HEAD
 	{ Opt_jid, "jid=%d\n", },
+=======
+	{ Opt_jid, "jid=%d", },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ Opt_err, NULL },
 };
 
@@ -1358,6 +1385,12 @@ static struct dentry *gfs2_mount_meta(struct file_system_type *fs_type,
 	struct path path;
 	int error;
 
+<<<<<<< HEAD
+=======
+	if (!dev_name || !*dev_name)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = kern_path(dev_name, LOOKUP_FOLLOW, &path);
 	if (error) {
 		pr_warn("path_lookup on %s returned error %d\n",

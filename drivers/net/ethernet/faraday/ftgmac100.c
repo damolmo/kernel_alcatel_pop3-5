@@ -28,6 +28,10 @@
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/phy.h>
 #include <linux/platform_device.h>
 #include <net/ip.h>

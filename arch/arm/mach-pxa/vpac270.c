@@ -15,6 +15,10 @@
 #include <linux/irq.h>
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
+<<<<<<< HEAD
+=======
+#include <linux/leds.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/gpio.h>
 #include <linux/usb/gpio_vbus.h>
 #include <linux/mtd/mtd.h>

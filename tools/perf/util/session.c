@@ -108,8 +108,19 @@ struct perf_session *perf_session__new(struct perf_data_file *file,
 			if (perf_session__open(session) < 0)
 				goto out_close;
 
+<<<<<<< HEAD
 			perf_session__set_id_hdr_size(session);
 			perf_session__set_comm_exec(session);
+=======
+			/*
+			 * set session attributes that are present in perf.data
+			 * but not in pipe-mode.
+			 */
+			if (!file->is_pipe) {
+				perf_session__set_id_hdr_size(session);
+				perf_session__set_comm_exec(session);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -122,7 +133,15 @@ struct perf_session *perf_session__new(struct perf_data_file *file,
 			pr_warning("Cannot read kernel map\n");
 	}
 
+<<<<<<< HEAD
 	if (tool && tool->ordering_requires_timestamps &&
+=======
+	/*
+	 * In pipe-mode, evlist is empty until PERF_RECORD_HEADER_ATTR is
+	 * processed, so perf_evlist__sample_id_all is not meaningful here.
+	 */
+	if ((!file || !file->is_pipe) && tool && tool->ordering_requires_timestamps &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    tool->ordered_events && !perf_evlist__sample_id_all(session->evlist)) {
 		dump_printf("WARNING: No sample_id_all support, falling back to unordered processing\n");
 		tool->ordered_events = false;
@@ -1063,6 +1082,10 @@ volatile int session_done;
 static int __perf_session__process_pipe_events(struct perf_session *session,
 					       struct perf_tool *tool)
 {
+<<<<<<< HEAD
+=======
+	struct ordered_events *oe = &session->ordered_events;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int fd = perf_data_file__fd(session->file);
 	union perf_event *event;
 	uint32_t size, cur_size = 0;
@@ -1080,6 +1103,10 @@ static int __perf_session__process_pipe_events(struct perf_session *session,
 	buf = malloc(cur_size);
 	if (!buf)
 		return -errno;
+<<<<<<< HEAD
+=======
+	ordered_events__set_copy_on_queue(oe, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 more:
 	event = buf;
 	err = readn(fd, event, sizeof(struct perf_event_header));

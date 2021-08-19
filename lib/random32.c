@@ -47,7 +47,11 @@ static inline void prandom_state_selftest(void)
 }
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PER_CPU(struct rnd_state, net_rand_state);
+=======
+DEFINE_PER_CPU(struct rnd_state, net_rand_state);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  *	prandom_u32_state - seeded pseudo-random number generator.

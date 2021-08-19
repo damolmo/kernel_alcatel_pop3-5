@@ -158,7 +158,11 @@ EXPORT_SYMBOL_GPL(tcp_vegas_cwnd_event);
 
 static inline u32 tcp_vegas_ssthresh(struct tcp_sock *tp)
 {
+<<<<<<< HEAD
 	return  min(tp->snd_ssthresh, tp->snd_cwnd-1);
+=======
+	return  min(tp->snd_ssthresh, tp->snd_cwnd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void tcp_vegas_cong_avoid(struct sock *sk, u32 ack, u32 acked)

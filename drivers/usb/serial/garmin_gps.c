@@ -138,6 +138,10 @@ struct garmin_data {
 	__u8   privpkt[4*6];
 	spinlock_t lock;
 	struct list_head pktlist;
+<<<<<<< HEAD
+=======
+	struct usb_anchor write_urbs;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 
@@ -906,7 +910,11 @@ static int garmin_init_session(struct usb_serial_port *port)
 					sizeof(GARMIN_START_SESSION_REQ), 0);
 
 			if (status < 0)
+<<<<<<< HEAD
 				break;
+=======
+				goto err_kill_urbs;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (status > 0)
@@ -914,6 +922,15 @@ static int garmin_init_session(struct usb_serial_port *port)
 	}
 
 	return status;
+<<<<<<< HEAD
+=======
+
+err_kill_urbs:
+	usb_kill_anchored_urbs(&garmin_data_p->write_urbs);
+	usb_kill_urb(port->interrupt_in_urb);
+
+	return status;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -931,7 +948,10 @@ static int garmin_open(struct tty_struct *tty, struct usb_serial_port *port)
 	spin_unlock_irqrestore(&garmin_data_p->lock, flags);
 
 	/* shutdown any bulk reads that might be going on */
+<<<<<<< HEAD
 	usb_kill_urb(port->write_urb);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_kill_urb(port->read_urb);
 
 	if (garmin_data_p->state == STATE_RESET)
@@ -954,7 +974,11 @@ static void garmin_close(struct usb_serial_port *port)
 
 	/* shutdown our urbs */
 	usb_kill_urb(port->read_urb);
+<<<<<<< HEAD
 	usb_kill_urb(port->write_urb);
+=======
+	usb_kill_anchored_urbs(&garmin_data_p->write_urbs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* keep reset state so we know that we must start a new session */
 	if (garmin_data_p->state != STATE_RESET)
@@ -1038,12 +1062,21 @@ static int garmin_write_bulk(struct usb_serial_port *port,
 	}
 
 	/* send it down the pipe */
+<<<<<<< HEAD
+=======
+	usb_anchor_urb(urb, &garmin_data_p->write_urbs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	status = usb_submit_urb(urb, GFP_ATOMIC);
 	if (status) {
 		dev_err(&port->dev,
 		   "%s - usb_submit_urb(write bulk) failed with status = %d\n",
 				__func__, status);
 		count = status;
+<<<<<<< HEAD
+=======
+		usb_unanchor_urb(urb);
+		kfree(buffer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* we are done with this urb, so let the host driver
@@ -1153,8 +1186,13 @@ static void garmin_read_process(struct garmin_data *garmin_data_p,
 		   send it directly to the tty port */
 		if (garmin_data_p->flags & FLAGS_QUEUING) {
 			pkt_add(garmin_data_p, data, data_length);
+<<<<<<< HEAD
 		} else if (bulk_data ||
 			   getLayerId(data) == GARMIN_LAYERID_APPL) {
+=======
+		} else if (bulk_data || (data_length >= sizeof(u32) &&
+				getLayerId(data) == GARMIN_LAYERID_APPL)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			spin_lock_irqsave(&garmin_data_p->lock, flags);
 			garmin_data_p->flags |= APP_RESP_SEEN;
@@ -1401,9 +1439,22 @@ static int garmin_port_probe(struct usb_serial_port *port)
 	garmin_data_p->state = 0;
 	garmin_data_p->flags = 0;
 	garmin_data_p->count = 0;
+<<<<<<< HEAD
 	usb_set_serial_port_data(port, garmin_data_p);
 
 	status = garmin_init_session(port);
+=======
+	init_usb_anchor(&garmin_data_p->write_urbs);
+	usb_set_serial_port_data(port, garmin_data_p);
+
+	status = garmin_init_session(port);
+	if (status)
+		goto err_free;
+
+	return 0;
+err_free:
+	kfree(garmin_data_p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return status;
 }
@@ -1413,6 +1464,10 @@ static int garmin_port_remove(struct usb_serial_port *port)
 {
 	struct garmin_data *garmin_data_p = usb_get_serial_port_data(port);
 
+<<<<<<< HEAD
+=======
+	usb_kill_anchored_urbs(&garmin_data_p->write_urbs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_kill_urb(port->interrupt_in_urb);
 	del_timer_sync(&garmin_data_p->timer);
 	kfree(garmin_data_p);

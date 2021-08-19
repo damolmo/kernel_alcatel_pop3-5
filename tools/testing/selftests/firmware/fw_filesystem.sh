@@ -18,7 +18,16 @@ FW="$FWPATH/test-firmware.bin"
 test_finish()
 {
 	echo "$OLD_TIMEOUT" >/sys/class/firmware/timeout
+<<<<<<< HEAD
 	echo -n "$OLD_PATH" >/sys/module/firmware_class/parameters/path
+=======
+	if [ "$OLD_FWPATH" = "" ]; then
+		# A zero-length write won't work; write a null byte
+		printf '\000' >/sys/module/firmware_class/parameters/path
+	else
+		echo -n "$OLD_FWPATH" >/sys/module/firmware_class/parameters/path
+	fi
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rm -f "$FW"
 	rmdir "$FWPATH"
 }
@@ -35,8 +44,21 @@ echo "ABCD0123" >"$FW"
 
 NAME=$(basename "$FW")
 
+<<<<<<< HEAD
 # Request a firmware that doesn't exist, it should fail.
 echo -n "nope-$NAME" >"$DIR"/trigger_request
+=======
+if printf '\000' >"$DIR"/trigger_request 2> /dev/null; then
+	echo "$0: empty filename should not succeed" >&2
+	exit 1
+fi
+
+# Request a firmware that doesn't exist, it should fail.
+if echo -n "nope-$NAME" >"$DIR"/trigger_request 2> /dev/null; then
+	echo "$0: firmware shouldn't have loaded" >&2
+	exit 1
+fi
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 if diff -q "$FW" /dev/test_firmware >/dev/null ; then
 	echo "$0: firmware was not expected to match" >&2
 	exit 1

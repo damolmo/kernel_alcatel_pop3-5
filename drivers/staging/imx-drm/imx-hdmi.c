@@ -967,7 +967,11 @@ static void hdmi_config_AVI(struct imx_hdmi *hdmi)
 	else
 		pix_fmt = HDMI_FC_AVICONF0_PIX_FMT_RGB;
 
+<<<<<<< HEAD
 		under_scan =  HDMI_FC_AVICONF0_SCAN_INFO_NODATA;
+=======
+	under_scan =  HDMI_FC_AVICONF0_SCAN_INFO_NODATA;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Active format identification data is present in the AVI InfoFrame.

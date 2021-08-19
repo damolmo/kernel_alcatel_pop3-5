@@ -983,7 +983,11 @@ static s32 e1000_platform_pm_pch_lpt(struct e1000_hw *hw, bool link)
 		u16 max_snoop, max_nosnoop;
 		u16 max_ltr_enc;	/* max LTR latency encoded */
 		s64 lat_ns;	/* latency (ns) */
+<<<<<<< HEAD
 		s64 value;
+=======
+		u64 value;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u32 rxa;
 
 		if (!hw->adapter->max_frame_size) {
@@ -1010,12 +1014,22 @@ static s32 e1000_platform_pm_pch_lpt(struct e1000_hw *hw, bool link)
 		 */
 		lat_ns = ((s64)rxa * 1024 -
 			  (2 * (s64)hw->adapter->max_frame_size)) * 8 * 1000;
+<<<<<<< HEAD
 		if (lat_ns < 0)
 			lat_ns = 0;
 		else
 			do_div(lat_ns, speed);
 
 		value = lat_ns;
+=======
+		if (lat_ns < 0) {
+			value = 0;
+		} else {
+			value = lat_ns;
+			do_div(value, speed);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		while (value > PCI_LTR_VALUE_MASK) {
 			scale++;
 			value = DIV_ROUND_UP(value, (1 << 5));
@@ -1298,6 +1312,12 @@ out:
  *  Checks to see of the link status of the hardware has changed.  If a
  *  change in link status has been detected, then we read the PHY registers
  *  to get the current speed/duplex if link exists.
+<<<<<<< HEAD
+=======
+ *
+ *  Returns a negative error code (-E1000_ERR_*) or 0 (link down) or 1 (link
+ *  up).
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  **/
 static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 {
@@ -1312,7 +1332,11 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 	 * Change or Rx Sequence Error interrupt.
 	 */
 	if (!mac->get_link_status)
+<<<<<<< HEAD
 		return 0;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* First we want to see if the MII Status Register reports
 	 * link.  If so, then we want to get the current speed/duplex
@@ -1437,7 +1461,11 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 	 * we have already determined whether we have link or not.
 	 */
 	if (!mac->autoneg)
+<<<<<<< HEAD
 		return -E1000_ERR_CONFIG;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Auto-Neg is enabled.  Auto Speed Detection takes care
 	 * of MAC speed/duplex configuration.  So we only need to
@@ -1451,10 +1479,19 @@ static s32 e1000_check_for_copper_link_ich8lan(struct e1000_hw *hw)
 	 * different link partner.
 	 */
 	ret_val = e1000e_config_fc_after_link_up(hw);
+<<<<<<< HEAD
 	if (ret_val)
 		e_dbg("Error configuring flow control\n");
 
 	return ret_val;
+=======
+	if (ret_val) {
+		e_dbg("Error configuring flow control\n");
+		return ret_val;
+	}
+
+	return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static s32 e1000_get_variants_ich8lan(struct e1000_adapter *adapter)

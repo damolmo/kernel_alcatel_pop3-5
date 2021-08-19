@@ -947,7 +947,11 @@ int radeon_uvd_calc_upll_dividers(struct radeon_device *rdev,
 		/* calc dclk divider with current vco freq */
 		dclk_div = radeon_uvd_calc_upll_post_div(vco_freq, dclk,
 							 pd_min, pd_even);
+<<<<<<< HEAD
 		if (vclk_div > pd_max)
+=======
+		if (dclk_div > pd_max)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break; /* vco is too big, it has to stop */
 
 		/* calc score with current vco freq */

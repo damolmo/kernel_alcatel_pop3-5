@@ -287,7 +287,10 @@ static void cpu_device_release(struct device *dev)
 	 */
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_CPU_AUTOPROBE
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
 static ssize_t print_cpu_modalias(struct device *dev,
 				  struct device_attribute *attr,
@@ -310,9 +313,12 @@ static ssize_t print_cpu_modalias(struct device *dev,
 	buf[n++] = '\n';
 	return n;
 }
+<<<<<<< HEAD
 #else
 #define print_cpu_modalias	arch_print_cpu_modalias
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int cpu_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
@@ -346,7 +352,11 @@ int register_cpu(struct cpu *cpu, int num)
 	cpu->dev.offline_disabled = !cpu->hotpluggable;
 	cpu->dev.offline = !cpu_online(num);
 	cpu->dev.of_node = of_get_cpu_node(num, NULL);
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_HAS_CPU_AUTOPROBE
+=======
+#ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cpu->dev.bus->uevent = cpu_uevent;
 #endif
 	cpu->dev.groups = common_cpu_attr_groups;
@@ -370,7 +380,11 @@ struct device *get_cpu_device(unsigned cpu)
 }
 EXPORT_SYMBOL_GPL(get_cpu_device);
 
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_CPU_AUTOPROBE
+=======
+#ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static DEVICE_ATTR(modalias, 0444, print_cpu_modalias, NULL);
 #endif
 
@@ -384,7 +398,11 @@ static struct attribute *cpu_root_attrs[] = {
 	&cpu_attrs[2].attr.attr,
 	&dev_attr_kernel_max.attr,
 	&dev_attr_offline.attr,
+<<<<<<< HEAD
 #ifdef CONFIG_HAVE_CPU_AUTOPROBE
+=======
+#ifdef CONFIG_GENERIC_CPU_AUTOPROBE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	&dev_attr_modalias.attr,
 #endif
 	NULL
@@ -422,6 +440,7 @@ static void __init cpu_dev_register_generic(void)
 #endif
 }
 
+<<<<<<< HEAD
 
 static int device_hotplug_notifier(struct notifier_block *nfb, unsigned long action, void *hcpu)
 {
@@ -446,11 +465,64 @@ static int device_hotplug_notifier(struct notifier_block *nfb, unsigned long act
 return ret;
 }
 
+=======
+#ifdef CONFIG_GENERIC_CPU_VULNERABILITIES
+
+ssize_t __weak cpu_show_meltdown(struct device *dev,
+				 struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_spectre_v1(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+ssize_t __weak cpu_show_spectre_v2(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "Not affected\n");
+}
+
+static DEVICE_ATTR(meltdown, 0444, cpu_show_meltdown, NULL);
+static DEVICE_ATTR(spectre_v1, 0444, cpu_show_spectre_v1, NULL);
+static DEVICE_ATTR(spectre_v2, 0444, cpu_show_spectre_v2, NULL);
+
+static struct attribute *cpu_root_vulnerabilities_attrs[] = {
+	&dev_attr_meltdown.attr,
+	&dev_attr_spectre_v1.attr,
+	&dev_attr_spectre_v2.attr,
+	NULL
+};
+
+static const struct attribute_group cpu_root_vulnerabilities_group = {
+	.name  = "vulnerabilities",
+	.attrs = cpu_root_vulnerabilities_attrs,
+};
+
+static void __init cpu_register_vulnerabilities(void)
+{
+	if (sysfs_create_group(&cpu_subsys.dev_root->kobj,
+			       &cpu_root_vulnerabilities_group))
+		pr_err("Unable to register CPU vulnerabilities\n");
+}
+
+#else
+static inline void cpu_register_vulnerabilities(void) { }
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __init cpu_dev_init(void)
 {
 	if (subsys_system_register(&cpu_subsys, cpu_root_attr_groups))
 		panic("Failed to register CPU subsystem");
 
 	cpu_dev_register_generic();
+<<<<<<< HEAD
 	cpu_notifier(device_hotplug_notifier, 0);
+=======
+	cpu_register_vulnerabilities();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

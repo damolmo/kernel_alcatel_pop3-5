@@ -368,7 +368,11 @@ static int drm_dp_dpcd_access(struct drm_dp_aux *aux, u8 request,
 {
 	struct drm_dp_aux_msg msg;
 	unsigned int retry;
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	memset(&msg, 0, sizeof(msg));
 	msg.address = offset;
@@ -376,6 +380,7 @@ static int drm_dp_dpcd_access(struct drm_dp_aux *aux, u8 request,
 	msg.buffer = buffer;
 	msg.size = size;
 
+<<<<<<< HEAD
 	/*
 	 * The specification doesn't give any recommendation on how often to
 	 * retry native transactions, so retry 7 times like for I2C-over-AUX
@@ -386,22 +391,48 @@ static int drm_dp_dpcd_access(struct drm_dp_aux *aux, u8 request,
 		mutex_lock(&aux->hw_mutex);
 		err = aux->transfer(aux, &msg);
 		mutex_unlock(&aux->hw_mutex);
+=======
+	mutex_lock(&aux->hw_mutex);
+
+	/*
+	 * The specification doesn't give any recommendation on how often to
+	 * retry native transactions. We used to retry 7 times like for
+	 * aux i2c transactions but real world devices this wasn't
+	 * sufficient, bump to 32 which makes Dell 4k monitors happier.
+	 */
+	for (retry = 0; retry < 32; retry++) {
+
+		err = aux->transfer(aux, &msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0) {
 			if (err == -EBUSY)
 				continue;
 
+<<<<<<< HEAD
 			return err;
+=======
+			goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 
 		switch (msg.reply & DP_AUX_NATIVE_REPLY_MASK) {
 		case DP_AUX_NATIVE_REPLY_ACK:
 			if (err < size)
+<<<<<<< HEAD
 				return -EPROTO;
 			return err;
 
 		case DP_AUX_NATIVE_REPLY_NACK:
 			return -EIO;
+=======
+				err = -EPROTO;
+			goto unlock;
+
+		case DP_AUX_NATIVE_REPLY_NACK:
+			err = -EIO;
+			goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		case DP_AUX_NATIVE_REPLY_DEFER:
 			usleep_range(400, 500);
@@ -410,7 +441,15 @@ static int drm_dp_dpcd_access(struct drm_dp_aux *aux, u8 request,
 	}
 
 	DRM_DEBUG_KMS("too many retries, giving up\n");
+<<<<<<< HEAD
 	return -EIO;
+=======
+	err = -EIO;
+
+unlock:
+	mutex_unlock(&aux->hw_mutex);
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -599,9 +638,13 @@ static int drm_dp_i2c_do_msg(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg)
 	 * before giving up the AUX transaction.
 	 */
 	for (retry = 0; retry < 7; retry++) {
+<<<<<<< HEAD
 		mutex_lock(&aux->hw_mutex);
 		err = aux->transfer(aux, msg);
 		mutex_unlock(&aux->hw_mutex);
+=======
+		err = aux->transfer(aux, msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0) {
 			if (err == -EBUSY)
 				continue;
@@ -654,12 +697,18 @@ static int drm_dp_i2c_do_msg(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg)
 
 		case DP_AUX_I2C_REPLY_NACK:
 			DRM_DEBUG_KMS("I2C nack\n");
+<<<<<<< HEAD
 			aux->i2c_nack_count++;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EREMOTEIO;
 
 		case DP_AUX_I2C_REPLY_DEFER:
 			DRM_DEBUG_KMS("I2C defer\n");
+<<<<<<< HEAD
 			aux->i2c_defer_count++;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			usleep_range(400, 500);
 			continue;
 
@@ -683,6 +732,11 @@ static int drm_dp_i2c_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 
 	memset(&msg, 0, sizeof(msg));
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&aux->hw_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < num; i++) {
 		msg.address = msgs[i].addr;
 		msg.request = (msgs[i].flags & I2C_M_RD) ?
@@ -727,6 +781,11 @@ static int drm_dp_i2c_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 	msg.size = 0;
 	(void)drm_dp_i2c_do_msg(aux, &msg);
 
+<<<<<<< HEAD
+=======
+	mutex_unlock(&aux->hw_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

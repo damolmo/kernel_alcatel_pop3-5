@@ -193,8 +193,11 @@ static void pci_proc_init(void)
 }
 #endif /* CONFIG_PROC_FS && PCI_COUNTERS */
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(bpci_lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*****************************************************************************
  *
  *  STRUCT: pci_io_resource
@@ -368,7 +371,10 @@ int msp_pcibios_config_access(unsigned char access_type,
 	struct msp_pci_regs *preg = (void *)PCI_BASE_REG;
 	unsigned char bus_num = bus->number;
 	unsigned char dev_fn = (unsigned char)devfn;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long intr;
 	unsigned long value;
 	static char pciirqflag;
@@ -401,10 +407,14 @@ int msp_pcibios_config_access(unsigned char access_type,
 	}
 
 #if defined(CONFIG_PMC_MSP7120_GW) || defined(CONFIG_PMC_MSP7120_EVAL)
+<<<<<<< HEAD
 	local_irq_save(flags);
 	vpe_status = dvpe();
 #else
 	spin_lock_irqsave(&bpci_lock, flags);
+=======
+	vpe_status = dvpe();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	/*
@@ -457,9 +467,12 @@ int msp_pcibios_config_access(unsigned char access_type,
 
 #if defined(CONFIG_PMC_MSP7120_GW) || defined(CONFIG_PMC_MSP7120_EVAL)
 		evpe(vpe_status);
+<<<<<<< HEAD
 		local_irq_restore(flags);
 #else
 		spin_unlock_irqrestore(&bpci_lock, flags);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 		return -1;
@@ -467,9 +480,12 @@ int msp_pcibios_config_access(unsigned char access_type,
 
 #if defined(CONFIG_PMC_MSP7120_GW) || defined(CONFIG_PMC_MSP7120_EVAL)
 	evpe(vpe_status);
+<<<<<<< HEAD
 	local_irq_restore(flags);
 #else
 	spin_unlock_irqrestore(&bpci_lock, flags);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	return PCIBIOS_SUCCESSFUL;

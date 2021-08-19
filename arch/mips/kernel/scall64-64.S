@@ -80,7 +80,11 @@ syscall_trace_entry:
 	SAVE_STATIC
 	move	s0, t2
 	move	a0, sp
+<<<<<<< HEAD
 	daddiu	a1, v0, __NR_64_Linux
+=======
+	move	a1, v0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jal	syscall_trace_enter
 
 	bltz	v0, 2f			# seccomp failed? Skip syscall
@@ -318,7 +322,11 @@ EXPORT(sys_call_table)
 	PTR	sys_sched_getaffinity
 	PTR	sys_cacheflush
 	PTR	sys_cachectl
+<<<<<<< HEAD
 	PTR	sys_sysmips
+=======
+	PTR	__sys_sysmips
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	PTR	sys_io_setup			/* 5200 */
 	PTR	sys_io_destroy
 	PTR	sys_io_getevents

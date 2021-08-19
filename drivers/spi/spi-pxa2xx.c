@@ -564,6 +564,13 @@ static irqreturn_t ssp_int(int irq, void *dev_id)
 	if (!(sccr1_reg & SSCR1_TIE))
 		mask &= ~SSSR_TFS;
 
+<<<<<<< HEAD
+=======
+	/* Ignore RX timeout interrupt if it is disabled */
+	if (!(sccr1_reg & SSCR1_TINTE))
+		mask &= ~SSSR_TINT;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(status & mask))
 		return IRQ_NONE;
 
@@ -592,10 +599,21 @@ static unsigned int ssp_get_clk_div(struct driver_data *drv_data, int rate)
 
 	rate = min_t(int, ssp_clk, rate);
 
+<<<<<<< HEAD
 	if (ssp->type == PXA25x_SSP || ssp->type == CE4100_SSP)
 		return ((ssp_clk / (2 * rate) - 1) & 0xff) << 8;
 	else
 		return ((ssp_clk / rate - 1) & 0xfff) << 8;
+=======
+	/*
+	 * Calculate the divisor for the SCR (Serial Clock Rate), avoiding
+	 * that the SSP transmission rate can be greater than the device rate
+	 */
+	if (ssp->type == PXA25x_SSP || ssp->type == CE4100_SSP)
+		return ((DIV_ROUND_UP(ssp_clk, 2 * rate) - 1) & 0xff) << 8;
+	else
+		return ((DIV_ROUND_UP(ssp_clk, rate) - 1)  & 0xfff) << 8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void pump_transfers(unsigned long data)
@@ -1052,7 +1070,17 @@ pxa2xx_spi_acpi_get_pdata(struct platform_device *pdev)
 		return NULL;
 
 	ssp->clk = devm_clk_get(&pdev->dev, NULL);
+<<<<<<< HEAD
 	ssp->irq = platform_get_irq(pdev, 0);
+=======
+	if (IS_ERR(ssp->clk))
+		return NULL;
+
+	ssp->irq = platform_get_irq(pdev, 0);
+	if (ssp->irq < 0)
+		return NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ssp->type = LPSS_SSP;
 	ssp->pdev = pdev;
 
@@ -1112,7 +1140,11 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 	}
 
 	/* Allocate master with space for drv_data and null dma buffer */
+<<<<<<< HEAD
 	master = spi_alloc_master(dev, sizeof(struct driver_data) + 16);
+=======
+	master = devm_spi_alloc_master(dev, sizeof(*drv_data) + 16);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!master) {
 		dev_err(&pdev->dev, "cannot alloc spi_master\n");
 		pxa_ssp_free(ssp);
@@ -1205,7 +1237,11 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 
 	/* Register with the SPI framework */
 	platform_set_drvdata(pdev, drv_data);
+<<<<<<< HEAD
 	status = devm_spi_register_master(&pdev->dev, master);
+=======
+	status = spi_register_master(master);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (status != 0) {
 		dev_err(&pdev->dev, "problem registering spi master\n");
 		goto out_error_clock_enabled;
@@ -1219,7 +1255,10 @@ out_error_clock_enabled:
 	free_irq(ssp->irq, drv_data);
 
 out_error_master_alloc:
+<<<<<<< HEAD
 	spi_master_put(master);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pxa_ssp_free(ssp);
 	return status;
 }
@@ -1235,6 +1274,11 @@ static int pxa2xx_spi_remove(struct platform_device *pdev)
 
 	pm_runtime_get_sync(&pdev->dev);
 
+<<<<<<< HEAD
+=======
+	spi_unregister_master(drv_data->master);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Disable the SSP at the peripheral and SOC level */
 	write_SSCR0(0, drv_data->ioaddr);
 	clk_disable_unprepare(ssp->clk);

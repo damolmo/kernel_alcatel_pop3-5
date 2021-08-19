@@ -389,7 +389,10 @@ static struct thread *__machine__findnew_thread(struct machine *machine,
 	if (th != NULL) {
 		rb_link_node(&th->rb_node, parent, p);
 		rb_insert_color(&th->rb_node, &machine->threads);
+<<<<<<< HEAD
 		machine->last_match = th;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * We have to initialize map_groups separately
@@ -400,9 +403,18 @@ static struct thread *__machine__findnew_thread(struct machine *machine,
 		 * leader and that would screwed the rb tree.
 		 */
 		if (thread__init_map_groups(th, machine)) {
+<<<<<<< HEAD
 			thread__delete(th);
 			return NULL;
 		}
+=======
+			rb_erase(&th->rb_node, &machine->threads);
+			thread__delete(th);
+			return NULL;
+		}
+
+		machine->last_match = th;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return th;

@@ -14,7 +14,11 @@
 MODULE_LICENSE("GPL");
 
 #ifndef __ARM_NEON__
+<<<<<<< HEAD
 #error You should compile this file with '-mfloat-abi=softfp -mfpu=neon'
+=======
+#error You should compile this file with '-march=armv7-a -mfloat-abi=softfp -mfpu=neon'
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*

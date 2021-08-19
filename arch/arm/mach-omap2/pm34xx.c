@@ -48,6 +48,10 @@
 #include "prm3xxx.h"
 #include "pm.h"
 #include "sdrc.h"
+<<<<<<< HEAD
+=======
+#include "omap-secure.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "sram.h"
 #include "control.h"
 #include "vc.h"
@@ -66,7 +70,10 @@ struct power_state {
 
 static LIST_HEAD(pwrst_list);
 
+<<<<<<< HEAD
 static int (*_omap_save_secure_sram)(u32 *addr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void (*omap3_do_wfi_sram)(void);
 
 static struct powerdomain *mpu_pwrdm, *neon_pwrdm;
@@ -121,8 +128,13 @@ static void omap3_save_secure_ram_context(void)
 		 * will hang the system.
 		 */
 		pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_ON);
+<<<<<<< HEAD
 		ret = _omap_save_secure_sram((u32 *)(unsigned long)
 				__pa(omap3_secure_ram_storage));
+=======
+		ret = omap3_save_secure_ram(omap3_secure_ram_storage,
+					    OMAP3_SAVE_SECURE_RAM_SZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pwrdm_set_next_pwrst(mpu_pwrdm, mpu_next_state);
 		/* Following is for error tracking, it should not happen */
 		if (ret) {
@@ -433,15 +445,21 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
  *
  * The minimum set of functions is pushed to SRAM for execution:
  * - omap3_do_wfi for erratum i581 WA,
+<<<<<<< HEAD
  * - save_secure_ram_context for security extensions.
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void omap_push_sram_idle(void)
 {
 	omap3_do_wfi_sram = omap_sram_push(omap3_do_wfi, omap3_do_wfi_sz);
+<<<<<<< HEAD
 
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP)
 		_omap_save_secure_sram = omap_sram_push(save_secure_ram_context,
 				save_secure_ram_context_sz);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __init pm_errata_configure(void)
@@ -553,7 +571,11 @@ int __init omap3_pm_init(void)
 	clkdm_add_wkdep(neon_clkdm, mpu_clkdm);
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP) {
 		omap3_secure_ram_storage =
+<<<<<<< HEAD
 			kmalloc(0x803F, GFP_KERNEL);
+=======
+			kmalloc(OMAP3_SAVE_SECURE_RAM_SZ, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!omap3_secure_ram_storage)
 			pr_err("Memory allocation failed when allocating for secure sram context\n");
 

@@ -26,7 +26,10 @@ struct task_struct;
 struct exec_domain;
 
 #include <asm/types.h>
+<<<<<<< HEAD
 #include <asm/domain.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 typedef unsigned long mm_segment_t;
 
@@ -68,9 +71,12 @@ struct thread_info {
 #ifdef CONFIG_ARM_THUMBEE
 	unsigned long		thumbee_state;	/* ThumbEE Handler Base register */
 #endif
+<<<<<<< HEAD
 	struct restart_block	restart_block;
 	int			cpu_excp;
 	void			*regs_on_excp;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define INIT_THREAD_INFO(tsk)						\
@@ -80,18 +86,29 @@ struct thread_info {
 	.flags		= 0,						\
 	.preempt_count	= INIT_PREEMPT_COUNT,				\
 	.addr_limit	= KERNEL_DS,					\
+<<<<<<< HEAD
 	.cpu_domain	= domain_val(DOMAIN_USER, DOMAIN_MANAGER) |	\
 			  domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) |	\
 			  domain_val(DOMAIN_IO, DOMAIN_CLIENT),		\
 	.restart_block	= {						\
 		.fn	= do_no_restart_syscall,			\
 	},								\
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define init_thread_info	(init_thread_union.thread_info)
 #define init_stack		(init_thread_union.stack)
 
 /*
+<<<<<<< HEAD
+=======
+ * how to get the current stack pointer in C
+ */
+register unsigned long current_stack_pointer asm ("sp");
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * how to get the thread information struct from C
  */
 static inline struct thread_info *current_thread_info(void) __attribute_const__;

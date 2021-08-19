@@ -237,13 +237,21 @@ __found_pages:
 static int is_valid_page(struct snd_emu10k1 *emu, dma_addr_t addr)
 {
 	if (addr & ~emu->dma_mask) {
+<<<<<<< HEAD
 		dev_err(emu->card->dev,
+=======
+		dev_err_ratelimited(emu->card->dev,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			"max memory size is 0x%lx (addr = 0x%lx)!!\n",
 			emu->dma_mask, (unsigned long)addr);
 		return 0;
 	}
 	if (addr & (EMUPAGESIZE-1)) {
+<<<<<<< HEAD
 		dev_err(emu->card->dev, "page is not aligned\n");
+=======
+		dev_err_ratelimited(emu->card->dev, "page is not aligned\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 	return 1;
@@ -334,7 +342,11 @@ snd_emu10k1_alloc_pages(struct snd_emu10k1 *emu, struct snd_pcm_substream *subst
 		else
 			addr = snd_pcm_sgbuf_get_addr(substream, ofs);
 		if (! is_valid_page(emu, addr)) {
+<<<<<<< HEAD
 			dev_err(emu->card->dev,
+=======
+			dev_err_ratelimited(emu->card->dev,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				"emu: failure page = %d\n", idx);
 			mutex_unlock(&hdr->block_mutex);
 			return NULL;

@@ -59,7 +59,11 @@ static void goldfish_tty_do_write(int line, const char *buf, unsigned count)
 	struct goldfish_tty *qtty = &goldfish_ttys[line];
 	void __iomem *base = qtty->base;
 	spin_lock_irqsave(&qtty->lock, irq_flags);
+<<<<<<< HEAD
 	gf_write64((u64)buf, base + GOLDFISH_TTY_DATA_PTR,
+=======
+	gf_write_ptr(buf, base + GOLDFISH_TTY_DATA_PTR,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				base + GOLDFISH_TTY_DATA_PTR_HIGH);
 	writel(count, base + GOLDFISH_TTY_DATA_LEN);
 	writel(GOLDFISH_TTY_CMD_WRITE_BUFFER, base + GOLDFISH_TTY_CMD);
@@ -81,7 +85,11 @@ static irqreturn_t goldfish_tty_interrupt(int irq, void *dev_id)
 
 	count = tty_prepare_flip_string(&qtty->port, &buf, count);
 	spin_lock_irqsave(&qtty->lock, irq_flags);
+<<<<<<< HEAD
 	gf_write64((u64)buf, base + GOLDFISH_TTY_DATA_PTR,
+=======
+	gf_write_ptr(buf, base + GOLDFISH_TTY_DATA_PTR,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				base + GOLDFISH_TTY_DATA_PTR_HIGH);
 	writel(count, base + GOLDFISH_TTY_DATA_LEN);
 	writel(GOLDFISH_TTY_CMD_READ_BUFFER, base + GOLDFISH_TTY_CMD);

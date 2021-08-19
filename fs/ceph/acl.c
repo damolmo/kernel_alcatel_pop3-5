@@ -108,11 +108,17 @@ int ceph_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	case ACL_TYPE_ACCESS:
 		name = POSIX_ACL_XATTR_ACCESS;
 		if (acl) {
+<<<<<<< HEAD
 			ret = posix_acl_equiv_mode(acl, &new_mode);
 			if (ret < 0)
 				goto out;
 			if (ret == 0)
 				acl = NULL;
+=======
+			ret = posix_acl_update_mode(inode, &new_mode, &acl);
+			if (ret)
+				goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		break;
 	case ACL_TYPE_DEFAULT:
@@ -144,7 +150,11 @@ int ceph_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	if (new_mode != old_mode) {
 		newattrs.ia_mode = new_mode;
 		newattrs.ia_valid = ATTR_MODE;
+<<<<<<< HEAD
 		ret = ceph_setattr(dentry, &newattrs);
+=======
+		ret = __ceph_setattr(dentry, &newattrs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret)
 			goto out_dput;
 	}
@@ -154,7 +164,11 @@ int ceph_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 		if (new_mode != old_mode) {
 			newattrs.ia_mode = old_mode;
 			newattrs.ia_valid = ATTR_MODE;
+<<<<<<< HEAD
 			ceph_setattr(dentry, &newattrs);
+=======
+			__ceph_setattr(dentry, &newattrs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		goto out_dput;
 	}

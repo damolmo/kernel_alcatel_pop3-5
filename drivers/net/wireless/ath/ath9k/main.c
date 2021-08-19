@@ -364,21 +364,35 @@ void ath9k_tasklet(unsigned long data)
 	struct ath_common *common = ath9k_hw_common(ah);
 	enum ath_reset_type type;
 	unsigned long flags;
+<<<<<<< HEAD
 	u32 status = sc->intrstatus;
 	u32 rxmask;
 
+=======
+	u32 status;
+	u32 rxmask;
+
+	spin_lock_irqsave(&sc->intr_lock, flags);
+	status = sc->intrstatus;
+	sc->intrstatus = 0;
+	spin_unlock_irqrestore(&sc->intr_lock, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ath9k_ps_wakeup(sc);
 	spin_lock(&sc->sc_pcu_lock);
 
 	if (status & ATH9K_INT_FATAL) {
 		type = RESET_TYPE_FATAL_INT;
 		ath9k_queue_reset(sc, type);
+<<<<<<< HEAD
 
 		/*
 		 * Increment the ref. counter here so that
 		 * interrupts are enabled in the reset routine.
 		 */
 		atomic_inc(&ah->intr_ref_cnt);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ath_dbg(common, RESET, "FATAL: Skipping interrupts\n");
 		goto out;
 	}
@@ -394,11 +408,14 @@ void ath9k_tasklet(unsigned long data)
 			type = RESET_TYPE_BB_WATCHDOG;
 			ath9k_queue_reset(sc, type);
 
+<<<<<<< HEAD
 			/*
 			 * Increment the ref. counter here so that
 			 * interrupts are enabled in the reset routine.
 			 */
 			atomic_inc(&ah->intr_ref_cnt);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ath_dbg(common, RESET,
 				"BB_WATCHDOG: Skipping interrupts\n");
 			goto out;
@@ -411,7 +428,10 @@ void ath9k_tasklet(unsigned long data)
 		if ((sc->gtt_cnt >= MAX_GTT_CNT) && !ath9k_hw_check_alive(ah)) {
 			type = RESET_TYPE_TX_GTT;
 			ath9k_queue_reset(sc, type);
+<<<<<<< HEAD
 			atomic_inc(&ah->intr_ref_cnt);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ath_dbg(common, RESET,
 				"GTT: Skipping interrupts\n");
 			goto out;
@@ -468,7 +488,11 @@ void ath9k_tasklet(unsigned long data)
 	ath9k_btcoex_handle_interrupt(sc, status);
 
 	/* re-enable hardware interrupt */
+<<<<<<< HEAD
 	ath9k_hw_enable_interrupts(ah);
+=======
+	ath9k_hw_resume_interrupts(ah);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	spin_unlock(&sc->sc_pcu_lock);
 	ath9k_ps_restore(sc);
@@ -535,7 +559,13 @@ irqreturn_t ath_isr(int irq, void *dev)
 		return IRQ_NONE;
 
 	/* Cache the status */
+<<<<<<< HEAD
 	sc->intrstatus = status;
+=======
+	spin_lock(&sc->intr_lock);
+	sc->intrstatus |= status;
+	spin_unlock(&sc->intr_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (status & SCHED_INTR)
 		sched = true;
@@ -591,7 +621,11 @@ chip_reset:
 
 	if (sched) {
 		/* turn off every interrupt */
+<<<<<<< HEAD
 		ath9k_hw_disable_interrupts(ah);
+=======
+		ath9k_hw_kill_interrupts(ah);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tasklet_schedule(&sc->intr_tq);
 	}
 

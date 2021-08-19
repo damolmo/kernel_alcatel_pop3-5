@@ -172,7 +172,11 @@ static int
 sq905_read_data(struct gspca_dev *gspca_dev, u8 *data, int size, int need_lock)
 {
 	int ret;
+<<<<<<< HEAD
 	int act_len;
+=======
+	int act_len = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	gspca_dev->usb_buf[0] = '\0';
 	if (need_lock)

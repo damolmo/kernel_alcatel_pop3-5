@@ -24,6 +24,10 @@
 #include <net/checksum.h>
 
 #include <net/inet_sock.h>
+<<<<<<< HEAD
+=======
+#include <net/inet_common.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <net/sock.h>
 #include <net/xfrm.h>
 
@@ -170,6 +174,18 @@ const char *dccp_packet_name(const int type)
 
 EXPORT_SYMBOL_GPL(dccp_packet_name);
 
+<<<<<<< HEAD
+=======
+static void dccp_sk_destruct(struct sock *sk)
+{
+	struct dccp_sock *dp = dccp_sk(sk);
+
+	ccid_hc_tx_delete(dp->dccps_hc_tx_ccid, sk);
+	dp->dccps_hc_tx_ccid = NULL;
+	inet_sock_destruct(sk);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int dccp_init_sock(struct sock *sk, const __u8 ctl_sock_initialized)
 {
 	struct dccp_sock *dp = dccp_sk(sk);
@@ -179,6 +195,10 @@ int dccp_init_sock(struct sock *sk, const __u8 ctl_sock_initialized)
 	icsk->icsk_syn_retries	= sysctl_dccp_request_retries;
 	sk->sk_state		= DCCP_CLOSED;
 	sk->sk_write_space	= dccp_write_space;
+<<<<<<< HEAD
+=======
+	sk->sk_destruct		= dccp_sk_destruct;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	icsk->icsk_sync_mss	= dccp_sync_mss;
 	dp->dccps_mss_cache	= 536;
 	dp->dccps_rate_last	= jiffies;
@@ -201,10 +221,14 @@ void dccp_destroy_sock(struct sock *sk)
 {
 	struct dccp_sock *dp = dccp_sk(sk);
 
+<<<<<<< HEAD
 	/*
 	 * DCCP doesn't use sk_write_queue, just sk_send_head
 	 * for retransmissions
 	 */
+=======
+	__skb_queue_purge(&sk->sk_write_queue);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sk->sk_send_head != NULL) {
 		kfree_skb(sk->sk_send_head);
 		sk->sk_send_head = NULL;
@@ -222,8 +246,12 @@ void dccp_destroy_sock(struct sock *sk)
 		dp->dccps_hc_rx_ackvec = NULL;
 	}
 	ccid_hc_rx_delete(dp->dccps_hc_rx_ccid, sk);
+<<<<<<< HEAD
 	ccid_hc_tx_delete(dp->dccps_hc_tx_ccid, sk);
 	dp->dccps_hc_rx_ccid = dp->dccps_hc_tx_ccid = NULL;
+=======
+	dp->dccps_hc_rx_ccid = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* clean up feature negotiation state */
 	dccp_feat_list_purge(&dp->dccps_featneg);
@@ -252,6 +280,10 @@ int dccp_disconnect(struct sock *sk, int flags)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
 	struct inet_sock *inet = inet_sk(sk);
+<<<<<<< HEAD
+=======
+	struct dccp_sock *dp = dccp_sk(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err = 0;
 	const int old_state = sk->sk_state;
 
@@ -271,6 +303,11 @@ int dccp_disconnect(struct sock *sk, int flags)
 		sk->sk_err = ECONNRESET;
 
 	dccp_clear_xmit_timers(sk);
+<<<<<<< HEAD
+=======
+	ccid_hc_rx_delete(dp->dccps_hc_rx_ccid, sk);
+	dp->dccps_hc_rx_ccid = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	__skb_queue_purge(&sk->sk_receive_queue);
 	__skb_queue_purge(&sk->sk_write_queue);
@@ -780,6 +817,14 @@ int dccp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	if (skb == NULL)
 		goto out_release;
 
+<<<<<<< HEAD
+=======
+	if (sk->sk_state == DCCP_CLOSED) {
+		rc = -ENOTCONN;
+		goto out_discard;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	skb_reserve(skb, sk->sk_prot->max_header);
 	rc = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
 	if (rc != 0)
@@ -1012,6 +1057,13 @@ void dccp_close(struct sock *sk, long timeout)
 		__kfree_skb(skb);
 	}
 
+<<<<<<< HEAD
+=======
+	/* If socket has been already reset kill it. */
+	if (sk->sk_state == DCCP_CLOSED)
+		goto adjudge_to_death;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (data_was_unread) {
 		/* Unread data was tossed, send an appropriate Reset Code */
 		DCCP_WARN("ABORT with %u bytes unread\n", data_was_unread);

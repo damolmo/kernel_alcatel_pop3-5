@@ -223,7 +223,11 @@ int elf_check_arch(const struct elf32_hdr *x)
 		return 0;
 
 	eflags = x->e_flags;
+<<<<<<< HEAD
 	if ((eflags & EF_ARC_OSABI_MSK) < EF_ARC_OSABI_CURRENT) {
+=======
+	if ((eflags & EF_ARC_OSABI_MSK) != EF_ARC_OSABI_CURRENT) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pr_err("ABI mismatch - you need newer toolchain\n");
 		force_sigsegv(SIGSEGV, current);
 		return 0;

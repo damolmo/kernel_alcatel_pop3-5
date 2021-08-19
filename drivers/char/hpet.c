@@ -377,7 +377,11 @@ static __init int hpet_mmap_enable(char *str)
 	pr_info("HPET mmap %s\n", hpet_mmap_enabled ? "enabled" : "disabled");
 	return 1;
 }
+<<<<<<< HEAD
 __setup("hpet_mmap", hpet_mmap_enable);
+=======
+__setup("hpet_mmap=", hpet_mmap_enable);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 {
@@ -570,8 +574,12 @@ static inline unsigned long hpet_time_div(struct hpets *hpets,
 	unsigned long long m;
 
 	m = hpets->hp_tick_freq + (dis >> 1);
+<<<<<<< HEAD
 	do_div(m, dis);
 	return (unsigned long)m;
+=======
+	return div64_ul(m, dis);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
@@ -978,6 +986,11 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 	if (ACPI_SUCCESS(status)) {
 		hdp->hd_phys_address = addr.minimum;
 		hdp->hd_address = ioremap(addr.minimum, addr.address_length);
+<<<<<<< HEAD
+=======
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -991,6 +1004,11 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 		hdp->hd_phys_address = fixmem32->address;
 		hdp->hd_address = ioremap(fixmem32->address,
 						HPET_RANGE_SIZE);
+<<<<<<< HEAD
+=======
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);

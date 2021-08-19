@@ -502,8 +502,13 @@ static int get_mext_match(const char *match_str, match_f flag)
 	else if (flag == FIND_NEXT_MATCH_UP)
 		--match_start;
 
+<<<<<<< HEAD
 	index = match_start;
 	index = (index + items_num) % items_num;
+=======
+	match_start = (match_start + items_num) % items_num;
+	index = match_start;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (true) {
 		char *str = k_menu_items[index].str;
 		if (strcasestr(str, match_str) != 0)
@@ -1046,7 +1051,11 @@ static int do_match(int key, struct match_state *state, int *ans)
 		state->match_direction = FIND_NEXT_MATCH_UP;
 		*ans = get_mext_match(state->pattern,
 				state->match_direction);
+<<<<<<< HEAD
 	} else if (key == KEY_BACKSPACE || key == 127) {
+=======
+	} else if (key == KEY_BACKSPACE || key == 8 || key == 127) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		state->pattern[strlen(state->pattern)-1] = '\0';
 		adj_match_dir(&state->match_direction);
 	} else

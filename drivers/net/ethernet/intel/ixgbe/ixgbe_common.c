@@ -1781,7 +1781,16 @@ s32 ixgbe_set_rar_generic(struct ixgbe_hw *hw, u32 index, u8 *addr, u32 vmdq,
 	if (enable_addr != 0)
 		rar_high |= IXGBE_RAH_AV;
 
+<<<<<<< HEAD
 	IXGBE_WRITE_REG(hw, IXGBE_RAL(index), rar_low);
+=======
+	/* Record lower 32 bits of MAC address and then make
+	 * sure that write is flushed to hardware before writing
+	 * the upper 16 bits and setting the valid bit.
+	 */
+	IXGBE_WRITE_REG(hw, IXGBE_RAL(index), rar_low);
+	IXGBE_WRITE_FLUSH(hw);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	IXGBE_WRITE_REG(hw, IXGBE_RAH(index), rar_high);
 
 	return 0;
@@ -1813,8 +1822,18 @@ s32 ixgbe_clear_rar_generic(struct ixgbe_hw *hw, u32 index)
 	rar_high = IXGBE_READ_REG(hw, IXGBE_RAH(index));
 	rar_high &= ~(0x0000FFFF | IXGBE_RAH_AV);
 
+<<<<<<< HEAD
 	IXGBE_WRITE_REG(hw, IXGBE_RAL(index), 0);
 	IXGBE_WRITE_REG(hw, IXGBE_RAH(index), rar_high);
+=======
+	/* Clear the address valid bit and upper 16 bits of the address
+	 * before clearing the lower bits. This way we aren't updating
+	 * a live filter.
+	 */
+	IXGBE_WRITE_REG(hw, IXGBE_RAH(index), rar_high);
+	IXGBE_WRITE_FLUSH(hw);
+	IXGBE_WRITE_REG(hw, IXGBE_RAL(index), 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* clear VMDq pool/queue selection for this RAR */
 	hw->mac.ops.clear_vmdq(hw, index, IXGBE_CLEAR_VMDQ_ALL);
@@ -2141,7 +2160,11 @@ s32 ixgbe_fc_enable_generic(struct ixgbe_hw *hw)
 	}
 
 	/* Configure pause time (2 TCs per register) */
+<<<<<<< HEAD
 	reg = hw->fc.pause_time * 0x00010001;
+=======
+	reg = hw->fc.pause_time * 0x00010001U;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < (MAX_TRAFFIC_CLASS / 2); i++)
 		IXGBE_WRITE_REG(hw, IXGBE_FCTTV(i), reg);
 
@@ -2799,6 +2822,11 @@ u16 ixgbe_get_pcie_msix_count_generic(struct ixgbe_hw *hw)
 		break;
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pcie_offset = IXGBE_PCIE_MSIX_82599_CAPS;
 		max_msix_count = IXGBE_MAX_MSIX_VECTORS_82599;
 		break;
@@ -3192,6 +3220,7 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw, ixgbe_link_speed *speed,
 			*link_up = false;
 	}
 
+<<<<<<< HEAD
 	if ((links_reg & IXGBE_LINKS_SPEED_82599) ==
 	    IXGBE_LINKS_SPEED_10G_82599)
 		*speed = IXGBE_LINK_SPEED_10GB_FULL;
@@ -3203,6 +3232,29 @@ s32 ixgbe_check_mac_link_generic(struct ixgbe_hw *hw, ixgbe_link_speed *speed,
 		*speed = IXGBE_LINK_SPEED_100_FULL;
 	else
 		*speed = IXGBE_LINK_SPEED_UNKNOWN;
+=======
+	switch (links_reg & IXGBE_LINKS_SPEED_82599) {
+	case IXGBE_LINKS_SPEED_10G_82599:
+		if ((hw->mac.type >= ixgbe_mac_X550) &&
+		    (links_reg & IXGBE_LINKS_SPEED_NON_STD))
+			*speed = IXGBE_LINK_SPEED_2_5GB_FULL;
+		else
+			*speed = IXGBE_LINK_SPEED_10GB_FULL;
+		break;
+	case IXGBE_LINKS_SPEED_1G_82599:
+		*speed = IXGBE_LINK_SPEED_1GB_FULL;
+		break;
+	case IXGBE_LINKS_SPEED_100_82599:
+		if ((hw->mac.type >= ixgbe_mac_X550) &&
+		    (links_reg & IXGBE_LINKS_SPEED_NON_STD))
+			*speed = IXGBE_LINK_SPEED_5GB_FULL;
+		else
+			*speed = IXGBE_LINK_SPEED_100_FULL;
+		break;
+	default:
+		*speed = IXGBE_LINK_SPEED_UNKNOWN;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

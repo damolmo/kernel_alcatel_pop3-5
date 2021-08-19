@@ -31,7 +31,13 @@
 #include <net/route.h>
 #include <net/snmp.h>
 #include <net/flow.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <net/flow_dissector.h>
+
+#define IPV4_MIN_MTU		68			/* RFC 791 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct sock;
 
@@ -160,6 +166,10 @@ static inline __u8 get_rtconn_flags(struct ipcm_cookie* ipc, struct sock* sk)
 }
 
 /* datagram.c */
+<<<<<<< HEAD
+=======
+int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
 
 void ip4_datagram_release_cb(struct sock *sk);
@@ -233,6 +243,11 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+__be32 inet_current_timestamp(void);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* From inetpeer.c */
 extern int inet_peer_threshold;
 extern int inet_peer_minttl;
@@ -270,12 +285,26 @@ int ip_decrease_ttl(struct iphdr *iph)
 	return --iph->ttl;
 }
 
+<<<<<<< HEAD
+=======
+static inline int ip_mtu_locked(const struct dst_entry *dst)
+{
+	const struct rtable *rt = (const struct rtable *)dst;
+
+	return rt->rt_mtu_locked || dst_metric_locked(dst, RTAX_MTU);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline
 int ip_dont_fragment(struct sock *sk, struct dst_entry *dst)
 {
 	return  inet_sk(sk)->pmtudisc == IP_PMTUDISC_DO ||
 		(inet_sk(sk)->pmtudisc == IP_PMTUDISC_WANT &&
+<<<<<<< HEAD
 		 !(dst_metric_locked(dst, RTAX_MTU)));
+=======
+		 !ip_mtu_locked(dst));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline bool ip_sk_accept_pmtu(const struct sock *sk)
@@ -299,6 +328,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 						    bool forwarding)
 {
 	struct net *net = dev_net(dst->dev);
+<<<<<<< HEAD
 
 	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
 	    dst_metric_locked(dst, RTAX_MTU) ||
@@ -306,6 +336,21 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 		return dst_mtu(dst);
 
 	return min(dst->dev->mtu, IP_MAX_MTU);
+=======
+	unsigned int mtu;
+
+	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
+	    ip_mtu_locked(dst) ||
+	    !forwarding)
+		return dst_mtu(dst);
+
+	/* 'forwarding = true' case should always honour route mtu */
+	mtu = dst_metric_raw(dst, RTAX_MTU);
+	if (mtu)
+		return mtu;
+
+	return min(READ_ONCE(dst->dev->mtu), IP_MAX_MTU);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline unsigned int ip_skb_dst_mtu(const struct sk_buff *skb)
@@ -314,14 +359,25 @@ static inline unsigned int ip_skb_dst_mtu(const struct sk_buff *skb)
 		bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
 		return ip_dst_mtu_maybe_forward(skb_dst(skb), forwarding);
 	} else {
+<<<<<<< HEAD
 		return min(skb_dst(skb)->dev->mtu, IP_MAX_MTU);
+=======
+		return min(READ_ONCE(skb_dst(skb)->dev->mtu), IP_MAX_MTU);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
 u32 ip_idents_reserve(u32 hash, int segs);
+<<<<<<< HEAD
 void __ip_select_ident(struct iphdr *iph, int segs);
 
 static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, int segs)
+=======
+void __ip_select_ident(struct net *net, struct iphdr *iph, int segs);
+
+static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
+					struct sock *sk, int segs)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct iphdr *iph = ip_hdr(skb);
 
@@ -338,6 +394,7 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 			iph->id = 0;
 		}
 	} else {
+<<<<<<< HEAD
 		__ip_select_ident(iph, segs);
 	}
 }
@@ -345,6 +402,16 @@ static inline void ip_select_ident_segs(struct sk_buff *skb, struct sock *sk, in
 static inline void ip_select_ident(struct sk_buff *skb, struct sock *sk)
 {
 	ip_select_ident_segs(skb, sk, 1);
+=======
+		__ip_select_ident(net, iph, segs);
+	}
+}
+
+static inline void ip_select_ident(struct net *net, struct sk_buff *skb,
+				   struct sock *sk)
+{
+	ip_select_ident_segs(net, skb, sk, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline __wsum inet_compute_pseudo(struct sk_buff *skb, int proto)
@@ -358,10 +425,19 @@ static inline void inet_set_txhash(struct sock *sk)
 	struct inet_sock *inet = inet_sk(sk);
 	struct flow_keys keys;
 
+<<<<<<< HEAD
 	keys.src = inet->inet_saddr;
 	keys.dst = inet->inet_daddr;
 	keys.port16[0] = inet->inet_sport;
 	keys.port16[1] = inet->inet_dport;
+=======
+	memset(&keys, 0, sizeof(keys));
+
+	keys.addrs.src = inet->inet_saddr;
+	keys.addrs.dst = inet->inet_daddr;
+	keys.ports.port16[0] = inet->inet_sport;
+	keys.ports.port16[1] = inet->inet_dport;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sk->sk_txhash = flow_hash_from_keys(&keys);
 }
@@ -476,6 +552,19 @@ enum ip_defrag_users {
 	IP_DEFRAG_MACVLAN,
 };
 
+<<<<<<< HEAD
+=======
+/* Return true if the value of 'user' is between 'lower_bond'
+ * and 'upper_bond' inclusively.
+ */
+static inline bool ip_defrag_user_in_between(u32 user,
+					     enum ip_defrag_users lower_bond,
+					     enum ip_defrag_users upper_bond)
+{
+	return user >= lower_bond && user <= upper_bond;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ip_defrag(struct sk_buff *skb, u32 user);
 #ifdef CONFIG_INET
 struct sk_buff *ip_check_defrag(struct sk_buff *skb, u32 user);
@@ -508,6 +597,11 @@ static inline int ip_options_echo(struct ip_options *dopt, struct sk_buff *skb)
 }
 
 void ip_options_fragment(struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+int __ip_options_compile(struct net *net, struct ip_options *opt,
+			 struct sk_buff *skb, __be32 *info);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ip_options_compile(struct net *net, struct ip_options *opt,
 		       struct sk_buff *skb);
 int ip_options_get(struct net *net, struct ip_options_rcu **optp,
@@ -551,4 +645,12 @@ extern int sysctl_icmp_msgs_burst;
 int ip_misc_proc_init(void);
 #endif
 
+<<<<<<< HEAD
+=======
+static inline bool inetdev_valid_mtu(unsigned int mtu)
+{
+	return likely(mtu >= IPV4_MIN_MTU);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif	/* _IP_H */

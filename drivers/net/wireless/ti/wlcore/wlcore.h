@@ -121,6 +121,11 @@ struct wlcore_ops {
 	int (*smart_config_stop)(struct wl1271 *wl);
 	int (*smart_config_set_group_key)(struct wl1271 *wl, u16 group_id,
 					  u8 key_len, u8 *key);
+<<<<<<< HEAD
+=======
+	int (*set_cac)(struct wl1271 *wl, struct wl12xx_vif *wlvif,
+		       bool start);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 enum wlcore_partitions {
@@ -192,6 +197,11 @@ struct wl1271 {
 
 	int irq;
 
+<<<<<<< HEAD
+=======
+	int irq_flags;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spinlock_t wl_lock;
 
 	enum wlcore_state state;
@@ -399,9 +409,12 @@ struct wl1271 {
 	/* Quirks of specific hardware revisions */
 	unsigned int quirks;
 
+<<<<<<< HEAD
 	/* Platform limitations */
 	unsigned int platform_quirks;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* number of currently active RX BA sessions */
 	int ba_rx_session_count;
 
@@ -546,9 +559,12 @@ wlcore_set_min_fw_ver(struct wl1271 *wl, unsigned int chip,
 /* Each RX/TX transaction requires an end-of-transaction transfer */
 #define WLCORE_QUIRK_END_OF_TRANSACTION		BIT(0)
 
+<<<<<<< HEAD
 /* the first start_role(sta) sometimes doesn't work on wl12xx */
 #define WLCORE_QUIRK_START_STA_FAILS		BIT(1)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* wl127x and SPI don't support SDIO block size alignment */
 #define WLCORE_QUIRK_TX_BLOCKSIZE_ALIGN		BIT(2)
 

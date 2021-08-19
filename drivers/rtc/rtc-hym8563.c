@@ -105,7 +105,11 @@ static int hym8563_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	if (!hym8563->valid) {
 		dev_warn(&client->dev, "no valid clock/calendar values available\n");
+<<<<<<< HEAD
 		return -EPERM;
+=======
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = i2c_smbus_read_i2c_block_data(client, HYM8563_SEC, 7, buf);
@@ -144,7 +148,11 @@ static int hym8563_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	 * it does not seem to carry it over a subsequent write/read.
 	 * So we'll limit ourself to 100 years, starting at 2000 for now.
 	 */
+<<<<<<< HEAD
 	buf[6] = tm->tm_year - 100;
+=======
+	buf[6] = bin2bcd(tm->tm_year - 100);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * CTL1 only contains TEST-mode bits apart from stop,

@@ -162,8 +162,15 @@ int ath10k_htc_send(struct ath10k_htc *htc,
 
 	skb_cb->paddr = dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
 	ret = dma_mapping_error(dev, skb_cb->paddr);
+<<<<<<< HEAD
 	if (ret)
 		goto err_credits;
+=======
+	if (ret) {
+		ret = -EIO;
+		goto err_credits;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sg_item.transfer_id = ep->eid;
 	sg_item.transfer_context = skb;

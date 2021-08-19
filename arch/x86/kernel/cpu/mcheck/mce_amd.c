@@ -51,7 +51,11 @@ static const char * const th_names[] = {
 	"load_store",
 	"insn_fetch",
 	"combined_unit",
+<<<<<<< HEAD
 	"",
+=======
+	"decode_unit",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	"northbridge",
 	"execution_unit",
 };
@@ -453,9 +457,18 @@ static const struct sysfs_ops threshold_ops = {
 	.store			= store,
 };
 
+<<<<<<< HEAD
 static struct kobj_type threshold_ktype = {
 	.sysfs_ops		= &threshold_ops,
 	.default_attrs		= default_attrs,
+=======
+static void threshold_block_release(struct kobject *kobj);
+
+static struct kobj_type threshold_ktype = {
+	.sysfs_ops		= &threshold_ops,
+	.default_attrs		= default_attrs,
+	.release		= threshold_block_release,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static int allocate_threshold_blocks(unsigned int cpu, unsigned int bank,
@@ -573,6 +586,12 @@ static int threshold_create_bank(unsigned int cpu, unsigned int bank)
 	const char *name = th_names[bank];
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!dev)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (is_shared_bank(bank)) {
 		nb = node_to_amd_nb(amd_get_nb_id(cpu));
 
@@ -654,8 +673,17 @@ static int threshold_create_device(unsigned int cpu)
 	return err;
 }
 
+<<<<<<< HEAD
 static void deallocate_threshold_block(unsigned int cpu,
 						 unsigned int bank)
+=======
+static void threshold_block_release(struct kobject *kobj)
+{
+	kfree(to_block(kobj));
+}
+
+static void deallocate_threshold_block(unsigned int cpu, unsigned int bank)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct threshold_block *pos = NULL;
 	struct threshold_block *tmp = NULL;
@@ -665,6 +693,7 @@ static void deallocate_threshold_block(unsigned int cpu,
 		return;
 
 	list_for_each_entry_safe(pos, tmp, &head->blocks->miscj, miscj) {
+<<<<<<< HEAD
 		kobject_put(&pos->kobj);
 		list_del(&pos->miscj);
 		kfree(pos);
@@ -672,6 +701,13 @@ static void deallocate_threshold_block(unsigned int cpu,
 
 	kfree(per_cpu(threshold_banks, cpu)[bank]->blocks);
 	per_cpu(threshold_banks, cpu)[bank]->blocks = NULL;
+=======
+		list_del(&pos->miscj);
+		kobject_put(&pos->kobj);
+	}
+
+	kobject_put(&head->blocks->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __threshold_remove_blocks(struct threshold_bank *b)

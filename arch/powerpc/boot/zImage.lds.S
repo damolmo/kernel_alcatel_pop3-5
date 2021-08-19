@@ -68,6 +68,10 @@ SECTIONS
   }
 
 #ifdef CONFIG_PPC64_BOOT_WRAPPER
+<<<<<<< HEAD
+=======
+  . = ALIGN(256);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
   .got :
   {
     __toc_start = .;

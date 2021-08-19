@@ -1201,14 +1201,21 @@ static long slgt_compat_ioctl(struct tty_struct *tty,
 			 unsigned int cmd, unsigned long arg)
 {
 	struct slgt_info *info = tty->driver_data;
+<<<<<<< HEAD
 	int rc = -ENOIOCTLCMD;
+=======
+	int rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (sanity_check(info, tty->name, "compat_ioctl"))
 		return -ENODEV;
 	DBGINFO(("%s compat_ioctl() cmd=%08X\n", info->device_name, cmd));
 
 	switch (cmd) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case MGSL_IOCSPARAMS32:
 		rc = set_params32(info, compat_ptr(arg));
 		break;
@@ -1228,6 +1235,7 @@ static long slgt_compat_ioctl(struct tty_struct *tty,
 	case MGSL_IOCWAITGPIO:
 	case MGSL_IOCGXSYNC:
 	case MGSL_IOCGXCTRL:
+<<<<<<< HEAD
 	case MGSL_IOCSTXIDLE:
 	case MGSL_IOCTXENABLE:
 	case MGSL_IOCRXENABLE:
@@ -1240,6 +1248,13 @@ static long slgt_compat_ioctl(struct tty_struct *tty,
 		break;
 	}
 
+=======
+		rc = ioctl(tty, cmd, (unsigned long)compat_ptr(arg));
+		break;
+	default:
+		rc = ioctl(tty, cmd, arg);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	DBGINFO(("%s compat_ioctl() cmd=%08X rc=%d\n", info->device_name, cmd, rc));
 	return rc;
 }

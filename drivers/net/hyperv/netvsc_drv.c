@@ -149,6 +149,7 @@ static void *init_ppi_data(struct rndis_message *msg, u32 ppi_size,
 	return ppi;
 }
 
+<<<<<<< HEAD
 union sub_key {
 	u64 k;
 	struct {
@@ -206,6 +207,8 @@ static bool netvsc_set_hash(u32 *hash, struct sk_buff *skb)
 	return true;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static u16 netvsc_select_queue(struct net_device *ndev, struct sk_buff *skb,
 			void *accel_priv, select_queue_fallback_t fallback)
 {
@@ -218,11 +221,17 @@ static u16 netvsc_select_queue(struct net_device *ndev, struct sk_buff *skb,
 	if (nvsc_dev == NULL || ndev->real_num_tx_queues <= 1)
 		return 0;
 
+<<<<<<< HEAD
 	if (netvsc_set_hash(&hash, skb)) {
 		q_idx = nvsc_dev->send_table[hash % VRSS_SEND_TAB_SIZE] %
 			ndev->real_num_tx_queues;
 		skb_set_hash(skb, hash, PKT_HASH_TYPE_L3);
 	}
+=======
+	hash = skb_get_hash(skb);
+	q_idx = nvsc_dev->send_table[hash % VRSS_SEND_TAB_SIZE] %
+		ndev->real_num_tx_queues;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return q_idx;
 }

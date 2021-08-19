@@ -11,8 +11,12 @@ utrap_trap:		/* %g3=handler,%g4=level */
 	mov		%l4, %o1
         call		bad_trap
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 invoke_utrap:
 	sllx		%g3, 3, %g3

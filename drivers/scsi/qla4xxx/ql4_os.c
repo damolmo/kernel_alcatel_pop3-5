@@ -268,6 +268,27 @@ static struct iscsi_transport qla4xxx_iscsi_transport = {
 
 static struct scsi_transport_template *qla4xxx_scsi_transport;
 
+<<<<<<< HEAD
+=======
+static int qla4xxx_isp_check_reg(struct scsi_qla_host *ha)
+{
+	u32 reg_val = 0;
+	int rval = QLA_SUCCESS;
+
+	if (is_qla8022(ha))
+		reg_val = readl(&ha->qla4_82xx_reg->host_status);
+	else if (is_qla8032(ha) || is_qla8042(ha))
+		reg_val = qla4_8xxx_rd_direct(ha, QLA8XXX_PEG_ALIVE_COUNTER);
+	else
+		reg_val = readw(&ha->reg->ctrl_status);
+
+	if (reg_val == QL4_ISP_REG_DISCONNECT)
+		rval = QLA_ERROR;
+
+	return rval;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int qla4xxx_send_ping(struct Scsi_Host *shost, uint32_t iface_num,
 			     uint32_t iface_type, uint32_t payload_size,
 			     uint32_t pid, struct sockaddr *dst_addr)
@@ -1211,7 +1232,11 @@ static int qla4xxx_get_host_stats(struct Scsi_Host *shost, char *buf, int len)
 			le64_to_cpu(ql_iscsi_stats->iscsi_sequence_error);
 exit_host_stats:
 	if (ql_iscsi_stats)
+<<<<<<< HEAD
 		dma_free_coherent(&ha->pdev->dev, host_stats_size,
+=======
+		dma_free_coherent(&ha->pdev->dev, stats_size,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  ql_iscsi_stats, iscsi_stats_dma);
 
 	ql4_printk(KERN_INFO, ha, "%s: Get host stats done\n",
@@ -3195,6 +3220,11 @@ static int qla4xxx_conn_bind(struct iscsi_cls_session *cls_session,
 	if (iscsi_conn_bind(cls_session, cls_conn, is_leading))
 		return -EINVAL;
 	ep = iscsi_lookup_endpoint(transport_fd);
+<<<<<<< HEAD
+=======
+	if (!ep)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	conn = cls_conn->dd_data;
 	qla_conn = conn->dd_data;
 	qla_conn->qla_ep = ep->dd_data;
@@ -4136,7 +4166,11 @@ static void qla4xxx_mem_free(struct scsi_qla_host *ha)
 		dma_free_coherent(&ha->pdev->dev, ha->queues_len, ha->queues,
 				  ha->queues_dma);
 
+<<<<<<< HEAD
 	 if (ha->fw_dump)
+=======
+	if (ha->fw_dump)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vfree(ha->fw_dump);
 
 	ha->queues_len = 0;
@@ -4271,7 +4305,10 @@ static int qla4xxx_mem_alloc(struct scsi_qla_host *ha)
 	return QLA_SUCCESS;
 
 mem_alloc_error_exit:
+<<<<<<< HEAD
 	qla4xxx_mem_free(ha);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return QLA_ERROR;
 }
 
@@ -5925,7 +5962,11 @@ static int get_fw_boot_info(struct scsi_qla_host *ha, uint16_t ddb_index[])
 		val = rd_nvram_byte(ha, sec_addr);
 		if (val & BIT_7)
 			ddb_index[1] = (val & 0x7f);
+<<<<<<< HEAD
 
+=======
+		goto exit_boot_info;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (is_qla80XX(ha)) {
 		buf = dma_alloc_coherent(&ha->pdev->dev, size,
 					 &buf_dma, GFP_KERNEL);
@@ -7233,6 +7274,11 @@ static int qla4xxx_sysfs_ddb_tgt_create(struct scsi_qla_host *ha,
 
 	rc = qla4xxx_copy_from_fwddb_param(fnode_sess, fnode_conn,
 					   fw_ddb_entry);
+<<<<<<< HEAD
+=======
+	if (rc)
+		goto free_sess;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ql4_printk(KERN_INFO, ha, "%s: sysfs entry %s created\n",
 		   __func__, fnode_sess->dev.kobj.name);
@@ -9230,10 +9276,23 @@ static int qla4xxx_eh_abort(struct scsi_cmnd *cmd)
 	struct srb *srb = NULL;
 	int ret = SUCCESS;
 	int wait = 0;
+<<<<<<< HEAD
+=======
+	int rval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ql4_printk(KERN_INFO, ha, "scsi%ld:%d:%llu: Abort command issued cmd=%p, cdb=0x%x\n",
 		   ha->host_no, id, lun, cmd, cmd->cmnd[0]);
 
+<<<<<<< HEAD
+=======
+	rval = qla4xxx_isp_check_reg(ha);
+	if (rval != QLA_SUCCESS) {
+		ql4_printk(KERN_INFO, ha, "PCI/Register disconnect, exiting.\n");
+		return FAILED;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	srb = (struct srb *) CMD_SP(cmd);
 	if (!srb) {
@@ -9285,6 +9344,10 @@ static int qla4xxx_eh_device_reset(struct scsi_cmnd *cmd)
 	struct scsi_qla_host *ha = to_qla_host(cmd->device->host);
 	struct ddb_entry *ddb_entry = cmd->device->hostdata;
 	int ret = FAILED, stat;
+<<<<<<< HEAD
+=======
+	int rval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!ddb_entry)
 		return ret;
@@ -9304,6 +9367,15 @@ static int qla4xxx_eh_device_reset(struct scsi_cmnd *cmd)
 		      cmd, jiffies, cmd->request->timeout / HZ,
 		      ha->dpc_flags, cmd->result, cmd->allowed));
 
+<<<<<<< HEAD
+=======
+	rval = qla4xxx_isp_check_reg(ha);
+	if (rval != QLA_SUCCESS) {
+		ql4_printk(KERN_INFO, ha, "PCI/Register disconnect, exiting.\n");
+		return FAILED;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* FIXME: wait for hba to go online */
 	stat = qla4xxx_reset_lun(ha, ddb_entry, cmd->device->lun);
 	if (stat != QLA_SUCCESS) {
@@ -9347,6 +9419,10 @@ static int qla4xxx_eh_target_reset(struct scsi_cmnd *cmd)
 	struct scsi_qla_host *ha = to_qla_host(cmd->device->host);
 	struct ddb_entry *ddb_entry = cmd->device->hostdata;
 	int stat, ret;
+<<<<<<< HEAD
+=======
+	int rval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!ddb_entry)
 		return FAILED;
@@ -9364,6 +9440,15 @@ static int qla4xxx_eh_target_reset(struct scsi_cmnd *cmd)
 		      ha->host_no, cmd, jiffies, cmd->request->timeout / HZ,
 		      ha->dpc_flags, cmd->result, cmd->allowed));
 
+<<<<<<< HEAD
+=======
+	rval = qla4xxx_isp_check_reg(ha);
+	if (rval != QLA_SUCCESS) {
+		ql4_printk(KERN_INFO, ha, "PCI/Register disconnect, exiting.\n");
+		return FAILED;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stat = qla4xxx_reset_target(ha, ddb_entry);
 	if (stat != QLA_SUCCESS) {
 		starget_printk(KERN_INFO, scsi_target(cmd->device),
@@ -9418,9 +9503,22 @@ static int qla4xxx_eh_host_reset(struct scsi_cmnd *cmd)
 {
 	int return_status = FAILED;
 	struct scsi_qla_host *ha;
+<<<<<<< HEAD
 
 	ha = to_qla_host(cmd->device->host);
 
+=======
+	int rval;
+
+	ha = to_qla_host(cmd->device->host);
+
+	rval = qla4xxx_isp_check_reg(ha);
+	if (rval != QLA_SUCCESS) {
+		ql4_printk(KERN_INFO, ha, "PCI/Register disconnect, exiting.\n");
+		return FAILED;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((is_qla8032(ha) || is_qla8042(ha)) && ql4xdontresethba)
 		qla4_83xx_set_idc_dontreset(ha);
 

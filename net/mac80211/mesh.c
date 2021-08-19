@@ -161,6 +161,13 @@ void mesh_sta_cleanup(struct sta_info *sta)
 		del_timer_sync(&sta->plink_timer);
 	}
 
+<<<<<<< HEAD
+=======
+	/* make sure no readers can access nexthop sta from here on */
+	mesh_path_flush_by_nexthop(sta);
+	synchronize_net();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (changed)
 		ieee80211_mbss_info_change_notify(sdata, changed);
 }
@@ -285,10 +292,13 @@ int mesh_add_meshconf_ie(struct ieee80211_sub_if_data *sdata,
 	/* Mesh PS mode. See IEEE802.11-2012 8.4.2.100.8 */
 	*pos |= ifmsh->ps_peers_deep_sleep ?
 			IEEE80211_MESHCONF_CAPAB_POWER_SAVE_LEVEL : 0x00;
+<<<<<<< HEAD
 	*pos++ |= ifmsh->adjusting_tbtt ?
 			IEEE80211_MESHCONF_CAPAB_TBTT_ADJUSTING : 0x00;
 	*pos++ = 0x00;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -345,7 +355,11 @@ int mesh_add_vendor_ies(struct ieee80211_sub_if_data *sdata,
 	/* fast-forward to vendor IEs */
 	offset = ieee80211_ie_split_vendor(ifmsh->ie, ifmsh->ie_len, 0);
 
+<<<<<<< HEAD
 	if (offset) {
+=======
+	if (offset < ifmsh->ie_len) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		len = ifmsh->ie_len - offset;
 		data = ifmsh->ie + offset;
 		if (skb_tailroom(skb) < len)
@@ -786,7 +800,10 @@ int ieee80211_start_mesh(struct ieee80211_sub_if_data *sdata)
 	ifmsh->mesh_cc_id = 0;	/* Disabled */
 	/* register sync ops from extensible synchronization framework */
 	ifmsh->sync_ops = ieee80211_mesh_sync_ops_get(ifmsh->mesh_sp_id);
+<<<<<<< HEAD
 	ifmsh->adjusting_tbtt = false;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ifmsh->sync_offset_clockdrift_max = 0;
 	set_bit(MESH_WORK_HOUSEKEEPING, &ifmsh->wrkq_flags);
 	ieee80211_mesh_root_setup(ifmsh);
@@ -1063,7 +1080,12 @@ int ieee80211_mesh_finish_csa(struct ieee80211_sub_if_data *sdata)
 	ifmsh->chsw_ttl = 0;
 
 	/* Remove the CSA and MCSP elements from the beacon */
+<<<<<<< HEAD
 	tmp_csa_settings = rcu_dereference(ifmsh->csa);
+=======
+	tmp_csa_settings = rcu_dereference_protected(ifmsh->csa,
+					    lockdep_is_held(&sdata->wdev.mtx));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	RCU_INIT_POINTER(ifmsh->csa, NULL);
 	if (tmp_csa_settings)
 		kfree_rcu(tmp_csa_settings, rcu_head);
@@ -1085,6 +1107,11 @@ int ieee80211_mesh_csa_beacon(struct ieee80211_sub_if_data *sdata,
 	struct mesh_csa_settings *tmp_csa_settings;
 	int ret = 0;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&sdata->wdev.mtx);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tmp_csa_settings = kmalloc(sizeof(*tmp_csa_settings),
 				   GFP_ATOMIC);
 	if (!tmp_csa_settings)
@@ -1297,6 +1324,7 @@ out:
 	sdata_unlock(sdata);
 }
 
+<<<<<<< HEAD
 void ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local)
 {
 	struct ieee80211_sub_if_data *sdata;
@@ -1308,6 +1336,8 @@ void ieee80211_mesh_notify_scan_completed(struct ieee80211_local *local)
 			ieee80211_queue_work(&local->hw, &sdata->work);
 	rcu_read_unlock();
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void ieee80211_mesh_init_sdata(struct ieee80211_sub_if_data *sdata)
 {

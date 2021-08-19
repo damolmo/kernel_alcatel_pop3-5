@@ -33,6 +33,7 @@
 #define stub_execve sys_execve
 #define stub_rt_sigreturn sys_rt_sigreturn
 
+<<<<<<< HEAD
 #define __SYSCALL_COMMON(nr, sym, compat) __SYSCALL_64(nr, sym, compat)
 #define __SYSCALL_X32(nr, sym, compat) /* Not supported */
 
@@ -41,6 +42,13 @@
 
 #undef __SYSCALL_64
 #define __SYSCALL_64(nr, sym, compat) [ nr ] = sym,
+=======
+#define __SYSCALL_64(nr, sym, qual) extern asmlinkage void sym(void) ;
+#include <asm/syscalls_64.h>
+
+#undef __SYSCALL_64
+#define __SYSCALL_64(nr, sym, qual) [ nr ] = sym,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 typedef void (*sys_call_ptr_t)(void);
 

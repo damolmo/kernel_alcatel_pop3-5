@@ -21,6 +21,10 @@
 
 #include <linux/slab.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <sound/opl3.h>
 #include <sound/asound_fm.h>
 
@@ -103,6 +107,11 @@ int snd_opl3_ioctl(struct snd_hwdep * hw, struct file *file,
 		{
 			struct snd_dm_fm_info info;
 
+<<<<<<< HEAD
+=======
+			memset(&info, 0, sizeof(info));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info.fm_mode = opl3->fm_mode;
 			info.rhythm = opl3->rhythm;
 			if (copy_to_user(argp, &info, sizeof(struct snd_dm_fm_info)))
@@ -448,7 +457,11 @@ static int snd_opl3_set_voice(struct snd_opl3 * opl3, struct snd_dm_fm_voice * v
 {
 	unsigned short reg_side;
 	unsigned char op_offset;
+<<<<<<< HEAD
 	unsigned char voice_offset;
+=======
+	unsigned char voice_offset, voice_op;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned short opl3_reg;
 	unsigned char reg_val;
@@ -473,7 +486,13 @@ static int snd_opl3_set_voice(struct snd_opl3 * opl3, struct snd_dm_fm_voice * v
 		voice_offset = voice->voice - MAX_OPL2_VOICES;
 	}
 	/* Get register offset of operator */
+<<<<<<< HEAD
 	op_offset = snd_opl3_regmap[voice_offset][voice->op];
+=======
+	voice_offset = array_index_nospec(voice_offset, MAX_OPL2_VOICES);
+	voice_op = array_index_nospec(voice->op, 4);
+	op_offset = snd_opl3_regmap[voice_offset][voice_op];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	reg_val = 0x00;
 	/* Set amplitude modulation (tremolo) effect */

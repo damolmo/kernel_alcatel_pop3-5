@@ -254,7 +254,12 @@ static void *edid_load(struct drm_connector *connector, const char *name,
 	    name, connector_name);
 
 out:
+<<<<<<< HEAD
 	release_firmware(fw);
+=======
+	if (fw)
+		release_firmware(fw);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return edid;
 }
 
@@ -287,6 +292,10 @@ int drm_load_edid_firmware(struct drm_connector *connector)
 
 	drm_mode_connector_update_edid_property(connector, edid);
 	ret = drm_add_edid_modes(connector, edid);
+<<<<<<< HEAD
+=======
+	drm_edid_to_eld(connector, edid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(edid);
 
 	return ret;

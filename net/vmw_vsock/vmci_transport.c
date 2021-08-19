@@ -273,6 +273,34 @@ vmci_transport_send_control_pkt_bh(struct sockaddr_vm *src,
 }
 
 static int
+<<<<<<< HEAD
+=======
+vmci_transport_alloc_send_control_pkt(struct sockaddr_vm *src,
+				      struct sockaddr_vm *dst,
+				      enum vmci_transport_packet_type type,
+				      u64 size,
+				      u64 mode,
+				      struct vmci_transport_waiting_info *wait,
+				      u16 proto,
+				      struct vmci_handle handle)
+{
+	struct vmci_transport_packet *pkt;
+	int err;
+
+	pkt = kmalloc(sizeof(*pkt), GFP_KERNEL);
+	if (!pkt)
+		return -ENOMEM;
+
+	err = __vmci_transport_send_control_pkt(pkt, src, dst, type, size,
+						mode, wait, proto, handle,
+						true);
+	kfree(pkt);
+
+	return err;
+}
+
+static int
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 vmci_transport_send_control_pkt(struct sock *sk,
 				enum vmci_transport_packet_type type,
 				u64 size,
@@ -281,9 +309,13 @@ vmci_transport_send_control_pkt(struct sock *sk,
 				u16 proto,
 				struct vmci_handle handle)
 {
+<<<<<<< HEAD
 	struct vmci_transport_packet *pkt;
 	struct vsock_sock *vsk;
 	int err;
+=======
+	struct vsock_sock *vsk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vsk = vsock_sk(sk);
 
@@ -293,6 +325,7 @@ vmci_transport_send_control_pkt(struct sock *sk,
 	if (!vsock_addr_bound(&vsk->remote_addr))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	pkt = kmalloc(sizeof(*pkt), GFP_KERNEL);
 	if (!pkt)
 		return -ENOMEM;
@@ -304,6 +337,12 @@ vmci_transport_send_control_pkt(struct sock *sk,
 	kfree(pkt);
 
 	return err;
+=======
+	return vmci_transport_alloc_send_control_pkt(&vsk->local_addr,
+						     &vsk->remote_addr,
+						     type, size, mode,
+						     wait, proto, handle);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int vmci_transport_send_reset_bh(struct sockaddr_vm *dst,
@@ -321,12 +360,38 @@ static int vmci_transport_send_reset_bh(struct sockaddr_vm *dst,
 static int vmci_transport_send_reset(struct sock *sk,
 				     struct vmci_transport_packet *pkt)
 {
+<<<<<<< HEAD
 	if (pkt->type == VMCI_TRANSPORT_PACKET_TYPE_RST)
 		return 0;
 	return vmci_transport_send_control_pkt(sk,
 					VMCI_TRANSPORT_PACKET_TYPE_RST,
 					0, 0, NULL, VSOCK_PROTO_INVALID,
 					VMCI_INVALID_HANDLE);
+=======
+	struct sockaddr_vm *dst_ptr;
+	struct sockaddr_vm dst;
+	struct vsock_sock *vsk;
+
+	if (pkt->type == VMCI_TRANSPORT_PACKET_TYPE_RST)
+		return 0;
+
+	vsk = vsock_sk(sk);
+
+	if (!vsock_addr_bound(&vsk->local_addr))
+		return -EINVAL;
+
+	if (vsock_addr_bound(&vsk->remote_addr)) {
+		dst_ptr = &vsk->remote_addr;
+	} else {
+		vsock_addr_init(&dst, pkt->dg.src.context,
+				pkt->src_port);
+		dst_ptr = &dst;
+	}
+	return vmci_transport_alloc_send_control_pkt(&vsk->local_addr, dst_ptr,
+					     VMCI_TRANSPORT_PACKET_TYPE_RST,
+					     0, 0, NULL, VSOCK_PROTO_INVALID,
+					     VMCI_INVALID_HANDLE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int vmci_transport_send_negotiate(struct sock *sk, size_t size)
@@ -560,8 +625,12 @@ vmci_transport_queue_pair_alloc(struct vmci_qp **qpair,
 			       peer, flags, VMCI_NO_PRIVILEGE_FLAGS);
 out:
 	if (err < 0) {
+<<<<<<< HEAD
 		pr_err("Could not attach to queue pair with %d\n",
 		       err);
+=======
+		pr_err_once("Could not attach to queue pair with %d\n", err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = vmci_transport_error_to_vsock_error(err);
 	}
 
@@ -1127,8 +1196,12 @@ static int vmci_transport_recv_listen(struct sock *sk,
 	vpending->listener = sk;
 	sock_hold(sk);
 	sock_hold(pending);
+<<<<<<< HEAD
 	INIT_DELAYED_WORK(&vpending->dwork, vsock_pending_work);
 	schedule_delayed_work(&vpending->dwork, HZ);
+=======
+	schedule_delayed_work(&vpending->pending_work, HZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	return err;
@@ -1631,6 +1704,13 @@ static int vmci_transport_socket_init(struct vsock_sock *vsk,
 
 static void vmci_transport_destruct(struct vsock_sock *vsk)
 {
+<<<<<<< HEAD
+=======
+	/* transport can be NULL if we hit a failure at init() time */
+	if (!vmci_trans(vsk))
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (vmci_trans(vsk)->attach_sub_id != VMCI_INVALID_ID) {
 		vmci_event_unsubscribe(vmci_trans(vsk)->attach_sub_id);
 		vmci_trans(vsk)->attach_sub_id = VMCI_INVALID_ID;

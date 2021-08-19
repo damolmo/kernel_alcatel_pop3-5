@@ -47,14 +47,26 @@ static const unsigned int bridgeco_freq_table[] = {
 	[6] = 0x07,
 };
 
+<<<<<<< HEAD
 static unsigned int
 get_formation_index(unsigned int rate)
+=======
+static int
+get_formation_index(unsigned int rate, unsigned int *index)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(snd_bebob_rate_table); i++) {
+<<<<<<< HEAD
 		if (snd_bebob_rate_table[i] == rate)
 			return i;
+=======
+		if (snd_bebob_rate_table[i] == rate) {
+			*index = i;
+			return 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return -EINVAL;
 }
@@ -194,8 +206,12 @@ end:
 	return err;
 }
 
+<<<<<<< HEAD
 static unsigned int
 map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
+=======
+static int map_data_channels(struct snd_bebob *bebob, struct amdtp_stream *s)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned int sec, sections, ch, channels;
 	unsigned int pcm, midi, location;
@@ -367,7 +383,13 @@ make_both_connections(struct snd_bebob *bebob, unsigned int rate)
 		goto end;
 
 	/* confirm params for both streams */
+<<<<<<< HEAD
 	index = get_formation_index(rate);
+=======
+	err = get_formation_index(rate, &index);
+	if (err < 0)
+		goto end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pcm_channels = bebob->tx_stream_formations[index].pcm;
 	midi_channels = bebob->tx_stream_formations[index].midi;
 	amdtp_stream_set_parameters(&bebob->tx_stream,

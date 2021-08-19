@@ -146,7 +146,11 @@ int cpu_isa_init(struct perf_kvm_stat *kvm, const char *cpuid)
 	if (strstr(cpuid, "Intel")) {
 		kvm->exit_reasons = vmx_exit_reasons;
 		kvm->exit_reasons_isa = "VMX";
+<<<<<<< HEAD
 	} else if (strstr(cpuid, "AMD")) {
+=======
+	} else if (strstr(cpuid, "AMD") || strstr(cpuid, "Hygon")) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kvm->exit_reasons = svm_exit_reasons;
 		kvm->exit_reasons_isa = "SVM";
 	} else

@@ -24,6 +24,11 @@
 #include <linux/btrfs.h>
 #include "async-thread.h"
 
+<<<<<<< HEAD
+=======
+#define BTRFS_MAX_DATA_CHUNK_SIZE	(10ULL * SZ_1G)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern struct mutex uuid_mutex;
 
 #define BTRFS_STRIPE_LEN	(64 * 1024)
@@ -60,6 +65,14 @@ struct btrfs_device {
 
 	spinlock_t io_lock ____cacheline_aligned;
 	int running_pending;
+<<<<<<< HEAD
+=======
+	/* When true means this device has pending chunk alloc in
+	 * current transaction. Protected by chunk_mutex.
+	 */
+	bool has_pending_chunks;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* regular prio bios */
 	struct btrfs_pending_bios pending_bios;
 	/* WRITE_SYNC bios */

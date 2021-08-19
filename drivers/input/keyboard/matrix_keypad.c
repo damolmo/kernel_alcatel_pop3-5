@@ -216,9 +216,17 @@ static void matrix_keypad_stop(struct input_dev *dev)
 {
 	struct matrix_keypad *keypad = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	keypad->stopped = true;
 	mb();
 	flush_work(&keypad->work.work);
+=======
+	spin_lock_irq(&keypad->lock);
+	keypad->stopped = true;
+	spin_unlock_irq(&keypad->lock);
+
+	flush_delayed_work(&keypad->work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * matrix_keypad_scan() will leave IRQs enabled;
 	 * we should disable them now.
@@ -403,7 +411,11 @@ matrix_keypad_parse_dt(struct device *dev)
 	struct matrix_keypad_platform_data *pdata;
 	struct device_node *np = dev->of_node;
 	unsigned int *gpios;
+<<<<<<< HEAD
 	int i, nrow, ncol;
+=======
+	int ret, i, nrow, ncol;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!np) {
 		dev_err(dev, "device lacks DT data\n");
@@ -443,12 +455,28 @@ matrix_keypad_parse_dt(struct device *dev)
 		return ERR_PTR(-ENOMEM);
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < pdata->num_row_gpios; i++)
 		gpios[i] = of_get_named_gpio(np, "row-gpios", i);
 
 	for (i = 0; i < pdata->num_col_gpios; i++)
 		gpios[pdata->num_row_gpios + i] =
 			of_get_named_gpio(np, "col-gpios", i);
+=======
+	for (i = 0; i < nrow; i++) {
+		ret = of_get_named_gpio(np, "row-gpios", i);
+		if (ret < 0)
+			return ERR_PTR(ret);
+		gpios[i] = ret;
+	}
+
+	for (i = 0; i < ncol; i++) {
+		ret = of_get_named_gpio(np, "col-gpios", i);
+		if (ret < 0)
+			return ERR_PTR(ret);
+		gpios[nrow + i] = ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pdata->row_gpios = gpios;
 	pdata->col_gpios = &gpios[pdata->num_row_gpios];
@@ -475,10 +503,15 @@ static int matrix_keypad_probe(struct platform_device *pdev)
 	pdata = dev_get_platdata(&pdev->dev);
 	if (!pdata) {
 		pdata = matrix_keypad_parse_dt(&pdev->dev);
+<<<<<<< HEAD
 		if (IS_ERR(pdata)) {
 			dev_err(&pdev->dev, "no platform data defined\n");
 			return PTR_ERR(pdata);
 		}
+=======
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (!pdata->keymap_data) {
 		dev_err(&pdev->dev, "no keymap data defined\n");
 		return -EINVAL;

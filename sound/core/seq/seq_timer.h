@@ -135,7 +135,12 @@ int snd_seq_timer_set_ppq(struct snd_seq_timer *tmr, int ppq);
 int snd_seq_timer_set_position_tick(struct snd_seq_timer *tmr, snd_seq_tick_time_t position);
 int snd_seq_timer_set_position_time(struct snd_seq_timer *tmr, snd_seq_real_time_t position);
 int snd_seq_timer_set_skew(struct snd_seq_timer *tmr, unsigned int skew, unsigned int base);
+<<<<<<< HEAD
 snd_seq_real_time_t snd_seq_timer_get_cur_time(struct snd_seq_timer *tmr);
+=======
+snd_seq_real_time_t snd_seq_timer_get_cur_time(struct snd_seq_timer *tmr,
+					       bool adjust_ktime);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 snd_seq_tick_time_t snd_seq_timer_get_cur_tick(struct snd_seq_timer *tmr);
 
 extern int seq_default_timer_class;

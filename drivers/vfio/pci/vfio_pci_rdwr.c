@@ -190,7 +190,14 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_device *vdev, char __user *buf,
 	if (!vdev->has_vga)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	switch (pos) {
+=======
+	if (pos > 0xbfffful)
+		return -EINVAL;
+
+	switch ((u32)pos) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 0xa0000 ... 0xbffff:
 		count = min(count, (size_t)(0xc0000 - pos));
 		iomem = ioremap_nocache(0xa0000, 0xbffff - 0xa0000 + 1);

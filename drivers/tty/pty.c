@@ -18,7 +18,10 @@
 #include <linux/major.h>
 #include <linux/mm.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/sysctl.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/bitops.h>
@@ -49,11 +52,17 @@ static void pty_close(struct tty_struct *tty, struct file *filp)
 	wake_up_interruptible(&tty->read_wait);
 	wake_up_interruptible(&tty->write_wait);
 	tty->packet = 0;
+<<<<<<< HEAD
 	tty->peer_stops = 0;
 	/* Review - krefs on tty_link ?? */
 	if (!tty->link)
 		return;
 	tty->link->peer_stops = 0;
+=======
+	/* Review - krefs on tty_link ?? */
+	if (!tty->link)
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	set_bit(TTY_OTHER_CLOSED, &tty->link->flags);
 	wake_up_interruptible(&tty->link->read_wait);
 	wake_up_interruptible(&tty->link->write_wait);
@@ -117,6 +126,7 @@ static int pty_space(struct tty_struct *to)
 static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
 {
 	struct tty_struct *to = tty->link;
+<<<<<<< HEAD
 
 	if (tty->stopped || tty->peer_stops) {
 		return 0;
@@ -124,6 +134,18 @@ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
 	if (c > 0) {
 		/* Stuff the data into the input queue of the other end */
 		c = tty_insert_flip_string(to->port, buf, c);
+=======
+	unsigned long flags;
+
+	if (tty->stopped)
+		return 0;
+
+	if (c > 0) {
+		spin_lock_irqsave(&to->port->lock, flags);
+		/* Stuff the data into the input queue of the other end */
+		c = tty_insert_flip_string(to->port, buf, c);
+		spin_unlock_irqrestore(&to->port->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* And shovel */
 		if (c)
 			tty_flip_buffer_push(to->port);
@@ -141,7 +163,11 @@ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
 
 static int pty_write_room(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	if (tty->stopped || tty->peer_stops)
+=======
+	if (tty->stopped)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	return pty_space(tty->link);
 }
@@ -355,6 +381,7 @@ static void pty_stop(struct tty_struct *tty)
 	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
 }
 
+<<<<<<< HEAD
 /* Unix98 devices */
 #ifdef CONFIG_UNIX98_PTYS
 /*
@@ -423,6 +450,8 @@ static struct ctl_table pty_root_table[] = {
 #define TCION 3
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	pty_common_install		-	set up the pty pair
  *	@driver: the pty driver
@@ -491,8 +520,11 @@ static int pty_common_install(struct tty_driver *driver, struct tty_struct *tty,
 
 	tty_driver_kref_get(driver);
 	tty->count++;
+<<<<<<< HEAD
 	pty_inc_count(); /* tty */
 	pty_inc_count(); /* tty->link */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 err_free_termios:
 	if (legacy)
@@ -610,7 +642,10 @@ static void __init legacy_pty_init(void)
 	if (IS_ERR(pty_slave_driver))
 		panic("Couldn't allocate pty slave driver");
 
+<<<<<<< HEAD
 	pty_driver->owner = THIS_MODULE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pty_driver->driver_name = "pty_master";
 	pty_driver->name = "pty";
 	pty_driver->major = PTY_MASTER_MAJOR;
@@ -627,7 +662,10 @@ static void __init legacy_pty_init(void)
 	pty_driver->other = pty_slave_driver;
 	tty_set_operations(pty_driver, &master_pty_ops_bsd);
 
+<<<<<<< HEAD
 	pty_slave_driver->owner = THIS_MODULE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pty_slave_driver->driver_name = "pty_slave";
 	pty_slave_driver->name = "ttyp";
 	pty_slave_driver->major = PTY_SLAVE_MAJOR;
@@ -650,6 +688,14 @@ static void __init legacy_pty_init(void)
 static inline void legacy_pty_init(void) { }
 #endif
 
+<<<<<<< HEAD
+=======
+/* Unix98 devices */
+#ifdef CONFIG_UNIX98_PTYS
+
+static struct cdev ptmx_cdev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int pty_unix98_ioctl(struct tty_struct *tty,
 			    unsigned int cmd, unsigned long arg)
 {
@@ -666,6 +712,7 @@ static int pty_unix98_ioctl(struct tty_struct *tty,
 		return put_user(tty->index, (unsigned int __user *)arg);
 	case TIOCSIG:    /* Send signal to other side of pty */
 		return pty_signal(tty, (int) arg);
+<<<<<<< HEAD
 	case TCXONC: /* Flow Control */
 		switch (arg) {
 		case TCIOFF:
@@ -715,6 +762,10 @@ static int pts_unix98_ioctl(struct tty_struct *tty,
 		}
 	return 0;
 	}
+=======
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return -ENOIOCTLCMD;
 }
 
@@ -767,13 +818,27 @@ static int pty_unix98_install(struct tty_driver *driver, struct tty_struct *tty)
 
 static void pty_unix98_remove(struct tty_driver *driver, struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	pty_dec_count();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* this is called once with whichever end is closed last */
 static void pty_unix98_shutdown(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	devpts_kill_index(tty->driver_data, tty->index);
+=======
+	struct pts_fs_info *fsi;
+
+	if (tty->driver->subtype == PTY_TYPE_MASTER)
+		fsi = tty->driver_data;
+	else
+		fsi = tty->link->driver_data;
+	devpts_kill_index(fsi, tty->index);
+	devpts_put_ref(fsi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct tty_operations ptm_unix98_ops = {
@@ -806,7 +871,10 @@ static const struct tty_operations pty_unix98_ops = {
 	.chars_in_buffer = pty_chars_in_buffer,
 	.unthrottle = pty_unthrottle,
 	.set_termios = pty_set_termios,
+<<<<<<< HEAD
 	.ioctl = pts_unix98_ioctl,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.start = pty_start,
 	.stop = pty_stop,
 	.shutdown = pty_unix98_shutdown,
@@ -827,6 +895,10 @@ static const struct tty_operations pty_unix98_ops = {
 
 static int ptmx_open(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
+=======
+	struct pts_fs_info *fsi;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct tty_struct *tty;
 	struct inode *slave_inode;
 	int retval;
@@ -841,6 +913,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 	if (retval)
 		return retval;
 
+<<<<<<< HEAD
 	/* find a device that is not in use. */
 	mutex_lock(&devpts_mutex);
 	index = devpts_new_index(inode);
@@ -860,16 +933,52 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 		goto out;
 	}
 
+=======
+	fsi = devpts_get_ref(inode, filp);
+	retval = -ENODEV;
+	if (!fsi)
+		goto out_free_file;
+
+	/* find a device that is not in use. */
+	mutex_lock(&devpts_mutex);
+	index = devpts_new_index(fsi);
+	mutex_unlock(&devpts_mutex);
+
+	retval = index;
+	if (index < 0)
+		goto out_put_ref;
+
+
+	mutex_lock(&tty_mutex);
+	tty = tty_init_dev(ptm_driver, index);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* The tty returned here is locked so we can safely
 	   drop the mutex */
 	mutex_unlock(&tty_mutex);
 
+<<<<<<< HEAD
 	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
 	tty->driver_data = inode;
 
 	tty_add_file(tty, filp);
 
 	slave_inode = devpts_pty_new(inode,
+=======
+	retval = PTR_ERR(tty);
+	if (IS_ERR(tty))
+		goto out;
+
+	/*
+	 * From here on out, the tty is "live", and the index and
+	 * fsi will be killed/put by the tty_release()
+	 */
+	set_bit(TTY_PTY_LOCK, &tty->flags); /* LOCK THE SLAVE */
+	tty->driver_data = fsi;
+
+	tty_add_file(tty, filp);
+
+	slave_inode = devpts_pty_new(fsi,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			MKDEV(UNIX98_PTY_SLAVE_MAJOR, index), index,
 			tty->link);
 	if (IS_ERR(slave_inode)) {
@@ -886,12 +995,23 @@ static int ptmx_open(struct inode *inode, struct file *filp)
 	return 0;
 err_release:
 	tty_unlock(tty);
+<<<<<<< HEAD
 	tty_release(inode, filp);
 	return retval;
 out:
 	mutex_unlock(&tty_mutex);
 	devpts_kill_index(inode, index);
 err_file:
+=======
+	// This will also put-ref the fsi
+	tty_release(inode, filp);
+	return retval;
+out:
+	devpts_kill_index(fsi, index);
+out_put_ref:
+	devpts_put_ref(fsi);
+out_free_file:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tty_free_file(filp);
 	return retval;
 }
@@ -917,7 +1037,10 @@ static void __init unix98_pty_init(void)
 	if (IS_ERR(pts_driver))
 		panic("Couldn't allocate Unix98 pts driver");
 
+<<<<<<< HEAD
 	ptm_driver->owner = THIS_MODULE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ptm_driver->driver_name = "pty_master";
 	ptm_driver->name = "ptm";
 	ptm_driver->major = UNIX98_PTY_MASTER_MAJOR;
@@ -952,8 +1075,11 @@ static void __init unix98_pty_init(void)
 	if (tty_register_driver(pts_driver))
 		panic("Couldn't register Unix98 pts driver");
 
+<<<<<<< HEAD
 	register_sysctl_table(pty_root_table);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Now create the /dev/ptmx special device */
 	tty_default_fops(&ptmx_fops);
 	ptmx_fops.open = ptmx_open;

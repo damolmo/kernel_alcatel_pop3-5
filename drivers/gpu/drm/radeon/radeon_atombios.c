@@ -436,7 +436,13 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	}
 
 	/* Fujitsu D3003-S2 board lists DVI-I as DVI-D and VGA */
+<<<<<<< HEAD
 	if (((dev->pdev->device == 0x9802) || (dev->pdev->device == 0x9806)) &&
+=======
+	if (((dev->pdev->device == 0x9802) ||
+	     (dev->pdev->device == 0x9805) ||
+	     (dev->pdev->device == 0x9806)) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (dev->pdev->subsystem_vendor == 0x1734) &&
 	    (dev->pdev->subsystem_device == 0x11bd)) {
 		if (*connector_type == DRM_MODE_CONNECTOR_VGA) {
@@ -447,6 +453,7 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	/* Fujitsu D3003-S2 board lists DVI-I as DVI-I and VGA */
 	if ((dev->pdev->device == 0x9805) &&
 	    (dev->pdev->subsystem_vendor == 0x1734) &&
@@ -455,6 +462,8 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 			return false;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 
@@ -1134,7 +1143,11 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		    le16_to_cpu(firmware_info->info.usReferenceClock);
 		p1pll->reference_div = 0;
 
+<<<<<<< HEAD
 		if (crev < 2)
+=======
+		if ((frev < 2) && (crev < 2))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			p1pll->pll_out_min =
 				le16_to_cpu(firmware_info->info.usMinPixelClockPLL_Output);
 		else
@@ -1143,7 +1156,11 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		p1pll->pll_out_max =
 		    le32_to_cpu(firmware_info->info.ulMaxPixelClockPLL_Output);
 
+<<<<<<< HEAD
 		if (crev >= 4) {
+=======
+		if (((frev < 2) && (crev >= 4)) || (frev >= 2)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			p1pll->lcd_pll_out_min =
 				le16_to_cpu(firmware_info->info_14.usLcdMinPixelClockPLL_Output) * 100;
 			if (p1pll->lcd_pll_out_min == 0)
@@ -2233,10 +2250,17 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 		rdev->pm.default_power_state_index = state_index - 1;
 		rdev->pm.power_state[state_index - 1].default_clock_mode =
 			&rdev->pm.power_state[state_index - 1].clock_info[0];
+<<<<<<< HEAD
 		rdev->pm.power_state[state_index].flags &=
 			~RADEON_PM_STATE_SINGLE_DISPLAY_ONLY;
 		rdev->pm.power_state[state_index].misc = 0;
 		rdev->pm.power_state[state_index].misc2 = 0;
+=======
+		rdev->pm.power_state[state_index - 1].flags &=
+			~RADEON_PM_STATE_SINGLE_DISPLAY_ONLY;
+		rdev->pm.power_state[state_index - 1].misc = 0;
+		rdev->pm.power_state[state_index - 1].misc2 = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return state_index;
 }

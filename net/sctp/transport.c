@@ -72,7 +72,11 @@ static struct sctp_transport *sctp_transport_init(struct net *net,
 	 */
 	peer->rto = msecs_to_jiffies(net->sctp.rto_initial);
 
+<<<<<<< HEAD
 	peer->last_time_heard = ktime_get();
+=======
+	peer->last_time_heard = ktime_set(0, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	peer->last_time_ecne_reduced = jiffies;
 
 	peer->param_flags = SPP_HB_DISABLE |
@@ -148,7 +152,11 @@ void sctp_transport_free(struct sctp_transport *transport)
 
 	/* Delete the ICMP proto unreachable timer if it's active. */
 	if (del_timer(&transport->proto_unreach_timer))
+<<<<<<< HEAD
 		sctp_association_put(transport->asoc);
+=======
+		sctp_transport_put(transport);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sctp_transport_put(transport);
 }

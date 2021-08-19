@@ -256,7 +256,11 @@ static int do_gfs2_set_flags(struct file *filp, u32 reqflags, u32 mask)
 			goto out;
 	}
 	if ((flags ^ new_flags) & GFS2_DIF_JDATA) {
+<<<<<<< HEAD
 		if (flags & GFS2_DIF_JDATA)
+=======
+		if (new_flags & GFS2_DIF_JDATA)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			gfs2_log_flush(sdp, ip->i_gl, NORMAL_FLUSH);
 		error = filemap_fdatawrite(inode->i_mapping);
 		if (error)
@@ -264,6 +268,11 @@ static int do_gfs2_set_flags(struct file *filp, u32 reqflags, u32 mask)
 		error = filemap_fdatawait(inode->i_mapping);
 		if (error)
 			goto out;
+<<<<<<< HEAD
+=======
+		if (new_flags & GFS2_DIF_JDATA)
+			gfs2_ordered_del_inode(ip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	error = gfs2_trans_begin(sdp, RES_DINODE, 0);
 	if (error)
@@ -654,7 +663,11 @@ static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 {
 	struct address_space *mapping = file->f_mapping;
 	struct inode *inode = mapping->host;
+<<<<<<< HEAD
 	int sync_state = inode->i_state & I_DIRTY;
+=======
+	int sync_state = inode->i_state & I_DIRTY_ALL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct gfs2_inode *ip = GFS2_I(inode);
 	int ret = 0, ret1 = 0;
 
@@ -667,7 +680,11 @@ static int gfs2_fsync(struct file *file, loff_t start, loff_t end,
 	if (!gfs2_is_jdata(ip))
 		sync_state &= ~I_DIRTY_PAGES;
 	if (datasync)
+<<<<<<< HEAD
 		sync_state &= ~I_DIRTY_SYNC;
+=======
+		sync_state &= ~(I_DIRTY_SYNC | I_DIRTY_TIME);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (sync_state) {
 		ret = sync_inode_metadata(inode, 1);

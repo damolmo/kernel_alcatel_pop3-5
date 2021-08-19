@@ -376,6 +376,15 @@ void dm_set_mdptr(struct mapped_device *md, void *ptr);
 void *dm_get_mdptr(struct mapped_device *md);
 
 /*
+<<<<<<< HEAD
+=======
+ * Export the device via the ioctl interface (uses mdptr).
+ */
+int dm_ioctl_export(struct mapped_device *md, const char *name,
+		    const char *uuid);
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * A device can still be used while suspended, but I/O is deferred.
  */
 int dm_suspend(struct mapped_device *md, unsigned suspend_flags);
@@ -586,7 +595,11 @@ extern struct ratelimit_state dm_ratelimit_state;
  */
 #define dm_target_offset(ti, sector) ((sector) - (ti)->begin)
 
+<<<<<<< HEAD
 static inline sector_t to_sector(unsigned long n)
+=======
+static inline sector_t to_sector(unsigned long long n)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return (n >> SECTOR_SHIFT);
 }

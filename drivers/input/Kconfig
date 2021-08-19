@@ -175,15 +175,22 @@ config INPUT_APMPOWER
 	  module will be called apm-power.
 
 config INPUT_KEYRESET
+<<<<<<< HEAD
 	tristate "Reset key"
+=======
+	bool "Reset key"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on INPUT
 	select INPUT_KEYCOMBO
 	---help---
 	  Say Y here if you want to reboot when some keys are pressed;
 
+<<<<<<< HEAD
 	  To compile this driver as a module, choose M here: the
 	  module will be called keyreset.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config INPUT_KEYCOMBO
 	tristate "Key combo"
 	depends on INPUT
@@ -205,12 +212,16 @@ source "drivers/input/tablet/Kconfig"
 
 source "drivers/input/touchscreen/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/input/touchscreen/mediatek/Kconfig"
 
 source "drivers/input/keyboard/mediatek/Kconfig"
 
 source "drivers/input/misc/Kconfig"
 source "drivers/input/fingerprint/Kconfig"
+=======
+source "drivers/input/misc/Kconfig"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 endif
 

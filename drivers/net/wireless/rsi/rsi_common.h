@@ -75,7 +75,10 @@ static inline int rsi_kill_thread(struct rsi_thread *handle)
 	atomic_inc(&handle->thread_done);
 	rsi_set_event(&handle->event);
 
+<<<<<<< HEAD
 	wait_for_completion(&handle->completion);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return kthread_stop(handle->task);
 }
 

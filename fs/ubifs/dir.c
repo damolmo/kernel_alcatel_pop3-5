@@ -272,12 +272,15 @@ static int ubifs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 		goto out_budg;
 	}
 
+<<<<<<< HEAD
 	err = ubifs_init_security(dir, inode, &dentry->d_name);
 	if (err) {
 		ubifs_err("cannot initialize extended attribute, error %d", err);
 		goto out_inode;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&dir_ui->ui_mutex);
 	dir->i_size += sz_change;
 	dir_ui->ui_size = dir->i_size;
@@ -297,7 +300,10 @@ out_cancel:
 	dir_ui->ui_size = dir->i_size;
 	mutex_unlock(&dir_ui->ui_mutex);
 	make_bad_inode(inode);
+<<<<<<< HEAD
 out_inode:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(inode);
 out_budg:
 	ubifs_release_budget(c, &req);
@@ -354,7 +360,11 @@ static unsigned int vfs_dent_type(uint8_t type)
  */
 static int ubifs_readdir(struct file *file, struct dir_context *ctx)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct qstr nm;
 	union ubifs_key key;
 	struct ubifs_dent_node *dent;
@@ -453,16 +463,32 @@ static int ubifs_readdir(struct file *file, struct dir_context *ctx)
 	}
 
 out:
+<<<<<<< HEAD
 	if (err != -ENOENT) {
 		ubifs_err("cannot find next direntry, error %d", err);
 		return err;
 	}
+=======
+	if (err != -ENOENT)
+		ubifs_err("cannot find next direntry, error %d", err);
+	else
+		/*
+		 * -ENOENT is a non-fatal error in this context, the TNC uses
+		 * it to indicate that the cursor moved past the current directory
+		 * and readdir() has to stop.
+		 */
+		err = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree(file->private_data);
 	file->private_data = NULL;
 	/* 2 is a special value indicating that there are no more direntries */
 	ctx->pos = 2;
+<<<<<<< HEAD
 	return 0;
+=======
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Free saved readdir() state when the directory is closed */
@@ -564,6 +590,7 @@ static int ubifs_unlink(struct inode *dir, struct dentry *dentry)
 	int err, budgeted = 1;
 	struct ubifs_budget_req req = { .mod_dent = 1, .dirtied_ino = 2 };
 	unsigned int saved_nlink = inode->i_nlink;
+<<<<<<< HEAD
 /* MTK start
 	 * add log to delete xattr
 	*/
@@ -585,6 +612,8 @@ static int ubifs_unlink(struct inode *dir, struct dentry *dentry)
 		kfree(xent);
 	}
 /* MTK end */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Budget request settings: deletion direntry, deletion inode (+1 for
@@ -756,6 +785,7 @@ static int ubifs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_budg;
 	}
 
+<<<<<<< HEAD
 	err = ubifs_init_security(dir, inode, &dentry->d_name);
 	if (err) {
 		ubifs_err("cannot initialize extended attribute, error %d",
@@ -763,6 +793,8 @@ static int ubifs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_inode;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&dir_ui->ui_mutex);
 	insert_inode_hash(inode);
 	inc_nlink(inode);
@@ -787,7 +819,10 @@ out_cancel:
 	drop_nlink(dir);
 	mutex_unlock(&dir_ui->ui_mutex);
 	make_bad_inode(inode);
+<<<<<<< HEAD
 out_inode:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(inode);
 out_budg:
 	ubifs_release_budget(c, &req);
@@ -844,6 +879,7 @@ static int ubifs_mknod(struct inode *dir, struct dentry *dentry,
 	ui->data = dev;
 	ui->data_len = devlen;
 
+<<<<<<< HEAD
 	err = ubifs_init_security(dir, inode, &dentry->d_name);
 	if (err) {
 		ubifs_err("cannot initialize extended attribute, error %d",
@@ -851,6 +887,8 @@ static int ubifs_mknod(struct inode *dir, struct dentry *dentry,
 		goto out_inode;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&dir_ui->ui_mutex);
 	dir->i_size += sz_change;
 	dir_ui->ui_size = dir->i_size;
@@ -870,7 +908,10 @@ out_cancel:
 	dir_ui->ui_size = dir->i_size;
 	mutex_unlock(&dir_ui->ui_mutex);
 	make_bad_inode(inode);
+<<<<<<< HEAD
 out_inode:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(inode);
 out_budg:
 	ubifs_release_budget(c, &req);
@@ -928,6 +969,7 @@ static int ubifs_symlink(struct inode *dir, struct dentry *dentry,
 	ui->data_len = len;
 	inode->i_size = ubifs_inode(inode)->ui_size = len;
 
+<<<<<<< HEAD
 	err = ubifs_init_security(dir, inode, &dentry->d_name);
 	if (err) {
 		ubifs_err("cannot initialize extended attribute, error %d",
@@ -935,6 +977,8 @@ static int ubifs_symlink(struct inode *dir, struct dentry *dentry,
 		goto out_inode;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&dir_ui->ui_mutex);
 	dir->i_size += sz_change;
 	dir_ui->ui_size = dir->i_size;

@@ -24,6 +24,7 @@
 #include "kmem.h"
 #include "xfs_message.h"
 
+<<<<<<< HEAD
 /*
  * Greedy allocation.  May fail and may return vmalloced memory.
  */
@@ -42,6 +43,8 @@ kmem_zalloc_greedy(size_t *size, size_t minsize, size_t maxsize)
 	return ptr;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void *
 kmem_alloc(size_t size, xfs_km_flags_t flags)
 {

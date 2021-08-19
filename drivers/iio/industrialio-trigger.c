@@ -203,6 +203,7 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
 
 	/* Prevent the module from being removed whilst attached to a trigger */
 	__module_get(pf->indio_dev->info->driver_module);
+<<<<<<< HEAD
 	pf->irq = iio_trigger_get_irq(trig);
 	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
 				   pf->type, pf->name,
@@ -219,6 +220,37 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
 	}
 
 	return ret;
+=======
+
+	/* Get irq number */
+	pf->irq = iio_trigger_get_irq(trig);
+	if (pf->irq < 0)
+		goto out_put_module;
+
+	/* Request irq */
+	ret = request_threaded_irq(pf->irq, pf->h, pf->thread,
+				   pf->type, pf->name,
+				   pf);
+	if (ret < 0)
+		goto out_put_irq;
+
+	/* Enable trigger in driver */
+	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
+		ret = trig->ops->set_trigger_state(trig, true);
+		if (ret < 0)
+			goto out_free_irq;
+	}
+
+	return ret;
+
+out_free_irq:
+	free_irq(pf->irq, pf);
+out_put_irq:
+	iio_trigger_put_irq(trig, pf->irq);
+out_put_module:
+	module_put(pf->indio_dev->info->driver_module);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int iio_trigger_detach_poll_func(struct iio_trigger *trig,

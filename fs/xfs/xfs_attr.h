@@ -112,6 +112,10 @@ typedef struct attrlist_cursor_kern {
  *========================================================================*/
 
 
+<<<<<<< HEAD
+=======
+/* Return 0 on success, or -errno; other state communicated via *context */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef int (*put_listent_func_t)(struct xfs_attr_list_context *, int,
 			      unsigned char *, int, int, unsigned char *);
 

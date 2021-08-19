@@ -647,6 +647,11 @@ struct qib_qpn_table {
 	struct qpn_map map[QPNMAP_ENTRIES];
 };
 
+<<<<<<< HEAD
+=======
+#define MAX_LKEY_TABLE_BITS 23
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct qib_lkey_table {
 	spinlock_t lock; /* protect changes in this struct */
 	u32 next;               /* next unused index (speeds search) */

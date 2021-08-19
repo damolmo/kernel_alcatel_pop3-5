@@ -36,12 +36,17 @@ static inline char *check_image_kernel(struct swsusp_info *info)
 	return arch_hibernation_header_restore(info) ?
 			"architecture specific data" : NULL;
 }
+<<<<<<< HEAD
 #else
 extern char *check_image_kernel(struct swsusp_info *info);
 #endif /* CONFIG_ARCH_HIBERNATION_HEADER */
 extern int init_header(struct swsusp_info *info);
 
 extern char resume_file[256];
+=======
+#endif /* CONFIG_ARCH_HIBERNATION_HEADER */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Keep some memory free so that I/O operations can succeed without paging
  * [Might this be more than 4 MB?]
@@ -81,8 +86,11 @@ static struct kobj_attribute _name##_attr = {	\
 	.store	= _name##_store,		\
 }
 
+<<<<<<< HEAD
 extern struct pbe *restore_pblist;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Preferred image size in bytes (default 500 MB) */
 extern unsigned long image_size;
 /* Size of memory reserved for drivers (default SPARE_PAGES x PAGE_SIZE) */
@@ -91,9 +99,12 @@ extern int in_suspend;
 extern dev_t swsusp_resume_device;
 extern sector_t swsusp_resume_block;
 
+<<<<<<< HEAD
 extern asmlinkage int swsusp_arch_suspend(void);
 extern asmlinkage int swsusp_arch_resume(void);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int create_basic_memory_bitmaps(void);
 extern void free_basic_memory_bitmaps(void);
 extern int hibernate_preallocate_memory(void);
@@ -207,6 +218,11 @@ static inline void suspend_test_finish(const char *label) {}
 
 #ifdef CONFIG_PM_SLEEP
 /* kernel/power/main.c */
+<<<<<<< HEAD
+=======
+extern int __pm_notifier_call_chain(unsigned long val, int nr_to_call,
+				    int *nr_calls);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int pm_notifier_call_chain(unsigned long val);
 #endif
 
@@ -276,6 +292,7 @@ static inline void suspend_thaw_processes(void)
 }
 #endif
 
+<<<<<<< HEAD
 extern struct page *saveable_page(struct zone *z, unsigned long p);
 #ifdef CONFIG_HIGHMEM
 extern struct page *saveable_highmem_page(struct zone *z, unsigned long p);
@@ -301,6 +318,8 @@ struct nosave_region {
 	unsigned long end_pfn;
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_PM_AUTOSLEEP
 
 /* kernel/power/autosleep.c */
@@ -327,8 +346,11 @@ extern int pm_wake_lock(const char *buf);
 extern int pm_wake_unlock(const char *buf);
 
 #endif /* !CONFIG_PM_WAKELOCKS */
+<<<<<<< HEAD
 
 #ifdef CONFIG_TOI
 unsigned long toi_get_nonconflicting_page(void);
 #define BM_END_OF_MAP	(~0UL)
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -187,7 +187,11 @@ static int k8temp_probe(struct pci_dev *pdev,
 		return -ENOMEM;
 
 	model = boot_cpu_data.x86_model;
+<<<<<<< HEAD
 	stepping = boot_cpu_data.x86_mask;
+=======
+	stepping = boot_cpu_data.x86_stepping;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* feature available since SH-C0, exclude older revisions */
 	if ((model == 4 && stepping == 0) ||

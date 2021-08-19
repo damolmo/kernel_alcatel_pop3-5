@@ -278,6 +278,37 @@ static void vfio_group_put(struct vfio_group *group)
 	kref_put_mutex(&group->kref, vfio_group_release, &vfio.group_lock);
 }
 
+<<<<<<< HEAD
+=======
+struct vfio_group_put_work {
+	struct work_struct work;
+	struct vfio_group *group;
+};
+
+static void vfio_group_put_bg(struct work_struct *work)
+{
+	struct vfio_group_put_work *do_work;
+
+	do_work = container_of(work, struct vfio_group_put_work, work);
+
+	vfio_group_put(do_work->group);
+	kfree(do_work);
+}
+
+static void vfio_group_schedule_put(struct vfio_group *group)
+{
+	struct vfio_group_put_work *do_work;
+
+	do_work = kmalloc(sizeof(*do_work), GFP_KERNEL);
+	if (WARN_ON(!do_work))
+		return;
+
+	INIT_WORK(&do_work->work, vfio_group_put_bg);
+	do_work->group = group;
+	schedule_work(&do_work->work);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Assume group_lock or group reference is held */
 static void vfio_group_get(struct vfio_group *group)
 {
@@ -553,7 +584,18 @@ static int vfio_iommu_group_notifier(struct notifier_block *nb,
 		break;
 	}
 
+<<<<<<< HEAD
 	vfio_group_put(group);
+=======
+	/*
+	 * If we're the last reference to the group, the group will be
+	 * released, which includes unregistering the iommu group notifier.
+	 * We hold a read-lock on that notifier list, unregistering needs
+	 * a write-lock... deadlock.  Release our reference asynchronously
+	 * to avoid that situation.
+	 */
+	vfio_group_schedule_put(group);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NOTIFY_OK;
 }
 
@@ -1401,6 +1443,18 @@ void vfio_group_put_external_user(struct vfio_group *group)
 }
 EXPORT_SYMBOL_GPL(vfio_group_put_external_user);
 
+<<<<<<< HEAD
+=======
+bool vfio_external_group_match_file(struct vfio_group *test_group,
+				    struct file *filep)
+{
+	struct vfio_group *group = filep->private_data;
+
+	return (filep->f_op == &vfio_group_fops) && (group == test_group);
+}
+EXPORT_SYMBOL_GPL(vfio_external_group_match_file);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int vfio_external_user_iommu_id(struct vfio_group *group)
 {
 	return iommu_group_id(group->iommu_group);

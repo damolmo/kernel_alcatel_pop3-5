@@ -178,7 +178,11 @@
 1:	PTR_ADDIU	a0, 1			/* fill bytewise */
 	R10KCBARRIER(0(ra))
 	bne		t1, a0, 1b
+<<<<<<< HEAD
 	sb		a1, -1(a0)
+=======
+	 EX(sb, a1, -1(a0), .Lsmall_fixup\@)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 2:	jr		ra			/* done */
 	move		a2, zero
@@ -204,13 +208,26 @@
 	PTR_L		t0, TI_TASK($28)
 	andi		a2, STORMASK
 	LONG_L		t0, THREAD_BUADDR(t0)
+<<<<<<< HEAD
 	LONG_ADDU	a2, t1
+=======
+	LONG_ADDU	a2, a0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jr		ra
 	LONG_SUBU	a2, t0
 
 .Llast_fixup\@:
 	jr		ra
+<<<<<<< HEAD
 	andi		v1, a2, STORMASK
+=======
+	 nop
+
+.Lsmall_fixup\@:
+	PTR_SUBU	a2, t1, a0
+	jr		ra
+	 PTR_ADDIU	a2, 1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	.endm
 

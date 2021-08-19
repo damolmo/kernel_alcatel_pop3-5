@@ -363,7 +363,10 @@ error_io:
 	ret = -EIO;
 error:
 	mutex_unlock(&f->sem);
+<<<<<<< HEAD
 	jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iget_failed(inode);
 	return ERR_PTR(ret);
 }

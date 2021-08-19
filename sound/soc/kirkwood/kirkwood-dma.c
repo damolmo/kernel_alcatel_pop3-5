@@ -136,7 +136,11 @@ static int kirkwood_dma_open(struct snd_pcm_substream *substream)
 		err = request_irq(priv->irq, kirkwood_dma_irq, IRQF_SHARED,
 				  "kirkwood-i2s", priv);
 		if (err)
+<<<<<<< HEAD
 			return -EBUSY;
+=======
+			return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * Enable Error interrupts. We're only ack'ing them but

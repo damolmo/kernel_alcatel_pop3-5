@@ -194,9 +194,12 @@ struct fadump_crash_info_header {
 	struct cpumask	cpu_online_mask;
 };
 
+<<<<<<< HEAD
 /* Crash memory ranges */
 #define INIT_CRASHMEM_RANGES	(INIT_MEMBLOCK_REGIONS + 2)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct fad_crash_memory_ranges {
 	unsigned long long	base;
 	unsigned long long	size;

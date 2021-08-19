@@ -141,7 +141,11 @@ score_rt_sigreturn(struct pt_regs *regs)
 	int sig;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	frame = (struct rt_sigframe __user *) regs->regs[0];
 	if (!access_ok(VERIFY_READ, frame, sizeof(*frame)))

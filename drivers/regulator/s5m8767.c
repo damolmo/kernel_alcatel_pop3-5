@@ -202,9 +202,16 @@ static int s5m8767_get_register(struct s5m8767_info *s5m8767, int reg_id,
 		}
 	}
 
+<<<<<<< HEAD
 	if (i < s5m8767->num_regulators)
 		*enable_ctrl =
 		s5m8767_opmode_reg[reg_id][mode] << S5M8767_ENCTRL_SHIFT;
+=======
+	if (i >= s5m8767->num_regulators)
+		return -EINVAL;
+
+	*enable_ctrl = s5m8767_opmode_reg[reg_id][mode] << S5M8767_ENCTRL_SHIFT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -936,8 +943,17 @@ static int s5m8767_pmic_probe(struct platform_device *pdev)
 			else
 				regulators[id].vsel_mask = 0xff;
 
+<<<<<<< HEAD
 			s5m8767_get_register(s5m8767, id, &enable_reg,
 					     &enable_val);
+=======
+			ret = s5m8767_get_register(s5m8767, id, &enable_reg,
+					     &enable_val);
+			if (ret) {
+				dev_err(s5m8767->dev, "error reading registers\n");
+				return ret;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			regulators[id].enable_reg = enable_reg;
 			regulators[id].enable_mask = S5M8767_ENCTRL_MASK;
 			regulators[id].enable_val = enable_val;

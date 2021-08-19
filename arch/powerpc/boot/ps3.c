@@ -119,13 +119,20 @@ void ps3_copy_vectors(void)
 	flush_cache((void *)0x100, 512);
 }
 
+<<<<<<< HEAD
 void platform_init(unsigned long null_check)
+=======
+void platform_init(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	const u32 heapsize = 0x1000000 - (u32)_end; /* 16MiB */
 	void *chosen;
 	unsigned long ft_addr;
 	u64 rm_size;
+<<<<<<< HEAD
 	unsigned long val;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	console_ops.write = ps3_console_write;
 	platform_ops.exit = ps3_exit;
@@ -153,11 +160,14 @@ void platform_init(unsigned long null_check)
 
 	printf(" flat tree at 0x%lx\n\r", ft_addr);
 
+<<<<<<< HEAD
 	val = *(unsigned long *)0;
 
 	if (val != null_check)
 		printf("null check failed: %lx != %lx\n\r", val, null_check);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	((kernel_entry_t)0)(ft_addr, 0, NULL);
 
 	ps3_exit();

@@ -1065,7 +1065,11 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
 		 * CHECSUM_UNNECESSARY.
 		 */
 		if ((netdev->features & NETIF_F_RXCSUM) && tcp_udp_csum_ok &&
+<<<<<<< HEAD
 		    ipv4_csum_ok)
+=======
+		    (ipv4_csum_ok || ipv6))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 
 		if (vlan_stripped)
@@ -1609,6 +1613,11 @@ static int enic_open(struct net_device *netdev)
 	}
 
 	for (i = 0; i < enic->rq_count; i++) {
+<<<<<<< HEAD
+=======
+		/* enable rq before updating rq desc */
+		vnic_rq_enable(&enic->rq[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vnic_rq_fill(&enic->rq[i], enic_rq_alloc_buf);
 		/* Need at least one buffer on ring to get going */
 		if (vnic_rq_desc_used(&enic->rq[i]) == 0) {
@@ -1620,8 +1629,11 @@ static int enic_open(struct net_device *netdev)
 
 	for (i = 0; i < enic->wq_count; i++)
 		vnic_wq_enable(&enic->wq[i]);
+<<<<<<< HEAD
 	for (i = 0; i < enic->rq_count; i++)
 		vnic_rq_enable(&enic->rq[i]);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!enic_is_dynamic(enic) && !enic_is_sriov_vf(enic))
 		enic_dev_add_station_addr(enic);
@@ -1643,11 +1655,24 @@ static int enic_open(struct net_device *netdev)
 		vnic_intr_unmask(&enic->intr[i]);
 
 	enic_notify_timer_start(enic);
+<<<<<<< HEAD
 	enic_rfs_flw_tbl_init(enic);
+=======
+	enic_rfs_timer_start(enic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 
 err_out_notify_unset:
+<<<<<<< HEAD
+=======
+	for (i = 0; i < enic->rq_count; i++) {
+		err = vnic_rq_disable(&enic->rq[i]);
+		if (err)
+			return err;
+		vnic_rq_clean(&enic->rq[i], enic_free_rq_buf);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	enic_dev_notify_unset(enic);
 err_out_free_intr:
 	enic_free_intr(enic);
@@ -1683,10 +1708,17 @@ static int enic_stop(struct net_device *netdev)
 	}
 
 	netif_carrier_off(netdev);
+<<<<<<< HEAD
 	netif_tx_disable(netdev);
 	if (vnic_dev_get_intr_mode(enic->vdev) == VNIC_DEV_INTR_MODE_MSIX)
 		for (i = 0; i < enic->wq_count; i++)
 			napi_disable(&enic->napi[enic_cq_wq(enic, i)]);
+=======
+	if (vnic_dev_get_intr_mode(enic->vdev) == VNIC_DEV_INTR_MODE_MSIX)
+		for (i = 0; i < enic->wq_count; i++)
+			napi_disable(&enic->napi[enic_cq_wq(enic, i)]);
+	netif_tx_disable(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!enic_is_dynamic(enic) && !enic_is_sriov_vf(enic))
 		enic_dev_del_station_addr(enic);
@@ -1717,10 +1749,39 @@ static int enic_stop(struct net_device *netdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int enic_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct enic *enic = netdev_priv(netdev);
 	int running = netif_running(netdev);
+=======
+static int _enic_change_mtu(struct net_device *netdev, int new_mtu)
+{
+	bool running = netif_running(netdev);
+	int err = 0;
+
+	ASSERT_RTNL();
+	if (running) {
+		err = enic_stop(netdev);
+		if (err)
+			return err;
+	}
+
+	netdev->mtu = new_mtu;
+
+	if (running) {
+		err = enic_open(netdev);
+		if (err)
+			return err;
+	}
+
+	return 0;
+}
+
+static int enic_change_mtu(struct net_device *netdev, int new_mtu)
+{
+	struct enic *enic = netdev_priv(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (new_mtu < ENIC_MIN_MTU || new_mtu > ENIC_MAX_MTU)
 		return -EINVAL;
@@ -1728,6 +1789,7 @@ static int enic_change_mtu(struct net_device *netdev, int new_mtu)
 	if (enic_is_dynamic(enic) || enic_is_sriov_vf(enic))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
 	if (running)
 		enic_stop(netdev);
 
@@ -1742,6 +1804,14 @@ static int enic_change_mtu(struct net_device *netdev, int new_mtu)
 		enic_open(netdev);
 
 	return 0;
+=======
+	if (netdev->mtu > enic->port_mtu)
+		netdev_warn(netdev,
+			    "interface MTU (%d) set higher than port MTU (%d)\n",
+			    netdev->mtu, enic->port_mtu);
+
+	return _enic_change_mtu(netdev, new_mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void enic_change_mtu_work(struct work_struct *work)
@@ -1749,6 +1819,7 @@ static void enic_change_mtu_work(struct work_struct *work)
 	struct enic *enic = container_of(work, struct enic, change_mtu_work);
 	struct net_device *netdev = enic->netdev;
 	int new_mtu = vnic_dev_mtu(enic->vdev);
+<<<<<<< HEAD
 	int err;
 	unsigned int i;
 
@@ -1790,6 +1861,11 @@ static void enic_change_mtu_work(struct work_struct *work)
 	vnic_intr_unmask(&enic->intr[0]);
 	enic_notify_timer_start(enic);
 
+=======
+
+	rtnl_lock();
+	(void)_enic_change_mtu(netdev, new_mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rtnl_unlock();
 
 	netdev_info(netdev, "interface MTU set as %d\n", netdev->mtu);
@@ -1838,8 +1914,11 @@ static int enic_dev_wait(struct vnic_dev *vdev,
 	int done;
 	int err;
 
+<<<<<<< HEAD
 	BUG_ON(in_interrupt());
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = start(vdev, arg);
 	if (err)
 		return err;
@@ -1998,6 +2077,16 @@ static int enic_set_rss_nic_cfg(struct enic *enic)
 		rss_hash_bits, rss_base_cpu, rss_enable);
 }
 
+<<<<<<< HEAD
+=======
+static void enic_set_api_busy(struct enic *enic, bool busy)
+{
+	spin_lock(&enic->enic_api_lock);
+	enic->enic_api_busy = busy;
+	spin_unlock(&enic->enic_api_lock);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void enic_reset(struct work_struct *work)
 {
 	struct enic *enic = container_of(work, struct enic, reset);
@@ -2007,7 +2096,13 @@ static void enic_reset(struct work_struct *work)
 
 	rtnl_lock();
 
+<<<<<<< HEAD
 	spin_lock(&enic->enic_api_lock);
+=======
+	/* Stop any activity from infiniband */
+	enic_set_api_busy(enic, true);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	enic_dev_hang_notify(enic);
 	enic_stop(enic->netdev);
 	enic_dev_hang_reset(enic);
@@ -2016,7 +2111,14 @@ static void enic_reset(struct work_struct *work)
 	enic_set_rss_nic_cfg(enic);
 	enic_dev_set_ig_vlan_rewrite_mode(enic);
 	enic_open(enic->netdev);
+<<<<<<< HEAD
 	spin_unlock(&enic->enic_api_lock);
+=======
+
+	/* Allow infiniband to fiddle with the device again */
+	enic_set_api_busy(enic, false);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	call_netdevice_notifiers(NETDEV_REBOOT, enic->netdev);
 
 	rtnl_unlock();
@@ -2362,11 +2464,19 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_set_master(pdev);
 
 	/* Query PCI controller on system for DMA addressing
+<<<<<<< HEAD
 	 * limitation for the device.  Try 64-bit first, and
 	 * fail to 32-bit.
 	 */
 
 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+=======
+	 * limitation for the device.  Try 47-bit first, and
+	 * fail to 32-bit.
+	 */
+
+	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(47));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
 		if (err) {
@@ -2380,10 +2490,17 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			goto err_out_release_regions;
 		}
 	} else {
+<<<<<<< HEAD
 		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
 		if (err) {
 			dev_err(dev, "Unable to obtain %u-bit DMA "
 				"for consistent allocations, aborting\n", 64);
+=======
+		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(47));
+		if (err) {
+			dev_err(dev, "Unable to obtain %u-bit DMA "
+				"for consistent allocations, aborting\n", 47);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto err_out_release_regions;
 		}
 		using_dac = 1;
@@ -2508,6 +2625,10 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	enic->notify_timer.function = enic_notify_timer;
 	enic->notify_timer.data = (unsigned long)enic;
 
+<<<<<<< HEAD
+=======
+	enic_rfs_flw_tbl_init(enic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	enic_set_rx_coal_setting(enic);
 	INIT_WORK(&enic->reset, enic_reset);
 	INIT_WORK(&enic->change_mtu_work, enic_change_mtu_work);
@@ -2519,7 +2640,10 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 */
 
 	enic->port_mtu = enic->config.mtu;
+<<<<<<< HEAD
 	(void)enic_change_mtu(netdev, enic->port_mtu);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = enic_set_mac_addr(netdev, enic->mac_addr);
 	if (err) {
@@ -2568,6 +2692,10 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->features |= NETIF_F_HIGHDMA;
 
 	netdev->priv_flags |= IFF_UNICAST_FLT;
+<<<<<<< HEAD
+=======
+	netdev->mtu = enic->port_mtu;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = register_netdev(netdev);
 	if (err) {

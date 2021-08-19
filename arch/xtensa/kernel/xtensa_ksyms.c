@@ -82,13 +82,21 @@ void __xtensa_libgcc_window_spill(void)
 }
 EXPORT_SYMBOL(__xtensa_libgcc_window_spill);
 
+<<<<<<< HEAD
 unsigned long __sync_fetch_and_and_4(unsigned long *p, unsigned long v)
+=======
+unsigned int __sync_fetch_and_and_4(volatile void *p, unsigned int v)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	BUG();
 }
 EXPORT_SYMBOL(__sync_fetch_and_and_4);
 
+<<<<<<< HEAD
 unsigned long __sync_fetch_and_or_4(unsigned long *p, unsigned long v)
+=======
+unsigned int __sync_fetch_and_or_4(volatile void *p, unsigned int v)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	BUG();
 }

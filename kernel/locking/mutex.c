@@ -34,11 +34,14 @@
 #ifdef CONFIG_DEBUG_MUTEXES
 # include "mutex-debug.h"
 # include <asm-generic/mutex-null.h>
+<<<<<<< HEAD
 
 #  ifndef CONFIG_LOCKDEP
 #   define CREATE_TRACE_POINTS
 #  endif
 # include <trace/events/lock.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Must be 0 for the debug case so we do not do the unlock outside of the
  * wait_lock region. debug_mutex_unlock() will do the actual unlock in this
@@ -383,6 +386,7 @@ done:
 	 * reschedule now, before we try-lock the mutex. This avoids getting
 	 * scheduled out right after we obtained the mutex.
 	 */
+<<<<<<< HEAD
 	if (need_resched()) {
 		/*
 		* We _should_ have TASK_RUNNING here, but just in case
@@ -392,6 +396,11 @@ done:
 		__set_current_state(TASK_RUNNING);
 		schedule_preempt_disabled();
 	}
+=======
+	if (need_resched())
+		schedule_preempt_disabled();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return false;
 }
 #else
@@ -482,9 +491,12 @@ __mutex_lock_check_stamp(struct mutex *lock, struct ww_acquire_ctx *ctx)
 	if (!hold_ctx)
 		return 0;
 
+<<<<<<< HEAD
 	if (unlikely(ctx == hold_ctx))
 		return -EALREADY;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ctx->stamp - hold_ctx->stamp <= LONG_MAX &&
 	    (ctx->stamp != hold_ctx->stamp || ctx > hold_ctx)) {
 #ifdef CONFIG_DEBUG_MUTEXES
@@ -509,9 +521,18 @@ __mutex_lock_common(struct mutex *lock, long state, unsigned int subclass,
 	struct mutex_waiter waiter;
 	unsigned long flags;
 	int ret;
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_MUTEXES
 	bool __mutex_contended = false;
 #endif
+=======
+
+	if (use_ww_ctx) {
+		struct ww_mutex *ww = container_of(lock, struct ww_mutex, base);
+		if (unlikely(ww_ctx == READ_ONCE(ww->ctx)))
+			return -EALREADY;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	preempt_disable();
 	mutex_acquire_nest(&lock->dep_map, subclass, 0, nest_lock, ip);
@@ -539,10 +560,13 @@ __mutex_lock_common(struct mutex *lock, long state, unsigned int subclass,
 	waiter.task = task;
 
 	lock_contended(&lock->dep_map, ip);
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_MUTEXES
 	trace_mutex_contended(lock, ip);
 	__mutex_contended = true; /* to pair mutex_contended & mutex_acquired */
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (;;) {
 		/*
@@ -588,10 +612,13 @@ __mutex_lock_common(struct mutex *lock, long state, unsigned int subclass,
 	debug_mutex_free_waiter(&waiter);
 
 skip_wait:
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_MUTEXES
 	if (unlikely(__mutex_contended))
 		trace_mutex_acquired(lock, ip);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* got the lock - cleanup and rejoice! */
 	lock_acquired(&lock->dep_map, ip);
 	mutex_set_owner(lock);

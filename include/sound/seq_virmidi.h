@@ -60,6 +60,10 @@ struct snd_virmidi_dev {
 	int port;			/* created/attached port */
 	unsigned int flags;		/* SNDRV_VIRMIDI_* */
 	rwlock_t filelist_lock;
+<<<<<<< HEAD
+=======
+	struct rw_semaphore filelist_sem;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct list_head filelist;
 };
 

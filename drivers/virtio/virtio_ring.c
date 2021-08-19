@@ -196,6 +196,11 @@ static inline int virtqueue_add(struct virtqueue *_vq,
 		 * host should service the ring ASAP. */
 		if (out_sgs)
 			vq->notify(&vq->vq);
+<<<<<<< HEAD
+=======
+		if (indirect)
+			kfree(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		END_USE(vq);
 		return -ENOSPC;
 	}
@@ -585,6 +590,12 @@ bool virtqueue_poll(struct virtqueue *_vq, unsigned last_used_idx)
 {
 	struct vring_virtqueue *vq = to_vvq(_vq);
 
+<<<<<<< HEAD
+=======
+	if (unlikely(vq->broken))
+		return false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	virtio_mb(vq->weak_barriers);
 	return (u16)last_used_idx != vq->vring.used->idx;
 }

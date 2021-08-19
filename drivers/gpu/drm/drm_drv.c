@@ -37,22 +37,34 @@
 #include "drm_legacy.h"
 #include "drm_internal.h"
 
+<<<<<<< HEAD
 unsigned int drm_debug = 7;	/* 1 to enable debug output */
 EXPORT_SYMBOL(drm_debug);
 
 bool drm_atomic = 0;
 
+=======
+unsigned int drm_debug = 0;	/* 1 to enable debug output */
+EXPORT_SYMBOL(drm_debug);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_AUTHOR(CORE_AUTHOR);
 MODULE_DESCRIPTION(CORE_DESC);
 MODULE_LICENSE("GPL and additional rights");
 MODULE_PARM_DESC(debug, "Enable debug output");
+<<<<<<< HEAD
 MODULE_PARM_DESC(atomic, "Enable experimental atomic KMS API");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_PARM_DESC(vblankoffdelay, "Delay until vblank irq auto-disable [msecs] (0: never disable, <0: disable immediately)");
 MODULE_PARM_DESC(timestamp_precision_usec, "Max. error on timestamps [usecs]");
 MODULE_PARM_DESC(timestamp_monotonic, "Use monotonic timestamps");
 
 module_param_named(debug, drm_debug, int, 0600);
+<<<<<<< HEAD
 module_param_named_unsafe(atomic, drm_atomic, bool, 0600);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static DEFINE_SPINLOCK(drm_minor_lock);
 static struct idr drm_minors_idr;
@@ -84,7 +96,10 @@ void drm_ut_debug_printk(const char *function_name, const char *format, ...)
 	va_start(args, format);
 	vaf.fmt = format;
 	vaf.va = &args;
+<<<<<<< HEAD
 	printk("[" DRM_NAME ":%s] %pV", function_name, &vaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	printk(KERN_DEBUG "[" DRM_NAME ":%s] %pV", function_name, &vaf);
 
@@ -325,7 +340,11 @@ static int drm_minor_register(struct drm_device *dev, unsigned int type)
 	ret = drm_debugfs_init(minor, minor->index, drm_debugfs_root);
 	if (ret) {
 		DRM_ERROR("DRM: Failed to initialize /sys/kernel/debug/dri.\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_debugfs;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = device_add(minor->kdev);
@@ -539,8 +558,11 @@ static void drm_fs_inode_free(struct inode *inode)
  * The initial ref-count of the object is 1. Use drm_dev_ref() and
  * drm_dev_unref() to take and drop further ref-counts.
  *
+<<<<<<< HEAD
  * Note that for purely virtual devices @parent can be NULL.
  *
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * RETURNS:
  * Pointer to new DRM device, or NULL if out of memory.
  */
@@ -825,7 +847,11 @@ static int drm_stub_open(struct inode *inode, struct file *filp)
 	struct drm_minor *minor;
 	int err;
 
+<<<<<<< HEAD
 	DRM_INFO("\n");
+=======
+	DRM_DEBUG("\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&drm_global_mutex);
 	minor = drm_minor_acquire(iminor(inode));
@@ -853,9 +879,12 @@ out_unlock:
 	return err;
 }
 
+<<<<<<< HEAD
 /* When set to 1, allow set/drop master ioctls as normal user */
 u32 drm_master_relax;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const struct file_operations drm_stub_fops = {
 	.owner = THIS_MODULE,
 	.open = drm_stub_open,
@@ -887,12 +916,15 @@ static int __init drm_core_init(void)
 		goto err_p3;
 	}
 
+<<<<<<< HEAD
 	if (!debugfs_create_bool("drm_master_relax", S_IRUSR | S_IWUSR,
 				drm_debugfs_root, &drm_master_relax)) {
 		DRM_ERROR(
 			  "Cannot create /sys/kernel/debug/dri/drm_master_relax\n");
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	DRM_INFO("Initialized %s %d.%d.%d %s\n",
 		 CORE_NAME, CORE_MAJOR, CORE_MINOR, CORE_PATCHLEVEL, CORE_DATE);
 	return 0;
@@ -908,7 +940,11 @@ err_p1:
 
 static void __exit drm_core_exit(void)
 {
+<<<<<<< HEAD
 	debugfs_remove_recursive(drm_debugfs_root);
+=======
+	debugfs_remove(drm_debugfs_root);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	drm_sysfs_destroy();
 
 	unregister_chrdev(DRM_MAJOR, "drm");

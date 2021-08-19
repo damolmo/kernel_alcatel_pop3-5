@@ -1047,6 +1047,12 @@ static int tw_chrdev_open(struct inode *inode, struct file *file)
 
 	dprintk(KERN_WARNING "3w-xxxx: tw_ioctl_open()\n");
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_SYS_ADMIN))
+		return -EACCES;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	minor_number = iminor(inode);
 	if (minor_number >= tw_device_extension_count)
 		return -ENODEV;
@@ -2288,6 +2294,10 @@ static int tw_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 
 	if (tw_initialize_device_extension(tw_dev)) {
 		printk(KERN_WARNING "3w-xxxx: Failed to initialize device extension.");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_free_device_extension;
 	}
 
@@ -2302,6 +2312,10 @@ static int tw_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 	tw_dev->base_addr = pci_resource_start(pdev, 0);
 	if (!tw_dev->base_addr) {
 		printk(KERN_WARNING "3w-xxxx: Failed to get io address.");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_release_mem_region;
 	}
 

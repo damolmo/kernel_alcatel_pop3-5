@@ -864,9 +864,12 @@ static int tvp5150_s_crop(struct v4l2_subdev *sd, const struct v4l2_crop *a)
 
 	/* tvp5150 has some special limits */
 	rect.left = clamp(rect.left, 0, TVP5150_MAX_CROP_LEFT);
+<<<<<<< HEAD
 	rect.width = clamp_t(unsigned int, rect.width,
 			     TVP5150_H_MAX - TVP5150_MAX_CROP_LEFT - rect.left,
 			     TVP5150_H_MAX - rect.left);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rect.top = clamp(rect.top, 0, TVP5150_MAX_CROP_TOP);
 
 	/* Calculate height based on current standard */
@@ -880,9 +883,22 @@ static int tvp5150_s_crop(struct v4l2_subdev *sd, const struct v4l2_crop *a)
 	else
 		hmax = TVP5150_V_MAX_OTHERS;
 
+<<<<<<< HEAD
 	rect.height = clamp_t(unsigned int, rect.height,
 			      hmax - TVP5150_MAX_CROP_TOP - rect.top,
 			      hmax - rect.top);
+=======
+	/*
+	 * alignments:
+	 *  - width = 2 due to UYVY colorspace
+	 *  - height, image = no special alignment
+	 */
+	v4l_bound_align_image(&rect.width,
+			      TVP5150_H_MAX - TVP5150_MAX_CROP_LEFT - rect.left,
+			      TVP5150_H_MAX - rect.left, 1, &rect.height,
+			      hmax - TVP5150_MAX_CROP_TOP - rect.top,
+			      hmax - rect.top, 0, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tvp5150_write(sd, TVP5150_VERT_BLANKING_START, rect.top);
 	tvp5150_write(sd, TVP5150_VERT_BLANKING_STOP,

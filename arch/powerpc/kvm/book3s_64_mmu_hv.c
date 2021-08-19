@@ -449,7 +449,11 @@ static int kvmppc_mmu_book3s_64_hv_xlate(struct kvm_vcpu *vcpu, gva_t eaddr,
 	unsigned long pp, key;
 	unsigned long v, gr;
 	__be64 *hptep;
+<<<<<<< HEAD
 	int index;
+=======
+	long int index;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int virtmode = vcpu->arch.shregs.msr & (data ? MSR_DR : MSR_IR);
 
 	/* Get SLB entry */

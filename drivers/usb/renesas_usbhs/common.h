@@ -158,11 +158,19 @@ struct usbhs_priv;
 #define VBSTS	(1 << 7)	/* VBUS_0 and VBUSIN_0 Input Status */
 #define VALID	(1 << 3)	/* USB Request Receive */
 
+<<<<<<< HEAD
 #define DVSQ_MASK		(0x3 << 4)	/* Device State */
+=======
+#define DVSQ_MASK		(0x7 << 4)	/* Device State */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define  POWER_STATE		(0 << 4)
 #define  DEFAULT_STATE		(1 << 4)
 #define  ADDRESS_STATE		(2 << 4)
 #define  CONFIGURATION_STATE	(3 << 4)
+<<<<<<< HEAD
+=======
+#define  SUSPENDED_STATE	(4 << 4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define CTSQ_MASK		(0x7)	/* Control Transfer Stage */
 #define  IDLE_SETUP_STAGE	0	/* Idle stage or setup stage */
@@ -207,6 +215,10 @@ struct usbhs_priv;
 /* DCPCTR */
 #define BSTS		(1 << 15)	/* Buffer Status */
 #define SUREQ		(1 << 14)	/* Sending SETUP Token */
+<<<<<<< HEAD
+=======
+#define INBUFM		(1 << 14)	/* (PIPEnCTR) Transfer Buffer Monitor */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CSSTS		(1 << 12)	/* CSSTS Status */
 #define	ACLRM		(1 << 9)	/* Buffer Auto-Clear Mode */
 #define SQCLR		(1 << 8)	/* Toggle Bit Clear */

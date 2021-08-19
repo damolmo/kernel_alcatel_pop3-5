@@ -525,6 +525,7 @@ SYSCALL_DEFINE4(osf_mount, unsigned long, typenr, const char __user *, path,
 SYSCALL_DEFINE1(osf_utsname, char __user *, name)
 {
 	int error;
+<<<<<<< HEAD
 
 	down_read(&uts_sem);
 	error = -EFAULT;
@@ -543,6 +544,21 @@ SYSCALL_DEFINE1(osf_utsname, char __user *, name)
  out:
 	up_read(&uts_sem);	
 	return error;
+=======
+	char tmp[5 * 32];
+
+	down_read(&uts_sem);
+	memcpy(tmp + 0 * 32, utsname()->sysname, 32);
+	memcpy(tmp + 1 * 32, utsname()->nodename, 32);
+	memcpy(tmp + 2 * 32, utsname()->release, 32);
+	memcpy(tmp + 3 * 32, utsname()->version, 32);
+	memcpy(tmp + 4 * 32, utsname()->machine, 32);
+	up_read(&uts_sem);
+
+	if (copy_to_user(name, tmp, sizeof(tmp)))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 SYSCALL_DEFINE0(getpagesize)
@@ -560,6 +576,7 @@ SYSCALL_DEFINE0(getdtablesize)
  */
 SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
 {
+<<<<<<< HEAD
 	unsigned len;
 	int i;
 
@@ -578,6 +595,24 @@ SYSCALL_DEFINE2(osf_getdomainname, char __user *, name, int, namelen)
 	}
 	up_read(&uts_sem);
 
+=======
+	int len, err = 0;
+	char *kname;
+	char tmp[32];
+
+	if (namelen < 0 || namelen > 32)
+		namelen = 32;
+
+	down_read(&uts_sem);
+	kname = utsname()->domainname;
+	len = strnlen(kname, namelen);
+	len = min(len + 1, namelen);
+	memcpy(tmp, kname, len);
+	up_read(&uts_sem);
+
+	if (copy_to_user(name, tmp, len))
+		return -EFAULT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -740,13 +775,22 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
 	};
 	unsigned long offset;
 	const char *res;
+<<<<<<< HEAD
 	long len, err = -EINVAL;
+=======
+	long len;
+	char tmp[__NEW_UTS_LEN + 1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	offset = command-1;
 	if (offset >= ARRAY_SIZE(sysinfo_table)) {
 		/* Digital UNIX has a few unpublished interfaces here */
 		printk("sysinfo(%d)", command);
+<<<<<<< HEAD
 		goto out;
+=======
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	down_read(&uts_sem);
@@ -754,6 +798,7 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
 	len = strlen(res)+1;
 	if ((unsigned long)len > (unsigned long)count)
 		len = count;
+<<<<<<< HEAD
 	if (copy_to_user(buf, res, len))
 		err = -EFAULT;
 	else
@@ -761,6 +806,13 @@ SYSCALL_DEFINE3(osf_sysinfo, int, command, char __user *, buf, long, count)
 	up_read(&uts_sem);
  out:
 	return err;
+=======
+	memcpy(tmp, res, len);
+	up_read(&uts_sem);
+	if (copy_to_user(buf, tmp, len))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 SYSCALL_DEFINE5(osf_getsysinfo, unsigned long, op, void __user *, buffer,
@@ -1183,8 +1235,15 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 	if (!access_ok(VERIFY_WRITE, ur, sizeof(*ur)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	err = 0;
 	err |= put_user(status, ustatus);
+=======
+	err = put_user(status, ustatus);
+	if (ret < 0)
+		return err ? err : ret;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err |= __put_user(r.ru_utime.tv_sec, &ur->ru_utime.tv_sec);
 	err |= __put_user(r.ru_utime.tv_usec, &ur->ru_utime.tv_usec);
 	err |= __put_user(r.ru_stime.tv_sec, &ur->ru_stime.tv_sec);

@@ -106,8 +106,11 @@ linux_gateway_entry:
 	mtsp	%r0,%sr4			/* get kernel space into sr4 */
 	mtsp	%r0,%sr5			/* get kernel space into sr5 */
 	mtsp	%r0,%sr6			/* get kernel space into sr6 */
+<<<<<<< HEAD
 	mfsp    %sr7,%r1                        /* save user sr7 */
 	mtsp    %r1,%sr3                        /* and store it in sr3 */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_64BIT
 	/* for now we can *always* set the W bit on entry to the syscall
@@ -133,6 +136,17 @@ linux_gateway_entry:
 	depdi	0, 31, 32, %r21
 1:	
 #endif
+<<<<<<< HEAD
+=======
+
+	/* We use a rsm/ssm pair to prevent sr3 from being clobbered
+	 * by external interrupts.
+	 */
+	mfsp    %sr7,%r1                        /* save user sr7 */
+	rsm	PSW_SM_I, %r0			/* disable interrupts */
+	mtsp    %r1,%sr3                        /* and store it in sr3 */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mfctl   %cr30,%r1
 	xor     %r1,%r30,%r30                   /* ye olde xor trick */
 	xor     %r1,%r30,%r1
@@ -147,6 +161,10 @@ linux_gateway_entry:
 	 */
 
 	mtsp	%r0,%sr7			/* get kernel space into sr7 */
+<<<<<<< HEAD
+=======
+	ssm	PSW_SM_I, %r0			/* enable interrupts */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	STREGM	%r1,FRAME_SIZE(%r30)		/* save r1 (usp) here for now */
 	mfctl	%cr30,%r1			/* get task ptr in %r1 */
 	LDREG	TI_TASK(%r1),%r1
@@ -342,8 +360,13 @@ tracesys_next:
 	stw     %r21, -56(%r30)                 /* 6th argument */
 #endif
 
+<<<<<<< HEAD
 	comiclr,>>=	__NR_Linux_syscalls, %r20, %r0
 	b,n	.Lsyscall_nosys
+=======
+	comiclr,>>	__NR_Linux_syscalls, %r20, %r0
+	b,n	.Ltracesys_nosys
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	LDREGX  %r20(%r19), %r19
 
@@ -359,6 +382,12 @@ tracesys_next:
 	be      0(%sr7,%r19)
 	ldo	R%tracesys_exit(%r2),%r2
 
+<<<<<<< HEAD
+=======
+.Ltracesys_nosys:
+	ldo	-ENOSYS(%r0),%r28		/* set errno */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Do *not* call this function on the gateway page, because it
 	makes a direct call to syscall_trace. */
 	
@@ -469,11 +498,14 @@ lws_start:
 	comiclr,>>	__NR_lws_entries, %r20, %r0
 	b,n	lws_exit_nosys
 
+<<<<<<< HEAD
 	/* WARNING: Trashing sr2 and sr3 */
 	mfsp	%sr7,%r1			/* get userspace into sr3 */
 	mtsp	%r1,%sr3
 	mtsp	%r0,%sr2			/* get kernel space into sr2 */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Load table start */
 	ldil	L%lws_table, %r1
 	ldo	R%lws_table(%r1), %r28	/* Scratch use of r28 */
@@ -622,9 +654,15 @@ cas_action:
 	stw	%r1, 4(%sr2,%r20)
 #endif
 	/* The load and store could fail */
+<<<<<<< HEAD
 1:	ldw,ma	0(%sr3,%r26), %r28
 	sub,<>	%r28, %r25, %r0
 2:	stw,ma	%r24, 0(%sr3,%r26)
+=======
+1:	ldw,ma	0(%r26), %r28
+	sub,<>	%r28, %r25, %r0
+2:	stw,ma	%r24, 0(%r26)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Free lock */
 	stw,ma	%r20, 0(%sr2,%r20)
 #if ENABLE_LWS_DEBUG
@@ -683,6 +721,7 @@ cas_action:
 	/* ELF32 Process entry path */
 lws_compare_and_swap_2:
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 	/* Clip the input registers */
 	depdi	0, 31, 32, %r26
 	depdi	0, 31, 32, %r25
@@ -692,6 +731,17 @@ lws_compare_and_swap_2:
 
 	/* Check the validity of the size pointer */
 	subi,>>= 4, %r23, %r0
+=======
+	/* Clip the input registers. We don't need to clip %r23 as we
+	   only use it for word operations */
+	depdi	0, 31, 32, %r26
+	depdi	0, 31, 32, %r25
+	depdi	0, 31, 32, %r24
+#endif
+
+	/* Check the validity of the size pointer */
+	subi,>>= 3, %r23, %r0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	b,n	lws_exit_nosys
 
 	/* Jump to the functions which will load the old and new values into
@@ -701,9 +751,15 @@ lws_compare_and_swap_2:
 	nop
 
 	/* 8bit load */
+<<<<<<< HEAD
 4:	ldb	0(%sr3,%r25), %r25
 	b	cas2_lock_start
 5:	ldb	0(%sr3,%r24), %r24
+=======
+4:	ldb	0(%r25), %r25
+	b	cas2_lock_start
+5:	ldb	0(%r24), %r24
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nop
 	nop
 	nop
@@ -711,9 +767,15 @@ lws_compare_and_swap_2:
 	nop
 
 	/* 16bit load */
+<<<<<<< HEAD
 6:	ldh	0(%sr3,%r25), %r25
 	b	cas2_lock_start
 7:	ldh	0(%sr3,%r24), %r24
+=======
+6:	ldh	0(%r25), %r25
+	b	cas2_lock_start
+7:	ldh	0(%r24), %r24
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nop
 	nop
 	nop
@@ -721,9 +783,15 @@ lws_compare_and_swap_2:
 	nop
 
 	/* 32bit load */
+<<<<<<< HEAD
 8:	ldw	0(%sr3,%r25), %r25
 	b	cas2_lock_start
 9:	ldw	0(%sr3,%r24), %r24
+=======
+8:	ldw	0(%r25), %r25
+	b	cas2_lock_start
+9:	ldw	0(%r24), %r24
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nop
 	nop
 	nop
@@ -732,6 +800,7 @@ lws_compare_and_swap_2:
 
 	/* 64bit load */
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 10:	ldd	0(%sr3,%r25), %r25
 11:	ldd	0(%sr3,%r24), %r24
 #else
@@ -740,6 +809,16 @@ lws_compare_and_swap_2:
 11:	ldw	4(%sr3,%r25), %r23
 	/* Load new value into fr4 for atomic store later */
 12:	flddx	0(%sr3,%r24), %fr4
+=======
+10:	ldd	0(%r25), %r25
+11:	ldd	0(%r24), %r24
+#else
+	/* Load old value into r22/r23 - high/low */
+10:	ldw	0(%r25), %r22
+11:	ldw	4(%r25), %r23
+	/* Load new value into fr4 for atomic store later */
+12:	flddx	0(%r24), %fr4
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 cas2_lock_start:
@@ -789,30 +868,51 @@ cas2_action:
 	ldo	1(%r0),%r28
 
 	/* 8bit CAS */
+<<<<<<< HEAD
 13:	ldb,ma	0(%sr3,%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 14:	stb,ma	%r24, 0(%sr3,%r26)
+=======
+13:	ldb,ma	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+14:	stb,ma	%r24, 0(%r26)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	b	cas2_end
 	copy	%r0, %r28
 	nop
 	nop
 
 	/* 16bit CAS */
+<<<<<<< HEAD
 15:	ldh,ma	0(%sr3,%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 16:	sth,ma	%r24, 0(%sr3,%r26)
+=======
+15:	ldh,ma	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+16:	sth,ma	%r24, 0(%r26)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	b	cas2_end
 	copy	%r0, %r28
 	nop
 	nop
 
 	/* 32bit CAS */
+<<<<<<< HEAD
 17:	ldw,ma	0(%sr3,%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
 18:	stw,ma	%r24, 0(%sr3,%r26)
+=======
+17:	ldw,ma	0(%r26), %r29
+	sub,=	%r29, %r25, %r0
+	b,n	cas2_end
+18:	stw,ma	%r24, 0(%r26)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	b	cas2_end
 	copy	%r0, %r28
 	nop
@@ -820,6 +920,7 @@ cas2_action:
 
 	/* 64bit CAS */
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 19:	ldd,ma	0(%sr3,%r26), %r29
 	sub,=	%r29, %r25, %r0
 	b,n	cas2_end
@@ -836,6 +937,24 @@ cas2_action:
 	b,n	cas2_end
 	/* Perform the store */
 21:	fstdx	%fr4, 0(%sr3,%r26)
+=======
+19:	ldd,ma	0(%r26), %r29
+	sub,*=	%r29, %r25, %r0
+	b,n	cas2_end
+20:	std,ma	%r24, 0(%r26)
+	copy	%r0, %r28
+#else
+	/* Compare first word */
+19:	ldw	0(%r26), %r29
+	sub,=	%r29, %r22, %r0
+	b,n	cas2_end
+	/* Compare second word */
+20:	ldw	4(%r26), %r29
+	sub,=	%r29, %r23, %r0
+	b,n	cas2_end
+	/* Perform the store */
+21:	fstdx	%fr4, 0(%r26)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	copy	%r0, %r28
 #endif
 

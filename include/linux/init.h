@@ -4,6 +4,16 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 
+<<<<<<< HEAD
+=======
+/* Built-in __init functions needn't be compiled with retpoline */
+#if defined(RETPOLINE) && !defined(MODULE)
+#define __noretpoline __attribute__((indirect_branch("keep")))
+#else
+#define __noretpoline
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* These macros are used to mark some functions or 
  * initialized data (doesn't apply to uninitialized data)
  * as `initialization' functions. The kernel can take this
@@ -39,7 +49,11 @@
 
 /* These are for everybody (although not all archs will actually
    discard it in modules) */
+<<<<<<< HEAD
 #define __init		__section(.init.text) __cold notrace
+=======
+#define __init		__section(.init.text) __cold notrace __noretpoline
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define __initdata	__section(.init.data)
 #define __initconst	__constsection(.init.rodata)
 #define __exitdata	__section(.exit.data)
@@ -153,6 +167,13 @@ void prepare_namespace(void);
 void __init load_default_modules(void);
 int __init init_rootfs(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_RODATA
+void mark_rodata_ro(void);
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void (*late_time_init)(void);
 
 extern bool initcall_debug;
@@ -327,13 +348,21 @@ void __init parse_early_options(char *cmdline);
 #define module_init(initfn)					\
 	static inline initcall_t __inittest(void)		\
 	{ return initfn; }					\
+<<<<<<< HEAD
 	int init_module(void) __attribute__((alias(#initfn)));
+=======
+	int init_module(void) __copy(initfn) __attribute__((alias(#initfn)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* This is only required if you want to be unloadable. */
 #define module_exit(exitfn)					\
 	static inline exitcall_t __exittest(void)		\
 	{ return exitfn; }					\
+<<<<<<< HEAD
 	void cleanup_module(void) __attribute__((alias(#exitfn)));
+=======
+	void cleanup_module(void) __copy(exitfn) __attribute__((alias(#exitfn)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define __setup_param(str, unique_id, fn)	/* nothing */
 #define __setup(str, func) 			/* nothing */

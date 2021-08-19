@@ -189,11 +189,18 @@ static bool access_l2ectlr(struct kvm_vcpu *vcpu,
 	return true;
 }
 
+<<<<<<< HEAD
 /* See note at ARM ARM B1.14.4 */
+=======
+/*
+ * See note at ARMv7 ARM B1.14.4 (TL;DR: S/W ops are not easily virtualized).
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static bool access_dcsw(struct kvm_vcpu *vcpu,
 			const struct coproc_params *p,
 			const struct coproc_reg *r)
 {
+<<<<<<< HEAD
 	unsigned long val;
 	int cpu;
 
@@ -227,23 +234,44 @@ static bool access_dcsw(struct kvm_vcpu *vcpu,
 done:
 	put_cpu();
 
+=======
+	if (!p->is_write)
+		return read_from_write_only(vcpu, p);
+
+	kvm_set_way_flush(vcpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 
 /*
  * Generic accessor for VM registers. Only called as long as HCR_TVM
+<<<<<<< HEAD
  * is set.
  */
 static bool access_vm_reg(struct kvm_vcpu *vcpu,
 			  const struct coproc_params *p,
 			  const struct coproc_reg *r)
 {
+=======
+ * is set.  If the guest enables the MMU, we stop trapping the VM
+ * sys_regs and leave it in complete control of the caches.
+ *
+ * Used by the cpu-specific code.
+ */
+bool access_vm_reg(struct kvm_vcpu *vcpu,
+		   const struct coproc_params *p,
+		   const struct coproc_reg *r)
+{
+	bool was_enabled = vcpu_has_cache_enabled(vcpu);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BUG_ON(!p->is_write);
 
 	vcpu->arch.cp15[r->reg] = *vcpu_reg(vcpu, p->Rt1);
 	if (p->is_64bit)
 		vcpu->arch.cp15[r->reg + 1] = *vcpu_reg(vcpu, p->Rt2);
 
+<<<<<<< HEAD
 	return true;
 }
 
@@ -265,6 +293,9 @@ bool access_sctlr(struct kvm_vcpu *vcpu,
 		stage2_flush_vm(vcpu->kvm);
 	}
 
+=======
+	kvm_toggle_cache(vcpu, was_enabled);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 

@@ -112,7 +112,10 @@ static int pSeries_reconfig_remove_node(struct device_node *np)
 
 	of_detach_node(np);
 	of_node_put(parent);
+<<<<<<< HEAD
 	of_node_put(np); /* Must decrement the refcount */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

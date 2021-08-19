@@ -68,7 +68,11 @@ static const struct proto_ops macvtap_socket_ops;
 #define TUN_OFFLOADS (NETIF_F_HW_CSUM | NETIF_F_TSO_ECN | NETIF_F_TSO | \
 		      NETIF_F_TSO6)
 #define RX_OFFLOADS (NETIF_F_GRO | NETIF_F_LRO)
+<<<<<<< HEAD
 #define TAP_FEATURES (NETIF_F_GSO | NETIF_F_SG)
+=======
+#define TAP_FEATURES (NETIF_F_GSO | NETIF_F_SG | NETIF_F_FRAGLIST)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct macvlan_dev *macvtap_get_vlan_rcu(const struct net_device *dev)
 {
@@ -310,7 +314,11 @@ static rx_handler_result_t macvtap_handle_frame(struct sk_buff **pskb)
 			goto wake_up;
 		}
 
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		consume_skb(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		while (segs) {
 			struct sk_buff *nskb = segs->next;
 
@@ -574,7 +582,11 @@ static int macvtap_skb_from_vnet_hdr(struct sk_buff *skb,
 				     current->comm);
 			gso_type = SKB_GSO_UDP;
 			if (skb->protocol == htons(ETH_P_IPV6))
+<<<<<<< HEAD
 				ipv6_proxy_select_ident(skb);
+=======
+				ipv6_proxy_select_ident(dev_net(skb->dev), skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		default:
 			return -EINVAL;
@@ -657,7 +669,11 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
 	size_t linear;
 
 	if (q->flags & IFF_VNET_HDR) {
+<<<<<<< HEAD
 		vnet_hdr_len = q->vnet_hdr_sz;
+=======
+		vnet_hdr_len = READ_ONCE(q->vnet_hdr_sz);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		err = -EINVAL;
 		if (len < vnet_hdr_len)
@@ -790,7 +806,11 @@ static ssize_t macvtap_put_user(struct macvtap_queue *q,
 
 	if (q->flags & IFF_VNET_HDR) {
 		struct virtio_net_hdr vnet_hdr;
+<<<<<<< HEAD
 		vnet_hdr_len = q->vnet_hdr_sz;
+=======
+		vnet_hdr_len = READ_ONCE(q->vnet_hdr_sz);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if ((len -= vnet_hdr_len) < 0)
 			return -EINVAL;
 
@@ -1047,6 +1067,11 @@ static long macvtap_ioctl(struct file *file, unsigned int cmd,
 	case TUNSETSNDBUF:
 		if (get_user(u, up))
 			return -EFAULT;
+<<<<<<< HEAD
+=======
+		if (u <= 0)
+			return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		q->sk.sk_sndbuf = u;
 		return 0;

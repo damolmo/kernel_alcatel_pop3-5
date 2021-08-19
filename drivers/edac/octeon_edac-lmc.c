@@ -79,6 +79,10 @@ static void octeon_lmc_edac_poll_o2(struct mem_ctl_info *mci)
 	if (!pvt->inject)
 		int_reg.u64 = cvmx_read_csr(CVMX_LMCX_INT(mci->mc_idx));
 	else {
+<<<<<<< HEAD
+=======
+		int_reg.u64 = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (pvt->error_type == 1)
 			int_reg.s.sec_err = 1;
 		if (pvt->error_type == 2)

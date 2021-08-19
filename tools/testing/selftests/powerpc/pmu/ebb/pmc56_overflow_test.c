@@ -64,7 +64,11 @@ int pmc56_overflow(void)
 
 	FAIL_IF(ebb_event_enable(&event));
 
+<<<<<<< HEAD
 	mtspr(SPRN_PMC1, pmc_sample_period(sample_period));
+=======
+	mtspr(SPRN_PMC2, pmc_sample_period(sample_period));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mtspr(SPRN_PMC5, 0);
 	mtspr(SPRN_PMC6, 0);
 
@@ -74,8 +78,11 @@ int pmc56_overflow(void)
 	ebb_global_disable();
 	ebb_freeze_pmcs();
 
+<<<<<<< HEAD
 	count_pmc(2, sample_period);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dump_ebb_state();
 
 	printf("PMC5/6 overflow %d\n", pmc56_overflowed);

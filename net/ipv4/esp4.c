@@ -239,9 +239,17 @@ static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
 	esph->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.low);
 
 	sg_init_table(sg, nfrags);
+<<<<<<< HEAD
 	skb_to_sgvec(skb, sg,
 		     esph->enc_data + crypto_aead_ivsize(aead) - skb->data,
 		     clen + alen);
+=======
+	err = skb_to_sgvec(skb, sg,
+			   esph->enc_data + crypto_aead_ivsize(aead) - skb->data,
+			   clen + alen);
+	if (unlikely(err < 0))
+		goto error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		sg_init_table(asg, 3);
@@ -426,7 +434,13 @@ static int esp_input(struct xfrm_state *x, struct sk_buff *skb)
 	iv = esph->enc_data;
 
 	sg_init_table(sg, nfrags);
+<<<<<<< HEAD
 	skb_to_sgvec(skb, sg, sizeof(*esph) + crypto_aead_ivsize(aead), elen);
+=======
+	err = skb_to_sgvec(skb, sg, sizeof(*esph) + crypto_aead_ivsize(aead), elen);
+	if (unlikely(err < 0))
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((x->props.flags & XFRM_STATE_ESN)) {
 		sg_init_table(asg, 3);

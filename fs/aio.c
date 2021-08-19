@@ -40,6 +40,10 @@
 #include <linux/ramfs.h>
 #include <linux/percpu-refcount.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/kmap_types.h>
 #include <asm/uaccess.h>
@@ -68,9 +72,15 @@ struct aio_ring {
 #define AIO_RING_PAGES	8
 
 struct kioctx_table {
+<<<<<<< HEAD
 	struct rcu_head	rcu;
 	unsigned	nr;
 	struct kioctx	*table[];
+=======
+	struct rcu_head		rcu;
+	unsigned		nr;
+	struct kioctx __rcu	*table[];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct kioctx_cpu {
@@ -110,7 +120,12 @@ struct kioctx {
 	struct page		**ring_pages;
 	long			nr_pages;
 
+<<<<<<< HEAD
 	struct work_struct	free_work;
+=======
+	struct rcu_head		free_rcu;
+	struct work_struct	free_work;	/* see free_ioctx() */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * signals when all in-flight requests are done
@@ -506,6 +521,15 @@ static int kiocb_cancel(struct kiocb *kiocb)
 	return cancel(kiocb);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * free_ioctx() should be RCU delayed to synchronize against the RCU
+ * protected lookup_ioctx() and also needs process context to call
+ * aio_free_ring(), so the double bouncing through kioctx->free_rcu and
+ * ->free_work.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void free_ioctx(struct work_struct *work)
 {
 	struct kioctx *ctx = container_of(work, struct kioctx, free_work);
@@ -519,6 +543,17 @@ static void free_ioctx(struct work_struct *work)
 	kmem_cache_free(kioctx_cachep, ctx);
 }
 
+<<<<<<< HEAD
+=======
+static void free_ioctx_rcufn(struct rcu_head *head)
+{
+	struct kioctx *ctx = container_of(head, struct kioctx, free_rcu);
+
+	INIT_WORK(&ctx->free_work, free_ioctx);
+	schedule_work(&ctx->free_work);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void free_ioctx_reqs(struct percpu_ref *ref)
 {
 	struct kioctx *ctx = container_of(ref, struct kioctx, reqs);
@@ -527,8 +562,13 @@ static void free_ioctx_reqs(struct percpu_ref *ref)
 	if (ctx->requests_done)
 		complete(ctx->requests_done);
 
+<<<<<<< HEAD
 	INIT_WORK(&ctx->free_work, free_ioctx);
 	schedule_work(&ctx->free_work);
+=======
+	/* Synchronize against RCU protected table->table[] dereferences */
+	call_rcu(&ctx->free_rcu, free_ioctx_rcufn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -546,9 +586,14 @@ static void free_ioctx_users(struct percpu_ref *ref)
 	while (!list_empty(&ctx->active_reqs)) {
 		req = list_first_entry(&ctx->active_reqs,
 				       struct kiocb, ki_list);
+<<<<<<< HEAD
 
 		list_del_init(&req->ki_list);
 		kiocb_cancel(req);
+=======
+		kiocb_cancel(req);
+		list_del_init(&req->ki_list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	spin_unlock_irq(&ctx->ctx_lock);
@@ -569,9 +614,15 @@ static int ioctx_add_table(struct kioctx *ctx, struct mm_struct *mm)
 	while (1) {
 		if (table)
 			for (i = 0; i < table->nr; i++)
+<<<<<<< HEAD
 				if (!table->table[i]) {
 					ctx->id = i;
 					table->table[i] = ctx;
+=======
+				if (!rcu_access_pointer(table->table[i])) {
+					ctx->id = i;
+					rcu_assign_pointer(table->table[i], ctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					spin_unlock(&mm->ioctx_lock);
 
 					/* While kioctx setup is in progress,
@@ -746,11 +797,19 @@ static int kill_ioctx(struct mm_struct *mm, struct kioctx *ctx,
 
 	spin_lock(&mm->ioctx_lock);
 	table = rcu_dereference_raw(mm->ioctx_table);
+<<<<<<< HEAD
 	WARN_ON(ctx != table->table[ctx->id]);
 	table->table[ctx->id] = NULL;
 	spin_unlock(&mm->ioctx_lock);
 
 	/* percpu_ref_kill() will do the necessary call_rcu() */
+=======
+	WARN_ON(ctx != rcu_access_pointer(table->table[ctx->id]));
+	RCU_INIT_POINTER(table->table[ctx->id], NULL);
+	spin_unlock(&mm->ioctx_lock);
+
+	/* free_ioctx_reqs() will do the necessary RCU synchronization */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wake_up_all(&ctx->wait);
 
 	/*
@@ -803,7 +862,12 @@ void exit_aio(struct mm_struct *mm)
 		return;
 
 	for (i = 0; i < table->nr; ++i) {
+<<<<<<< HEAD
 		struct kioctx *ctx = table->table[i];
+=======
+		struct kioctx *ctx =
+			rcu_dereference_protected(table->table[i], true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct completion requests_done =
 			COMPLETION_INITIALIZER_ONSTACK(requests_done);
 
@@ -989,10 +1053,18 @@ static struct kioctx *lookup_ioctx(unsigned long ctx_id)
 	if (!table || id >= table->nr)
 		goto out;
 
+<<<<<<< HEAD
 	ctx = table->table[id];
 	if (ctx && ctx->user_id == ctx_id) {
 		percpu_ref_get(&ctx->users);
 		ret = ctx;
+=======
+	id = array_index_nospec(id, table->nr);
+	ctx = rcu_dereference(table->table[id]);
+	if (ctx && ctx->user_id == ctx_id) {
+		if (percpu_ref_tryget_live(&ctx->users))
+			ret = ctx;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	rcu_read_unlock();

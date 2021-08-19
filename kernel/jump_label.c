@@ -116,6 +116,16 @@ void static_key_slow_dec_deferred(struct static_key_deferred *key)
 }
 EXPORT_SYMBOL_GPL(static_key_slow_dec_deferred);
 
+<<<<<<< HEAD
+=======
+void static_key_deferred_flush(struct static_key_deferred *key)
+{
+	STATIC_KEY_CHECK_USE();
+	flush_delayed_work(&key->work);
+}
+EXPORT_SYMBOL_GPL(static_key_deferred_flush);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void jump_label_rate_limit(struct static_key_deferred *key,
 		unsigned long rl)
 {

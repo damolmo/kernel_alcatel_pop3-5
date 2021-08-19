@@ -141,10 +141,18 @@ static int led_tg_check(const struct xt_tgchk_param *par)
 		goto exit_alloc;
 	}
 
+<<<<<<< HEAD
 	/* See if we need to set up a timer */
 	if (ledinfo->delay > 0)
 		setup_timer(&ledinternal->timer, led_timeout_callback,
 			    (unsigned long)ledinternal);
+=======
+	/* Since the letinternal timer can be shared between multiple targets,
+	 * always set it up, even if the current target does not need it
+	 */
+	setup_timer(&ledinternal->timer, led_timeout_callback,
+		    (unsigned long)ledinternal);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_add_tail(&ledinternal->list, &xt_led_triggers);
 
@@ -181,8 +189,12 @@ static void led_tg_destroy(const struct xt_tgdtor_param *par)
 
 	list_del(&ledinternal->list);
 
+<<<<<<< HEAD
 	if (ledinfo->delay > 0)
 		del_timer_sync(&ledinternal->timer);
+=======
+	del_timer_sync(&ledinternal->timer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	led_trigger_unregister(&ledinternal->netfilter_led_trigger);
 

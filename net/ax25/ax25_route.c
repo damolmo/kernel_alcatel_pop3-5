@@ -40,7 +40,11 @@
 #include <linux/export.h>
 
 static ax25_route *ax25_route_list;
+<<<<<<< HEAD
 static DEFINE_RWLOCK(ax25_route_lock);
+=======
+DEFINE_RWLOCK(ax25_route_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void ax25_rt_device_down(struct net_device *dev)
 {
@@ -349,6 +353,10 @@ const struct file_operations ax25_route_fops = {
  *	Find AX.25 route
  *
  *	Only routes with a reference count of zero can be destroyed.
+<<<<<<< HEAD
+=======
+ *	Must be called with ax25_route_lock read locked.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
 {
@@ -356,7 +364,10 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
 	ax25_route *ax25_def_rt = NULL;
 	ax25_route *ax25_rt;
 
+<<<<<<< HEAD
 	read_lock(&ax25_route_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 *	Bind to the physical interface we heard them on, or the default
 	 *	route if none is found;
@@ -379,11 +390,14 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
 	if (ax25_spe_rt != NULL)
 		ax25_rt = ax25_spe_rt;
 
+<<<<<<< HEAD
 	if (ax25_rt != NULL)
 		ax25_hold_route(ax25_rt);
 
 	read_unlock(&ax25_route_lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ax25_rt;
 }
 
@@ -414,9 +428,18 @@ int ax25_rt_autobind(ax25_cb *ax25, ax25_address *addr)
 	ax25_route *ax25_rt;
 	int err = 0;
 
+<<<<<<< HEAD
 	if ((ax25_rt = ax25_get_route(addr, NULL)) == NULL)
 		return -EHOSTUNREACH;
 
+=======
+	ax25_route_lock_use();
+	ax25_rt = ax25_get_route(addr, NULL);
+	if (!ax25_rt) {
+		ax25_route_lock_unuse();
+		return -EHOSTUNREACH;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((ax25->ax25_dev = ax25_dev_ax25dev(ax25_rt->dev)) == NULL) {
 		err = -EHOSTUNREACH;
 		goto put;
@@ -445,6 +468,7 @@ int ax25_rt_autobind(ax25_cb *ax25, ax25_address *addr)
 	}
 
 	if (ax25->sk != NULL) {
+<<<<<<< HEAD
 		bh_lock_sock(ax25->sk);
 		sock_reset_flag(ax25->sk, SOCK_ZAPPED);
 		bh_unlock_sock(ax25->sk);
@@ -453,6 +477,17 @@ int ax25_rt_autobind(ax25_cb *ax25, ax25_address *addr)
 put:
 	ax25_put_route(ax25_rt);
 
+=======
+		local_bh_disable();
+		bh_lock_sock(ax25->sk);
+		sock_reset_flag(ax25->sk, SOCK_ZAPPED);
+		bh_unlock_sock(ax25->sk);
+		local_bh_enable();
+	}
+
+put:
+	ax25_route_lock_unuse();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

@@ -50,7 +50,11 @@ static struct inet_protosw pingv6_protosw = {
 	.type =      SOCK_DGRAM,
 	.protocol =  IPPROTO_ICMPV6,
 	.prot =      &pingv6_prot,
+<<<<<<< HEAD
 	.ops =       &inet6_dgram_ops,
+=======
+	.ops =       &inet6_sockraw_ops,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.flags =     INET_PROTOSW_REUSE,
 };
 
@@ -85,7 +89,11 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	struct icmp6hdr user_icmph;
 	int addr_type;
 	struct in6_addr *daddr;
+<<<<<<< HEAD
 	int iif = 0;
+=======
+	int oif = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct flowi6 fl6;
 	int err;
 	int hlimit;
@@ -107,18 +115,25 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		if (u->sin6_family != AF_INET6) {
 			return -EAFNOSUPPORT;
 		}
+<<<<<<< HEAD
 		if (sk->sk_bound_dev_if &&
 		    sk->sk_bound_dev_if != u->sin6_scope_id) {
 			return -EINVAL;
 		}
 		daddr = &(u->sin6_addr);
 		iif = u->sin6_scope_id;
+=======
+		daddr = &(u->sin6_addr);
+		if (__ipv6_addr_needs_scope_id(ipv6_addr_type(daddr)))
+			oif = u->sin6_scope_id;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		if (sk->sk_state != TCP_ESTABLISHED)
 			return -EDESTADDRREQ;
 		daddr = &sk->sk_v6_daddr;
 	}
 
+<<<<<<< HEAD
 	if (!iif)
 		iif = sk->sk_bound_dev_if;
 
@@ -126,6 +141,23 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	if (__ipv6_addr_needs_scope_id(addr_type) && !iif)
 		return -EINVAL;
 	if (addr_type & IPV6_ADDR_MAPPED)
+=======
+	if (!oif)
+		oif = sk->sk_bound_dev_if;
+
+	if (!oif)
+		oif = np->sticky_pktinfo.ipi6_ifindex;
+
+	if (!oif && ipv6_addr_is_multicast(daddr))
+		oif = np->mcast_oif;
+	else if (!oif)
+		oif = np->ucast_oif;
+
+	addr_type = ipv6_addr_type(daddr);
+	if ((__ipv6_addr_needs_scope_id(addr_type) && !oif) ||
+	    (addr_type & IPV6_ADDR_MAPPED) ||
+	    (oif && sk->sk_bound_dev_if && oif != sk->sk_bound_dev_if))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	/* TODO: use ip6_datagram_send_ctl to get options from cmsg */
@@ -135,23 +167,33 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	fl6.flowi6_proto = IPPROTO_ICMPV6;
 	fl6.saddr = np->saddr;
 	fl6.daddr = *daddr;
+<<<<<<< HEAD
 	fl6.flowi6_mark = sk->sk_mark;
 	fl6.flowi6_uid = sock_i_uid(sk);
+=======
+	fl6.flowi6_oif = oif;
+	fl6.flowi6_mark = sk->sk_mark;
+	fl6.flowi6_uid = sk->sk_uid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fl6.fl6_icmp_type = user_icmph.icmp6_type;
 	fl6.fl6_icmp_code = user_icmph.icmp6_code;
 	security_sk_classify_flow(sk, flowi6_to_flowi(&fl6));
 
+<<<<<<< HEAD
 	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr))
 		fl6.flowi6_oif = np->mcast_oif;
 	else if (!fl6.flowi6_oif)
 		fl6.flowi6_oif = np->ucast_oif;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dst = ip6_sk_dst_lookup_flow(sk, &fl6,  daddr);
 	if (IS_ERR(dst))
 		return PTR_ERR(dst);
 	rt = (struct rt6_info *) dst;
 
 	np = inet6_sk(sk);
+<<<<<<< HEAD
 	if (!np)
 		return -EBADF;
 
@@ -159,6 +201,12 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 		fl6.flowi6_oif = np->mcast_oif;
 	else if (!fl6.flowi6_oif)
 		fl6.flowi6_oif = np->ucast_oif;
+=======
+	if (!np) {
+		err = -EBADF;
+		goto dst_err_out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pfh.icmph.type = user_icmph.icmp6_type;
 	pfh.icmph.code = user_icmph.icmp6_code;
@@ -188,6 +236,12 @@ int ping_v6_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
 	}
 	release_sock(sk);
 
+<<<<<<< HEAD
+=======
+dst_err_out:
+	dst_release(dst);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err)
 		return err;
 
@@ -231,7 +285,11 @@ static int __net_init ping_v6_proc_init_net(struct net *net)
 	return ping_proc_register(net, &ping_v6_seq_afinfo);
 }
 
+<<<<<<< HEAD
 static void __net_init ping_v6_proc_exit_net(struct net *net)
+=======
+static void __net_exit ping_v6_proc_exit_net(struct net *net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return ping_proc_unregister(net, &ping_v6_seq_afinfo);
 }

@@ -19,7 +19,10 @@
 #define PT_SEIZED	0x00010000	/* SEIZE used, enable new behavior */
 #define PT_PTRACED	0x00000001
 #define PT_DTRACE	0x00000002	/* delayed trace (used on m68k, i386) */
+<<<<<<< HEAD
 #define PT_PTRACE_CAP	0x00000004	/* ptracer can follow suid-exec */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define PT_OPT_FLAG_SHIFT	3
 /* PT_TRACE_* event enable flags */
@@ -50,13 +53,44 @@ extern int ptrace_request(struct task_struct *child, long request,
 			  unsigned long addr, unsigned long data);
 extern void ptrace_notify(int exit_code);
 extern void __ptrace_link(struct task_struct *child,
+<<<<<<< HEAD
 			  struct task_struct *new_parent);
+=======
+			  struct task_struct *new_parent,
+			  const struct cred *ptracer_cred);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void __ptrace_unlink(struct task_struct *child);
 extern void exit_ptrace(struct task_struct *tracer);
 #define PTRACE_MODE_READ	0x01
 #define PTRACE_MODE_ATTACH	0x02
 #define PTRACE_MODE_NOAUDIT	0x04
+<<<<<<< HEAD
 /* Returns true on success, false on denial. */
+=======
+#define PTRACE_MODE_FSCREDS 0x08
+#define PTRACE_MODE_REALCREDS 0x10
+
+/* shorthands for READ/ATTACH and FSCREDS/REALCREDS combinations */
+#define PTRACE_MODE_READ_FSCREDS (PTRACE_MODE_READ | PTRACE_MODE_FSCREDS)
+#define PTRACE_MODE_READ_REALCREDS (PTRACE_MODE_READ | PTRACE_MODE_REALCREDS)
+#define PTRACE_MODE_ATTACH_FSCREDS (PTRACE_MODE_ATTACH | PTRACE_MODE_FSCREDS)
+#define PTRACE_MODE_ATTACH_REALCREDS (PTRACE_MODE_ATTACH | PTRACE_MODE_REALCREDS)
+
+/**
+ * ptrace_may_access - check whether the caller is permitted to access
+ * a target task.
+ * @task: target task
+ * @mode: selects type of access and caller credentials
+ *
+ * Returns true on success, false on denial.
+ *
+ * One of the flags PTRACE_MODE_FSCREDS and PTRACE_MODE_REALCREDS must
+ * be set in @mode to specify whether the access was requested through
+ * a filesystem syscall (should use effective capabilities and fsuid
+ * of the caller) or through an explicit syscall such as
+ * process_vm_writev or ptrace (and should use the real credentials).
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern bool ptrace_may_access(struct task_struct *task, unsigned int mode);
 
 static inline int ptrace_reparented(struct task_struct *child)
@@ -180,7 +214,11 @@ static inline void ptrace_init_task(struct task_struct *child, bool ptrace)
 
 	if (unlikely(ptrace) && current->ptrace) {
 		child->ptrace = current->ptrace;
+<<<<<<< HEAD
 		__ptrace_link(child, current->parent);
+=======
+		__ptrace_link(child, current->parent, current->ptracer_cred);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (child->ptrace & PT_SEIZED)
 			task_set_jobctl_pending(child, JOBCTL_TRAP_STOP);
@@ -189,6 +227,11 @@ static inline void ptrace_init_task(struct task_struct *child, bool ptrace)
 
 		set_tsk_thread_flag(child, TIF_SIGPENDING);
 	}
+<<<<<<< HEAD
+=======
+	else
+		child->ptracer_cred = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

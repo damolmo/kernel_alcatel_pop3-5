@@ -70,19 +70,31 @@ static inline u8 *blkcipher_get_spot(u8 *start, unsigned int len)
 	return max(start, end_page);
 }
 
+<<<<<<< HEAD
 static inline unsigned int blkcipher_done_slow(struct blkcipher_walk *walk,
 					       unsigned int bsize)
+=======
+static inline void blkcipher_done_slow(struct blkcipher_walk *walk,
+				       unsigned int bsize)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u8 *addr;
 
 	addr = (u8 *)ALIGN((unsigned long)walk->buffer, walk->alignmask + 1);
 	addr = blkcipher_get_spot(addr, bsize);
 	scatterwalk_copychunks(addr, &walk->out, bsize, 1);
+<<<<<<< HEAD
 	return bsize;
 }
 
 static inline unsigned int blkcipher_done_fast(struct blkcipher_walk *walk,
 					       unsigned int n)
+=======
+}
+
+static inline void blkcipher_done_fast(struct blkcipher_walk *walk,
+				       unsigned int n)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (walk->flags & BLKCIPHER_WALK_COPY) {
 		blkcipher_map_dst(walk);
@@ -96,13 +108,17 @@ static inline unsigned int blkcipher_done_fast(struct blkcipher_walk *walk,
 
 	scatterwalk_advance(&walk->in, n);
 	scatterwalk_advance(&walk->out, n);
+<<<<<<< HEAD
 
 	return n;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int blkcipher_walk_done(struct blkcipher_desc *desc,
 			struct blkcipher_walk *walk, int err)
 {
+<<<<<<< HEAD
 	unsigned int nbytes = 0;
 
 	if (likely(err >= 0)) {
@@ -132,13 +148,49 @@ err:
 		return blkcipher_walk_next(desc, walk);
 	}
 
+=======
+	unsigned int n; /* bytes processed */
+	bool more;
+
+	if (unlikely(err < 0))
+		goto finish;
+
+	n = walk->nbytes - err;
+	walk->total -= n;
+	more = (walk->total != 0);
+
+	if (likely(!(walk->flags & BLKCIPHER_WALK_SLOW))) {
+		blkcipher_done_fast(walk, n);
+	} else {
+		if (WARN_ON(err)) {
+			/* unexpected case; didn't process all bytes */
+			err = -EINVAL;
+			goto finish;
+		}
+		blkcipher_done_slow(walk, n);
+	}
+
+	scatterwalk_done(&walk->in, 0, more);
+	scatterwalk_done(&walk->out, 1, more);
+
+	if (more) {
+		crypto_yield(desc->flags);
+		return blkcipher_walk_next(desc, walk);
+	}
+	err = 0;
+finish:
+	walk->nbytes = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (walk->iv != desc->info)
 		memcpy(desc->info, walk->iv, walk->ivsize);
 	if (walk->buffer != walk->page)
 		kfree(walk->buffer);
 	if (walk->page)
 		free_page((unsigned long)walk->page);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 EXPORT_SYMBOL_GPL(blkcipher_walk_done);
@@ -233,6 +285,11 @@ static int blkcipher_walk_next(struct blkcipher_desc *desc,
 		return blkcipher_walk_done(desc, walk, -EINVAL);
 	}
 
+<<<<<<< HEAD
+=======
+	bsize = min(walk->walk_blocksize, n);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	walk->flags &= ~(BLKCIPHER_WALK_SLOW | BLKCIPHER_WALK_COPY |
 			 BLKCIPHER_WALK_DIFF);
 	if (!scatterwalk_aligned(&walk->in, walk->alignmask) ||
@@ -245,7 +302,10 @@ static int blkcipher_walk_next(struct blkcipher_desc *desc,
 		}
 	}
 
+<<<<<<< HEAD
 	bsize = min(walk->walk_blocksize, n);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	n = scatterwalk_clamp(&walk->in, n);
 	n = scatterwalk_clamp(&walk->out, n);
 
@@ -515,6 +575,10 @@ static int crypto_blkcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
 	strncpy(rblkcipher.type, "blkcipher", sizeof(rblkcipher.type));
 	strncpy(rblkcipher.geniv, alg->cra_blkcipher.geniv ?: "<default>",
 		sizeof(rblkcipher.geniv));
+<<<<<<< HEAD
+=======
+	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rblkcipher.blocksize = alg->cra_blocksize;
 	rblkcipher.min_keysize = alg->cra_blkcipher.min_keysize;

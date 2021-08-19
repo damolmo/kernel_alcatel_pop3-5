@@ -2818,11 +2818,21 @@ static int  device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 		pr_debug(" SIOCSIWSENS\n");
 		rc = -EOPNOTSUPP;
 		break;
+<<<<<<< HEAD
 
 	case SIOCGIWAPLIST: {
 		char buffer[IW_MAX_AP * (sizeof(struct sockaddr) + sizeof(struct iw_quality))];
 
 		if (wrq->u.data.pointer) {
+=======
+	case SIOCGIWAPLIST: {
+		char *buffer = kzalloc(IW_MAX_AP * (sizeof(struct sockaddr) +
+				       sizeof(struct iw_quality)), GFP_KERNEL);
+
+		if (!buffer) {
+			rc = -ENOMEM;
+		} else if (wrq->u.data.pointer) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			rc = iwctl_giwaplist(dev, NULL, &(wrq->u.data), buffer);
 			if (rc == 0) {
 				if (copy_to_user(wrq->u.data.pointer,
@@ -2832,6 +2842,10 @@ static int  device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 					rc = -EFAULT;
 			}
 		}
+<<<<<<< HEAD
+=======
+		kfree(buffer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	break;
 
@@ -2878,7 +2892,10 @@ static int  device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 		pr_debug(" SIOCGIWGENIE\n");
 		rc = iwctl_giwgenie(dev, NULL, &(wrq->u.data), wrq->u.data.pointer);
 		break;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case SIOCSIWENCODEEXT: {
 		char extra[sizeof(struct iw_encode_ext)+MAX_KEY_LEN+1];
 

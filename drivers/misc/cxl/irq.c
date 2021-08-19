@@ -272,7 +272,10 @@ unsigned int cxl_map_irq(struct cxl *adapter, irq_hw_number_t hwirq,
 void cxl_unmap_irq(unsigned int virq, void *cookie)
 {
 	free_irq(virq, cookie);
+<<<<<<< HEAD
 	irq_dispose_mapping(virq);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int cxl_register_one_irq(struct cxl *adapter,

@@ -36,7 +36,10 @@
 #include <linux/kallsyms.h>
 #include <linux/proc_fs.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/ratelimit.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/exception.h>
@@ -137,6 +140,7 @@ int __init arch_probe_nr_irqs(void)
 
 #ifdef CONFIG_HOTPLUG_CPU
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_IRQ_NEW_DESIGN
 #include <linux/slab.h>
 #include <linux/bitmap.h>
@@ -386,6 +390,8 @@ void update_affinity_settings(struct irq_desc *desc, const struct cpumask *new_a
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static bool migrate_one_irq(struct irq_desc *desc)
 {
 	struct irq_data *d = irq_desc_get_irq_data(desc);
@@ -409,11 +415,15 @@ static bool migrate_one_irq(struct irq_desc *desc)
 	if (!c->irq_set_affinity)
 		pr_debug("IRQ%u: unable to set affinity\n", d->irq);
 	else if (c->irq_set_affinity(d, affinity, false) == IRQ_SET_MASK_OK && ret)
+<<<<<<< HEAD
 #ifndef CONFIG_MTK_IRQ_NEW_DESIGN
 		cpumask_copy(d->affinity, affinity);
 #else
 		update_affinity_settings(desc, affinity, true);
 #endif
+=======
+		cpumask_copy(d->affinity, affinity);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -428,6 +438,7 @@ static bool migrate_one_irq(struct irq_desc *desc)
  */
 void migrate_irqs(void)
 {
+<<<<<<< HEAD
 #ifndef CONFIG_MTK_IRQ_NEW_DESIGN
 	unsigned int i;
 #endif
@@ -459,6 +470,14 @@ void migrate_irqs(void)
 	}
 	rcu_read_unlock();
 #else
+=======
+	unsigned int i;
+	struct irq_desc *desc;
+	unsigned long flags;
+
+	local_irq_save(flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for_each_irq_desc(i, desc) {
 		bool affinity_broken;
 
@@ -470,7 +489,10 @@ void migrate_irqs(void)
 			pr_warn("IRQ%u no longer affine to CPU%u\n",
 				i, smp_processor_id());
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	local_irq_restore(flags);
 }

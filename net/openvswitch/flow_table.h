@@ -82,5 +82,9 @@ bool ovs_flow_cmp_unmasked_key(const struct sw_flow *flow,
 			       struct sw_flow_match *match);
 
 void ovs_flow_mask_key(struct sw_flow_key *dst, const struct sw_flow_key *src,
+<<<<<<< HEAD
 		       const struct sw_flow_mask *mask);
+=======
+		       bool full, const struct sw_flow_mask *mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* flow_table.h */

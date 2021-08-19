@@ -25,6 +25,10 @@
 #include <linux/uaccess.h>
 #include <linux/tracehook.h>
 #include <linux/ratelimit.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscalls.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/debug-monitors.h>
 #include <asm/elf.h>
@@ -115,7 +119,11 @@ static int restore_sigframe(struct pt_regs *regs,
 	 */
 	regs->syscallno = ~0UL;
 
+<<<<<<< HEAD
 	err |= !valid_user_regs(&regs->user_regs);
+=======
+	err |= !valid_user_regs(&regs->user_regs, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (err == 0) {
 		struct fpsimd_context *fpsimd_ctx =
@@ -131,7 +139,11 @@ asmlinkage long sys_rt_sigreturn(struct pt_regs *regs)
 	struct rt_sigframe __user *frame;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Since we stacked the signal on a 128-bit boundary, then 'sp' should
@@ -314,7 +326,11 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
 	/*
 	 * Check that the resulting registers are actually sane.
 	 */
+<<<<<<< HEAD
 	ret |= !valid_user_regs(&regs->user_regs);
+=======
+	ret |= !valid_user_regs(&regs->user_regs, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Fast forward the stepping logic so we step into the signal
@@ -409,6 +425,12 @@ static void do_signal(struct pt_regs *regs)
 asmlinkage void do_notify_resume(struct pt_regs *regs,
 				 unsigned int thread_flags)
 {
+<<<<<<< HEAD
+=======
+	/* Check valid user FS if needed */
+	addr_limit_user_check();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (thread_flags & _TIF_SIGPENDING)
 		do_signal(regs);
 

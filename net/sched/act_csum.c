@@ -104,9 +104,13 @@ static void *tcf_csum_skb_nextlayer(struct sk_buff *skb,
 	int hl = ihl + jhl;
 
 	if (!pskb_may_pull(skb, ipl + ntkoff) || (ipl < hl) ||
+<<<<<<< HEAD
 	    (skb_cloned(skb) &&
 	     !skb_clone_writable(skb, hl + ntkoff) &&
 	     pskb_expand_head(skb, 0, 0, GFP_ATOMIC)))
+=======
+	    skb_try_make_writable(skb, hl + ntkoff))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 	else
 		return (void *)(skb_network_header(skb) + ihl);
@@ -176,6 +180,12 @@ static int tcf_csum_ipv4_tcp(struct sk_buff *skb,
 	struct tcphdr *tcph;
 	const struct iphdr *iph;
 
+<<<<<<< HEAD
+=======
+	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_TCPV4)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tcph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*tcph));
 	if (tcph == NULL)
 		return 0;
@@ -197,6 +207,12 @@ static int tcf_csum_ipv6_tcp(struct sk_buff *skb,
 	struct tcphdr *tcph;
 	const struct ipv6hdr *ip6h;
 
+<<<<<<< HEAD
+=======
+	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tcph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*tcph));
 	if (tcph == NULL)
 		return 0;
@@ -220,6 +236,12 @@ static int tcf_csum_ipv4_udp(struct sk_buff *skb,
 	const struct iphdr *iph;
 	u16 ul;
 
+<<<<<<< HEAD
+=======
+	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Support both UDP and UDPLITE checksum algorithms, Don't use
 	 * udph->len to get the real length without any protocol check,
@@ -273,6 +295,12 @@ static int tcf_csum_ipv6_udp(struct sk_buff *skb,
 	const struct ipv6hdr *ip6h;
 	u16 ul;
 
+<<<<<<< HEAD
+=======
+	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Support both UDP and UDPLITE checksum algorithms, Don't use
 	 * udph->len to get the real length without any protocol check,
@@ -364,9 +392,13 @@ static int tcf_csum_ipv4(struct sk_buff *skb, u32 update_flags)
 	}
 
 	if (update_flags & TCA_CSUM_UPDATE_FLAG_IPV4HDR) {
+<<<<<<< HEAD
 		if (skb_cloned(skb) &&
 		    !skb_clone_writable(skb, sizeof(*iph) + ntkoff) &&
 		    pskb_expand_head(skb, 0, 0, GFP_ATOMIC))
+=======
+		if (skb_try_make_writable(skb, sizeof(*iph) + ntkoff))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto fail;
 
 		ip_send_check(ip_hdr(skb));

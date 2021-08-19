@@ -267,7 +267,15 @@ static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	struct device *dev = chip->dev;
 	struct i2c_client *client = to_i2c_client(dev);
 	s32 rc;
+<<<<<<< HEAD
 	int expected, status, burst_count, retries, size = 0;
+=======
+	int status;
+	int burst_count;
+	int retries;
+	int size = 0;
+	u32 expected;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (count < TPM_HEADER_SIZE) {
 		i2c_nuvoton_ready(chip);    /* return to idle */
@@ -309,7 +317,11 @@ static int i2c_nuvoton_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 		 * to machine native
 		 */
 		expected = be32_to_cpu(*(__be32 *) (buf + 2));
+<<<<<<< HEAD
 		if (expected > count) {
+=======
+		if (expected > count || expected < size) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev_err(dev, "%s() expected > count\n", __func__);
 			size = -EIO;
 			continue;

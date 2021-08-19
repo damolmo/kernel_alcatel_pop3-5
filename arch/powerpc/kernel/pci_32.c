@@ -11,6 +11,10 @@
 #include <linux/sched.h>
 #include <linux/errno.h>
 #include <linux/bootmem.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscalls.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/irq.h>
 #include <linux/list.h>
 #include <linux/of.h>

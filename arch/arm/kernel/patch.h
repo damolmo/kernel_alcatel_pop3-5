@@ -2,6 +2,20 @@
 #define _ARM_KERNEL_PATCH_H
 
 void patch_text(void *addr, unsigned int insn);
+<<<<<<< HEAD
 void __patch_text(void *addr, unsigned int insn);
+=======
+void __patch_text_real(void *addr, unsigned int insn, bool remap);
+
+static inline void __patch_text(void *addr, unsigned int insn)
+{
+	__patch_text_real(addr, insn, true);
+}
+
+static inline void __patch_text_early(void *addr, unsigned int insn)
+{
+	__patch_text_real(addr, insn, false);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

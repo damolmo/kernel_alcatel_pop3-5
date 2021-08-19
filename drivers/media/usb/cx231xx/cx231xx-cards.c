@@ -489,7 +489,11 @@ struct cx231xx_board cx231xx_boards[] = {
 		.output_mode = OUT_MODE_VIP11,
 		.demod_xfer_mode = 0,
 		.ctl_pin_status_mask = 0xFFFFFFC4,
+<<<<<<< HEAD
 		.agc_analog_digital_select_gpio = 0x00,	/* According with PV cxPolaris.inf file */
+=======
+		.agc_analog_digital_select_gpio = 0x1c,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.tuner_sif_gpio = -1,
 		.tuner_scl_gpio = -1,
 		.tuner_sda_gpio = -1,
@@ -805,6 +809,12 @@ struct usb_device_id cx231xx_id_table[] = {
 	 .driver_info = CX231XX_BOARD_CNXT_RDE_250},
 	{USB_DEVICE(0x0572, 0x58A0),
 	 .driver_info = CX231XX_BOARD_CNXT_RDU_250},
+<<<<<<< HEAD
+=======
+	/* AverMedia DVD EZMaker 7 */
+	{USB_DEVICE(0x07ca, 0xc039),
+	 .driver_info = CX231XX_BOARD_CNXT_VIDEO_GRABBER},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{USB_DEVICE(0x2040, 0xb110),
 	 .driver_info = CX231XX_BOARD_HAUPPAUGE_USB2_FM_PAL},
 	{USB_DEVICE(0x2040, 0xb111),
@@ -1291,6 +1301,12 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 
 	uif = udev->actconfig->interface[idx];
 
+<<<<<<< HEAD
+=======
+	if (uif->altsetting[0].desc.bNumEndpoints < isoc_pipe + 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->video_mode.end_point_addr = uif->altsetting[0].endpoint[isoc_pipe].desc.bEndpointAddress;
 	dev->video_mode.num_alt = uif->num_altsetting;
 
@@ -1305,7 +1321,16 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 	}
 
 	for (i = 0; i < dev->video_mode.num_alt; i++) {
+<<<<<<< HEAD
 		u16 tmp = le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].desc.wMaxPacketSize);
+=======
+		u16 tmp;
+
+		if (uif->altsetting[i].desc.bNumEndpoints < isoc_pipe + 1)
+			return -ENODEV;
+
+		tmp = le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].desc.wMaxPacketSize);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev->video_mode.alt_max_pkt_size[i] = (tmp & 0x07ff) * (((tmp & 0x1800) >> 11) + 1);
 		cx231xx_info("Alternate setting %i, max size= %i\n", i,
 			     dev->video_mode.alt_max_pkt_size[i]);
@@ -1320,6 +1345,12 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 	}
 	uif = udev->actconfig->interface[idx];
 
+<<<<<<< HEAD
+=======
+	if (uif->altsetting[0].desc.bNumEndpoints < isoc_pipe + 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->vbi_mode.end_point_addr =
 	    uif->altsetting[0].endpoint[isoc_pipe].desc.
 			bEndpointAddress;
@@ -1337,8 +1368,17 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 	}
 
 	for (i = 0; i < dev->vbi_mode.num_alt; i++) {
+<<<<<<< HEAD
 		u16 tmp =
 		    le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].
+=======
+		u16 tmp;
+
+		if (uif->altsetting[i].desc.bNumEndpoints < isoc_pipe + 1)
+			return -ENODEV;
+
+		tmp = le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				desc.wMaxPacketSize);
 		dev->vbi_mode.alt_max_pkt_size[i] =
 		    (tmp & 0x07ff) * (((tmp & 0x1800) >> 11) + 1);
@@ -1356,6 +1396,12 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 	}
 	uif = udev->actconfig->interface[idx];
 
+<<<<<<< HEAD
+=======
+	if (uif->altsetting[0].desc.bNumEndpoints < isoc_pipe + 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->sliced_cc_mode.end_point_addr =
 	    uif->altsetting[0].endpoint[isoc_pipe].desc.
 			bEndpointAddress;
@@ -1372,7 +1418,16 @@ static int cx231xx_init_v4l2(struct cx231xx *dev,
 	}
 
 	for (i = 0; i < dev->sliced_cc_mode.num_alt; i++) {
+<<<<<<< HEAD
 		u16 tmp = le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].
+=======
+		u16 tmp;
+
+		if (uif->altsetting[i].desc.bNumEndpoints < isoc_pipe + 1)
+			return -ENODEV;
+
+		tmp = le16_to_cpu(uif->altsetting[i].endpoint[isoc_pipe].
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				desc.wMaxPacketSize);
 		dev->sliced_cc_mode.alt_max_pkt_size[i] =
 		    (tmp & 0x07ff) * (((tmp & 0x1800) >> 11) + 1);
@@ -1488,7 +1543,11 @@ static int cx231xx_usb_probe(struct usb_interface *interface,
 	nr = dev->devno;
 
 	assoc_desc = udev->actconfig->intf_assoc[0];
+<<<<<<< HEAD
 	if (assoc_desc->bFirstInterface != ifnum) {
+=======
+	if (!assoc_desc || assoc_desc->bFirstInterface != ifnum) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cx231xx_err(DRIVER_NAME ": Not found "
 			    "matching IAD interface\n");
 		retval = -ENODEV;
@@ -1526,6 +1585,14 @@ static int cx231xx_usb_probe(struct usb_interface *interface,
 		}
 		uif = udev->actconfig->interface[idx];
 
+<<<<<<< HEAD
+=======
+		if (uif->altsetting[0].desc.bNumEndpoints < isoc_pipe + 1) {
+			retval = -ENODEV;
+			goto err_video_alt;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev->ts1_mode.end_point_addr =
 		    uif->altsetting[0].endpoint[isoc_pipe].
 				desc.bEndpointAddress;
@@ -1543,7 +1610,18 @@ static int cx231xx_usb_probe(struct usb_interface *interface,
 		}
 
 		for (i = 0; i < dev->ts1_mode.num_alt; i++) {
+<<<<<<< HEAD
 			u16 tmp = le16_to_cpu(uif->altsetting[i].
+=======
+			u16 tmp;
+
+			if (uif->altsetting[i].desc.bNumEndpoints < isoc_pipe + 1) {
+				retval = -ENODEV;
+				goto err_video_alt;
+			}
+
+			tmp = le16_to_cpu(uif->altsetting[i].
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						endpoint[isoc_pipe].desc.
 						wMaxPacketSize);
 			dev->ts1_mode.alt_max_pkt_size[i] =

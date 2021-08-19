@@ -538,9 +538,13 @@ extern int  nfs_readpage_async(struct nfs_open_context *, struct inode *,
 
 static inline loff_t nfs_size_to_loff_t(__u64 size)
 {
+<<<<<<< HEAD
 	if (size > (__u64) OFFSET_MAX - 1)
 		return OFFSET_MAX - 1;
 	return (loff_t) size;
+=======
+	return min_t(u64, size, OFFSET_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline ino_t

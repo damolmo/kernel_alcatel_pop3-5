@@ -148,10 +148,17 @@ static inline bool xilinx_pcie_link_is_up(struct xilinx_pcie_port *port)
  */
 static void xilinx_pcie_clear_err_interrupts(struct xilinx_pcie_port *port)
 {
+<<<<<<< HEAD
 	u32 val = pcie_read(port, XILINX_PCIE_REG_RPEFR);
 
 	if (val & XILINX_PCIE_RPEFR_ERR_VALID) {
 		dev_dbg(port->dev, "Requester ID %d\n",
+=======
+	unsigned long val = pcie_read(port, XILINX_PCIE_REG_RPEFR);
+
+	if (val & XILINX_PCIE_RPEFR_ERR_VALID) {
+		dev_dbg(port->dev, "Requester ID %lu\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			val & XILINX_PCIE_RPEFR_REQ_ID);
 		pcie_write(port, XILINX_PCIE_RPEFR_ALL_MASK,
 			   XILINX_PCIE_REG_RPEFR);
@@ -421,14 +428,29 @@ static const struct irq_domain_ops msi_domain_ops = {
  * xilinx_pcie_enable_msi - Enable MSI support
  * @port: PCIe port information
  */
+<<<<<<< HEAD
 static void xilinx_pcie_enable_msi(struct xilinx_pcie_port *port)
+=======
+static int xilinx_pcie_enable_msi(struct xilinx_pcie_port *port)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	phys_addr_t msg_addr;
 
 	port->msi_pages = __get_free_pages(GFP_KERNEL, 0);
+<<<<<<< HEAD
 	msg_addr = virt_to_phys((void *)port->msi_pages);
 	pcie_write(port, 0x0, XILINX_PCIE_REG_MSIBASE1);
 	pcie_write(port, msg_addr, XILINX_PCIE_REG_MSIBASE2);
+=======
+	if (!port->msi_pages)
+		return -ENOMEM;
+
+	msg_addr = virt_to_phys((void *)port->msi_pages);
+	pcie_write(port, 0x0, XILINX_PCIE_REG_MSIBASE1);
+	pcie_write(port, msg_addr, XILINX_PCIE_REG_MSIBASE2);
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -639,6 +661,10 @@ static int xilinx_pcie_init_irq_domain(struct xilinx_pcie_port *port)
 	struct device *dev = port->dev;
 	struct device_node *node = dev->of_node;
 	struct device_node *pcie_intc_node;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Setup INTx */
 	pcie_intc_node = of_get_next_child(node, NULL);
@@ -666,7 +692,13 @@ static int xilinx_pcie_init_irq_domain(struct xilinx_pcie_port *port)
 			return PTR_ERR(port->irq_domain);
 		}
 
+<<<<<<< HEAD
 		xilinx_pcie_enable_msi(port);
+=======
+		ret = xilinx_pcie_enable_msi(port);
+		if (ret)
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -859,7 +891,12 @@ static int xilinx_pcie_parse_dt(struct xilinx_pcie_port *port)
 
 	port->irq = irq_of_parse_and_map(node, 0);
 	err = devm_request_irq(dev, port->irq, xilinx_pcie_intr_handler,
+<<<<<<< HEAD
 			       IRQF_SHARED, "xilinx-pcie", port);
+=======
+			       IRQF_SHARED | IRQF_NO_THREAD,
+			       "xilinx-pcie", port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		dev_err(dev, "unable to request irq %d\n", port->irq);
 		return err;

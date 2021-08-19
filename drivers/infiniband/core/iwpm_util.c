@@ -484,6 +484,10 @@ static int send_nlmsg_done(struct sk_buff *skb, u8 nl_client, int iwpm_pid)
 	if (!(ibnl_put_msg(skb, &nlh, 0, 0, nl_client,
 			   RDMA_NL_IWPM_MAPINFO, NLM_F_MULTI))) {
 		pr_warn("%s Unable to put NLMSG_DONE\n", __func__);
+<<<<<<< HEAD
+=======
+		dev_kfree_skb(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	}
 	nlh->nlmsg_type = NLMSG_DONE;
@@ -512,6 +516,10 @@ int iwpm_send_mapinfo(u8 nl_client, int iwpm_pid)
 	}
 	skb_num++;
 	spin_lock_irqsave(&iwpm_mapinfo_lock, flags);
+<<<<<<< HEAD
+=======
+	ret = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < IWPM_HASH_BUCKET_SIZE; i++) {
 		hlist_for_each_entry(map_info, &iwpm_hash_bucket[i],
 				     hlist_node) {

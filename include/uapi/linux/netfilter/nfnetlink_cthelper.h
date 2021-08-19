@@ -4,7 +4,11 @@
 #define NFCT_HELPER_STATUS_DISABLED	0
 #define NFCT_HELPER_STATUS_ENABLED	1
 
+<<<<<<< HEAD
 enum nfnl_acct_msg_types {
+=======
+enum nfnl_cthelper_msg_types {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	NFNL_MSG_CTHELPER_NEW,
 	NFNL_MSG_CTHELPER_GET,
 	NFNL_MSG_CTHELPER_DEL,

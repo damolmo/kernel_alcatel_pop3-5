@@ -13,8 +13,11 @@ obj-$(CONFIG_FSL_IFC)		+= fsl_ifc.o
 obj-$(CONFIG_MVEBU_DEVBUS)	+= mvebu-devbus.o
 obj-$(CONFIG_TEGRA20_MC)	+= tegra20-mc.o
 obj-$(CONFIG_TEGRA30_MC)	+= tegra30-mc.o
+<<<<<<< HEAD
 ifeq ($(CONFIG_MTK_SMI_V1),y)
 obj-$(CONFIG_MTK_SMI)		+= mt2701-smi.o
 else
 obj-$(CONFIG_MTK_SMI)		+= mtk-smi.o
 endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

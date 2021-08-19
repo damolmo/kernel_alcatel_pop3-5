@@ -148,7 +148,11 @@ opal_tracepoint_entry:
 opal_tracepoint_return:
 	std	r3,STK_REG(R31)(r1)
 	mr	r4,r3
+<<<<<<< HEAD
 	ld	r0,STK_REG(R23)(r1)
+=======
+	ld	r3,STK_REG(R23)(r1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bl	__trace_opal_exit
 	ld	r3,STK_REG(R31)(r1)
 	addi	r1,r1,STACKFRAMESIZE

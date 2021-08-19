@@ -199,7 +199,10 @@ __be32 fib_compute_spec_dst(struct sk_buff *skb)
 	struct in_device *in_dev;
 	struct fib_result res;
 	struct rtable *rt;
+<<<<<<< HEAD
 	struct flowi4 fl4;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct net *net;
 	int scope;
 
@@ -209,12 +212,16 @@ __be32 fib_compute_spec_dst(struct sk_buff *skb)
 		return ip_hdr(skb)->daddr;
 
 	in_dev = __in_dev_get_rcu(dev);
+<<<<<<< HEAD
 	BUG_ON(!in_dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	net = dev_net(dev);
 
 	scope = RT_SCOPE_UNIVERSE;
 	if (!ipv4_is_zeronet(ip_hdr(skb)->saddr)) {
+<<<<<<< HEAD
 		fl4.flowi4_oif = 0;
 		fl4.flowi4_iif = LOOPBACK_IFINDEX;
 		fl4.daddr = ip_hdr(skb)->saddr;
@@ -222,6 +229,15 @@ __be32 fib_compute_spec_dst(struct sk_buff *skb)
 		fl4.flowi4_tos = RT_TOS(ip_hdr(skb)->tos);
 		fl4.flowi4_scope = scope;
 		fl4.flowi4_mark = IN_DEV_SRC_VMARK(in_dev) ? skb->mark : 0;
+=======
+		struct flowi4 fl4 = {
+			.flowi4_iif = LOOPBACK_IFINDEX,
+			.daddr = ip_hdr(skb)->saddr,
+			.flowi4_tos = ip_hdr(skb)->tos & IPTOS_RT_MASK,
+			.flowi4_scope = scope,
+			.flowi4_mark = IN_DEV_SRC_VMARK(in_dev) ? skb->mark : 0,
+		};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!fib_lookup(net, &fl4, &res))
 			return FIB_RES_PREFSRC(net, res);
 	} else {
@@ -800,7 +816,15 @@ void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
 	if (ifa->ifa_flags & IFA_F_SECONDARY) {
 		prim = inet_ifa_byprefix(in_dev, any, ifa->ifa_mask);
 		if (prim == NULL) {
+<<<<<<< HEAD
 			pr_warn("%s: bug: prim == NULL\n", __func__);
+=======
+			/* if the device has been deleted, we don't perform
+			 * address promotion
+			 */
+			if (!in_dev->dead)
+				pr_warn("%s: bug: prim == NULL\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return;
 		}
 		if (iprim && iprim != prim) {
@@ -815,6 +839,12 @@ void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
 		subnet = 1;
 	}
 
+<<<<<<< HEAD
+=======
+	if (in_dev->dead)
+		goto no_promotions;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Deletion is more complicated than add.
 	 * We should take care of not to delete too much :-)
 	 *
@@ -890,6 +920,10 @@ void fib_del_ifaddr(struct in_ifaddr *ifa, struct in_ifaddr *iprim)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+no_promotions:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(ok & BRD_OK))
 		fib_magic(RTM_DELROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32, prim);
 	if (subnet && ifa->ifa_prefixlen < 31) {
@@ -958,7 +992,12 @@ static void nl_fib_input(struct sk_buff *skb)
 
 	net = sock_net(skb->sk);
 	nlh = nlmsg_hdr(skb);
+<<<<<<< HEAD
 	if (skb->len < NLMSG_HDRLEN || skb->len < nlh->nlmsg_len ||
+=======
+	if (skb->len < nlmsg_total_size(sizeof(*frn)) ||
+	    skb->len < nlh->nlmsg_len ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    nlmsg_len(nlh) < sizeof(*frn))
 		return;
 
@@ -1107,14 +1146,27 @@ fail:
 
 static void ip_fib_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	unsigned int i;
+=======
+	int i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_IP_MULTIPLE_TABLES
 	fib4_rules_exit(net);
 #endif
 
 	rtnl_lock();
+<<<<<<< HEAD
 	for (i = 0; i < FIB_TABLE_HASHSZ; i++) {
+=======
+	/* Destroy the tables in reverse order to guarantee that the
+	 * local table, ID 255, is destroyed before the main table, ID
+	 * 254. This is necessary as the local table may contain
+	 * references to data contained in the main table.
+	 */
+	for (i = FIB_TABLE_HASHSZ - 1; i >= 0; i--) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct fib_table *tb;
 		struct hlist_head *head;
 		struct hlist_node *tmp;
@@ -1170,6 +1222,7 @@ static struct pernet_operations fib_net_ops = {
 
 void __init ip_fib_init(void)
 {
+<<<<<<< HEAD
 	rtnl_register(PF_INET, RTM_NEWROUTE, inet_rtm_newroute, NULL, NULL);
 	rtnl_register(PF_INET, RTM_DELROUTE, inet_rtm_delroute, NULL, NULL);
 	rtnl_register(PF_INET, RTM_GETROUTE, NULL, inet_dump_fib, NULL);
@@ -1179,4 +1232,16 @@ void __init ip_fib_init(void)
 	register_inetaddr_notifier(&fib_inetaddr_notifier);
 
 	fib_trie_init();
+=======
+	fib_trie_init();
+
+	register_pernet_subsys(&fib_net_ops);
+
+	register_netdevice_notifier(&fib_netdev_notifier);
+	register_inetaddr_notifier(&fib_inetaddr_notifier);
+
+	rtnl_register(PF_INET, RTM_NEWROUTE, inet_rtm_newroute, NULL, NULL);
+	rtnl_register(PF_INET, RTM_DELROUTE, inet_rtm_delroute, NULL, NULL);
+	rtnl_register(PF_INET, RTM_GETROUTE, NULL, inet_dump_fib, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

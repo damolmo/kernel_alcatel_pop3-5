@@ -140,8 +140,15 @@ static inline unsigned hub_power_on_good_delay(struct usb_hub *hub)
 {
 	unsigned delay = hub->descriptor->bPwrOn2PwrGood * 2;
 
+<<<<<<< HEAD
 	/* Wait at least 100 msec for power to become stable */
 	return max(delay, 100U);
+=======
+	if (!hub->hdev->parent)	/* root hub */
+		return delay;
+	else /* Wait at least 100 msec for power to become stable */
+		return max(delay, 100U);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int hub_port_debounce_be_connected(struct usb_hub *hub,

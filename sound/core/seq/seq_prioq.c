@@ -59,10 +59,15 @@ struct snd_seq_prioq *snd_seq_prioq_new(void)
 	struct snd_seq_prioq *f;
 
 	f = kzalloc(sizeof(*f), GFP_KERNEL);
+<<<<<<< HEAD
 	if (f == NULL) {
 		pr_debug("ALSA: seq: malloc failed for snd_seq_prioq_new()\n");
 		return NULL;
 	}
+=======
+	if (!f)
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	spin_lock_init(&f->lock);
 	f->head = NULL;
@@ -89,7 +94,11 @@ void snd_seq_prioq_delete(struct snd_seq_prioq **fifo)
 	if (f->cells > 0) {
 		/* drain prioQ */
 		while (f->cells > 0)
+<<<<<<< HEAD
 			snd_seq_cell_free(snd_seq_prioq_cell_out(f));
+=======
+			snd_seq_cell_free(snd_seq_prioq_cell_out(f, NULL));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	
 	kfree(f);
@@ -216,8 +225,23 @@ int snd_seq_prioq_cell_in(struct snd_seq_prioq * f,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* dequeue cell from prioq */
 struct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f)
+=======
+/* return 1 if the current time >= event timestamp */
+static int event_is_ready(struct snd_seq_event *ev, void *current_time)
+{
+	if ((ev->flags & SNDRV_SEQ_TIME_STAMP_MASK) == SNDRV_SEQ_TIME_STAMP_TICK)
+		return snd_seq_compare_tick_time(current_time, &ev->time.tick);
+	else
+		return snd_seq_compare_real_time(current_time, &ev->time.time);
+}
+
+/* dequeue cell from prioq */
+struct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f,
+						  void *current_time)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct snd_seq_event_cell *cell;
 	unsigned long flags;
@@ -229,6 +253,11 @@ struct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f)
 	spin_lock_irqsave(&f->lock, flags);
 
 	cell = f->head;
+<<<<<<< HEAD
+=======
+	if (cell && current_time && !event_is_ready(&cell->event, current_time))
+		cell = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (cell) {
 		f->head = cell->next;
 
@@ -254,6 +283,7 @@ int snd_seq_prioq_avail(struct snd_seq_prioq * f)
 	return f->cells;
 }
 
+<<<<<<< HEAD
 
 /* peek at cell at the head of the prioq */
 struct snd_seq_event_cell *snd_seq_prioq_cell_peek(struct snd_seq_prioq * f)
@@ -266,6 +296,8 @@ struct snd_seq_event_cell *snd_seq_prioq_cell_peek(struct snd_seq_prioq * f)
 }
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int prioq_match(struct snd_seq_event_cell *cell,
 			      int client, int timestamp)
 {

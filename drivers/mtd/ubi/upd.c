@@ -142,20 +142,31 @@ int ubi_start_update(struct ubi_device *ubi, struct ubi_volume *vol,
 		return err;
 
 	/* Before updating - wipe out the volume */
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	ubi_wipe_mtbl_record(ubi, vol->vol_id);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < vol->reserved_pebs; i++) {
 		err = ubi_eba_unmap_leb(ubi, vol, i);
 		if (err)
 			return err;
 	}
 
+<<<<<<< HEAD
 	if (bytes == 0) {
 		err = ubi_wl_flush(ubi, UBI_ALL, UBI_ALL);
 		if (err)
 			return err;
 
+=======
+	err = ubi_wl_flush(ubi, UBI_ALL, UBI_ALL);
+	if (err)
+		return err;
+
+	if (bytes == 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = clear_update_marker(ubi, vol, 0);
 		if (err)
 			return err;
@@ -196,7 +207,11 @@ int ubi_start_leb_change(struct ubi_device *ubi, struct ubi_volume *vol,
 	vol->changing_leb = 1;
 	vol->ch_lnum = req->lnum;
 
+<<<<<<< HEAD
 	vol->upd_buf = vmalloc(req->bytes);
+=======
+	vol->upd_buf = vmalloc(ALIGN((int)req->bytes, ubi->min_io_size));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!vol->upd_buf)
 		return -ENOMEM;
 
@@ -246,11 +261,15 @@ static int write_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
 			dbg_gen("all %d bytes contain 0xFF - skip", len);
 			return 0;
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 		if (lnum >= 10)
 			err = ubi_eba_write_tlc_leb(ubi, vol, lnum, buf, 0, len);
 		else
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = ubi_eba_write_leb(ubi, vol, lnum, buf, 0, len);
 	} else {
 		/*
@@ -423,11 +442,14 @@ int ubi_more_leb_change_data(struct ubi_device *ubi, struct ubi_volume *vol,
 		memset(vol->upd_buf + vol->upd_bytes, 0xFF,
 		       len - vol->upd_bytes);
 		len = ubi_calc_data_len(ubi, vol->upd_buf, len);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 		if (vol->ch_lnum >= 10)
 			err = ubi_eba_write_tlc_leb(ubi, vol, vol->ch_lnum, vol->upd_buf, 0, len);
 		else
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = ubi_eba_atomic_leb_change(ubi, vol, vol->ch_lnum,
 						vol->upd_buf, len);
 		if (err)

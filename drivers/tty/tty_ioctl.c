@@ -327,7 +327,11 @@ speed_t tty_termios_baud_rate(struct ktermios *termios)
 		else
 			cbaud += 15;
 	}
+<<<<<<< HEAD
 	return baud_table[cbaud];
+=======
+	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(tty_termios_baud_rate);
 
@@ -363,7 +367,11 @@ speed_t tty_termios_input_baud_rate(struct ktermios *termios)
 		else
 			cbaud += 15;
 	}
+<<<<<<< HEAD
 	return baud_table[cbaud];
+=======
+	return cbaud >= n_baud_table ? 0 : baud_table[cbaud];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 	return tty_termios_baud_rate(termios);
 #endif

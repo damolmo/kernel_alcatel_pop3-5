@@ -86,6 +86,14 @@ static u32 mpc52xx_can_get_clock(struct platform_device *ofdev,
 		return 0;
 	}
 	cdm = of_iomap(np_cdm, 0);
+<<<<<<< HEAD
+=======
+	if (!cdm) {
+		of_node_put(np_cdm);
+		dev_err(&ofdev->dev, "can't map clock node!\n");
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (in_8(&cdm->ipb_clk_sel) & 0x1)
 		freq *= 2;

@@ -57,7 +57,11 @@ static int chameleon_parse_gdd(struct mcb_bus *bus,
 	mdev->id = GDD_DEV(reg1);
 	mdev->rev = GDD_REV(reg1);
 	mdev->var = GDD_VAR(reg1);
+<<<<<<< HEAD
 	mdev->bar = GDD_BAR(reg1);
+=======
+	mdev->bar = GDD_BAR(reg2);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mdev->group = GDD_GRP(reg2);
 	mdev->inst = GDD_INS(reg2);
 

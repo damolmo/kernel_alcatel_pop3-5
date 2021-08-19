@@ -38,7 +38,11 @@ nfs4_file_open(struct inode *inode, struct file *filp)
 	dprintk("NFS: open file(%pd2)\n", dentry);
 
 	if ((openflags & O_ACCMODE) == 3)
+<<<<<<< HEAD
 		openflags--;
+=======
+		return nfs_open(inode, filp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We can't create new files here */
 	openflags &= ~(O_CREAT|O_EXCL);
@@ -62,6 +66,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
 	if (IS_ERR(inode)) {
 		err = PTR_ERR(inode);
 		switch (err) {
+<<<<<<< HEAD
 		case -EPERM:
 		case -EACCES:
 		case -EDQUOT:
@@ -69,6 +74,15 @@ nfs4_file_open(struct inode *inode, struct file *filp)
 		case -EROFS:
 			goto out_put_ctx;
 		default:
+=======
+		default:
+			goto out_put_ctx;
+		case -ENOENT:
+		case -ESTALE:
+		case -EISDIR:
+		case -ENOTDIR:
+		case -ELOOP:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out_drop;
 		}
 	}
@@ -128,7 +142,11 @@ static loff_t nfs4_file_llseek(struct file *filep, loff_t offset, int whence)
 	case SEEK_HOLE:
 	case SEEK_DATA:
 		ret = nfs42_proc_llseek(filep, offset, whence);
+<<<<<<< HEAD
 		if (ret != -ENOTSUPP)
+=======
+		if (ret != -EOPNOTSUPP)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 	default:
 		return nfs_file_llseek(filep, offset, whence);

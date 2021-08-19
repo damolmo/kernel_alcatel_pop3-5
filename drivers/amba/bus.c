@@ -216,10 +216,18 @@ static int amba_remove(struct device *dev)
 {
 	struct amba_device *pcdev = to_amba_device(dev);
 	struct amba_driver *drv = to_amba_driver(dev->driver);
+<<<<<<< HEAD
 	int ret;
 
 	pm_runtime_get_sync(dev);
 	ret = drv->remove(pcdev);
+=======
+	int ret = 0;
+
+	pm_runtime_get_sync(dev);
+	if (drv->remove)
+		ret = drv->remove(pcdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_runtime_put_noidle(dev);
 
 	/* Undo the runtime PM settings in amba_probe() */
@@ -236,7 +244,13 @@ static int amba_remove(struct device *dev)
 static void amba_shutdown(struct device *dev)
 {
 	struct amba_driver *drv = to_amba_driver(dev->driver);
+<<<<<<< HEAD
 	drv->shutdown(to_amba_device(dev));
+=======
+
+	if (drv->shutdown)
+		drv->shutdown(to_amba_device(dev));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -249,12 +263,22 @@ static void amba_shutdown(struct device *dev)
  */
 int amba_driver_register(struct amba_driver *drv)
 {
+<<<<<<< HEAD
 	drv->drv.bus = &amba_bustype;
 
 #define SETFN(fn)	if (drv->fn) drv->drv.fn = amba_##fn
 	SETFN(probe);
 	SETFN(remove);
 	SETFN(shutdown);
+=======
+	if (!drv->probe)
+		return -EINVAL;
+
+	drv->drv.bus = &amba_bustype;
+	drv->drv.probe = amba_probe;
+	drv->drv.remove = amba_remove;
+	drv->drv.shutdown = amba_shutdown;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return driver_register(&drv->drv);
 }

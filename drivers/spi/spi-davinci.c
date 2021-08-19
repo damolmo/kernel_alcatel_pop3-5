@@ -230,7 +230,11 @@ static void davinci_spi_chipselect(struct spi_device *spi, int value)
 	}
 
 	/* program delay transfers if tx_delay is non zero */
+<<<<<<< HEAD
 	if (spicfg->wdelay)
+=======
+	if (spicfg && spicfg->wdelay)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spidat1 |= SPIDAT1_WDEL;
 
 	/*
@@ -659,7 +663,11 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 			buf = t->rx_buf;
 		t->rx_dma = dma_map_single(&spi->dev, buf,
 				t->len, DMA_FROM_DEVICE);
+<<<<<<< HEAD
 		if (!t->rx_dma) {
+=======
+		if (dma_mapping_error(&spi->dev, t->rx_dma)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = -EFAULT;
 			goto err_rx_map;
 		}
@@ -673,7 +681,11 @@ static int davinci_spi_bufs(struct spi_device *spi, struct spi_transfer *t)
 			buf = (void *)t->tx_buf;
 		t->tx_dma = dma_map_single(&spi->dev, buf,
 				t->len, DMA_TO_DEVICE);
+<<<<<<< HEAD
 		if (!t->tx_dma) {
+=======
+		if (dma_mapping_error(&spi->dev, t->tx_dma)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = -EFAULT;
 			goto err_tx_map;
 		}

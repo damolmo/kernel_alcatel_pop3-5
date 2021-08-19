@@ -393,7 +393,11 @@ config XILINX_HWICAP
 
 config R3964
 	tristate "Siemens R3964 line discipline"
+<<<<<<< HEAD
 	depends on TTY
+=======
+	depends on TTY && BROKEN
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	---help---
 	  This driver allows synchronous communication with devices using the
 	  Siemens R3964 packet protocol. Unless you are dealing with special
@@ -587,6 +591,7 @@ config TELCLOCK
 	  controlling the behavior of this hardware.
 
 config DEVPORT
+<<<<<<< HEAD
 	bool
 	depends on !M68K
 	depends on ISA || PCI
@@ -595,6 +600,14 @@ config DEVPORT
 config DCC_TTY
 	tristate "DCC tty driver"
 	depends on ARM
+=======
+	bool "/dev/port character device"
+	depends on ISA || PCI
+	default y
+	help
+	  Say Y here if you want to support the /dev/port device. The /dev/port
+	  device is similar to /dev/mem, but for I/O ports.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 source "drivers/s390/char/Kconfig"
 

@@ -27,6 +27,12 @@
 #include <linux/delay.h>
 #include <linux/bitops.h>
 #include <asm/uv/uv_hub.h>
+<<<<<<< HEAD
+=======
+
+#include <linux/nospec.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "gru.h"
 #include "grutables.h"
 #include "gruhandles.h"
@@ -198,6 +204,10 @@ int gru_dump_chiplet_request(unsigned long arg)
 	/* Currently, only dump by gid is implemented */
 	if (req.gid >= gru_max_gids || req.gid < 0)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	req.gid = array_index_nospec(req.gid, gru_max_gids);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	gru = GID_TO_GRU(req.gid);
 	ubuf = req.buf;

@@ -57,6 +57,7 @@ static const unsigned int tacc_mant[] = {
 		__res & __mask;						\
 	})
 
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #define MMC_UPDATE_BKOPS_STATS_SUSPEND(stats)\
 	do {\
@@ -66,6 +67,8 @@ static const unsigned int tacc_mant[] = {
 		spin_unlock(&stats.lock);\
 	} while (0)
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Given the decoded CSD structure, decode the raw CID to our CID structure.
  */
@@ -397,6 +400,12 @@ static void mmc_manage_gp_partitions(struct mmc_card *card, u8 *ext_csd)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* Minimum partition switch timeout in milliseconds */
+#define MMC_MIN_PART_SWITCH_TIME	300
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Decode extended CSD.
  */
@@ -455,7 +464,10 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		ext_csd[EXT_CSD_HC_ERASE_GRP_SIZE];
 	if (card->ext_csd.rev >= 3) {
 		u8 sa_shift = ext_csd[EXT_CSD_S_A_TIMEOUT];
+<<<<<<< HEAD
 		u8 sn_shift = ext_csd[EXT_CSD_SLEEP_NOTIFICATION_TIME]; //20160112 liujunting add for MTK patch P13
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		card->ext_csd.part_config = ext_csd[EXT_CSD_PART_CONFIG];
 
 		/* EXT_CSD value is in units of 10ms, but we store in ms */
@@ -465,12 +477,15 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		if (sa_shift > 0 && sa_shift <= 0x17)
 			card->ext_csd.sa_timeout =
 					1 << ext_csd[EXT_CSD_S_A_TIMEOUT];
+<<<<<<< HEAD
 //begin 20160112 liujunting add for MTK patch P13
 		/* Sleep notification time in 10us units */
 		if (sn_shift > 0 && sn_shift <= 0x17)
 			card->ext_csd.sleep_notification_time =
 					1 << ext_csd[EXT_CSD_SLEEP_NOTIFICATION_TIME];
 //end 20160112 liujunting add for MTK patch P13
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		card->ext_csd.erase_group_def =
 			ext_csd[EXT_CSD_ERASE_GROUP_DEF];
 		card->ext_csd.hc_erase_timeout = 300 *
@@ -567,7 +582,11 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			card->ext_csd.raw_bkops_status =
 				ext_csd[EXT_CSD_BKOPS_STATUS];
 			if (!card->ext_csd.bkops_en)
+<<<<<<< HEAD
 				pr_info("%s: BKOPS_EN bit is not set\n",
+=======
+				pr_debug("%s: BKOPS_EN bit is not set\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					mmc_hostname(card->host));
 		}
 
@@ -644,6 +663,28 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		card->ext_csd.data_sector_size = 512;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * GENERIC_CMD6_TIME is to be used "unless a specific timeout is defined
+	 * when accessing a specific field", so use it here if there is no
+	 * PARTITION_SWITCH_TIME.
+	 */
+	if (!card->ext_csd.part_time)
+		card->ext_csd.part_time = card->ext_csd.generic_cmd6_time;
+	/* Some eMMC set the value too low so set a minimum */
+	if (card->ext_csd.part_time < MMC_MIN_PART_SWITCH_TIME)
+		card->ext_csd.part_time = MMC_MIN_PART_SWITCH_TIME;
+
+	/* eMMC v5 or later */
+	if (card->ext_csd.rev >= 7) {
+		card->ext_csd.pre_eol_info = ext_csd[EXT_CSD_PRE_EOL_INFO];
+		card->ext_csd.device_life_time_est_typ_a =
+			ext_csd[EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_A];
+		card->ext_csd.device_life_time_est_typ_b =
+			ext_csd[EXT_CSD_DEVICE_LIFE_TIME_EST_TYP_B];
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return err;
 }
@@ -744,6 +785,14 @@ MMC_DEV_ATTR(manfid, "0x%06x\n", card->cid.manfid);
 MMC_DEV_ATTR(name, "%s\n", card->cid.prod_name);
 MMC_DEV_ATTR(oemid, "0x%04x\n", card->cid.oemid);
 MMC_DEV_ATTR(prv, "0x%x\n", card->cid.prv);
+<<<<<<< HEAD
+=======
+MMC_DEV_ATTR(rev, "0x%x\n", card->ext_csd.rev);
+MMC_DEV_ATTR(pre_eol_info, "%02x\n", card->ext_csd.pre_eol_info);
+MMC_DEV_ATTR(life_time, "0x%02x 0x%02x\n",
+	card->ext_csd.device_life_time_est_typ_a,
+	card->ext_csd.device_life_time_est_typ_b);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MMC_DEV_ATTR(serial, "0x%08x\n", card->cid.serial);
 MMC_DEV_ATTR(enhanced_area_offset, "%llu\n",
 		card->ext_csd.enhanced_area_offset);
@@ -763,6 +812,12 @@ static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_name.attr,
 	&dev_attr_oemid.attr,
 	&dev_attr_prv.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_rev.attr,
+	&dev_attr_pre_eol_info.attr,
+	&dev_attr_life_time.attr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	&dev_attr_serial.attr,
 	&dev_attr_enhanced_area_offset.attr,
 	&dev_attr_enhanced_area_size.attr,
@@ -966,7 +1021,11 @@ static int mmc_select_bus_width(struct mmc_card *card)
 			break;
 		} else {
 			pr_warn("%s: switch to bus width %d failed\n",
+<<<<<<< HEAD
 				mmc_hostname(host), ext_csd_bits[idx]);
+=======
+				mmc_hostname(host), 1 << bus_width);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1014,7 +1073,11 @@ static int mmc_select_hs_ddr(struct mmc_card *card)
 			ext_csd_bits,
 			card->ext_csd.generic_cmd6_time);
 	if (err) {
+<<<<<<< HEAD
 		pr_warn("%s: switch to bus width %d ddr failed\n",
+=======
+		pr_err("%s: switch to bus width %d ddr failed\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mmc_hostname(host), 1 << bus_width);
 		return err;
 	}
@@ -1085,7 +1148,11 @@ static int mmc_select_hs400(struct mmc_card *card)
 			   card->ext_csd.generic_cmd6_time,
 			   true, true, true);
 	if (err) {
+<<<<<<< HEAD
 		pr_warn("%s: switch to high-speed from hs200 failed, err:%d\n",
+=======
+		pr_err("%s: switch to high-speed from hs200 failed, err:%d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mmc_hostname(host), err);
 		return err;
 	}
@@ -1095,7 +1162,11 @@ static int mmc_select_hs400(struct mmc_card *card)
 			 EXT_CSD_DDR_BUS_WIDTH_8,
 			 card->ext_csd.generic_cmd6_time);
 	if (err) {
+<<<<<<< HEAD
 		pr_warn("%s: switch to bus width for hs400 failed, err:%d\n",
+=======
+		pr_err("%s: switch to bus width for hs400 failed, err:%d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mmc_hostname(host), err);
 		return err;
 	}
@@ -1105,7 +1176,11 @@ static int mmc_select_hs400(struct mmc_card *card)
 			   card->ext_csd.generic_cmd6_time,
 			   true, true, true);
 	if (err) {
+<<<<<<< HEAD
 		pr_warn("%s: switch to hs400 failed, err:%d\n",
+=======
+		pr_err("%s: switch to hs400 failed, err:%d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 mmc_hostname(host), err);
 		return err;
 	}
@@ -1230,7 +1305,10 @@ EXPORT_SYMBOL(tuning_blk_pattern_8bit);
 static int mmc_hs200_tuning(struct mmc_card *card)
 {
 	struct mmc_host *host = card->host;
+<<<<<<< HEAD
 	int err = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Timing should be adjusted to the HS400 target
@@ -1241,6 +1319,7 @@ static int mmc_hs200_tuning(struct mmc_card *card)
 		if (host->ops->prepare_hs400_tuning)
 			host->ops->prepare_hs400_tuning(host, &host->ios);
 
+<<<<<<< HEAD
 	if (host->ops->execute_tuning) {
 		mmc_host_clk_hold(host);
 		err = host->ops->execute_tuning(host,
@@ -1253,6 +1332,9 @@ static int mmc_hs200_tuning(struct mmc_card *card)
 	}
 
 	return err;
+=======
+	return mmc_execute_tuning(card);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1310,6 +1392,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	if (err)
 		goto err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_FFU
 	if (oldcard && (oldcard->state & MMC_STATE_FFUED)) {
 		/* After FFU, some fields in CID may change,
@@ -1325,6 +1408,8 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 
 	} else
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (oldcard) {
 		if (memcmp(cid, oldcard->raw_cid, sizeof(cid)) != 0) {
 			err = -ENOENT;
@@ -1489,6 +1574,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	if (mmc_card_hs200(card)) {
 		err = mmc_hs200_tuning(card);
 		if (err)
+<<<<<<< HEAD
 			goto err;
 
 		err = mmc_select_hs400(card);
@@ -1501,6 +1587,20 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 			err = mmc_select_hs_ddr(card);
 			if (err)
 				goto err;
+=======
+			goto free_card;
+
+		err = mmc_select_hs400(card);
+		if (err)
+			goto free_card;
+	} else {
+		/* Select the desired bus width optionally */
+		err = mmc_select_bus_width(card);
+		if (!IS_ERR_VALUE(err) && mmc_card_hs(card)) {
+			err = mmc_select_hs_ddr(card);
+			if (err)
+				goto free_card;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1508,6 +1608,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	 * Choose the power class with selected bus interface
 	 */
 	mmc_select_powerclass(card);
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	/*
 	 * enable BKOPS if eMMC card supports.
@@ -1531,6 +1632,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		}
 	}
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Enable HPI feature (if supported)
 	 */
@@ -1543,6 +1647,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		if (err) {
 			pr_warn("%s: Enabling HPI failed\n",
 				mmc_hostname(card->host));
+<<<<<<< HEAD
 			err = 0;
 		} else
 			card->ext_csd.hpi_en = 1;
@@ -1552,6 +1657,15 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 	if (card->quirks & MMC_QUIRK_DISABLE_CACHE)
 		goto skip_cache;
 #endif
+=======
+			card->ext_csd.hpi_en = 0;
+			err = 0;
+		} else {
+			card->ext_csd.hpi_en = 1;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * If cache size is higher than 0, this indicates
 	 * the existence of cache and it can be turned on.
@@ -1575,9 +1689,12 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 			card->ext_csd.cache_ctrl = 1;
 		}
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_EMMC_CACHE
 skip_cache:
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * The mandatory minimum values are defined for packed command.
@@ -1617,6 +1734,7 @@ err:
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_FFU
 int mmc_reinit_oldcard(struct mmc_host *host)
 {
@@ -1654,6 +1772,8 @@ static int mmc_cache_ctrl(struct mmc_host *host, u8 enable)
 	return err;
 }
 //end 20160112 liujunting add for MTK patch P13
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int mmc_can_sleep(struct mmc_card *card)
 {
 	return (card && card->ext_csd.rev >= 3);
@@ -1664,6 +1784,7 @@ static int mmc_sleep(struct mmc_host *host)
 	struct mmc_command cmd = {0};
 	struct mmc_card *card = host->card;
 	unsigned int timeout_ms = DIV_ROUND_UP(card->ext_csd.sa_timeout, 10000);
+<<<<<<< HEAD
 	unsigned int sn_timeout_ms = DIV_ROUND_UP(card->ext_csd.sleep_notification_time, 100); //20160112 liujunting add for MTK patch P13
 	int err;
 //begin 20160112 liujunting add for MTK patch P13
@@ -1679,6 +1800,10 @@ static int mmc_sleep(struct mmc_host *host)
 				       mmc_hostname(card->host), sn_timeout_ms);
 	}
 //end 20160112 liujunting add for MTK patch P13
+=======
+	int err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = mmc_deselect_cards(host);
 	if (err)
 		return err;
@@ -1716,6 +1841,7 @@ static int mmc_sleep(struct mmc_host *host)
 	return err;
 }
 
+<<<<<<< HEAD
 static int mmc_awake(struct mmc_host *host)
 {
 	struct mmc_command cmd = {0};
@@ -1736,6 +1862,8 @@ static int mmc_awake(struct mmc_host *host)
 
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int mmc_can_poweroff_notify(const struct mmc_card *card)
 {
 	return card &&
@@ -1832,6 +1960,7 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
 		err = mmc_stop_bkops(host->card);
 		if (err)
 			goto out;
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 		MMC_UPDATE_BKOPS_STATS_SUSPEND(host->card->bkops_info.bkops_stats);
 #endif
@@ -1844,6 +1973,10 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
 		err = mmc_cache_ctrl(host, 0);
 	else
 //end 20160112 liujunting add for MTK patch P13
+=======
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = mmc_flush_cache(host->card);
 	if (err)
 		goto out;
@@ -1851,6 +1984,7 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
 	if (mmc_can_poweroff_notify(host->card) &&
 		((host->caps2 & MMC_CAP2_FULL_PWR_CYCLE) || !is_suspend))
 		err = mmc_poweroff_notify(host->card, notify_type);
+<<<<<<< HEAD
 	else if (mmc_can_sleep(host->card) && mmc_card_keep_power(host)) {
 		err = mmc_sleep(host);
 		if (!err)
@@ -1861,6 +1995,15 @@ static int _mmc_suspend(struct mmc_host *host, bool is_suspend)
 	if (!err) {
 		if (!mmc_card_keep_power(host))
 			mmc_power_off(host);
+=======
+	else if (mmc_can_sleep(host->card))
+		err = mmc_sleep(host);
+	else if (!mmc_host_is_spi(host))
+		err = mmc_deselect_cards(host);
+
+	if (!err) {
+		mmc_power_off(host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mmc_card_set_suspended(host->card);
 	}
 out:
@@ -1900,6 +2043,7 @@ static int _mmc_resume(struct mmc_host *host)
 	if (!mmc_card_suspended(host->card))
 		goto out;
 
+<<<<<<< HEAD
 	if (!mmc_card_keep_power(host))
 		mmc_power_up(host, host->card->ocr);
 
@@ -1918,6 +2062,12 @@ static int _mmc_resume(struct mmc_host *host)
 	if (host->card->ext_csd.rev < 7)
 		err = mmc_cache_ctrl(host, 1);
 //end 20160112 liujunting add for MTK patch P13
+=======
+	mmc_power_up(host, host->card->ocr);
+	err = mmc_init_card(host, host->card->ocr, host->card);
+	mmc_card_clr_suspended(host->card);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	mmc_release_host(host);
 	return err;
@@ -1997,6 +2147,7 @@ static int mmc_runtime_resume(struct mmc_host *host)
 	return 0;
 }
 
+<<<<<<< HEAD
 int mmc_can_reset(struct mmc_card *card)
 {
 	u8 rst_n_function;
@@ -2035,6 +2186,17 @@ static int mmc_reset(struct mmc_host *host)
 	mmc_host_clk_release(host);
 
 	return mmc_init_card(host, card->ocr, card);
+=======
+static int mmc_power_restore(struct mmc_host *host)
+{
+	int ret;
+
+	mmc_claim_host(host);
+	ret = mmc_init_card(host, host->card->ocr, host->card);
+	mmc_release_host(host);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct mmc_bus_ops mmc_ops = {
@@ -2044,9 +2206,15 @@ static const struct mmc_bus_ops mmc_ops = {
 	.resume = mmc_resume,
 	.runtime_suspend = mmc_runtime_suspend,
 	.runtime_resume = mmc_runtime_resume,
+<<<<<<< HEAD
 	.alive = mmc_alive,
 	.shutdown = mmc_shutdown,
 	.reset = mmc_reset,
+=======
+	.power_restore = mmc_power_restore,
+	.alive = mmc_alive,
+	.shutdown = mmc_shutdown,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -2098,6 +2266,7 @@ int mmc_attach_mmc(struct mmc_host *host)
 	if (err)
 		goto err;
 
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	if (host->card->ext_csd.bkops_en) {
 		INIT_DELAYED_WORK(&host->card->bkops_info.dw,
@@ -2115,6 +2284,8 @@ int mmc_attach_mmc(struct mmc_host *host)
 				host->card->bkops_info.host_delay_ms;
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mmc_release_host(host);
 	err = mmc_add_card(host->card);
 	mmc_claim_host(host);

@@ -2,7 +2,11 @@
  * USB Attached SCSI
  * Note that this is not the same as the USB Mass Storage driver
  *
+<<<<<<< HEAD
  * Copyright Hans de Goede <hdegoede@redhat.com> for Red Hat, Inc. 2013 - 2014
+=======
+ * Copyright Hans de Goede <hdegoede@redhat.com> for Red Hat, Inc. 2013 - 2016
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Copyright Matthew Wilcox for Intel Corp, 2010
  * Copyright Sarah Sharp for Intel Corp, 2010
  *
@@ -46,6 +50,10 @@ struct uas_dev_info {
 	struct scsi_cmnd *cmnd[MAX_CMNDS];
 	spinlock_t lock;
 	struct work_struct work;
+<<<<<<< HEAD
+=======
+	struct work_struct scan_work;      /* for async scanning */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 enum {
@@ -81,6 +89,22 @@ static void uas_free_streams(struct uas_dev_info *devinfo);
 static void uas_log_cmd_state(struct scsi_cmnd *cmnd, const char *prefix,
 				int status);
 
+<<<<<<< HEAD
+=======
+/*
+ * This driver needs its own workqueue, as we need to control memory allocation.
+ *
+ * In the course of error handling and power management uas_wait_for_pending_cmnds()
+ * needs to flush pending work items. In these contexts we cannot allocate memory
+ * by doing block IO as we would deadlock. For the same reason we cannot wait
+ * for anything allocating memory not heeding these constraints.
+ *
+ * So we have to control all work items that can be on the workqueue we flush.
+ * Hence we cannot share a queue and need our own.
+ */
+static struct workqueue_struct *workqueue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void uas_do_work(struct work_struct *work)
 {
 	struct uas_dev_info *devinfo =
@@ -109,12 +133,30 @@ static void uas_do_work(struct work_struct *work)
 		if (!err)
 			cmdinfo->state &= ~IS_IN_WORK_LIST;
 		else
+<<<<<<< HEAD
 			schedule_work(&devinfo->work);
+=======
+			queue_work(workqueue, &devinfo->work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	spin_unlock_irqrestore(&devinfo->lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static void uas_scan_work(struct work_struct *work)
+{
+	struct uas_dev_info *devinfo =
+		container_of(work, struct uas_dev_info, scan_work);
+	struct Scsi_Host *shost = usb_get_intfdata(devinfo->intf);
+
+	dev_dbg(&devinfo->intf->dev, "starting scan\n");
+	scsi_scan_host(shost);
+	dev_dbg(&devinfo->intf->dev, "scan complete\n");
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void uas_add_work(struct uas_cmd_info *cmdinfo)
 {
 	struct scsi_pointer *scp = (void *)cmdinfo;
@@ -123,7 +165,11 @@ static void uas_add_work(struct uas_cmd_info *cmdinfo)
 
 	lockdep_assert_held(&devinfo->lock);
 	cmdinfo->state |= IS_IN_WORK_LIST;
+<<<<<<< HEAD
 	schedule_work(&devinfo->work);
+=======
+	queue_work(workqueue, &devinfo->work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void uas_zap_pending(struct uas_dev_info *devinfo, int result)
@@ -194,6 +240,12 @@ static void uas_log_cmd_state(struct scsi_cmnd *cmnd, const char *prefix,
 {
 	struct uas_cmd_info *ci = (void *)&cmnd->SCp;
 
+<<<<<<< HEAD
+=======
+	if (status == -ENODEV) /* too late */
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	scmd_printk(KERN_INFO, cmnd,
 		    "%s %d tag %d inflight:%s%s%s%s%s%s%s%s%s%s%s%s ",
 		    prefix, status, uas_get_tag(cmnd),
@@ -631,8 +683,12 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd,
 	if (devinfo->resetting) {
 		cmnd->result = DID_ERROR << 16;
 		cmnd->scsi_done(cmnd);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&devinfo->lock, flags);
 		return 0;
+=======
+		goto zombie;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	stream = uas_get_tag(cmnd);
@@ -665,6 +721,19 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd,
 	}
 
 	err = uas_submit_urbs(cmnd, devinfo, GFP_ATOMIC);
+<<<<<<< HEAD
+=======
+	/*
+	 * in case of fatal errors the SCSI layer is peculiar
+	 * a command that has finished is a success for the purpose
+	 * of queueing, no matter how fatal the error
+	 */
+	if (err == -ENODEV) {
+		cmnd->result = DID_ERROR << 16;
+		cmnd->scsi_done(cmnd);
+		goto zombie;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		/* If we did nothing, give up now */
 		if (cmdinfo->state & SUBMIT_STATUS_URB) {
@@ -675,6 +744,10 @@ static int uas_queuecommand_lck(struct scsi_cmnd *cmnd,
 	}
 
 	devinfo->cmnd[stream - 1] = cmnd;
+<<<<<<< HEAD
+=======
+zombie:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irqrestore(&devinfo->lock, flags);
 	return 0;
 }
@@ -768,6 +841,20 @@ static int uas_eh_bus_reset_handler(struct scsi_cmnd *cmnd)
 	return SUCCESS;
 }
 
+<<<<<<< HEAD
+=======
+static int uas_target_alloc(struct scsi_target *starget)
+{
+	struct uas_dev_info *devinfo = (struct uas_dev_info *)
+			dev_to_shost(starget->dev.parent)->hostdata;
+
+	if (devinfo->flags & US_FL_NO_REPORT_LUNS)
+		starget->no_report_luns = 1;
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int uas_slave_alloc(struct scsi_device *sdev)
 {
 	struct uas_dev_info *devinfo =
@@ -807,6 +894,13 @@ static int uas_slave_configure(struct scsi_device *sdev)
 	if (devinfo->flags & US_FL_NO_REPORT_OPCODES)
 		sdev->no_report_opcodes = 1;
 
+<<<<<<< HEAD
+=======
+	/* A few buggy USB-ATA bridges don't understand FUA */
+	if (devinfo->flags & US_FL_BROKEN_FUA)
+		sdev->broken_fua = 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	scsi_set_tag_type(sdev, MSG_ORDERED_TAG);
 	scsi_activate_tcq(sdev, devinfo->qdepth - 2);
 	return 0;
@@ -816,11 +910,19 @@ static struct scsi_host_template uas_host_template = {
 	.module = THIS_MODULE,
 	.name = "uas",
 	.queuecommand = uas_queuecommand,
+<<<<<<< HEAD
+=======
+	.target_alloc = uas_target_alloc,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.slave_alloc = uas_slave_alloc,
 	.slave_configure = uas_slave_configure,
 	.eh_abort_handler = uas_eh_abort_handler,
 	.eh_bus_reset_handler = uas_eh_bus_reset_handler,
+<<<<<<< HEAD
 	.can_queue = 65536,	/* Is there a limit on the _host_ ? */
+=======
+	.can_queue = MAX_CMNDS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.this_id = -1,
 	.sg_tablesize = SG_NONE,
 	.cmd_per_lun = 1,	/* until we override it */
@@ -854,6 +956,7 @@ MODULE_DEVICE_TABLE(usb, uas_usb_ids);
 static int uas_switch_interface(struct usb_device *udev,
 				struct usb_interface *intf)
 {
+<<<<<<< HEAD
 	int alt;
 
 	alt = uas_find_uas_alt_setting(intf);
@@ -862,6 +965,16 @@ static int uas_switch_interface(struct usb_device *udev,
 
 	return usb_set_interface(udev,
 			intf->altsetting[0].desc.bInterfaceNumber, alt);
+=======
+	struct usb_host_interface *alt;
+
+	alt = uas_find_uas_alt_setting(intf);
+	if (!alt)
+		return -ENODEV;
+
+	return usb_set_interface(udev, alt->desc.bInterfaceNumber,
+			alt->desc.bAlternateSetting);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int uas_configure_endpoints(struct uas_dev_info *devinfo)
@@ -944,6 +1057,10 @@ static int uas_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	init_usb_anchor(&devinfo->data_urbs);
 	spin_lock_init(&devinfo->lock);
 	INIT_WORK(&devinfo->work, uas_do_work);
+<<<<<<< HEAD
+=======
+	INIT_WORK(&devinfo->scan_work, uas_scan_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	result = uas_configure_endpoints(devinfo);
 	if (result)
@@ -958,7 +1075,13 @@ static int uas_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	if (result)
 		goto free_streams;
 
+<<<<<<< HEAD
 	scsi_scan_host(shost);
+=======
+	/* Submit the delayed_work for SCSI-device scanning */
+	schedule_work(&devinfo->scan_work);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return result;
 
 free_streams:
@@ -1055,6 +1178,7 @@ static int uas_post_reset(struct usb_interface *intf)
 		return 0;
 
 	err = uas_configure_endpoints(devinfo);
+<<<<<<< HEAD
 	if (err) {
 		shost_printk(KERN_ERR, shost,
 			     "%s: alloc streams error %d after reset",
@@ -1062,13 +1186,25 @@ static int uas_post_reset(struct usb_interface *intf)
 		return 1;
 	}
 
+=======
+	if (err && err != -ENODEV)
+		shost_printk(KERN_ERR, shost,
+			     "%s: alloc streams error %d after reset",
+			     __func__, err);
+
+	/* we must unblock the host in every case lest we deadlock */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(shost->host_lock, flags);
 	scsi_report_bus_reset(shost, 0);
 	spin_unlock_irqrestore(shost->host_lock, flags);
 
 	scsi_unblock_requests(shost);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return err ? 1 : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int uas_suspend(struct usb_interface *intf, pm_message_t message)
@@ -1127,6 +1263,15 @@ static void uas_disconnect(struct usb_interface *intf)
 	usb_kill_anchored_urbs(&devinfo->data_urbs);
 	uas_zap_pending(devinfo, DID_NO_CONNECT);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Prevent SCSI scanning (if it hasn't started yet)
+	 * or wait for the SCSI-scanning routine to stop.
+	 */
+	cancel_work_sync(&devinfo->scan_work);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	scsi_remove_host(shost);
 	uas_free_streams(devinfo);
 	scsi_host_put(shost);
@@ -1166,7 +1311,35 @@ static struct usb_driver uas_driver = {
 	.id_table = uas_usb_ids,
 };
 
+<<<<<<< HEAD
 module_usb_driver(uas_driver);
+=======
+static int __init uas_init(void)
+{
+	int rv;
+
+	workqueue = alloc_workqueue("uas", WQ_MEM_RECLAIM, 0);
+	if (!workqueue)
+		return -ENOMEM;
+
+	rv = usb_register(&uas_driver);
+	if (rv) {
+		destroy_workqueue(workqueue);
+		return -ENOMEM;
+	}
+
+	return 0;
+}
+
+static void __exit uas_exit(void)
+{
+	usb_deregister(&uas_driver);
+	destroy_workqueue(workqueue);
+}
+
+module_init(uas_init);
+module_exit(uas_exit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR(

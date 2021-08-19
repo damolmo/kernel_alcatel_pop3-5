@@ -224,9 +224,16 @@ affs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 
 	affs_lock_dir(dir);
 	bh = affs_find_entry(dir, dentry);
+<<<<<<< HEAD
 	affs_unlock_dir(dir);
 	if (IS_ERR(bh))
 		return ERR_CAST(bh);
+=======
+	if (IS_ERR(bh)) {
+		affs_unlock_dir(dir);
+		return ERR_CAST(bh);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (bh) {
 		u32 ino = bh->b_blocknr;
 
@@ -240,10 +247,20 @@ affs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 		}
 		affs_brelse(bh);
 		inode = affs_iget(sb, ino);
+<<<<<<< HEAD
 		if (IS_ERR(inode))
 			return ERR_CAST(inode);
 	}
 	d_add(dentry, inode);
+=======
+		if (IS_ERR(inode)) {
+			affs_unlock_dir(dir);
+			return ERR_CAST(inode);
+		}
+	}
+	d_add(dentry, inode);
+	affs_unlock_dir(dir);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NULL;
 }
 

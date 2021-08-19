@@ -939,7 +939,14 @@ static int open_file_eeprom(struct inode *inode, struct file *file)
 	}
 
 	for (i = 0; i < eesize; ++i) {
+<<<<<<< HEAD
 		AR5K_EEPROM_READ(i, val);
+=======
+		if (!ath5k_hw_nvram_read(ah, i, &val)) {
+			ret = -EIO;
+			goto freebuf;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		buf[i] = val;
 	}
 

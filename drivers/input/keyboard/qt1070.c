@@ -274,10 +274,25 @@ static const struct i2c_device_id qt1070_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, qt1070_id);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id qt1070_of_match[] = {
+	{ .compatible = "qt1070", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, qt1070_of_match);
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct i2c_driver qt1070_driver = {
 	.driver	= {
 		.name	= "qt1070",
 		.owner	= THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.of_match_table = of_match_ptr(qt1070_of_match),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.pm	= &qt1070_pm_ops,
 	},
 	.id_table	= qt1070_id,

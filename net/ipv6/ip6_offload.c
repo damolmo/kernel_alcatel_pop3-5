@@ -62,7 +62,10 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 	const struct net_offload *ops;
 	int proto;
 	struct frag_hdr *fptr;
+<<<<<<< HEAD
 	unsigned int unfrag_ip6hlen;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 *prevhdr;
 	int offset = 0;
 	bool encap, udpfrag;
@@ -119,10 +122,22 @@ static struct sk_buff *ipv6_gso_segment(struct sk_buff *skb,
 		ipv6h = (struct ipv6hdr *)(skb_mac_header(skb) + nhoff);
 		ipv6h->payload_len = htons(skb->len - nhoff - sizeof(*ipv6h));
 		skb->network_header = (u8 *)ipv6h - skb->head;
+<<<<<<< HEAD
 
 		if (udpfrag) {
 			unfrag_ip6hlen = ip6_find_1stfragopt(skb, &prevhdr);
 			fptr = (struct frag_hdr *)((u8 *)ipv6h + unfrag_ip6hlen);
+=======
+		skb_reset_mac_len(skb);
+
+		if (udpfrag) {
+			int err = ip6_find_1stfragopt(skb, &prevhdr);
+			if (err < 0) {
+				kfree_skb_list(segs);
+				return ERR_PTR(err);
+			}
+			fptr = (struct frag_hdr *)((u8 *)ipv6h + err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			fptr->frag_off = htons(offset);
 			if (skb->next != NULL)
 				fptr->frag_off |= htons(IP6_MF);
@@ -196,6 +211,10 @@ static struct sk_buff **ipv6_gro_receive(struct sk_buff **head,
 	ops = rcu_dereference(inet6_offloads[proto]);
 	if (!ops || !ops->callbacks.gro_receive) {
 		__pskb_pull(skb, skb_gro_offset(skb));
+<<<<<<< HEAD
+=======
+		skb_gro_frag0_invalidate(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		proto = ipv6_gso_pull_exthdrs(skb, proto);
 		skb_gro_pull(skb, -skb_transport_offset(skb));
 		skb_reset_transport_header(skb);
@@ -258,6 +277,22 @@ out:
 	return pp;
 }
 
+<<<<<<< HEAD
+=======
+static struct sk_buff **sit_gro_receive(struct sk_buff **head,
+					struct sk_buff *skb)
+{
+	if (NAPI_GRO_CB(skb)->encap_mark) {
+		NAPI_GRO_CB(skb)->flush = 1;
+		return NULL;
+	}
+
+	NAPI_GRO_CB(skb)->encap_mark = 1;
+
+	return ipv6_gro_receive(head, skb);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
 {
 	const struct net_offload *ops;
@@ -292,7 +327,11 @@ static struct packet_offload ipv6_packet_offload __read_mostly = {
 static const struct net_offload sit_offload = {
 	.callbacks = {
 		.gso_segment	= ipv6_gso_segment,
+<<<<<<< HEAD
 		.gro_receive	= ipv6_gro_receive,
+=======
+		.gro_receive	= sit_gro_receive,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.gro_complete	= ipv6_gro_complete,
 	},
 };

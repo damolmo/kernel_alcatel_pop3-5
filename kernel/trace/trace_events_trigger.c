@@ -121,9 +121,16 @@ static void *trigger_next(struct seq_file *m, void *t, loff_t *pos)
 {
 	struct ftrace_event_file *event_file = event_file_data(m->private);
 
+<<<<<<< HEAD
 	if (t == SHOW_AVAILABLE_TRIGGERS)
 		return NULL;
 
+=======
+	if (t == SHOW_AVAILABLE_TRIGGERS) {
+		(*pos)++;
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return seq_list_next(t, &event_file->triggers, pos);
 }
 
@@ -203,11 +210,25 @@ static int event_trigger_regex_open(struct inode *inode, struct file *file)
 
 static int trigger_process_regex(struct ftrace_event_file *file, char *buff)
 {
+<<<<<<< HEAD
 	char *command, *next = buff;
 	struct event_command *p;
 	int ret = -EINVAL;
 
 	command = strsep(&next, ": \t");
+=======
+	char *command, *next;
+	struct event_command *p;
+	int ret = -EINVAL;
+
+	next = buff = skip_spaces(buff);
+	command = strsep(&next, ": \t");
+	if (next) {
+		next = skip_spaces(next);
+		if (!*next)
+			next = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	command = (command[0] != '!') ? command : command + 1;
 
 	mutex_lock(&trigger_cmd_mutex);
@@ -469,9 +490,16 @@ clear_event_triggers(struct trace_array *tr)
 	struct ftrace_event_file *file;
 
 	list_for_each_entry(file, &tr->events, list) {
+<<<<<<< HEAD
 		struct event_trigger_data *data;
 		list_for_each_entry_rcu(data, &file->triggers, list) {
 			trace_event_trigger_enable_disable(file, 0);
+=======
+		struct event_trigger_data *data, *n;
+		list_for_each_entry_safe(data, n, &file->triggers, list) {
+			trace_event_trigger_enable_disable(file, 0);
+			list_del_rcu(&data->list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (data->ops->free)
 				data->ops->free(data->ops, data);
 		}
@@ -613,8 +641,19 @@ event_trigger_callback(struct event_command *cmd_ops,
 	int ret;
 
 	/* separate the trigger from the filter (t:n [if filter]) */
+<<<<<<< HEAD
 	if (param && isdigit(param[0]))
 		trigger = strsep(&param, " \t");
+=======
+	if (param && isdigit(param[0])) {
+		trigger = strsep(&param, " \t");
+		if (param) {
+			param = skip_spaces(param);
+			if (!*param)
+				param = NULL;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	trigger_ops = cmd_ops->get_trigger_ops(cmd, trigger);
 
@@ -662,6 +701,11 @@ event_trigger_callback(struct event_command *cmd_ops,
 		goto out_free;
 
  out_reg:
+<<<<<<< HEAD
+=======
+	/* Up the trigger_data count to make sure reg doesn't free it on failure */
+	event_trigger_init(trigger_ops, trigger_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = cmd_ops->reg(glob, trigger_ops, trigger_data, file);
 	/*
 	 * The above returns on success the # of functions enabled,
@@ -669,11 +713,21 @@ event_trigger_callback(struct event_command *cmd_ops,
 	 * Consider no functions a failure too.
 	 */
 	if (!ret) {
+<<<<<<< HEAD
 		ret = -ENOENT;
 		goto out_free;
 	} else if (ret < 0)
 		goto out_free;
 	ret = 0;
+=======
+		cmd_ops->unreg(glob, trigger_ops, trigger_data, file);
+		ret = -ENOENT;
+	} else if (ret > 0)
+		ret = 0;
+
+	/* Down the counter of trigger_data or free it if not used anymore */
+	event_trigger_free(trigger_ops, trigger_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  out:
 	return ret;
 
@@ -722,8 +776,15 @@ static int set_trigger_filter(char *filter_str,
 
 	/* The filter is for the 'trigger' event, not the triggered event */
 	ret = create_event_filter(file->event_call, filter_str, false, &filter);
+<<<<<<< HEAD
 	if (ret)
 		goto out;
+=======
+	/*
+	 * If create_event_filter() fails, filter still needs to be freed.
+	 * Which the calling code will do with data->filter.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  assign:
 	tmp = rcu_access_pointer(data->filter);
 
@@ -902,6 +963,7 @@ register_snapshot_trigger(char *glob, struct event_trigger_ops *ops,
 			  struct event_trigger_data *data,
 			  struct ftrace_event_file *file)
 {
+<<<<<<< HEAD
 	int ret = register_trigger(glob, ops, data, file);
 
 	if (ret > 0 && tracing_alloc_snapshot() != 0) {
@@ -910,6 +972,12 @@ register_snapshot_trigger(char *glob, struct event_trigger_ops *ops,
 	}
 
 	return ret;
+=======
+	if (tracing_alloc_snapshot() != 0)
+		return 0;
+
+	return register_trigger(glob, ops, data, file);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
@@ -1181,6 +1249,14 @@ event_enable_trigger_func(struct event_command *cmd_ops,
 	trigger = strsep(&param, " \t");
 	if (!trigger)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (param) {
+		param = skip_spaces(param);
+		if (!*param)
+			param = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	system = strsep(&trigger, ":");
 	if (!trigger)
@@ -1226,6 +1302,12 @@ event_enable_trigger_func(struct event_command *cmd_ops,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Up the trigger_data count to make sure nothing frees it on failure */
+	event_trigger_init(trigger_ops, trigger_data);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (trigger) {
 		number = strsep(&trigger, ":");
 
@@ -1276,6 +1358,10 @@ event_enable_trigger_func(struct event_command *cmd_ops,
 		goto out_disable;
 	/* Just return zero, not the number of enabled functions */
 	ret = 0;
+<<<<<<< HEAD
+=======
+	event_trigger_free(trigger_ops, trigger_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  out:
 	return ret;
 
@@ -1286,7 +1372,11 @@ event_enable_trigger_func(struct event_command *cmd_ops,
  out_free:
 	if (cmd_ops->set_filter)
 		cmd_ops->set_filter(NULL, trigger_data, NULL);
+<<<<<<< HEAD
 	kfree(trigger_data);
+=======
+	event_trigger_free(trigger_ops, trigger_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(enable_data);
 	goto out;
 }

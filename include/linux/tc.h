@@ -84,6 +84,10 @@ struct tc_dev {
 					   device. */
 	struct device	dev;		/* Generic device interface. */
 	struct resource	resource;	/* Address space of this device. */
+<<<<<<< HEAD
+=======
+	u64		dma_mask;	/* DMA addressable range. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char		vendor[9];
 	char		name[9];
 	char		firmware[9];

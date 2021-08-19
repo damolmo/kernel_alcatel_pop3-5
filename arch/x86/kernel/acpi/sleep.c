@@ -16,6 +16,10 @@
 #include <asm/cacheflush.h>
 #include <asm/realmode.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/ftrace.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "../../realmode/rm/wakeup.h"
 #include "sleep.h"
 
@@ -107,7 +111,17 @@ int x86_acpi_suspend_lowlevel(void)
        saved_magic = 0x123456789abcdef0L;
 #endif /* CONFIG_64BIT */
 
+<<<<<<< HEAD
 	do_suspend_lowlevel();
+=======
+	/*
+	 * Pause/unpause graph tracing around do_suspend_lowlevel as it has
+	 * inconsistent call/return info after it jumps to the wakeup vector.
+	 */
+	pause_graph_tracing();
+	do_suspend_lowlevel();
+	unpause_graph_tracing();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

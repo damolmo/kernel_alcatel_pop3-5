@@ -944,11 +944,14 @@ static long do_get_mempolicy(int *policy, nodemask_t *nmask,
 		*policy |= (pol->flags & MPOL_MODE_FLAGS);
 	}
 
+<<<<<<< HEAD
 	if (vma) {
 		up_read(&current->mm->mmap_sem);
 		vma = NULL;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = 0;
 	if (nmask) {
 		if (mpol_store_user_nodemask(pol)) {
@@ -1291,6 +1294,10 @@ static int get_nodes(nodemask_t *nodes, const unsigned long __user *nmask,
 		     unsigned long maxnode)
 {
 	unsigned long k;
+<<<<<<< HEAD
+=======
+	unsigned long t;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long nlongs;
 	unsigned long endmask;
 
@@ -1307,13 +1314,28 @@ static int get_nodes(nodemask_t *nodes, const unsigned long __user *nmask,
 	else
 		endmask = (1UL << (maxnode % BITS_PER_LONG)) - 1;
 
+<<<<<<< HEAD
 	/* When the user specified more nodes than supported just check
 	   if the non supported part is all zero. */
+=======
+	/*
+	 * When the user specified more nodes than supported just check
+	 * if the non supported part is all zero.
+	 *
+	 * If maxnode have more longs than MAX_NUMNODES, check
+	 * the bits in that area first. And then go through to
+	 * check the rest bits which equal or bigger than MAX_NUMNODES.
+	 * Otherwise, just check bits [MAX_NUMNODES, maxnode).
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (nlongs > BITS_TO_LONGS(MAX_NUMNODES)) {
 		if (nlongs > PAGE_SIZE/sizeof(long))
 			return -EINVAL;
 		for (k = BITS_TO_LONGS(MAX_NUMNODES); k < nlongs; k++) {
+<<<<<<< HEAD
 			unsigned long t;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (get_user(t, nmask + k))
 				return -EFAULT;
 			if (k == nlongs - 1) {
@@ -1326,6 +1348,19 @@ static int get_nodes(nodemask_t *nodes, const unsigned long __user *nmask,
 		endmask = ~0UL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (maxnode > MAX_NUMNODES && MAX_NUMNODES % BITS_PER_LONG != 0) {
+		unsigned long valid_mask = endmask;
+
+		valid_mask &= ~((1UL << (MAX_NUMNODES % BITS_PER_LONG)) - 1);
+		if (get_user(t, nmask + nlongs - 1))
+			return -EFAULT;
+		if (t & valid_mask)
+			return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (copy_from_user(nodes_addr(*nodes), nmask, nlongs*sizeof(unsigned long)))
 		return -EFAULT;
 	nodes_addr(*nodes)[nlongs-1] &= endmask;
@@ -1337,7 +1372,11 @@ static int copy_nodes_to_user(unsigned long __user *mask, unsigned long maxnode,
 			      nodemask_t *nodes)
 {
 	unsigned long copy = ALIGN(maxnode-1, 64) / 8;
+<<<<<<< HEAD
 	const int nbytes = BITS_TO_LONGS(MAX_NUMNODES) * sizeof(long);
+=======
+	unsigned int nbytes = BITS_TO_LONGS(nr_node_ids) * sizeof(long);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (copy > nbytes) {
 		if (copy > PAGE_SIZE)
@@ -1452,10 +1491,21 @@ SYSCALL_DEFINE4(migrate_pages, pid_t, pid, unsigned long, maxnode,
 		goto out_put;
 	}
 
+<<<<<<< HEAD
 	if (!nodes_subset(*new, node_states[N_MEMORY])) {
 		err = -EINVAL;
 		goto out_put;
 	}
+=======
+	task_nodes = cpuset_mems_allowed(current);
+	nodes_and(*new, *new, task_nodes);
+	if (nodes_empty(*new))
+		goto out_put;
+
+	nodes_and(*new, *new, node_states[N_MEMORY]);
+	if (nodes_empty(*new))
+		goto out_put;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = security_task_movememory(task);
 	if (err)
@@ -1494,7 +1544,11 @@ SYSCALL_DEFINE5(get_mempolicy, int __user *, policy,
 	int uninitialized_var(pval);
 	nodemask_t nodes;
 
+<<<<<<< HEAD
 	if (nmask != NULL && maxnode < MAX_NUMNODES)
+=======
+	if (nmask != NULL && maxnode < nr_node_ids)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	err = do_get_mempolicy(&pval, &nodes, addr, flags);
@@ -1523,7 +1577,11 @@ COMPAT_SYSCALL_DEFINE5(get_mempolicy, int __user *, policy,
 	unsigned long nr_bits, alloc_size;
 	DECLARE_BITMAP(bm, MAX_NUMNODES);
 
+<<<<<<< HEAD
 	nr_bits = min_t(unsigned long, maxnode-1, MAX_NUMNODES);
+=======
+	nr_bits = min_t(unsigned long, maxnode-1, nr_node_ids);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alloc_size = ALIGN(nr_bits, BITS_PER_LONG) / 8;
 
 	if (nmask)
@@ -1546,7 +1604,10 @@ COMPAT_SYSCALL_DEFINE5(get_mempolicy, int __user *, policy,
 COMPAT_SYSCALL_DEFINE3(set_mempolicy, int, mode, compat_ulong_t __user *, nmask,
 		       compat_ulong_t, maxnode)
 {
+<<<<<<< HEAD
 	long err = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long __user *nm = NULL;
 	unsigned long nr_bits, alloc_size;
 	DECLARE_BITMAP(bm, MAX_NUMNODES);
@@ -1555,6 +1616,7 @@ COMPAT_SYSCALL_DEFINE3(set_mempolicy, int, mode, compat_ulong_t __user *, nmask,
 	alloc_size = ALIGN(nr_bits, BITS_PER_LONG) / 8;
 
 	if (nmask) {
+<<<<<<< HEAD
 		err = compat_get_bitmap(bm, nmask, nr_bits);
 		nm = compat_alloc_user_space(alloc_size);
 		err |= copy_to_user(nm, bm, alloc_size);
@@ -1563,6 +1625,15 @@ COMPAT_SYSCALL_DEFINE3(set_mempolicy, int, mode, compat_ulong_t __user *, nmask,
 	if (err)
 		return -EFAULT;
 
+=======
+		if (compat_get_bitmap(bm, nmask, nr_bits))
+			return -EFAULT;
+		nm = compat_alloc_user_space(alloc_size);
+		if (copy_to_user(nm, bm, alloc_size))
+			return -EFAULT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return sys_set_mempolicy(mode, nm, nr_bits+1);
 }
 
@@ -1570,7 +1641,10 @@ COMPAT_SYSCALL_DEFINE6(mbind, compat_ulong_t, start, compat_ulong_t, len,
 		       compat_ulong_t, mode, compat_ulong_t __user *, nmask,
 		       compat_ulong_t, maxnode, compat_ulong_t, flags)
 {
+<<<<<<< HEAD
 	long err = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long __user *nm = NULL;
 	unsigned long nr_bits, alloc_size;
 	nodemask_t bm;
@@ -1579,6 +1653,7 @@ COMPAT_SYSCALL_DEFINE6(mbind, compat_ulong_t, start, compat_ulong_t, len,
 	alloc_size = ALIGN(nr_bits, BITS_PER_LONG) / 8;
 
 	if (nmask) {
+<<<<<<< HEAD
 		err = compat_get_bitmap(nodes_addr(bm), nmask, nr_bits);
 		nm = compat_alloc_user_space(alloc_size);
 		err |= copy_to_user(nm, nodes_addr(bm), alloc_size);
@@ -1587,6 +1662,15 @@ COMPAT_SYSCALL_DEFINE6(mbind, compat_ulong_t, start, compat_ulong_t, len,
 	if (err)
 		return -EFAULT;
 
+=======
+		if (compat_get_bitmap(nodes_addr(bm), nmask, nr_bits))
+			return -EFAULT;
+		nm = compat_alloc_user_space(alloc_size);
+		if (copy_to_user(nm, nodes_addr(bm), alloc_size))
+			return -EFAULT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return sys_mbind(start, len, mode, nm, nr_bits+1, flags);
 }
 
@@ -2157,6 +2241,12 @@ bool __mpol_equal(struct mempolicy *a, struct mempolicy *b)
 	case MPOL_INTERLEAVE:
 		return !!nodes_equal(a->v.nodes, b->v.nodes);
 	case MPOL_PREFERRED:
+<<<<<<< HEAD
+=======
+		/* a's ->flags is the same as b's */
+		if (a->flags & MPOL_F_LOCAL)
+			return true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return a->v.preferred_node == b->v.preferred_node;
 	default:
 		BUG();
@@ -2681,6 +2771,12 @@ int mpol_parse_str(char *str, struct mempolicy **mpol)
 	char *flags = strchr(str, '=');
 	int err = 1;
 
+<<<<<<< HEAD
+=======
+	if (flags)
+		*flags++ = '\0';	/* terminate mode string */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (nodelist) {
 		/* NUL-terminate mode or flags string */
 		*nodelist++ = '\0';
@@ -2691,9 +2787,12 @@ int mpol_parse_str(char *str, struct mempolicy **mpol)
 	} else
 		nodes_clear(nodes);
 
+<<<<<<< HEAD
 	if (flags)
 		*flags++ = '\0';	/* terminate mode string */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (mode = 0; mode < MPOL_MAX; mode++) {
 		if (!strcmp(str, policy_modes[mode])) {
 			break;
@@ -2705,7 +2804,13 @@ int mpol_parse_str(char *str, struct mempolicy **mpol)
 	switch (mode) {
 	case MPOL_PREFERRED:
 		/*
+<<<<<<< HEAD
 		 * Insist on a nodelist of one node only
+=======
+		 * Insist on a nodelist of one node only, although later
+		 * we use first_node(nodes) to grab a single node, so here
+		 * nodelist (or nodes) cannot be empty.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		if (nodelist) {
 			char *rest = nodelist;
@@ -2713,6 +2818,11 @@ int mpol_parse_str(char *str, struct mempolicy **mpol)
 				rest++;
 			if (*rest)
 				goto out;
+<<<<<<< HEAD
+=======
+			if (nodes_empty(nodes))
+				goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		break;
 	case MPOL_INTERLEAVE:

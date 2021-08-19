@@ -515,7 +515,11 @@ static struct pci_platform_pm_ops acpi_pci_platform_pm = {
 
 void acpi_pci_add_bus(struct pci_bus *bus)
 {
+<<<<<<< HEAD
 	if (acpi_pci_disabled || !bus->bridge)
+=======
+	if (acpi_pci_disabled || !bus->bridge || !ACPI_HANDLE(bus->bridge))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	acpi_pci_slot_enumerate(bus);

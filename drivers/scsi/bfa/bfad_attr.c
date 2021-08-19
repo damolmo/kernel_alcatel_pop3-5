@@ -282,8 +282,15 @@ bfad_im_get_stats(struct Scsi_Host *shost)
 	rc = bfa_port_get_stats(BFA_FCPORT(&bfad->bfa),
 				fcstats, bfad_hcb_comp, &fcomp);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+<<<<<<< HEAD
 	if (rc != BFA_STATUS_OK)
 		return NULL;
+=======
+	if (rc != BFA_STATUS_OK) {
+		kfree(fcstats);
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	wait_for_completion(&fcomp.comp);
 
@@ -842,7 +849,11 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
 	char symname[BFA_SYMNAME_MAXLEN];
 
 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
+<<<<<<< HEAD
 	strncpy(symname, port_attr.port_cfg.sym_name.symname,
+=======
+	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			BFA_SYMNAME_MAXLEN);
 	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
 }

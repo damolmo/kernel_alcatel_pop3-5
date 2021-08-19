@@ -59,7 +59,11 @@ static inline acpi_handle acpi_device_handle(struct acpi_device *adev)
 static inline void acpi_preset_companion(struct device *dev,
 					 struct acpi_device *parent, u64 addr)
 {
+<<<<<<< HEAD
 	ACPI_COMPANION_SET(dev, acpi_find_child_device(parent, addr, NULL));
+=======
+	ACPI_COMPANION_SET(dev, acpi_find_child_device(parent, addr, false));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline const char *acpi_dev_name(struct acpi_device *adev)
@@ -163,7 +167,14 @@ int acpi_isa_irq_to_gsi (unsigned isa_irq, u32 *gsi);
 #ifdef CONFIG_X86_IO_APIC
 extern int acpi_get_override_irq(u32 gsi, int *trigger, int *polarity);
 #else
+<<<<<<< HEAD
 #define acpi_get_override_irq(gsi, trigger, polarity) (-1)
+=======
+static inline int acpi_get_override_irq(u32 gsi, int *trigger, int *polarity)
+{
+	return -1;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 /*
  * This function undoes the effect of one call to acpi_register_gsi().
@@ -415,6 +426,10 @@ extern acpi_status acpi_pci_osc_control_set(acpi_handle handle,
 #define ACPI_OST_SC_INSERT_NOT_SUPPORTED	0x82
 
 extern void acpi_early_init(void);
+<<<<<<< HEAD
+=======
+extern void acpi_subsystem_init(void);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern int acpi_nvs_register(__u64 start, __u64 size);
 
@@ -450,6 +465,10 @@ static inline const char *acpi_dev_name(struct acpi_device *adev)
 }
 
 static inline void acpi_early_init(void) { }
+<<<<<<< HEAD
+=======
+static inline void acpi_subsystem_init(void) { }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline int early_acpi_boot_init(void)
 {

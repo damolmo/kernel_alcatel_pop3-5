@@ -45,10 +45,16 @@ struct can_proto {
 extern int  can_proto_register(const struct can_proto *cp);
 extern void can_proto_unregister(const struct can_proto *cp);
 
+<<<<<<< HEAD
 extern int  can_rx_register(struct net_device *dev, canid_t can_id,
 			    canid_t mask,
 			    void (*func)(struct sk_buff *, void *),
 			    void *data, char *ident);
+=======
+int can_rx_register(struct net_device *dev, canid_t can_id, canid_t mask,
+		    void (*func)(struct sk_buff *, void *),
+		    void *data, char *ident, struct sock *sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern void can_rx_unregister(struct net_device *dev, canid_t can_id,
 			      canid_t mask,

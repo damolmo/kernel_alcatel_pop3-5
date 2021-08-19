@@ -329,10 +329,17 @@ int ip6_mc_input(struct sk_buff *skb)
 				if (offset < 0)
 					goto out;
 
+<<<<<<< HEAD
 				if (!ipv6_is_mld(skb, nexthdr, offset))
 					goto out;
 
 				deliver = true;
+=======
+				if (ipv6_is_mld(skb, nexthdr, offset))
+					deliver = true;
+
+				goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			/* unknown RA - process it normally */
 		}

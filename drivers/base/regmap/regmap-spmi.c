@@ -153,7 +153,11 @@ static int regmap_spmi_ext_read(void *context,
 	while (val_size) {
 		len = min_t(size_t, val_size, 8);
 
+<<<<<<< HEAD
 		err = spmi_ext_register_readl(context, addr, val, val_size);
+=======
+		err = spmi_ext_register_readl(context, addr, val, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err)
 			goto err_out;
 

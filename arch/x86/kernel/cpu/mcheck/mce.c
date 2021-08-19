@@ -56,6 +56,12 @@ static DEFINE_MUTEX(mce_chrdev_read_mutex);
 			      rcu_read_lock_sched_held() || \
 			      lockdep_is_held(&mce_chrdev_read_mutex))
 
+<<<<<<< HEAD
+=======
+/* sysfs synchronization */
+static DEFINE_MUTEX(mce_sysfs_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CREATE_TRACE_POINTS
 #include <trace/events/mce.h>
 
@@ -672,6 +678,10 @@ static int mce_no_way_out(struct mce *m, char **msg, unsigned long *validp,
 		}
 
 		if (mce_severity(m, mca_cfg.tolerant, &tmp, true) >= MCE_PANIC_SEVERITY) {
+<<<<<<< HEAD
+=======
+			m->bank = i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*msg = tmp;
 			ret = 1;
 		}
@@ -2183,6 +2193,10 @@ static ssize_t set_ignore_ce(struct device *s,
 	if (kstrtou64(buf, 0, &new) < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&mce_sysfs_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (mca_cfg.ignore_ce ^ !!new) {
 		if (new) {
 			/* disable ce features */
@@ -2195,6 +2209,11 @@ static ssize_t set_ignore_ce(struct device *s,
 			on_each_cpu(mce_enable_ce, (void *)1, 1);
 		}
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&mce_sysfs_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return size;
 }
 
@@ -2207,6 +2226,10 @@ static ssize_t set_cmci_disabled(struct device *s,
 	if (kstrtou64(buf, 0, &new) < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&mce_sysfs_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (mca_cfg.cmci_disabled ^ !!new) {
 		if (new) {
 			/* disable cmci */
@@ -2218,6 +2241,11 @@ static ssize_t set_cmci_disabled(struct device *s,
 			on_each_cpu(mce_enable_ce, NULL, 1);
 		}
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&mce_sysfs_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return size;
 }
 
@@ -2225,8 +2253,21 @@ static ssize_t store_int_with_restart(struct device *s,
 				      struct device_attribute *attr,
 				      const char *buf, size_t size)
 {
+<<<<<<< HEAD
 	ssize_t ret = device_store_int(s, attr, buf, size);
 	mce_restart();
+=======
+	unsigned long old_check_interval = check_interval;
+	ssize_t ret = device_store_ulong(s, attr, buf, size);
+
+	if (check_interval == old_check_interval)
+		return ret;
+
+	mutex_lock(&mce_sysfs_mutex);
+	mce_restart();
+	mutex_unlock(&mce_sysfs_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

@@ -453,6 +453,15 @@ static int is_leaf(char *buf, int blocksize, struct buffer_head *bh)
 					 "(second one): %h", ih);
 			return 0;
 		}
+<<<<<<< HEAD
+=======
+		if (is_direntry_le_ih(ih) && (ih_item_len(ih) < (ih_entry_count(ih) * IH_SIZE))) {
+			reiserfs_warning(NULL, "reiserfs-5093",
+					 "item entry count seems wrong %h",
+					 ih);
+			return 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		prev_location = ih_location(ih);
 	}
 
@@ -2249,7 +2258,12 @@ error_out:
 	/* also releases the path */
 	unfix_nodes(&s_ins_balance);
 #ifdef REISERQUOTA_DEBUG
+<<<<<<< HEAD
 	reiserfs_debug(th->t_super, REISERFS_DEBUG_CODE,
+=======
+	if (inode)
+		reiserfs_debug(th->t_super, REISERFS_DEBUG_CODE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		       "reiserquota insert_item(): freeing %u id=%u type=%c",
 		       quota_bytes, inode->i_uid, head2type(ih));
 #endif

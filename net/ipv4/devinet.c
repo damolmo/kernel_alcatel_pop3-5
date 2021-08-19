@@ -59,7 +59,10 @@
 
 #include <net/arp.h>
 #include <net/ip.h>
+<<<<<<< HEAD
 #include <net/tcp.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <net/route.h>
 #include <net/ip_fib.h>
 #include <net/rtnetlink.h>
@@ -258,6 +261,10 @@ static struct in_device *inetdev_init(struct net_device *dev)
 	err = devinet_sysctl_register(in_dev);
 	if (err) {
 		in_dev->dead = 1;
+<<<<<<< HEAD
+=======
+		neigh_parms_release(&arp_tbl, in_dev->arp_parms);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		in_dev_put(in_dev);
 		in_dev = NULL;
 		goto out;
@@ -335,6 +342,12 @@ static void __inet_del_ifa(struct in_device *in_dev, struct in_ifaddr **ifap,
 
 	ASSERT_RTNL();
 
+<<<<<<< HEAD
+=======
+	if (in_dev->dead)
+		goto no_promotions;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* 1. Deleting primary ifaddr forces deletion all secondaries
 	 * unless alias promotion is set
 	 **/
@@ -381,6 +394,10 @@ static void __inet_del_ifa(struct in_device *in_dev, struct in_ifaddr **ifap,
 			fib_del_ifaddr(ifa, ifa1);
 	}
 
+<<<<<<< HEAD
+=======
+no_promotions:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* 2. Unlink it */
 
 	*ifap = ifa1->ifa_next;
@@ -935,7 +952,10 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	case SIOCSIFBRDADDR:	/* Set the broadcast address */
 	case SIOCSIFDSTADDR:	/* Set the destination address */
 	case SIOCSIFNETMASK: 	/* Set the netmask for the interface */
+<<<<<<< HEAD
 	case SIOCKILLADDR:	/* Nuke all sockets on this address */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -EPERM;
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			goto out;
@@ -987,8 +1007,12 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	}
 
 	ret = -EADDRNOTAVAIL;
+<<<<<<< HEAD
 	if (!ifa && cmd != SIOCSIFADDR && cmd != SIOCSIFFLAGS
 	    && cmd != SIOCKILLADDR)
+=======
+	if (!ifa && cmd != SIOCSIFADDR && cmd != SIOCSIFFLAGS)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto done;
 
 	switch (cmd) {
@@ -1115,9 +1139,12 @@ int devinet_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 			inet_insert_ifa(ifa);
 		}
 		break;
+<<<<<<< HEAD
 	case SIOCKILLADDR:	/* Nuke all connections on this address */
 		ret = tcp_nuke_addr(net, (struct sockaddr *) sin);
 		break;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 done:
 	rtnl_unlock();
@@ -1328,11 +1355,14 @@ skip:
 	}
 }
 
+<<<<<<< HEAD
 static bool inetdev_valid_mtu(unsigned int mtu)
 {
 	return mtu >= 68;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void inetdev_send_gratuitous_arp(struct net_device *dev,
 					struct in_device *in_dev)
 
@@ -1768,7 +1798,11 @@ void inet_netconf_notify_devconf(struct net *net, int type, int ifindex,
 	struct sk_buff *skb;
 	int err = -ENOBUFS;
 
+<<<<<<< HEAD
 	skb = nlmsg_new(inet_netconf_msgsize_devconf(type), GFP_ATOMIC);
+=======
+	skb = nlmsg_new(inet_netconf_msgsize_devconf(type), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (skb == NULL)
 		goto errout;
 
@@ -1780,7 +1814,11 @@ void inet_netconf_notify_devconf(struct net *net, int type, int ifindex,
 		kfree_skb(skb);
 		goto errout;
 	}
+<<<<<<< HEAD
 	rtnl_notify(skb, net, 0, RTNLGRP_IPV4_NETCONF, NULL, GFP_ATOMIC);
+=======
+	rtnl_notify(skb, net, 0, RTNLGRP_IPV4_NETCONF, NULL, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return;
 errout:
 	if (err < 0)
@@ -1812,7 +1850,11 @@ static int inet_netconf_get_devconf(struct sk_buff *in_skb,
 	if (err < 0)
 		goto errout;
 
+<<<<<<< HEAD
 	err = EINVAL;
+=======
+	err = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!tb[NETCONFA_IFINDEX])
 		goto errout;
 
@@ -1836,7 +1878,11 @@ static int inet_netconf_get_devconf(struct sk_buff *in_skb,
 	}
 
 	err = -ENOBUFS;
+<<<<<<< HEAD
 	skb = nlmsg_new(inet_netconf_msgsize_devconf(-1), GFP_ATOMIC);
+=======
+	skb = nlmsg_new(inet_netconf_msgsize_devconf(-1), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (skb == NULL)
 		goto errout;
 
@@ -1960,16 +2006,27 @@ static void inet_forward_change(struct net *net)
 
 	for_each_netdev(net, dev) {
 		struct in_device *in_dev;
+<<<<<<< HEAD
 		if (on)
 			dev_disable_lro(dev);
 		rcu_read_lock();
 		in_dev = __in_dev_get_rcu(dev);
+=======
+
+		if (on)
+			dev_disable_lro(dev);
+
+		in_dev = __in_dev_get_rtnl(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (in_dev) {
 			IN_DEV_CONF_SET(in_dev, FORWARDING, on);
 			inet_netconf_notify_devconf(net, NETCONFA_FORWARDING,
 						    dev->ifindex, &in_dev->cnf);
 		}
+<<<<<<< HEAD
 		rcu_read_unlock();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

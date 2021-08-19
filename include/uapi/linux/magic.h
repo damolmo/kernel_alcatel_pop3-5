@@ -52,12 +52,22 @@
 #define REISER2FS_SUPER_MAGIC_STRING	"ReIsEr2Fs"
 #define REISER2FS_JR_SUPER_MAGIC_STRING	"ReIsEr3Fs"
 
+<<<<<<< HEAD
+=======
+#define SDCARDFS_SUPER_MAGIC	0x5dca2df5
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SMB_SUPER_MAGIC		0x517B
 #define CGROUP_SUPER_MAGIC	0x27e0eb
 
 
 #define STACK_END_MAGIC		0x57AC6E9D
 
+<<<<<<< HEAD
+=======
+#define TRACEFS_MAGIC          0x74726163
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define V9FS_MAGIC		0x01021997
 
 #define BDEVFS_MAGIC            0x62646576

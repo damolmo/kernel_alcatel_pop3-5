@@ -364,8 +364,13 @@ cfs_wi_sched_create(char *name, struct cfs_cpt_table *cptab,
 	if (sched == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	strncpy(sched->ws_name, name, CFS_WS_NAME_LEN);
 	sched->ws_name[CFS_WS_NAME_LEN - 1] = '\0';
+=======
+	strlcpy(sched->ws_name, name, CFS_WS_NAME_LEN);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sched->ws_cptab = cptab;
 	sched->ws_cpt = cpt;
 

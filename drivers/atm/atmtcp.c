@@ -432,9 +432,21 @@ static int atmtcp_remove_persistent(int itf)
 		return -EMEDIUMTYPE;
 	}
 	dev_data = PRIV(dev);
+<<<<<<< HEAD
 	if (!dev_data->persist) return 0;
 	dev_data->persist = 0;
 	if (PRIV(dev)->vcc) return 0;
+=======
+	if (!dev_data->persist) {
+		atm_dev_put(dev);
+		return 0;
+	}
+	dev_data->persist = 0;
+	if (PRIV(dev)->vcc) {
+		atm_dev_put(dev);
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(dev_data);
 	atm_dev_put(dev);
 	atm_dev_deregister(dev);

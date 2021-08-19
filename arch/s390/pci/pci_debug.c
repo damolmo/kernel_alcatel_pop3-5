@@ -31,12 +31,32 @@ static char *pci_perf_names[] = {
 	"Refresh operations",
 	"DMA read bytes",
 	"DMA write bytes",
+<<<<<<< HEAD
 	/* software counters */
+=======
+};
+
+static char *pci_sw_names[] = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	"Allocated pages",
 	"Mapped pages",
 	"Unmapped pages",
 };
 
+<<<<<<< HEAD
+=======
+static void pci_sw_counter_show(struct seq_file *m)
+{
+	struct zpci_dev *zdev = m->private;
+	atomic64_t *counter = &zdev->allocated_pages;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(pci_sw_names); i++, counter++)
+		seq_printf(m, "%26s:\t%llu\n", pci_sw_names[i],
+			   atomic64_read(counter));
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int pci_perf_show(struct seq_file *m, void *v)
 {
 	struct zpci_dev *zdev = m->private;
@@ -63,12 +83,17 @@ static int pci_perf_show(struct seq_file *m, void *v)
 		for (i = 4; i < 6; i++)
 			seq_printf(m, "%26s:\t%llu\n",
 				   pci_perf_names[i], *(stat + i));
+<<<<<<< HEAD
 	/* software counters */
 	for (i = 6; i < ARRAY_SIZE(pci_perf_names); i++)
 		seq_printf(m, "%26s:\t%llu\n",
 			   pci_perf_names[i],
 			   atomic64_read((atomic64_t *) (stat + i)));
 
+=======
+
+	pci_sw_counter_show(m);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

@@ -82,6 +82,13 @@ static void release_slot(struct hotplug_slot *hotplug_slot)
 	ctrl_dbg(slot->ctrl, "%s: physical_slot = %s\n",
 		 __func__, hotplug_slot_name(hotplug_slot));
 
+<<<<<<< HEAD
+=======
+	/* queued work needs hotplug_slot name */
+	cancel_delayed_work(&slot->work);
+	drain_workqueue(slot->wq);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(hotplug_slot->ops);
 	kfree(hotplug_slot->info);
 	kfree(hotplug_slot);
@@ -313,6 +320,10 @@ static void pciehp_remove(struct pcie_device *dev)
 {
 	struct controller *ctrl = get_service_data(dev);
 
+<<<<<<< HEAD
+=======
+	pcie_shutdown_notification(ctrl);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cleanup_slot(ctrl);
 	pciehp_release_ctrl(ctrl);
 }
@@ -332,7 +343,11 @@ static int pciehp_resume(struct pcie_device *dev)
 	ctrl = get_service_data(dev);
 
 	/* reinitialize the chipset's event detection logic */
+<<<<<<< HEAD
 	pcie_enable_notification(ctrl);
+=======
+	pcie_reenable_notification(ctrl);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	slot = ctrl->slot;
 

@@ -553,7 +553,11 @@ static int sunxi_pinctrl_irq_request_resources(struct irq_data *d)
 	if (!func)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = gpio_lock_as_irq(pctl->chip,
+=======
+	ret = gpiochip_lock_as_irq(pctl->chip,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pctl->irq_array[d->hwirq] - pctl->desc->pin_base);
 	if (ret) {
 		dev_err(pctl->dev, "unable to lock HW IRQ %lu for IRQ\n",
@@ -571,8 +575,13 @@ static void sunxi_pinctrl_irq_release_resources(struct irq_data *d)
 {
 	struct sunxi_pinctrl *pctl = irq_data_get_irq_chip_data(d);
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(pctl->chip,
 			   pctl->irq_array[d->hwirq] - pctl->desc->pin_base);
+=======
+	gpiochip_unlock_as_irq(pctl->chip,
+			      pctl->irq_array[d->hwirq] - pctl->desc->pin_base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int sunxi_pinctrl_irq_set_type(struct irq_data *d, unsigned int type)

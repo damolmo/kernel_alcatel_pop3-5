@@ -102,6 +102,10 @@ void ax25_ds_heartbeat_expiry(ax25_cb *ax25)
 	switch (ax25->state) {
 
 	case AX25_STATE_0:
+<<<<<<< HEAD
+=======
+	case AX25_STATE_2:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Magic here: If we listen() and a new link dies before it
 		   is accepted() it isn't 'dead' so doesn't get removed. */
 		if (!sk || sock_flag(sk, SOCK_DESTROY) ||
@@ -111,6 +115,10 @@ void ax25_ds_heartbeat_expiry(ax25_cb *ax25)
 				sock_hold(sk);
 				ax25_destroy_socket(ax25);
 				bh_unlock_sock(sk);
+<<<<<<< HEAD
+=======
+				/* Ungrab socket and destroy it */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sock_put(sk);
 			} else
 				ax25_destroy_socket(ax25);
@@ -213,7 +221,12 @@ void ax25_ds_t1_timeout(ax25_cb *ax25)
 	case AX25_STATE_2:
 		if (ax25->n2count == ax25->n2) {
 			ax25_send_control(ax25, AX25_DISC, AX25_POLLON, AX25_COMMAND);
+<<<<<<< HEAD
 			ax25_disconnect(ax25, ETIMEDOUT);
+=======
+			if (!sock_flag(ax25->sk, SOCK_DESTROY))
+				ax25_disconnect(ax25, ETIMEDOUT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return;
 		} else {
 			ax25->n2count++;

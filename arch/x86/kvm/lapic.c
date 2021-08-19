@@ -55,7 +55,11 @@
 #define APIC_BUS_CYCLE_NS 1
 
 /* #define apic_debug(fmt,arg...) printk(KERN_WARNING fmt,##arg) */
+<<<<<<< HEAD
 #define apic_debug(fmt, arg...)
+=======
+#define apic_debug(fmt, arg...) do {} while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define APIC_LVT_NUM			6
 /* 14 is the version for Xeon and Pentium 8.4.8*/
@@ -268,8 +272,21 @@ void kvm_apic_set_version(struct kvm_vcpu *vcpu)
 	if (!kvm_vcpu_has_lapic(vcpu))
 		return;
 
+<<<<<<< HEAD
 	feat = kvm_find_cpuid_entry(apic->vcpu, 0x1, 0);
 	if (feat && (feat->ecx & (1 << (X86_FEATURE_X2APIC & 31))))
+=======
+	/*
+	 * KVM emulates 82093AA datasheet (with in-kernel IOAPIC implementation)
+	 * which doesn't have EOI register; Some buggy OSes (e.g. Windows with
+	 * Hyper-V role) disable EOI broadcast in lapic not checking for IOAPIC
+	 * version first and level-triggered interrupts never get EOIed in
+	 * IOAPIC.
+	 */
+	feat = kvm_find_cpuid_entry(apic->vcpu, 0x1, 0);
+	if (feat && (feat->ecx & (1 << (X86_FEATURE_X2APIC & 31))) &&
+	    !ioapic_in_kernel(vcpu->kvm))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		v |= APIC_LVR_DIRECTED_EOI;
 	apic_set_reg(apic, APIC_LVR, v);
 }
@@ -492,9 +509,17 @@ static inline bool pv_eoi_enabled(struct kvm_vcpu *vcpu)
 static bool pv_eoi_get_pending(struct kvm_vcpu *vcpu)
 {
 	u8 val;
+<<<<<<< HEAD
 	if (pv_eoi_get_user(vcpu, &val) < 0)
 		apic_debug("Can't read EOI MSR value: 0x%llx\n",
 			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
+=======
+	if (pv_eoi_get_user(vcpu, &val) < 0) {
+		apic_debug("Can't read EOI MSR value: 0x%llx\n",
+			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
+		return false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return val & 0x1;
 }
 
@@ -1943,3 +1968,12 @@ void kvm_lapic_init(void)
 	jump_label_rate_limit(&apic_hw_disabled, HZ);
 	jump_label_rate_limit(&apic_sw_disabled, HZ);
 }
+<<<<<<< HEAD
+=======
+
+void kvm_lapic_exit(void)
+{
+	static_key_deferred_flush(&apic_hw_disabled);
+	static_key_deferred_flush(&apic_sw_disabled);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

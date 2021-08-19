@@ -22,11 +22,18 @@
 #include <linux/errno.h>
 #include <linux/skbuff.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/jhash.h>
 #include <net/ip.h>
 #include <net/pkt_sched.h>
 #include <net/inet_ecn.h>
 #include <net/flow_keys.h>
+=======
+#include <linux/siphash.h>
+#include <net/ip.h>
+#include <net/pkt_sched.h>
+#include <net/inet_ecn.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * SFB uses two B[l][n] : L x N arrays of bins (L levels, N bins per level)
@@ -49,7 +56,11 @@ struct sfb_bucket {
  * (Section 4.4 of SFB reference : moving hash functions)
  */
 struct sfb_bins {
+<<<<<<< HEAD
 	u32		  perturbation; /* jhash perturbation */
+=======
+	siphash_key_t	  perturbation; /* siphash key */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct sfb_bucket bins[SFB_LEVELS][SFB_NUMBUCKETS];
 };
 
@@ -220,7 +231,12 @@ static u32 sfb_compute_qlen(u32 *prob_r, u32 *avgpm_r, const struct sfb_sched_da
 
 static void sfb_init_perturbation(u32 slot, struct sfb_sched_data *q)
 {
+<<<<<<< HEAD
 	q->bins[slot].perturbation = prandom_u32();
+=======
+	get_random_bytes(&q->bins[slot].perturbation,
+			 sizeof(q->bins[slot].perturbation));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void sfb_swap_slot(struct sfb_sched_data *q)
@@ -285,9 +301,15 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	int i;
 	u32 p_min = ~0;
 	u32 minqlen = ~0;
+<<<<<<< HEAD
 	u32 r, slot, salt, sfbhash;
 	int ret = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
 	struct flow_keys keys;
+=======
+	u32 r, sfbhash;
+	u32 slot = q->slot;
+	int ret = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(sch->q.qlen >= q->limit)) {
 		qdisc_qstats_overlimit(sch);
@@ -309,6 +331,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 
 	fl = rcu_dereference_bh(q->filter_list);
 	if (fl) {
+<<<<<<< HEAD
 		/* If using external classifiers, get result and record it. */
 		if (!sfb_classify(skb, fl, &ret, &salt))
 			goto other_drop;
@@ -325,6 +348,19 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 			       (__force u32)keys.src,
 			       (__force u32)keys.ports,
 			       q->bins[slot].perturbation);
+=======
+		u32 salt;
+
+		/* If using external classifiers, get result and record it. */
+		if (!sfb_classify(skb, fl, &ret, &salt))
+			goto other_drop;
+		sfbhash = siphash_1u32(salt, &q->bins[slot].perturbation);
+	} else {
+		sfbhash = skb_get_hash_perturb(skb, &q->bins[slot].perturbation);
+	}
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!sfbhash)
 		sfbhash = 1;
 	sfb_skb_cb(skb)->hashes[slot] = sfbhash;
@@ -356,10 +392,15 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (unlikely(p_min >= SFB_MAX_PROB)) {
 		/* Inelastic flow */
 		if (q->double_buffering) {
+<<<<<<< HEAD
 			sfbhash = jhash_3words((__force u32)keys.dst,
 					       (__force u32)keys.src,
 					       (__force u32)keys.ports,
 					       q->bins[slot].perturbation);
+=======
+			sfbhash = skb_get_hash_perturb(skb,
+			    &q->bins[slot].perturbation);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!sfbhash)
 				sfbhash = 1;
 			sfb_skb_cb(skb)->hashes[slot] = sfbhash;
@@ -407,6 +448,10 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 enqueue:
 	ret = qdisc_enqueue(skb, child);
 	if (likely(ret == NET_XMIT_SUCCESS)) {
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen++;
 		increment_qlen(skb, q);
 	} else if (net_xmit_drop_count(ret)) {
@@ -435,6 +480,10 @@ static struct sk_buff *sfb_dequeue(struct Qdisc *sch)
 
 	if (skb) {
 		qdisc_bstats_update(sch, skb);
+<<<<<<< HEAD
+=======
+		qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sch->q.qlen--;
 		decrement_qlen(skb, q);
 	}
@@ -457,6 +506,10 @@ static void sfb_reset(struct Qdisc *sch)
 	struct sfb_sched_data *q = qdisc_priv(sch);
 
 	qdisc_reset(q->qdisc);
+<<<<<<< HEAD
+=======
+	sch->qstats.backlog = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen = 0;
 	q->slot = 0;
 	q->double_buffering = false;
@@ -518,7 +571,12 @@ static int sfb_change(struct Qdisc *sch, struct nlattr *opt)
 
 	sch_tree_lock(sch);
 
+<<<<<<< HEAD
 	qdisc_tree_decrease_qlen(q->qdisc, q->qdisc->q.qlen);
+=======
+	qdisc_tree_reduce_backlog(q->qdisc, q->qdisc->q.qlen,
+				  q->qdisc->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	qdisc_destroy(q->qdisc);
 	q->qdisc = child;
 
@@ -614,12 +672,16 @@ static int sfb_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	if (new == NULL)
 		new = &noop_qdisc;
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = q->qdisc;
 	q->qdisc = new;
 	qdisc_tree_decrease_qlen(*old, (*old)->q.qlen);
 	qdisc_reset(*old);
 	sch_tree_unlock(sch);
+=======
+	*old = qdisc_replace(sch, new, &q->qdisc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

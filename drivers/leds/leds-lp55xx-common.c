@@ -200,7 +200,11 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 
 	if (!fw) {
 		dev_err(dev, "firmware request failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* handling firmware data is chip dependent */
@@ -213,9 +217,15 @@ static void lp55xx_firmware_loaded(const struct firmware *fw, void *context)
 
 	mutex_unlock(&chip->lock);
 
+<<<<<<< HEAD
 out:
 	/* firmware should be released for other channel use */
 	release_firmware(chip->fw);
+=======
+	/* firmware should be released for other channel use */
+	release_firmware(chip->fw);
+	chip->fw = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int lp55xx_request_firmware(struct lp55xx_chip *chip)

@@ -527,14 +527,22 @@ EXPORT_SYMBOL(gameport_set_phys);
  */
 static void gameport_init_port(struct gameport *gameport)
 {
+<<<<<<< HEAD
 	static atomic_t gameport_no = ATOMIC_INIT(0);
+=======
+	static atomic_t gameport_no = ATOMIC_INIT(-1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	__module_get(THIS_MODULE);
 
 	mutex_init(&gameport->drv_mutex);
 	device_initialize(&gameport->dev);
 	dev_set_name(&gameport->dev, "gameport%lu",
+<<<<<<< HEAD
 			(unsigned long)atomic_inc_return(&gameport_no) - 1);
+=======
+			(unsigned long)atomic_inc_return(&gameport_no));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	gameport->dev.bus = &gameport_bus;
 	gameport->dev.release = gameport_release_port;
 	if (gameport->parent)

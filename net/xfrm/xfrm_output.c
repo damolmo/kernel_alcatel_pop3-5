@@ -54,6 +54,12 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
 			goto error_nolock;
 		}
 
+<<<<<<< HEAD
+=======
+		if (x->props.output_mark)
+			skb->mark = x->props.output_mark;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = x->outer_mode->output(x, skb);
 		if (err) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEMODEERROR);
@@ -153,6 +159,11 @@ static int xfrm_output_gso(struct sk_buff *skb)
 {
 	struct sk_buff *segs;
 
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_SGO_CB_OFFSET);
+	BUILD_BUG_ON(sizeof(*IP6CB(skb)) > SKB_SGO_CB_OFFSET);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	segs = skb_gso_segment(skb, 0);
 	kfree_skb(skb);
 	if (IS_ERR(segs))
@@ -221,7 +232,12 @@ void xfrm_local_error(struct sk_buff *skb, int mtu)
 
 	if (skb->protocol == htons(ETH_P_IP))
 		proto = AF_INET;
+<<<<<<< HEAD
 	else if (skb->protocol == htons(ETH_P_IPV6))
+=======
+	else if (skb->protocol == htons(ETH_P_IPV6) &&
+		 skb->sk->sk_family == AF_INET6)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		proto = AF_INET6;
 	else
 		return;

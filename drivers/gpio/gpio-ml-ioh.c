@@ -495,9 +495,16 @@ err_irq_alloc_descs:
 
 	chip = chip_save;
 err_gpiochip_add:
+<<<<<<< HEAD
 	while (--i >= 0) {
 		chip--;
 		gpiochip_remove(&chip->gpio);
+=======
+	chip = chip_save;
+	while (--i >= 0) {
+		gpiochip_remove(&chip->gpio);
+		chip++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	kfree(chip_save);
 

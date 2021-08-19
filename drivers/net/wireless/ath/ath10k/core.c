@@ -832,6 +832,16 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode)
 		goto err_hif_stop;
 	}
 
+<<<<<<< HEAD
+=======
+	if (test_bit(ATH10K_FW_FEATURE_WMI_10X, ar->fw_features))
+		ar->free_vdev_map = (1 << TARGET_10X_NUM_VDEVS) - 1;
+	else
+		ar->free_vdev_map = (1 << TARGET_NUM_VDEVS) - 1;
+
+	INIT_LIST_HEAD(&ar->arvifs);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* we don't care about HTT in UTF mode */
 	if (mode == ATH10K_FIRMWARE_MODE_NORMAL) {
 		status = ath10k_htt_setup(&ar->htt);
@@ -845,6 +855,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode)
 	if (status)
 		goto err_hif_stop;
 
+<<<<<<< HEAD
 	if (test_bit(ATH10K_FW_FEATURE_WMI_10X, ar->fw_features))
 		ar->free_vdev_map = (1 << TARGET_10X_NUM_VDEVS) - 1;
 	else
@@ -852,6 +863,8 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode)
 
 	INIT_LIST_HEAD(&ar->arvifs);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 err_hif_stop:

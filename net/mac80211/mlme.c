@@ -34,6 +34,10 @@
 #define IEEE80211_AUTH_TIMEOUT		(HZ / 5)
 #define IEEE80211_AUTH_TIMEOUT_LONG	(HZ / 2)
 #define IEEE80211_AUTH_TIMEOUT_SHORT	(HZ / 10)
+<<<<<<< HEAD
+=======
+#define IEEE80211_AUTH_TIMEOUT_SAE	(HZ * 2)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define IEEE80211_AUTH_MAX_TRIES	3
 #define IEEE80211_AUTH_WAIT_ASSOC	(HZ * 5)
 #define IEEE80211_ASSOC_TIMEOUT		(HZ / 5)
@@ -969,6 +973,13 @@ static void ieee80211_chswitch_work(struct work_struct *work)
 	 */
 
 	if (sdata->reserved_chanctx) {
+<<<<<<< HEAD
+=======
+		struct ieee80211_supported_band *sband = NULL;
+		struct sta_info *mgd_sta = NULL;
+		enum ieee80211_sta_rx_bandwidth bw = IEEE80211_STA_RX_BW_20;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * with multi-vif csa driver may call ieee80211_csa_finish()
 		 * many times while waiting for other interfaces to use their
@@ -977,6 +988,51 @@ static void ieee80211_chswitch_work(struct work_struct *work)
 		if (sdata->reserved_ready)
 			goto out;
 
+<<<<<<< HEAD
+=======
+		if (sdata->vif.bss_conf.chandef.width !=
+		    sdata->csa_chandef.width) {
+			/*
+			 * For managed interface, we need to also update the AP
+			 * station bandwidth and align the rate scale algorithm
+			 * on the bandwidth change. Here we only consider the
+			 * bandwidth of the new channel definition (as channel
+			 * switch flow does not have the full HT/VHT/HE
+			 * information), assuming that if additional changes are
+			 * required they would be done as part of the processing
+			 * of the next beacon from the AP.
+			 */
+			switch (sdata->csa_chandef.width) {
+			case NL80211_CHAN_WIDTH_20_NOHT:
+			case NL80211_CHAN_WIDTH_20:
+			default:
+				bw = IEEE80211_STA_RX_BW_20;
+				break;
+			case NL80211_CHAN_WIDTH_40:
+				bw = IEEE80211_STA_RX_BW_40;
+				break;
+			case NL80211_CHAN_WIDTH_80:
+				bw = IEEE80211_STA_RX_BW_80;
+				break;
+			case NL80211_CHAN_WIDTH_80P80:
+			case NL80211_CHAN_WIDTH_160:
+				bw = IEEE80211_STA_RX_BW_160;
+				break;
+			}
+
+			mgd_sta = sta_info_get(sdata, ifmgd->bssid);
+			sband =
+				local->hw.wiphy->bands[sdata->csa_chandef.chan->band];
+		}
+
+		if (sdata->vif.bss_conf.chandef.width >
+		    sdata->csa_chandef.width) {
+			mgd_sta->sta.bandwidth = bw;
+			rate_control_rate_update(local, sband, mgd_sta,
+						 IEEE80211_RC_BW_CHANGED);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = ieee80211_vif_use_reserved_context(sdata);
 		if (ret) {
 			sdata_info(sdata,
@@ -987,6 +1043,16 @@ static void ieee80211_chswitch_work(struct work_struct *work)
 			goto out;
 		}
 
+<<<<<<< HEAD
+=======
+		if (sdata->vif.bss_conf.chandef.width <
+		    sdata->csa_chandef.width) {
+			mgd_sta->sta.bandwidth = bw;
+			rate_control_rate_update(local, sband, mgd_sta,
+						 IEEE80211_RC_BW_CHANGED);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -999,9 +1065,12 @@ static void ieee80211_chswitch_work(struct work_struct *work)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* XXX: shouldn't really modify cfg80211-owned data! */
 	ifmgd->associated->channel = sdata->csa_chandef.chan;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sdata->vif.csa_active = false;
 
 	/* XXX: wait for a beacon first? */
@@ -2141,7 +2210,12 @@ struct sk_buff *ieee80211_ap_probereq_get(struct ieee80211_hw *hw,
 
 	rcu_read_lock();
 	ssid = ieee80211_bss_get_ie(cbss, WLAN_EID_SSID);
+<<<<<<< HEAD
 	if (WARN_ON_ONCE(ssid == NULL))
+=======
+	if (WARN_ONCE(!ssid || ssid[1] > IEEE80211_MAX_SSID_LEN,
+		      "invalid SSID element (len=%d)", ssid ? ssid[1] : -1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ssid_len = 0;
 	else
 		ssid_len = ssid[1];
@@ -3464,6 +3538,7 @@ static int ieee80211_probe_auth(struct ieee80211_sub_if_data *sdata)
 	}
 
 	if (tx_flags == 0) {
+<<<<<<< HEAD
 		auth_data->timeout = jiffies + IEEE80211_AUTH_TIMEOUT;
 		auth_data->timeout_started = true;
 		run_again(sdata, auth_data->timeout);
@@ -3474,6 +3549,21 @@ static int ieee80211_probe_auth(struct ieee80211_sub_if_data *sdata)
 		run_again(sdata, auth_data->timeout);
 	}
 
+=======
+		if (auth_data->algorithm == WLAN_AUTH_SAE)
+			auth_data->timeout = jiffies +
+				IEEE80211_AUTH_TIMEOUT_SAE;
+		else
+			auth_data->timeout = jiffies + IEEE80211_AUTH_TIMEOUT;
+	} else {
+		auth_data->timeout =
+			round_jiffies_up(jiffies + IEEE80211_AUTH_TIMEOUT_LONG);
+	}
+
+	auth_data->timeout_started = true;
+	run_again(sdata, auth_data->timeout);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -3545,8 +3635,20 @@ void ieee80211_sta_work(struct ieee80211_sub_if_data *sdata)
 		if (ifmgd->auth_data &&
 		    (ieee80211_is_probe_req(fc) || ieee80211_is_auth(fc))) {
 			if (status_acked) {
+<<<<<<< HEAD
 				ifmgd->auth_data->timeout =
 					jiffies + IEEE80211_AUTH_TIMEOUT_SHORT;
+=======
+				if (ifmgd->auth_data->algorithm ==
+				    WLAN_AUTH_SAE)
+					ifmgd->auth_data->timeout =
+						jiffies +
+						IEEE80211_AUTH_TIMEOUT_SAE;
+				else
+					ifmgd->auth_data->timeout =
+						jiffies +
+						IEEE80211_AUTH_TIMEOUT_SHORT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				run_again(sdata, ifmgd->auth_data->timeout);
 			} else {
 				ifmgd->auth_data->timeout = jiffies - 1;
@@ -3715,8 +3817,11 @@ static void ieee80211_restart_sta_timer(struct ieee80211_sub_if_data *sdata)
 		if (!(flags & IEEE80211_HW_CONNECTION_MONITOR))
 			ieee80211_queue_work(&sdata->local->hw,
 					     &sdata->u.mgd.monitor_work);
+<<<<<<< HEAD
 		/* and do all the other regular work too */
 		ieee80211_queue_work(&sdata->local->hw, &sdata->work);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -3997,6 +4102,13 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
 	if (WARN_ON(!ifmgd->auth_data && !ifmgd->assoc_data))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* If a reconfig is happening, bail out */
+	if (local->in_reconfig)
+		return -EBUSY;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (assoc) {
 		rcu_read_lock();
 		have_sta = sta_info_get(sdata, cbss->bssid);
@@ -4293,7 +4405,11 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 
 	rcu_read_lock();
 	ssidie = ieee80211_bss_get_ie(req->bss, WLAN_EID_SSID);
+<<<<<<< HEAD
 	if (!ssidie) {
+=======
+	if (!ssidie || ssidie[1] > sizeof(assoc_data->ssid)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rcu_read_unlock();
 		kfree(assoc_data);
 		return -EINVAL;

@@ -144,6 +144,19 @@
 #define PMBR1				0x0D
 #define GPIO_USB_4PIN_ULPI_2430C	(3 << 0)
 
+<<<<<<< HEAD
+=======
+/*
+ * If VBUS is valid or ID is ground, then we know a
+ * cable is present and we need to be runtime-enabled
+ */
+static inline bool cable_present(enum omap_musb_vbus_id_status stat)
+{
+	return stat == OMAP_MUSB_VBUS_VALID ||
+		stat == OMAP_MUSB_ID_GROUND;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct twl4030_usb {
 	struct usb_phy		phy;
 	struct device		*dev;
@@ -536,8 +549,15 @@ static irqreturn_t twl4030_usb_irq(int irq, void *_twl)
 
 	mutex_lock(&twl->lock);
 	if (status >= 0 && status != twl->linkstat) {
+<<<<<<< HEAD
 		twl->linkstat = status;
 		status_changed = true;
+=======
+		status_changed =
+			cable_present(twl->linkstat) !=
+			cable_present(status);
+		twl->linkstat = status;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	mutex_unlock(&twl->lock);
 
@@ -553,6 +573,7 @@ static irqreturn_t twl4030_usb_irq(int irq, void *_twl)
 		 * USB_LINK_VBUS state.  musb_hdrc won't care until it
 		 * starts to handle softconnect right.
 		 */
+<<<<<<< HEAD
 		if ((status == OMAP_MUSB_VBUS_VALID) ||
 		    (status == OMAP_MUSB_ID_GROUND)) {
 			if (pm_runtime_suspended(twl->dev))
@@ -562,6 +583,13 @@ static irqreturn_t twl4030_usb_irq(int irq, void *_twl)
 				pm_runtime_mark_last_busy(twl->dev);
 				pm_runtime_put_autosuspend(twl->dev);
 			}
+=======
+		if (cable_present(status)) {
+			pm_runtime_get_sync(twl->dev);
+		} else {
+			pm_runtime_mark_last_busy(twl->dev);
+			pm_runtime_put_autosuspend(twl->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		omap_musb_mailbox(status);
 	}
@@ -745,13 +773,29 @@ static int twl4030_usb_remove(struct platform_device *pdev)
 	struct twl4030_usb *twl = platform_get_drvdata(pdev);
 	int val;
 
+<<<<<<< HEAD
 	pm_runtime_get_sync(twl->dev);
 	cancel_delayed_work(&twl->id_workaround_work);
+=======
+	usb_remove_phy(&twl->phy);
+	pm_runtime_get_sync(twl->dev);
+	cancel_delayed_work_sync(&twl->id_workaround_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	device_remove_file(twl->dev, &dev_attr_vbus);
 
 	/* set transceiver mode to power on defaults */
 	twl4030_usb_set_mode(twl, -1);
 
+<<<<<<< HEAD
+=======
+	/* idle ulpi before powering off */
+	if (cable_present(twl->linkstat))
+		pm_runtime_put_noidle(twl->dev);
+	pm_runtime_mark_last_busy(twl->dev);
+	pm_runtime_put_sync_suspend(twl->dev);
+	pm_runtime_disable(twl->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* autogate 60MHz ULPI clock,
 	 * clear dpll clock request for i2c access,
 	 * disable 32KHz
@@ -765,8 +809,11 @@ static int twl4030_usb_remove(struct platform_device *pdev)
 
 	/* disable complete OTG block */
 	twl4030_usb_clear_bits(twl, POWER_CTRL, POWER_CTRL_OTG_ENAB);
+<<<<<<< HEAD
 	pm_runtime_mark_last_busy(twl->dev);
 	pm_runtime_put(twl->dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

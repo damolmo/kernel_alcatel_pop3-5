@@ -169,6 +169,20 @@ typedef struct {
 	unsigned int	eof:1;
 } nfs_readdir_descriptor_t;
 
+<<<<<<< HEAD
+=======
+static
+void nfs_readdir_init_array(struct page *page)
+{
+	struct nfs_cache_array *array;
+
+	array = kmap_atomic(page);
+	memset(array, 0, sizeof(struct nfs_cache_array));
+	array->eof_index = -1;
+	kunmap_atomic(array);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * The caller is responsible for calling nfs_readdir_release_array(page)
  */
@@ -202,6 +216,10 @@ void nfs_readdir_clear_array(struct page *page)
 	array = kmap_atomic(page);
 	for (i = 0; i < array->size; i++)
 		kfree(array->array[i].string.name);
+<<<<<<< HEAD
+=======
+	array->size = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kunmap_atomic(array);
 }
 
@@ -277,7 +295,11 @@ int nfs_readdir_search_for_pos(struct nfs_cache_array *array, nfs_readdir_descri
 	desc->cache_entry_index = index;
 	return 0;
 out_eof:
+<<<<<<< HEAD
 	desc->eof = 1;
+=======
+	desc->eof = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return -EBADCOOKIE;
 }
 
@@ -331,7 +353,11 @@ int nfs_readdir_search_for_cookie(struct nfs_cache_array *array, nfs_readdir_des
 	if (array->eof_index >= 0) {
 		status = -EBADCOOKIE;
 		if (*desc->dir_cookie == array->last_cookie)
+<<<<<<< HEAD
 			desc->eof = 1;
+=======
+			desc->eof = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	return status;
@@ -455,7 +481,11 @@ void nfs_force_use_readdirplus(struct inode *dir)
 {
 	if (!list_empty(&NFS_I(dir)->open_files)) {
 		nfs_advise_use_readdirplus(dir);
+<<<<<<< HEAD
 		nfs_zap_mapping(dir, dir->i_mapping);
+=======
+		invalidate_mapping_pages(dir->i_mapping, 0, -1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -538,6 +568,12 @@ int nfs_readdir_page_filler(nfs_readdir_descriptor_t *desc, struct nfs_entry *en
 	xdr_set_scratch_buffer(&stream, page_address(scratch), PAGE_SIZE);
 
 	do {
+<<<<<<< HEAD
+=======
+		if (entry->label)
+			entry->label->len = NFS4_MAXLABELLEN;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status = xdr_decode(desc, entry, &stream);
 		if (status != 0) {
 			if (status == -EAGAIN)
@@ -617,6 +653,11 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page, 
 	int status = -ENOMEM;
 	unsigned int array_size = ARRAY_SIZE(pages);
 
+<<<<<<< HEAD
+=======
+	nfs_readdir_init_array(page);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	entry.prev_cookie = 0;
 	entry.cookie = desc->last_cookie;
 	entry.eof = 0;
@@ -637,8 +678,11 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page, 
 		status = PTR_ERR(array);
 		goto out_label_free;
 	}
+<<<<<<< HEAD
 	memset(array, 0, sizeof(struct nfs_cache_array));
 	array->eof_index = -1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	status = nfs_readdir_large_page(pages, array_size);
 	if (status < 0)
@@ -693,6 +737,10 @@ int nfs_readdir_filler(nfs_readdir_descriptor_t *desc, struct page* page)
 	unlock_page(page);
 	return 0;
  error:
+<<<<<<< HEAD
+=======
+	nfs_readdir_clear_array(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unlock_page(page);
 	return ret;
 }
@@ -700,8 +748,11 @@ int nfs_readdir_filler(nfs_readdir_descriptor_t *desc, struct page* page)
 static
 void cache_page_release(nfs_readdir_descriptor_t *desc)
 {
+<<<<<<< HEAD
 	if (!desc->page->mapping)
 		nfs_readdir_clear_array(desc->page);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	page_cache_release(desc->page);
 	desc->page = NULL;
 }
@@ -715,19 +766,41 @@ struct page *get_cache_page(nfs_readdir_descriptor_t *desc)
 
 /*
  * Returns 0 if desc->dir_cookie was found on page desc->page_index
+<<<<<<< HEAD
  */
 static
 int find_cache_page(nfs_readdir_descriptor_t *desc)
+=======
+ * and locks the page to prevent removal from the page cache.
+ */
+static
+int find_and_lock_cache_page(nfs_readdir_descriptor_t *desc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int res;
 
 	desc->page = get_cache_page(desc);
 	if (IS_ERR(desc->page))
 		return PTR_ERR(desc->page);
+<<<<<<< HEAD
 
 	res = nfs_readdir_search_array(desc);
 	if (res != 0)
 		cache_page_release(desc);
+=======
+	res = lock_page_killable(desc->page);
+	if (res != 0)
+		goto error;
+	res = -EAGAIN;
+	if (desc->page->mapping != NULL) {
+		res = nfs_readdir_search_array(desc);
+		if (res == 0)
+			return 0;
+	}
+	unlock_page(desc->page);
+error:
+	cache_page_release(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return res;
 }
 
@@ -742,7 +815,11 @@ int readdir_search_pagecache(nfs_readdir_descriptor_t *desc)
 		desc->last_cookie = 0;
 	}
 	do {
+<<<<<<< HEAD
 		res = find_cache_page(desc);
+=======
+		res = find_and_lock_cache_page(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} while (res == -EAGAIN);
 	return res;
 }
@@ -771,7 +848,11 @@ int nfs_do_filldir(nfs_readdir_descriptor_t *desc)
 		ent = &array->array[i];
 		if (!dir_emit(desc->ctx, ent->string.name, ent->string.len,
 		    nfs_compat_user_ino64(ent->ino), ent->d_type)) {
+<<<<<<< HEAD
 			desc->eof = 1;
+=======
+			desc->eof = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 		desc->ctx->pos++;
@@ -783,11 +864,18 @@ int nfs_do_filldir(nfs_readdir_descriptor_t *desc)
 			ctx->duped = 1;
 	}
 	if (array->eof_index >= 0)
+<<<<<<< HEAD
 		desc->eof = 1;
 
 	nfs_readdir_release_array(desc->page);
 out:
 	cache_page_release(desc);
+=======
+		desc->eof = true;
+
+	nfs_readdir_release_array(desc->page);
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dfprintk(DIRCACHE, "NFS: nfs_do_filldir() filling ended @ cookie %Lu; returning = %d\n",
 			(unsigned long long)*desc->dir_cookie, res);
 	return res;
@@ -833,10 +921,17 @@ int uncached_readdir(nfs_readdir_descriptor_t *desc)
 
 	status = nfs_do_filldir(desc);
 
+<<<<<<< HEAD
+=======
+ out_release:
+	nfs_readdir_clear_array(desc->page);
+	cache_page_release(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  out:
 	dfprintk(DIRCACHE, "NFS: %s: returns %d\n",
 			__func__, status);
 	return status;
+<<<<<<< HEAD
  out_release:
 	cache_page_release(desc);
 	goto out;
@@ -851,6 +946,8 @@ static bool nfs_dir_mapping_need_revalidate(struct inode *dir)
 	if (nfsi->cache_validity & NFS_INO_INVALID_DATA)
 		return true;
 	return false;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* The file offset position represents the dirent entry number.  A
@@ -885,7 +982,11 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 	desc->plus = nfs_use_readdirplus(inode, ctx) ? 1 : 0;
 
 	nfs_block_sillyrename(dentry);
+<<<<<<< HEAD
 	if (ctx->pos == 0 || nfs_dir_mapping_need_revalidate(inode))
+=======
+	if (ctx->pos == 0 || nfs_attribute_cache_expired(inode))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		res = nfs_revalidate_mapping(inode, file->f_mapping);
 	if (res < 0)
 		goto out;
@@ -896,7 +997,11 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 		if (res == -EBADCOOKIE) {
 			res = 0;
 			/* This means either end of directory */
+<<<<<<< HEAD
 			if (*desc->dir_cookie && desc->eof == 0) {
+=======
+			if (*desc->dir_cookie && !desc->eof) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				/* Or that the server has 'lost' a cookie */
 				res = uncached_readdir(desc);
 				if (res == 0)
@@ -916,6 +1021,11 @@ static int nfs_readdir(struct file *file, struct dir_context *ctx)
 			break;
 
 		res = nfs_do_filldir(desc);
+<<<<<<< HEAD
+=======
+		unlock_page(desc->page);
+		cache_page_release(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (res < 0)
 			break;
 	} while (!desc->eof);
@@ -1141,11 +1251,21 @@ static int nfs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	/* Force a full look up iff the parent directory has changed */
 	if (!nfs_is_exclusive_create(dir, flags) &&
 	    nfs_check_verifier(dir, dentry, flags & LOOKUP_RCU)) {
+<<<<<<< HEAD
 
 		if (nfs_lookup_verify_inode(inode, flags)) {
 			if (flags & LOOKUP_RCU)
 				return -ECHILD;
 			goto out_zap_parent;
+=======
+		error = nfs_lookup_verify_inode(inode, flags);
+		if (error) {
+			if (flags & LOOKUP_RCU)
+				return -ECHILD;
+			if (error == -ESTALE)
+				goto out_zap_parent;
+			goto out_error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		goto out_valid;
 	}
@@ -1169,8 +1289,15 @@ static int nfs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
 	trace_nfs_lookup_revalidate_enter(dir, dentry, flags);
 	error = NFS_PROTO(dir)->lookup(dir, &dentry->d_name, fhandle, fattr, label);
 	trace_nfs_lookup_revalidate_exit(dir, dentry, flags, error);
+<<<<<<< HEAD
 	if (error)
 		goto out_bad;
+=======
+	if (error == -ESTALE || error == -ENOENT)
+		goto out_bad;
+	if (error)
+		goto out_error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (nfs_compare_fh(NFS_FH(inode), fhandle))
 		goto out_bad;
 	if ((error = nfs_refresh_inode(inode, fattr)) != 0)
@@ -1262,7 +1389,11 @@ static int nfs_weak_revalidate(struct dentry *dentry, unsigned int flags)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	error = nfs_revalidate_inode(NFS_SERVER(inode), inode);
+=======
+	error = nfs_lookup_verify_inode(inode, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dfprintk(LOOKUPCACHE, "NFS: %s: inode %lu is %s\n",
 			__func__, inode->i_ino, error ? "invalid" : "valid");
 	return !error;
@@ -1422,6 +1553,10 @@ static int nfs4_lookup_revalidate(struct dentry *, unsigned int);
 
 const struct dentry_operations nfs4_dentry_operations = {
 	.d_revalidate	= nfs4_lookup_revalidate,
+<<<<<<< HEAD
+=======
+	.d_weak_revalidate	= nfs_weak_revalidate,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.d_delete	= nfs_dentry_delete,
 	.d_iput		= nfs_dentry_iput,
 	.d_automount	= nfs_d_automount,
@@ -1529,9 +1664,15 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
 		err = PTR_ERR(inode);
 		trace_nfs_atomic_open_exit(dir, ctx, open_flags, err);
 		put_nfs_open_context(ctx);
+<<<<<<< HEAD
 		switch (err) {
 		case -ENOENT:
 			d_drop(dentry);
+=======
+		d_drop(dentry);
+		switch (err) {
+		case -ENOENT:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			d_add(dentry, NULL);
 			nfs_set_verifier(dentry, nfs_save_change_attribute(dir));
 			break;
@@ -2058,7 +2199,11 @@ out:
 		if (new_inode != NULL)
 			nfs_drop_nlink(new_inode);
 		d_move(old_dentry, new_dentry);
+<<<<<<< HEAD
 		nfs_set_verifier(new_dentry,
+=======
+		nfs_set_verifier(old_dentry,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					nfs_save_change_attribute(new_dir));
 	} else if (error == -ENOENT)
 		nfs_dentry_handle_enoent(old_dentry);
@@ -2433,6 +2578,23 @@ int nfs_may_open(struct inode *inode, struct rpc_cred *cred, int openflags)
 }
 EXPORT_SYMBOL_GPL(nfs_may_open);
 
+<<<<<<< HEAD
+=======
+static int nfs_execute_ok(struct inode *inode, int mask)
+{
+	struct nfs_server *server = NFS_SERVER(inode);
+	int ret;
+
+	if (mask & MAY_NOT_BLOCK)
+		ret = nfs_revalidate_inode_rcu(server, inode);
+	else
+		ret = nfs_revalidate_inode(server, inode);
+	if (ret == 0 && !execute_ok(inode))
+		ret = -EACCES;
+	return ret;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int nfs_permission(struct inode *inode, int mask)
 {
 	struct rpc_cred *cred;
@@ -2450,6 +2612,12 @@ int nfs_permission(struct inode *inode, int mask)
 		case S_IFLNK:
 			goto out;
 		case S_IFREG:
+<<<<<<< HEAD
+=======
+			if ((mask & MAY_OPEN) &&
+			   nfs_server_capable(inode, NFS_CAP_ATOMIC_OPEN))
+				return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case S_IFDIR:
 			/*
@@ -2482,8 +2650,13 @@ force_lookup:
 			res = PTR_ERR(cred);
 	}
 out:
+<<<<<<< HEAD
 	if (!res && (mask & MAY_EXEC) && !execute_ok(inode))
 		res = -EACCES;
+=======
+	if (!res && (mask & MAY_EXEC))
+		res = nfs_execute_ok(inode, mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dfprintk(VFS, "NFS: permission(%s/%lu), mask=0x%x, res=%d\n",
 		inode->i_sb->s_id, inode->i_ino, mask, res);

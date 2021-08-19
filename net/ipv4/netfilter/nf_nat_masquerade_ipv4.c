@@ -108,10 +108,25 @@ static int masq_inet_event(struct notifier_block *this,
 			   unsigned long event,
 			   void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ((struct in_ifaddr *)ptr)->ifa_dev->dev;
 	struct netdev_notifier_info info;
 
 	netdev_notifier_info_init(&info, dev);
+=======
+	struct in_device *idev = ((struct in_ifaddr *)ptr)->ifa_dev;
+	struct netdev_notifier_info info;
+
+	/* The masq_dev_notifier will catch the case of the device going
+	 * down.  So if the inetdev is dead and being destroyed we have
+	 * no work to do.  Otherwise this is an individual address removal
+	 * and we have to perform the flush.
+	 */
+	if (idev->dead)
+		return NOTIFY_DONE;
+
+	netdev_notifier_info_init(&info, idev->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return masq_device_event(this, event, &info);
 }
 

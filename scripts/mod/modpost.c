@@ -647,7 +647,11 @@ static void handle_modversions(struct module *mod, struct elf_info *info,
 			if (ELF_ST_TYPE(sym->st_info) == STT_SPARC_REGISTER)
 				break;
 			if (symname[0] == '.') {
+<<<<<<< HEAD
 				char *munged = strdup(symname);
+=======
+				char *munged = NOFAIL(strdup(symname));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				munged[0] = '_';
 				munged[1] = toupper(munged[1]);
 				symname = munged;
@@ -776,6 +780,10 @@ static const char *sech_name(struct elf_info *elf, Elf_Shdr *sechdr)
  * "foo" will match an exact string equal to "foo"
  * "*foo" will match a string that ends with "foo"
  * "foo*" will match a string that begins with "foo"
+<<<<<<< HEAD
+=======
+ * "*foo*" will match a string that contains "foo"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static int match(const char *sym, const char * const pat[])
 {
@@ -784,8 +792,22 @@ static int match(const char *sym, const char * const pat[])
 		p = *pat++;
 		const char *endp = p + strlen(p) - 1;
 
+<<<<<<< HEAD
 		/* "*foo" */
 		if (*p == '*') {
+=======
+		/* "*foo*" */
+		if (*p == '*' && *endp == '*') {
+			char *here, *bare = strndup(p + 1, strlen(p) - 2);
+
+			here = strstr(sym, bare);
+			free(bare);
+			if (here != NULL)
+				return 1;
+		}
+		/* "*foo" */
+		else if (*p == '*') {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (strrcmp(sym, p + 1) == 0)
 				return 1;
 		}
@@ -892,6 +914,13 @@ static const char *const init_sections[] = { ALL_INIT_SECTIONS, NULL };
 static const char *const init_exit_sections[] =
 	{ALL_INIT_SECTIONS, ALL_EXIT_SECTIONS, NULL };
 
+<<<<<<< HEAD
+=======
+/* all text sections */
+static const char *const text_sections[] = { ALL_INIT_TEXT_SECTIONS,
+				ALL_EXIT_TEXT_SECTIONS, TEXT_SECTIONS, NULL };
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* data section */
 static const char *const data_sections[] = { DATA_SECTIONS, NULL };
 
@@ -910,6 +939,10 @@ static const char *const data_sections[] = { DATA_SECTIONS, NULL };
 static const char *const head_sections[] = { ".head.text*", NULL };
 static const char *const linker_symbols[] =
 	{ "__init_begin", "_sinittext", "_einittext", NULL };
+<<<<<<< HEAD
+=======
+static const char *const optim_symbols[] = { "*.constprop.*", NULL };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 enum mismatch {
 	TEXT_TO_ANY_INIT,
@@ -1067,6 +1100,20 @@ static const struct sectioncheck *section_mismatch(
  *   This pattern is identified by
  *   refsymname = __init_begin, _sinittext, _einittext
  *
+<<<<<<< HEAD
+=======
+ * Pattern 5:
+ *   GCC may optimize static inlines when fed constant arg(s) resulting
+ *   in functions like cpumask_empty() -- generating an associated symbol
+ *   cpumask_empty.constprop.3 that appears in the audit.  If the const that
+ *   is passed in comes from __init, like say nmi_ipi_mask, we get a
+ *   meaningless section warning.  May need to add isra symbols too...
+ *   This pattern is identified by
+ *   tosec   = init section
+ *   fromsec = text section
+ *   refsymname = *.constprop.*
+ *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  **/
 static int secref_whitelist(const struct sectioncheck *mismatch,
 			    const char *fromsec, const char *fromsym,
@@ -1099,50 +1146,18 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
 	if (match(tosym, linker_symbols))
 		return 0;
 
+<<<<<<< HEAD
 	return 1;
 }
 
-/**
- * Find symbol based on relocation record info.
- * In some cases the symbol supplied is a valid symbol so
- * return refsym. If st_name != 0 we assume this is a valid symbol.
- * In other cases the symbol needs to be looked up in the symbol table
- * based on section and address.
- *  **/
-static Elf_Sym *find_elf_symbol(struct elf_info *elf, Elf64_Sword addr,
-				Elf_Sym *relsym)
-{
-	Elf_Sym *sym;
-	Elf_Sym *near = NULL;
-	Elf64_Sword distance = 20;
-	Elf64_Sword d;
-	unsigned int relsym_secindex;
+=======
+	/* Check for pattern 5 */
+	if (match(fromsec, text_sections) &&
+	    match(tosec, init_sections) &&
+	    match(fromsym, optim_symbols))
+		return 0;
 
-	if (relsym->st_name != 0)
-		return relsym;
-
-	relsym_secindex = get_secindex(elf, relsym);
-	for (sym = elf->symtab_start; sym < elf->symtab_stop; sym++) {
-		if (get_secindex(elf, sym) != relsym_secindex)
-			continue;
-		if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
-			continue;
-		if (sym->st_value == addr)
-			return sym;
-		/* Find a symbol nearby - addr are maybe negative */
-		d = sym->st_value - addr;
-		if (d < 0)
-			d = addr - sym->st_value;
-		if (d < distance) {
-			distance = d;
-			near = sym;
-		}
-	}
-	/* We need a close match */
-	if (distance < 20)
-		return near;
-	else
-		return NULL;
+	return 1;
 }
 
 static inline int is_arm_mapping_symbol(const char *str)
@@ -1169,6 +1184,82 @@ static inline int is_valid_name(struct elf_info *elf, Elf_Sym *sym)
 	return !is_arm_mapping_symbol(name);
 }
 
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
+/**
+ * Find symbol based on relocation record info.
+ * In some cases the symbol supplied is a valid symbol so
+ * return refsym. If st_name != 0 we assume this is a valid symbol.
+ * In other cases the symbol needs to be looked up in the symbol table
+ * based on section and address.
+ *  **/
+static Elf_Sym *find_elf_symbol(struct elf_info *elf, Elf64_Sword addr,
+				Elf_Sym *relsym)
+{
+	Elf_Sym *sym;
+	Elf_Sym *near = NULL;
+	Elf64_Sword distance = 20;
+	Elf64_Sword d;
+	unsigned int relsym_secindex;
+
+	if (relsym->st_name != 0)
+		return relsym;
+
+	relsym_secindex = get_secindex(elf, relsym);
+	for (sym = elf->symtab_start; sym < elf->symtab_stop; sym++) {
+		if (get_secindex(elf, sym) != relsym_secindex)
+			continue;
+		if (ELF_ST_TYPE(sym->st_info) == STT_SECTION)
+			continue;
+<<<<<<< HEAD
+=======
+		if (!is_valid_name(elf, sym))
+			continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
+		if (sym->st_value == addr)
+			return sym;
+		/* Find a symbol nearby - addr are maybe negative */
+		d = sym->st_value - addr;
+		if (d < 0)
+			d = addr - sym->st_value;
+		if (d < distance) {
+			distance = d;
+			near = sym;
+		}
+	}
+	/* We need a close match */
+	if (distance < 20)
+		return near;
+	else
+		return NULL;
+}
+
+<<<<<<< HEAD
+static inline int is_arm_mapping_symbol(const char *str)
+{
+	return str[0] == '$' && strchr("axtd", str[1])
+	       && (str[2] == '\0' || str[2] == '.');
+}
+
+/*
+ * If there's no name there, ignore it; likewise, ignore it if it's
+ * one of the magic symbols emitted used by current ARM tools.
+ *
+ * Otherwise if find_symbols_between() returns those symbols, they'll
+ * fail the whitelist tests and cause lots of false alarms ... fixable
+ * only by merging __exit and __init sections into __text, bloating
+ * the kernel (which is especially evil on embedded platforms).
+ */
+static inline int is_valid_name(struct elf_info *elf, Elf_Sym *sym)
+{
+	const char *name = elf->strtab + sym->st_name;
+
+	if (!name || !strlen(name))
+		return 0;
+	return !is_arm_mapping_symbol(name);
+}
+
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Find symbols before or equal addr and after addr - in the section sec.
  * If we find two symbols with equal offset prefer one with a valid name.
@@ -1216,7 +1307,11 @@ static Elf_Sym *find_elf_symbol2(struct elf_info *elf, Elf_Addr addr,
 static char *sec2annotation(const char *s)
 {
 	if (match(s, init_exit_sections)) {
+<<<<<<< HEAD
 		char *p = malloc(20);
+=======
+		char *p = NOFAIL(malloc(20));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		char *r = p;
 
 		*p++ = '_';
@@ -1236,7 +1331,11 @@ static char *sec2annotation(const char *s)
 			strcat(p, " ");
 		return r;
 	} else {
+<<<<<<< HEAD
 		return strdup("");
+=======
+		return NOFAIL(strdup(""));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -1794,7 +1893,11 @@ void buf_write(struct buffer *buf, const char *s, int len)
 {
 	if (buf->size - buf->pos < len) {
 		buf->size += len + SZ;
+<<<<<<< HEAD
 		buf->p = realloc(buf->p, buf->size);
+=======
+		buf->p = NOFAIL(realloc(buf->p, buf->size));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	strncpy(buf->p + buf->pos, s, len);
 	buf->pos += len;
@@ -1891,6 +1994,17 @@ static void add_intree_flag(struct buffer *b, int is_intree)
 		buf_printf(b, "\nMODULE_INFO(intree, \"Y\");\n");
 }
 
+<<<<<<< HEAD
+=======
+/* Cannot check for assembler */
+static void add_retpoline(struct buffer *b)
+{
+	buf_printf(b, "\n#ifdef RETPOLINE\n");
+	buf_printf(b, "MODULE_INFO(retpoline, \"Y\");\n");
+	buf_printf(b, "#endif\n");
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void add_staging_flag(struct buffer *b, const char *name)
 {
 	static const char *staging_dir = "drivers/staging";
@@ -2221,6 +2335,10 @@ int main(int argc, char **argv)
 
 		add_header(&buf, mod);
 		add_intree_flag(&buf, !external_module);
+<<<<<<< HEAD
+=======
+		add_retpoline(&buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		add_staging_flag(&buf, mod->name);
 		err |= add_versions(&buf, mod);
 		add_depends(&buf, mod, modules);

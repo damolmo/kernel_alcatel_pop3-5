@@ -168,7 +168,11 @@ void __jbd2_log_wait_for_space(journal_t *journal)
 				       "journal space in %s\n", __func__,
 				       journal->j_devname);
 				WARN_ON(1);
+<<<<<<< HEAD
 				jbd2_journal_abort(journal, 0);
+=======
+				jbd2_journal_abort(journal, -EIO);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			write_lock(&journal->j_state_lock);
 		} else {
@@ -254,8 +258,13 @@ restart:
 		bh = jh2bh(jh);
 
 		if (buffer_locked(bh)) {
+<<<<<<< HEAD
 			spin_unlock(&journal->j_list_lock);
 			get_bh(bh);
+=======
+			get_bh(bh);
+			spin_unlock(&journal->j_list_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			wait_on_buffer(bh);
 			/* the journal_head may have gone by now */
 			BUFFER_TRACE(bh, "brelse");
@@ -336,8 +345,13 @@ restart2:
 		jh = transaction->t_checkpoint_io_list;
 		bh = jh2bh(jh);
 		if (buffer_locked(bh)) {
+<<<<<<< HEAD
 			spin_unlock(&journal->j_list_lock);
 			get_bh(bh);
+=======
+			get_bh(bh);
+			spin_unlock(&journal->j_list_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			wait_on_buffer(bh);
 			/* the journal_head may have gone by now */
 			BUFFER_TRACE(bh, "brelse");
@@ -417,12 +431,20 @@ int jbd2_cleanup_journal_tail(journal_t *journal)
  * journal_clean_one_cp_list
  *
  * Find all the written-back checkpoint buffers in the given list and
+<<<<<<< HEAD
  * release them.
+=======
+ * release them. If 'destroy' is set, clean all buffers unconditionally.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Called with j_list_lock held.
  * Returns 1 if we freed the transaction, 0 otherwise.
  */
+<<<<<<< HEAD
 static int journal_clean_one_cp_list(struct journal_head *jh)
+=======
+static int journal_clean_one_cp_list(struct journal_head *jh, bool destroy)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct journal_head *last_jh;
 	struct journal_head *next_jh = jh;
@@ -436,7 +458,14 @@ static int journal_clean_one_cp_list(struct journal_head *jh)
 	do {
 		jh = next_jh;
 		next_jh = jh->b_cpnext;
+<<<<<<< HEAD
 		ret = __try_to_free_cp_buf(jh);
+=======
+		if (!destroy)
+			ret = __try_to_free_cp_buf(jh);
+		else
+			ret = __jbd2_journal_remove_checkpoint(jh) + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!ret)
 			return freed;
 		if (ret == 2)
@@ -459,10 +488,18 @@ static int journal_clean_one_cp_list(struct journal_head *jh)
  * journal_clean_checkpoint_list
  *
  * Find all the written-back checkpoint buffers in the journal and release them.
+<<<<<<< HEAD
  *
  * Called with j_list_lock held.
  */
 void __jbd2_journal_clean_checkpoint_list(journal_t *journal)
+=======
+ * If 'destroy' is set, release all buffers unconditionally.
+ *
+ * Called with j_list_lock held.
+ */
+void __jbd2_journal_clean_checkpoint_list(journal_t *journal, bool destroy)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	transaction_t *transaction, *last_transaction, *next_transaction;
 	int ret;
@@ -476,7 +513,12 @@ void __jbd2_journal_clean_checkpoint_list(journal_t *journal)
 	do {
 		transaction = next_transaction;
 		next_transaction = transaction->t_cpnext;
+<<<<<<< HEAD
 		ret = journal_clean_one_cp_list(transaction->t_checkpoint_list);
+=======
+		ret = journal_clean_one_cp_list(transaction->t_checkpoint_list,
+						destroy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * This function only frees up some memory if possible so we
 		 * dont have an obligation to finish processing. Bail out if
@@ -492,7 +534,11 @@ void __jbd2_journal_clean_checkpoint_list(journal_t *journal)
 		 * we can possibly see not yet submitted buffers on io_list
 		 */
 		ret = journal_clean_one_cp_list(transaction->
+<<<<<<< HEAD
 				t_checkpoint_io_list);
+=======
+				t_checkpoint_io_list, destroy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (need_resched())
 			return;
 		/*
@@ -506,6 +552,31 @@ void __jbd2_journal_clean_checkpoint_list(journal_t *journal)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Remove buffers from all checkpoint lists as journal is aborted and we just
+ * need to free memory
+ */
+void jbd2_journal_destroy_checkpoint(journal_t *journal)
+{
+	/*
+	 * We loop because __jbd2_journal_clean_checkpoint_list() may abort
+	 * early due to a need of rescheduling.
+	 */
+	while (1) {
+		spin_lock(&journal->j_list_lock);
+		if (!journal->j_checkpoint_transactions) {
+			spin_unlock(&journal->j_list_lock);
+			break;
+		}
+		__jbd2_journal_clean_checkpoint_list(journal, true);
+		spin_unlock(&journal->j_list_lock);
+		cond_resched();
+	}
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * journal_remove_checkpoint: called after a buffer has been committed
  * to disk (either by being write-back flushed to disk, or being
  * committed to the log).

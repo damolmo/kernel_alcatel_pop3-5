@@ -138,7 +138,11 @@ u32 pci_ohci_read_reg(int reg)
 		break;
 	case PCI_OHCI_INT_REG:
 		_rdmsr(DIVIL_MSR_REG(PIC_YSEL_LOW), &hi, &lo);
+<<<<<<< HEAD
 		if ((lo & 0x00000f00) == CS5536_USB_INTR)
+=======
+		if (((lo >> PIC_YSEL_LOW_USB_SHIFT) & 0xf) == CS5536_USB_INTR)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			conf_data = 1;
 		break;
 	default:

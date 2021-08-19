@@ -526,14 +526,22 @@ static int gsc_src_set_fmt(struct device *dev, u32 fmt)
 			GSC_IN_CHROMA_ORDER_CRCB);
 		break;
 	case DRM_FORMAT_NV21:
+<<<<<<< HEAD
 	case DRM_FORMAT_NV61:
 		cfg |= (GSC_IN_CHROMA_ORDER_CRCB |
 			GSC_IN_YUV420_2P);
+=======
+		cfg |= (GSC_IN_CHROMA_ORDER_CRCB | GSC_IN_YUV420_2P);
+		break;
+	case DRM_FORMAT_NV61:
+		cfg |= (GSC_IN_CHROMA_ORDER_CRCB | GSC_IN_YUV422_2P);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case DRM_FORMAT_YUV422:
 		cfg |= GSC_IN_YUV422_3P;
 		break;
 	case DRM_FORMAT_YUV420:
+<<<<<<< HEAD
 	case DRM_FORMAT_YVU420:
 		cfg |= GSC_IN_YUV420_3P;
 		break;
@@ -541,6 +549,18 @@ static int gsc_src_set_fmt(struct device *dev, u32 fmt)
 	case DRM_FORMAT_NV16:
 		cfg |= (GSC_IN_CHROMA_ORDER_CBCR |
 			GSC_IN_YUV420_2P);
+=======
+		cfg |= (GSC_IN_CHROMA_ORDER_CBCR | GSC_IN_YUV420_3P);
+		break;
+	case DRM_FORMAT_YVU420:
+		cfg |= (GSC_IN_CHROMA_ORDER_CRCB | GSC_IN_YUV420_3P);
+		break;
+	case DRM_FORMAT_NV12:
+		cfg |= (GSC_IN_CHROMA_ORDER_CBCR | GSC_IN_YUV420_2P);
+		break;
+	case DRM_FORMAT_NV16:
+		cfg |= (GSC_IN_CHROMA_ORDER_CBCR | GSC_IN_YUV422_2P);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case DRM_FORMAT_NV12MT:
 		cfg |= (GSC_IN_TILE_C_16x8 | GSC_IN_TILE_MODE);
@@ -796,6 +816,7 @@ static int gsc_dst_set_fmt(struct device *dev, u32 fmt)
 			GSC_OUT_CHROMA_ORDER_CRCB);
 		break;
 	case DRM_FORMAT_NV21:
+<<<<<<< HEAD
 	case DRM_FORMAT_NV61:
 		cfg |= (GSC_OUT_CHROMA_ORDER_CRCB | GSC_OUT_YUV420_2P);
 		break;
@@ -808,6 +829,27 @@ static int gsc_dst_set_fmt(struct device *dev, u32 fmt)
 	case DRM_FORMAT_NV16:
 		cfg |= (GSC_OUT_CHROMA_ORDER_CBCR |
 			GSC_OUT_YUV420_2P);
+=======
+		cfg |= (GSC_OUT_CHROMA_ORDER_CRCB | GSC_OUT_YUV420_2P);
+		break;
+	case DRM_FORMAT_NV61:
+		cfg |= (GSC_OUT_CHROMA_ORDER_CRCB | GSC_OUT_YUV422_2P);
+		break;
+	case DRM_FORMAT_YUV422:
+		cfg |= GSC_OUT_YUV422_3P;
+		break;
+	case DRM_FORMAT_YUV420:
+		cfg |= (GSC_OUT_CHROMA_ORDER_CBCR | GSC_OUT_YUV420_3P);
+		break;
+	case DRM_FORMAT_YVU420:
+		cfg |= (GSC_OUT_CHROMA_ORDER_CRCB | GSC_OUT_YUV420_3P);
+		break;
+	case DRM_FORMAT_NV12:
+		cfg |= (GSC_OUT_CHROMA_ORDER_CBCR | GSC_OUT_YUV420_2P);
+		break;
+	case DRM_FORMAT_NV16:
+		cfg |= (GSC_OUT_CHROMA_ORDER_CBCR | GSC_OUT_YUV422_2P);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case DRM_FORMAT_NV12MT:
 		cfg |= (GSC_OUT_TILE_C_16x8 | GSC_OUT_TILE_MODE);

@@ -64,7 +64,11 @@ struct packet_diag_mclist {
 	__u32	pdmc_count;
 	__u16	pdmc_type;
 	__u16	pdmc_alen;
+<<<<<<< HEAD
 	__u8	pdmc_addr[MAX_ADDR_LEN];
+=======
+	__u8	pdmc_addr[32]; /* MAX_ADDR_LEN */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct packet_diag_ring {

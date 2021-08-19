@@ -4067,6 +4067,10 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		dev_err(&pdev->dev,
 			"invalid sram_size %dB or board span %ldB\n",
 			mgp->sram_size, mgp->board_span);
+<<<<<<< HEAD
+=======
+		status = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto abort_with_ioremap;
 	}
 	memcpy_fromio(mgp->eeprom_strings,
@@ -4130,7 +4134,11 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * setup (if available). */
 	status = myri10ge_request_irq(mgp);
 	if (status != 0)
+<<<<<<< HEAD
 		goto abort_with_firmware;
+=======
+		goto abort_with_slices;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	myri10ge_free_irq(mgp);
 
 	/* Save configuration space to be restored if the

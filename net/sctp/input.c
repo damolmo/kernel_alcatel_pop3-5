@@ -420,7 +420,11 @@ void sctp_icmp_redirect(struct sock *sk, struct sctp_transport *t,
 {
 	struct dst_entry *dst;
 
+<<<<<<< HEAD
 	if (!t)
+=======
+	if (sock_owned_by_user(sk) || !t)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	dst = sctp_transport_dst_check(t);
 	if (dst)
@@ -448,7 +452,11 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 		else {
 			if (!mod_timer(&t->proto_unreach_timer,
 						jiffies + (HZ/20)))
+<<<<<<< HEAD
 				sctp_association_hold(asoc);
+=======
+				sctp_transport_hold(t);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	} else {
 		struct net *net = sock_net(sk);
@@ -457,7 +465,11 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 			 "encountered!\n", __func__);
 
 		if (del_timer(&t->proto_unreach_timer))
+<<<<<<< HEAD
 			sctp_association_put(asoc);
+=======
+			sctp_transport_put(t);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		sctp_do_sm(net, SCTP_EVENT_T_OTHER,
 			   SCTP_ST_OTHER(SCTP_EVENT_ICMP_PROTO_UNREACH),
@@ -472,15 +484,23 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 			     struct sctp_association **app,
 			     struct sctp_transport **tpp)
 {
+<<<<<<< HEAD
+=======
+	struct sctp_init_chunk *chunkhdr, _chunkhdr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	union sctp_addr saddr;
 	union sctp_addr daddr;
 	struct sctp_af *af;
 	struct sock *sk = NULL;
 	struct sctp_association *asoc;
 	struct sctp_transport *transport = NULL;
+<<<<<<< HEAD
 	struct sctp_init_chunk *chunkhdr;
 	__u32 vtag = ntohl(sctphdr->vtag);
 	int len = skb->len - ((void *)sctphdr - (void *)skb->data);
+=======
+	__u32 vtag = ntohl(sctphdr->vtag);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	*app = NULL; *tpp = NULL;
 
@@ -515,6 +535,7 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 	 * discard the packet.
 	 */
 	if (vtag == 0) {
+<<<<<<< HEAD
 		chunkhdr = (void *)sctphdr + sizeof(struct sctphdr);
 		if (len < sizeof(struct sctphdr) + sizeof(sctp_chunkhdr_t)
 			  + sizeof(__be32) ||
@@ -522,6 +543,18 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag) {
 			goto out;
 		}
+=======
+		/* chunk header + first 4 octects of init header */
+		chunkhdr = skb_header_pointer(skb, skb_transport_offset(skb) +
+					      sizeof(struct sctphdr),
+					      sizeof(struct sctp_chunkhdr) +
+					      sizeof(__be32), &_chunkhdr);
+		if (!chunkhdr ||
+		    chunkhdr->chunk_hdr.type != SCTP_CID_INIT ||
+		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag)
+			goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (vtag != asoc->c.peer_vtag) {
 		goto out;
 	}

@@ -37,12 +37,30 @@ static inline void __tlb_remove_table(void *_table)
 
 static inline void tlb_flush(struct mmu_gather *tlb)
 {
+<<<<<<< HEAD
 	if (tlb->fullmm) {
 		flush_tlb_mm(tlb->mm);
 	} else {
 		struct vm_area_struct vma = { .vm_mm = tlb->mm, };
 		flush_tlb_range(&vma, tlb->start, tlb->end);
 	}
+=======
+	struct vm_area_struct vma = { .vm_mm = tlb->mm, };
+
+	/*
+	 * The ASID allocator will either invalidate the ASID or mark
+	 * it as used.
+	 */
+	if (tlb->fullmm)
+		return;
+
+	/*
+	 * The intermediate page table levels are already handled by
+	 * the __(pte|pmd|pud)_free_tlb() functions, so last level
+	 * TLBI is sufficient here.
+	 */
+	__flush_tlb_range(&vma, tlb->start, tlb->end, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
@@ -53,7 +71,11 @@ static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
 	tlb_remove_entry(tlb, pte);
 }
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 2
+=======
+#if CONFIG_PGTABLE_LEVELS > 2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void __pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp,
 				  unsigned long addr)
 {
@@ -62,7 +84,11 @@ static inline void __pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp,
 }
 #endif
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 3
+=======
+#if CONFIG_PGTABLE_LEVELS > 3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void __pud_free_tlb(struct mmu_gather *tlb, pud_t *pudp,
 				  unsigned long addr)
 {

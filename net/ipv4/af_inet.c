@@ -89,6 +89,10 @@
 #include <linux/netfilter_ipv4.h>
 #include <linux/random.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/netfilter/xt_qtaguid.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/uaccess.h>
 
@@ -275,6 +279,12 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
 	if (!current_has_network())
 		return -EACCES;
 
+<<<<<<< HEAD
+=======
+	if (protocol < 0 || protocol >= IPPROTO_MAX)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sock->state = SS_UNCONNECTED;
 
 	/* Look for the requested type/protocol pair. */
@@ -412,6 +422,12 @@ int inet_release(struct socket *sock)
 	if (sk) {
 		long timeout;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NETFILTER_XT_MATCH_QTAGUID
+		qtaguid_untag(sock, true);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sock_rps_reset_flow(sk);
 
 		/* Applications forget to leave groups before exiting */
@@ -885,7 +901,10 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	case SIOCSIFPFLAGS:
 	case SIOCGIFPFLAGS:
 	case SIOCSIFFLAGS:
+<<<<<<< HEAD
 	case SIOCKILLADDR:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = devinet_ioctl(net, cmd, (void __user *)arg);
 		break;
 	default:
@@ -1029,7 +1048,11 @@ static struct inet_protosw inetsw_array[] =
 		.type =       SOCK_DGRAM,
 		.protocol =   IPPROTO_ICMP,
 		.prot =       &ping_prot,
+<<<<<<< HEAD
 		.ops =        &inet_dgram_ops,
+=======
+		.ops =        &inet_sockraw_ops,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.flags =      INET_PROTOSW_REUSE,
        },
 
@@ -1301,6 +1324,10 @@ static struct sk_buff *inet_gso_segment(struct sk_buff *skb,
 		if (encap)
 			skb_reset_inner_headers(skb);
 		skb->network_header = (u8 *)iph - skb->head;
+<<<<<<< HEAD
+=======
+		skb_reset_mac_len(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} while ((skb = skb->next));
 
 out:
@@ -1404,6 +1431,48 @@ out:
 	return pp;
 }
 
+<<<<<<< HEAD
+=======
+static struct sk_buff **ipip_gro_receive(struct sk_buff **head,
+					 struct sk_buff *skb)
+{
+	if (NAPI_GRO_CB(skb)->encap_mark) {
+		NAPI_GRO_CB(skb)->flush = 1;
+		return NULL;
+	}
+
+	NAPI_GRO_CB(skb)->encap_mark = 1;
+
+	return inet_gro_receive(head, skb);
+}
+
+#define SECONDS_PER_DAY	86400
+
+/* inet_current_timestamp - Return IP network timestamp
+ *
+ * Return milliseconds since midnight in network byte order.
+ */
+__be32 inet_current_timestamp(void)
+{
+	u32 secs;
+	u32 msecs;
+	struct timespec64 ts;
+
+	ktime_get_real_ts64(&ts);
+
+	/* Get secs since midnight. */
+	(void)div_u64_rem(ts.tv_sec, SECONDS_PER_DAY, &secs);
+	/* Convert to msecs. */
+	msecs = secs * MSEC_PER_SEC;
+	/* Convert nsec to msec. */
+	msecs += (u32)ts.tv_nsec / NSEC_PER_MSEC;
+
+	/* Convert to network byte order. */
+	return htons(msecs);
+}
+EXPORT_SYMBOL(inet_current_timestamp);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int inet_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 {
 	if (sk->sk_family == AF_INET)
@@ -1446,6 +1515,16 @@ out_unlock:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int ipip_gro_complete(struct sk_buff *skb, int nhoff)
+{
+	skb->encapsulation = 1;
+	skb_shinfo(skb)->gso_type |= SKB_GSO_IPIP;
+	return inet_gro_complete(skb, nhoff);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int inet_ctl_sock_create(struct sock **sk, unsigned short family,
 			 unsigned short type, unsigned char protocol,
 			 struct net *net)
@@ -1662,8 +1741,13 @@ static struct packet_offload ip_packet_offload __read_mostly = {
 static const struct net_offload ipip_offload = {
 	.callbacks = {
 		.gso_segment	= inet_gso_segment,
+<<<<<<< HEAD
 		.gro_receive	= inet_gro_receive,
 		.gro_complete	= inet_gro_complete,
+=======
+		.gro_receive	= ipip_gro_receive,
+		.gro_complete	= ipip_gro_complete,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 };
 

@@ -42,7 +42,12 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len,
 
 static inline void inet_ctl_sock_destroy(struct sock *sk)
 {
+<<<<<<< HEAD
 	sk_release_kernel(sk);
+=======
+	if (sk)
+		sk_release_kernel(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif

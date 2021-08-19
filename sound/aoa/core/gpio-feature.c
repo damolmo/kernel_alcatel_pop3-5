@@ -88,8 +88,15 @@ static struct device_node *get_gpio(char *name,
 	}
 
 	reg = of_get_property(np, "reg", NULL);
+<<<<<<< HEAD
 	if (!reg)
 		return NULL;
+=======
+	if (!reg) {
+		of_node_put(np);
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	*gpioptr = *reg;
 

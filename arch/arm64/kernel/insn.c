@@ -17,14 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <linux/compiler.h>
 #include <linux/kernel.h>
 #include <linux/smp.h>
 #include <linux/stop_machine.h>
+=======
+#include <linux/bug.h>
+#include <linux/compiler.h>
+#include <linux/kernel.h>
+#include <linux/mm.h>
+#include <linux/smp.h>
+#include <linux/spinlock.h>
+#include <linux/stop_machine.h>
+#include <linux/types.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/uaccess.h>
 
 #include <asm/cacheflush.h>
 #include <asm/debug-monitors.h>
+<<<<<<< HEAD
+=======
+#include <asm/fixmap.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/insn.h>
 
 #define AARCH64_INSN_SF_BIT	BIT(31)
@@ -72,6 +87,42 @@ bool __kprobes aarch64_insn_is_nop(u32 insn)
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool aarch64_insn_is_branch_imm(u32 insn)
+{
+	return (aarch64_insn_is_b(insn) || aarch64_insn_is_bl(insn) ||
+		aarch64_insn_is_tbz(insn) || aarch64_insn_is_tbnz(insn) ||
+		aarch64_insn_is_cbz(insn) || aarch64_insn_is_cbnz(insn) ||
+		aarch64_insn_is_bcond(insn));
+}
+
+static DEFINE_SPINLOCK(patch_lock);
+
+static void __kprobes *patch_map(void *addr, int fixmap)
+{
+	unsigned long uintaddr = (uintptr_t) addr;
+	bool module = !core_kernel_text(uintaddr);
+	struct page *page;
+
+	if (module && IS_ENABLED(CONFIG_DEBUG_SET_MODULE_RONX))
+		page = vmalloc_to_page(addr);
+	else if (!module && IS_ENABLED(CONFIG_DEBUG_RODATA))
+		page = virt_to_page(addr);
+	else
+		return addr;
+
+	BUG_ON(!page);
+	set_fixmap(fixmap, page_to_phys(page));
+
+	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+}
+
+static void __kprobes patch_unmap(int fixmap)
+{
+	clear_fixmap(fixmap);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * In ARMv8-A, A64 instructions have a fixed length of 32 bits and are always
  * little-endian.
@@ -88,10 +139,34 @@ int __kprobes aarch64_insn_read(void *addr, u32 *insnp)
 	return ret;
 }
 
+<<<<<<< HEAD
 int __kprobes aarch64_insn_write(void *addr, u32 insn)
 {
 	insn = cpu_to_le32(insn);
 	return probe_kernel_write(addr, &insn, AARCH64_INSN_SIZE);
+=======
+static int __kprobes __aarch64_insn_write(void *addr, u32 insn)
+{
+	void *waddr = addr;
+	unsigned long flags = 0;
+	int ret;
+
+	spin_lock_irqsave(&patch_lock, flags);
+	waddr = patch_map(addr, FIX_TEXT_POKE0);
+
+	ret = probe_kernel_write(waddr, &insn, AARCH64_INSN_SIZE);
+
+	patch_unmap(FIX_TEXT_POKE0);
+	spin_unlock_irqrestore(&patch_lock, flags);
+
+	return ret;
+}
+
+int __kprobes aarch64_insn_write(void *addr, u32 insn)
+{
+	insn = cpu_to_le32(insn);
+	return __aarch64_insn_write(addr, insn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static bool __kprobes __aarch64_insn_hotpatch_safe(u32 insn)
@@ -218,6 +293,7 @@ int __kprobes aarch64_insn_patch_text(void *addrs[], u32 insns[], int cnt)
 	return aarch64_insn_patch_text_sync(addrs, insns, cnt);
 }
 
+<<<<<<< HEAD
 u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 				  u32 insn, u64 imm)
 {
@@ -235,6 +311,15 @@ u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 		mask = (lomask << 24) | (himask);
 		shift = 5;
 		break;
+=======
+static int __kprobes aarch64_get_imm_shift_mask(enum aarch64_insn_imm_type type,
+						u32 *maskp, int *shiftp)
+{
+	u32 mask;
+	int shift;
+
+	switch (type) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case AARCH64_INSN_IMM_26:
 		mask = BIT(26) - 1;
 		shift = 0;
@@ -273,9 +358,74 @@ u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
 		shift = 16;
 		break;
 	default:
+<<<<<<< HEAD
 		pr_err("aarch64_insn_encode_immediate: unknown immediate encoding %d\n",
 			type);
 		return 0;
+=======
+		return -EINVAL;
+	}
+
+	*maskp = mask;
+	*shiftp = shift;
+
+	return 0;
+}
+
+#define ADR_IMM_HILOSPLIT	2
+#define ADR_IMM_SIZE		SZ_2M
+#define ADR_IMM_LOMASK		((1 << ADR_IMM_HILOSPLIT) - 1)
+#define ADR_IMM_HIMASK		((ADR_IMM_SIZE >> ADR_IMM_HILOSPLIT) - 1)
+#define ADR_IMM_LOSHIFT		29
+#define ADR_IMM_HISHIFT		5
+
+u64 aarch64_insn_decode_immediate(enum aarch64_insn_imm_type type, u32 insn)
+{
+	u32 immlo, immhi, mask;
+	int shift;
+
+	switch (type) {
+	case AARCH64_INSN_IMM_ADR:
+		shift = 0;
+		immlo = (insn >> ADR_IMM_LOSHIFT) & ADR_IMM_LOMASK;
+		immhi = (insn >> ADR_IMM_HISHIFT) & ADR_IMM_HIMASK;
+		insn = (immhi << ADR_IMM_HILOSPLIT) | immlo;
+		mask = ADR_IMM_SIZE - 1;
+		break;
+	default:
+		if (aarch64_get_imm_shift_mask(type, &mask, &shift) < 0) {
+			pr_err("aarch64_insn_decode_immediate: unknown immediate encoding %d\n",
+			       type);
+			return 0;
+		}
+	}
+
+	return (insn >> shift) & mask;
+}
+
+u32 __kprobes aarch64_insn_encode_immediate(enum aarch64_insn_imm_type type,
+				  u32 insn, u64 imm)
+{
+	u32 immlo, immhi, mask;
+	int shift;
+
+	switch (type) {
+	case AARCH64_INSN_IMM_ADR:
+		shift = 0;
+		immlo = (imm & ADR_IMM_LOMASK) << ADR_IMM_LOSHIFT;
+		imm >>= ADR_IMM_HILOSPLIT;
+		immhi = (imm & ADR_IMM_HIMASK) << ADR_IMM_HISHIFT;
+		imm = immlo | immhi;
+		mask = ((ADR_IMM_LOMASK << ADR_IMM_LOSHIFT) |
+			(ADR_IMM_HIMASK << ADR_IMM_HISHIFT));
+		break;
+	default:
+		if (aarch64_get_imm_shift_mask(type, &mask, &shift) < 0) {
+			pr_err("aarch64_insn_encode_immediate: unknown immediate encoding %d\n",
+			       type);
+			return 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Update the immediate field. */
@@ -961,6 +1111,61 @@ u32 aarch64_insn_gen_logical_shifted_reg(enum aarch64_insn_register dst,
 	return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_6, insn, shift);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Decode the imm field of a branch, and return the byte offset as a
+ * signed value (so it can be used when computing a new branch
+ * target).
+ */
+s32 aarch64_get_branch_offset(u32 insn)
+{
+	s32 imm;
+
+	if (aarch64_insn_is_b(insn) || aarch64_insn_is_bl(insn)) {
+		imm = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_26, insn);
+		return (imm << 6) >> 4;
+	}
+
+	if (aarch64_insn_is_cbz(insn) || aarch64_insn_is_cbnz(insn) ||
+	    aarch64_insn_is_bcond(insn)) {
+		imm = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_19, insn);
+		return (imm << 13) >> 11;
+	}
+
+	if (aarch64_insn_is_tbz(insn) || aarch64_insn_is_tbnz(insn)) {
+		imm = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_14, insn);
+		return (imm << 18) >> 16;
+	}
+
+	/* Unhandled instruction */
+	BUG();
+}
+
+/*
+ * Encode the displacement of a branch in the imm field and return the
+ * updated instruction.
+ */
+u32 aarch64_set_branch_offset(u32 insn, s32 offset)
+{
+	if (aarch64_insn_is_b(insn) || aarch64_insn_is_bl(insn))
+		return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_26, insn,
+						     offset >> 2);
+
+	if (aarch64_insn_is_cbz(insn) || aarch64_insn_is_cbnz(insn) ||
+	    aarch64_insn_is_bcond(insn))
+		return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_19, insn,
+						     offset >> 2);
+
+	if (aarch64_insn_is_tbz(insn) || aarch64_insn_is_tbnz(insn))
+		return aarch64_insn_encode_immediate(AARCH64_INSN_IMM_14, insn,
+						     offset >> 2);
+
+	/* Unhandled instruction */
+	BUG();
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 bool aarch32_insn_is_wide(u32 insn)
 {
 	return insn >= 0xe800;

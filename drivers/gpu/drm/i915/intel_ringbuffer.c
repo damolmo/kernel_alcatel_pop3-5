@@ -1615,6 +1615,20 @@ i915_dispatch_execbuffer(struct intel_engine_cs *ring,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void cleanup_phys_status_page(struct intel_engine_cs *ring)
+{
+	struct drm_i915_private *dev_priv = to_i915(ring->dev);
+
+	if (!dev_priv->status_page_dmah)
+		return;
+
+	drm_pci_free(ring->dev, dev_priv->status_page_dmah);
+	ring->status_page.page_addr = NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void cleanup_status_page(struct intel_engine_cs *ring)
 {
 	struct drm_i915_gem_object *obj;
@@ -1631,9 +1645,15 @@ static void cleanup_status_page(struct intel_engine_cs *ring)
 
 static int init_status_page(struct intel_engine_cs *ring)
 {
+<<<<<<< HEAD
 	struct drm_i915_gem_object *obj;
 
 	if ((obj = ring->status_page.obj) == NULL) {
+=======
+	struct drm_i915_gem_object *obj = ring->status_page.obj;
+
+	if (obj == NULL) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		unsigned flags;
 		int ret;
 
@@ -1783,7 +1803,11 @@ static int intel_init_ring_buffer(struct drm_device *dev,
 		if (ret)
 			goto error;
 	} else {
+<<<<<<< HEAD
 		BUG_ON(ring->id != RCS);
+=======
+		WARN_ON(ring->id != RCS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = init_phys_status_page(ring);
 		if (ret)
 			goto error;
@@ -1837,7 +1861,16 @@ void intel_cleanup_ring_buffer(struct intel_engine_cs *ring)
 	if (ring->cleanup)
 		ring->cleanup(ring);
 
+<<<<<<< HEAD
 	cleanup_status_page(ring);
+=======
+	if (I915_NEED_GFX_HWS(ring->dev)) {
+		cleanup_status_page(ring);
+	} else {
+		WARN_ON(ring->id != RCS);
+		cleanup_phys_status_page(ring);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	i915_cmd_parser_fini_ring(ring);
 

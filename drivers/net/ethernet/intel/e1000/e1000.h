@@ -213,8 +213,16 @@ struct e1000_rx_ring {
 };
 
 #define E1000_DESC_UNUSED(R)						\
+<<<<<<< HEAD
 	((((R)->next_to_clean > (R)->next_to_use)			\
 	  ? 0 : (R)->count) + (R)->next_to_clean - (R)->next_to_use - 1)
+=======
+({									\
+	unsigned int clean = smp_load_acquire(&(R)->next_to_clean);	\
+	unsigned int use = READ_ONCE((R)->next_to_use);			\
+	(clean > use ? 0 : (R)->count) + clean - use - 1;		\
+})
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define E1000_RX_DESC_EXT(R, i)						\
 	(&(((union e1000_rx_desc_extended *)((R).desc))[i]))
@@ -328,7 +336,12 @@ struct e1000_adapter {
 enum e1000_state_t {
 	__E1000_TESTING,
 	__E1000_RESETTING,
+<<<<<<< HEAD
 	__E1000_DOWN
+=======
+	__E1000_DOWN,
+	__E1000_DISABLED
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #undef pr_fmt

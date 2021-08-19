@@ -1120,7 +1120,11 @@ EXPORT_SYMBOL_GPL(vb2_create_bufs);
  */
 void *vb2_plane_vaddr(struct vb2_buffer *vb, unsigned int plane_no)
 {
+<<<<<<< HEAD
 	if (plane_no > vb->num_planes || !vb->planes[plane_no].mem_priv)
+=======
+	if (plane_no >= vb->num_planes || !vb->planes[plane_no].mem_priv)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 
 	return call_ptr_memop(vb, vaddr, vb->planes[plane_no].mem_priv);
@@ -1790,6 +1794,14 @@ static int vb2_internal_qbuf(struct vb2_queue *q, struct v4l2_buffer *b)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
+=======
+	if (q->error) {
+		dprintk(1, "fatal error occurred on queue\n");
+		return -EIO;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vb = q->bufs[b->index];
 
 	switch (vb->state) {
@@ -2075,6 +2087,14 @@ static int vb2_internal_dqbuf(struct vb2_queue *q, struct v4l2_buffer *b, bool n
 	dprintk(1, "dqbuf of buffer %d, with state %d\n",
 			vb->v4l2_buf.index, vb->state);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * After calling the VIDIOC_DQBUF V4L2_BUF_FLAG_DONE must be
+	 * cleared.
+	 */
+	b->flags &= ~V4L2_BUF_FLAG_DONE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -2469,9 +2489,19 @@ int vb2_mmap(struct vb2_queue *q, struct vm_area_struct *vma)
 			return -EINVAL;
 		}
 	}
+<<<<<<< HEAD
 	if (vb2_fileio_is_active(q)) {
 		dprintk(1, "mmap: file io in progress\n");
 		return -EBUSY;
+=======
+
+	mutex_lock(&q->mmap_lock);
+
+	if (vb2_fileio_is_active(q)) {
+		dprintk(1, "mmap: file io in progress\n");
+		ret = -EBUSY;
+		goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*
@@ -2479,7 +2509,11 @@ int vb2_mmap(struct vb2_queue *q, struct vm_area_struct *vma)
 	 */
 	ret = __find_plane_by_offset(q, off, &buffer, &plane);
 	if (ret)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vb = q->bufs[buffer];
 
@@ -2492,11 +2526,21 @@ int vb2_mmap(struct vb2_queue *q, struct vm_area_struct *vma)
 	if (length < (vma->vm_end - vma->vm_start)) {
 		dprintk(1,
 			"MMAP invalid, as it would overflow buffer length\n");
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
 	mutex_lock(&q->mmap_lock);
 	ret = call_memop(vb, mmap, vb->planes[plane].mem_priv, vma);
+=======
+		ret = -EINVAL;
+		goto unlock;
+	}
+
+	ret = call_memop(vb, mmap, vb->planes[plane].mem_priv, vma);
+
+unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&q->mmap_lock);
 	if (ret)
 		return ret;
@@ -2618,10 +2662,17 @@ unsigned int vb2_poll(struct vb2_queue *q, struct file *file, poll_table *wait)
 		return res | POLLERR;
 
 	/*
+<<<<<<< HEAD
 	 * For output streams you can write as long as there are fewer buffers
 	 * queued than there are buffers available.
 	 */
 	if (V4L2_TYPE_IS_OUTPUT(q->type) && q->queued_count < q->num_buffers)
+=======
+	 * For output streams you can call write() as long as there are fewer
+	 * buffers queued than there are buffers available.
+	 */
+	if (V4L2_TYPE_IS_OUTPUT(q->type) && q->fileio && q->queued_count < q->num_buffers)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return res | POLLOUT | POLLWRNORM;
 
 	if (list_empty(&q->done_list))
@@ -3221,7 +3272,10 @@ EXPORT_SYMBOL_GPL(vb2_thread_start);
 int vb2_thread_stop(struct vb2_queue *q)
 {
 	struct vb2_threadio_data *threadio = q->threadio;
+<<<<<<< HEAD
 	struct vb2_fileio_data *fileio = q->fileio;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 
 	if (threadio == NULL)

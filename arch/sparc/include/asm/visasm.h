@@ -28,6 +28,7 @@
  * Must preserve %o5 between VISEntryHalf and VISExitHalf */
 
 #define VISEntryHalf					\
+<<<<<<< HEAD
 	rd		%fprs, %o5;			\
 	andcc		%o5, FPRS_FEF, %g0;		\
 	be,pt		%icc, 297f;			\
@@ -38,6 +39,12 @@
 	clr		%o5;				\
 297:	wr		%o5, FPRS_FEF, %fprs;		\
 298:
+=======
+	VISEntry
+
+#define VISExitHalf					\
+	VISExit
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define VISEntryHalfFast(fail_label)			\
 	rd		%fprs, %o5;			\
@@ -47,7 +54,11 @@
 	ba,a,pt		%xcc, fail_label;		\
 297:	wr		%o5, FPRS_FEF, %fprs;
 
+<<<<<<< HEAD
 #define VISExitHalf					\
+=======
+#define VISExitHalfFast					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wr		%o5, 0, %fprs;
 
 #ifndef __ASSEMBLY__

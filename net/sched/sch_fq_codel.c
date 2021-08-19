@@ -23,7 +23,10 @@
 #include <linux/vmalloc.h>
 #include <net/netlink.h>
 #include <net/pkt_sched.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <net/codel.h>
 
 /*	Fair Queue CoDel.
@@ -56,7 +59,11 @@ struct fq_codel_sched_data {
 	struct fq_codel_flow *flows;	/* Flows table [flows_cnt] */
 	u32		*backlogs;	/* backlog table [flows_cnt] */
 	u32		flows_cnt;	/* number of flows */
+<<<<<<< HEAD
 	u32		perturbation;	/* hash perturbation */
+=======
+	siphash_key_t	perturbation;	/* hash perturbation */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32		quantum;	/* psched_mtu(qdisc_dev(sch)); */
 	struct codel_params cparams;
 	struct codel_stats cstats;
@@ -68,6 +75,7 @@ struct fq_codel_sched_data {
 };
 
 static unsigned int fq_codel_hash(const struct fq_codel_sched_data *q,
+<<<<<<< HEAD
 				  const struct sk_buff *skb)
 {
 	struct flow_keys keys;
@@ -77,6 +85,11 @@ static unsigned int fq_codel_hash(const struct fq_codel_sched_data *q,
 	hash = jhash_3words((__force u32)keys.dst,
 			    (__force u32)keys.src ^ keys.ip_proto,
 			    (__force u32)keys.ports, q->perturbation);
+=======
+				  struct sk_buff *skb)
+{
+	u32 hash = skb_get_hash_perturb(skb, &q->perturbation);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return reciprocal_scale(hash, q->flows_cnt);
 }
@@ -173,7 +186,11 @@ static unsigned int fq_codel_drop(struct Qdisc *sch)
 static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 {
 	struct fq_codel_sched_data *q = qdisc_priv(sch);
+<<<<<<< HEAD
 	unsigned int idx;
+=======
+	unsigned int idx, prev_backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct fq_codel_flow *flow;
 	int uninitialized_var(ret);
 
@@ -201,6 +218,10 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (++sch->q.qlen <= sch->limit)
 		return NET_XMIT_SUCCESS;
 
+<<<<<<< HEAD
+=======
+	prev_backlog = sch->qstats.backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	q->drop_overlimit++;
 	/* Return Congestion Notification only if we dropped a packet
 	 * from this flow.
@@ -209,7 +230,11 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return NET_XMIT_CN;
 
 	/* As we dropped a packet, better let upper stack know this */
+<<<<<<< HEAD
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	qdisc_tree_reduce_backlog(sch, 1, prev_backlog - sch->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NET_XMIT_SUCCESS;
 }
 
@@ -239,6 +264,10 @@ static struct sk_buff *fq_codel_dequeue(struct Qdisc *sch)
 	struct fq_codel_flow *flow;
 	struct list_head *head;
 	u32 prev_drop_count, prev_ecn_mark;
+<<<<<<< HEAD
+=======
+	unsigned int prev_backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 begin:
 	head = &q->new_flows;
@@ -257,6 +286,10 @@ begin:
 
 	prev_drop_count = q->cstats.drop_count;
 	prev_ecn_mark = q->cstats.ecn_mark;
+<<<<<<< HEAD
+=======
+	prev_backlog = sch->qstats.backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	skb = codel_dequeue(sch, &q->cparams, &flow->cvars, &q->cstats,
 			    dequeue);
@@ -274,12 +307,23 @@ begin:
 	}
 	qdisc_bstats_update(sch, skb);
 	flow->deficit -= qdisc_pkt_len(skb);
+<<<<<<< HEAD
 	/* We cant call qdisc_tree_decrease_qlen() if our qlen is 0,
 	 * or HTB crashes. Defer it for next round.
 	 */
 	if (q->cstats.drop_count && sch->q.qlen) {
 		qdisc_tree_decrease_qlen(sch, q->cstats.drop_count);
 		q->cstats.drop_count = 0;
+=======
+	/* We cant call qdisc_tree_reduce_backlog() if our qlen is 0,
+	 * or HTB crashes. Defer it for next round.
+	 */
+	if (q->cstats.drop_count && sch->q.qlen) {
+		qdisc_tree_reduce_backlog(sch, q->cstats.drop_count,
+					  q->cstats.drop_len);
+		q->cstats.drop_count = 0;
+		q->cstats.drop_len = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return skb;
 }
@@ -347,11 +391,21 @@ static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt)
 	while (sch->q.qlen > sch->limit) {
 		struct sk_buff *skb = fq_codel_dequeue(sch);
 
+<<<<<<< HEAD
 		kfree_skb(skb);
 		q->cstats.drop_count++;
 	}
 	qdisc_tree_decrease_qlen(sch, q->cstats.drop_count);
 	q->cstats.drop_count = 0;
+=======
+		q->cstats.drop_len += qdisc_pkt_len(skb);
+		kfree_skb(skb);
+		q->cstats.drop_count++;
+	}
+	qdisc_tree_reduce_backlog(sch, q->cstats.drop_count, q->cstats.drop_len);
+	q->cstats.drop_count = 0;
+	q->cstats.drop_len = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sch_tree_unlock(sch);
 	return 0;
@@ -388,7 +442,11 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt)
 	sch->limit = 10*1024;
 	q->flows_cnt = 1024;
 	q->quantum = psched_mtu(qdisc_dev(sch));
+<<<<<<< HEAD
 	q->perturbation = prandom_u32();
+=======
+	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&q->new_flows);
 	INIT_LIST_HEAD(&q->old_flows);
 	codel_params_init(&q->cparams);
@@ -550,7 +608,11 @@ static int fq_codel_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 		qs.backlog = q->backlogs[idx];
 		qs.drops = flow->dropped;
 	}
+<<<<<<< HEAD
 	if (gnet_stats_copy_queue(d, NULL, &qs, 0) < 0)
+=======
+	if (gnet_stats_copy_queue(d, NULL, &qs, qs.qlen) < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -1;
 	if (idx < q->flows_cnt)
 		return gnet_stats_copy_app(d, &xstats, sizeof(xstats));

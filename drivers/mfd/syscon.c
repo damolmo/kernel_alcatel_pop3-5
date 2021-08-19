@@ -15,7 +15,10 @@
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/list.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_platform.h>
@@ -23,6 +26,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/mfd/syscon.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 
 static struct platform_driver syscon_driver;
@@ -90,10 +94,25 @@ err_regmap:
 err_map:
 	kfree(syscon);
 	return ERR_PTR(ret);
+=======
+
+static struct platform_driver syscon_driver;
+
+struct syscon {
+	struct regmap *regmap;
+};
+
+static int syscon_match_node(struct device *dev, void *data)
+{
+	struct device_node *dn = data;
+
+	return (dev->of_node == dn) ? 1 : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 struct regmap *syscon_node_to_regmap(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct syscon *entry, *syscon = NULL;
 
 	spin_lock(&syscon_list_slock);
@@ -111,6 +130,17 @@ struct regmap *syscon_node_to_regmap(struct device_node *np)
 
 	if (IS_ERR(syscon))
 		return ERR_CAST(syscon);
+=======
+	struct syscon *syscon;
+	struct device *dev;
+
+	dev = driver_find_device(&syscon_driver.driver, NULL, np,
+				 syscon_match_node);
+	if (!dev)
+		return ERR_PTR(-EPROBE_DEFER);
+
+	syscon = dev_get_drvdata(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return syscon->regmap;
 }
@@ -174,6 +204,20 @@ struct regmap *syscon_regmap_lookup_by_phandle(struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_phandle);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id of_syscon_match[] = {
+	{ .compatible = "syscon", },
+	{ },
+};
+
+static struct regmap_config syscon_regmap_config = {
+	.reg_bits = 32,
+	.val_bits = 32,
+	.reg_stride = 4,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int syscon_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -220,6 +264,10 @@ static struct platform_driver syscon_driver = {
 	.driver = {
 		.name = "syscon",
 		.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.of_match_table = of_syscon_match,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	.probe		= syscon_probe,
 	.id_table	= syscon_ids,

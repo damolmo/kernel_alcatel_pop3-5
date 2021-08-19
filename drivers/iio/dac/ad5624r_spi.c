@@ -22,7 +22,11 @@
 #include "ad5624r.h"
 
 static int ad5624r_spi_write(struct spi_device *spi,
+<<<<<<< HEAD
 			     u8 cmd, u8 addr, u16 val, u8 len)
+=======
+			     u8 cmd, u8 addr, u16 val, u8 shift)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u32 data;
 	u8 msg[3];
@@ -35,7 +39,11 @@ static int ad5624r_spi_write(struct spi_device *spi,
 	 * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits,
 	 * for the AD5664R, AD5644R, and AD5624R, respectively.
 	 */
+<<<<<<< HEAD
 	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
+=======
+	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << shift);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	msg[0] = data >> 16;
 	msg[1] = data >> 8;
 	msg[2] = data;

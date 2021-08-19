@@ -718,13 +718,21 @@ u8 rtw_addbareq_cmd(struct adapter *padapter, u8 tid, u8 *addr)
 	u8	res = _SUCCESS;
 
 
+<<<<<<< HEAD
 	ph2c = kzalloc(sizeof(struct cmd_obj), GFP_KERNEL);
+=======
+	ph2c = kzalloc(sizeof(struct cmd_obj), GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ph2c == NULL) {
 		res = _FAIL;
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	paddbareq_parm = kzalloc(sizeof(struct addBaReq_parm), GFP_KERNEL);
+=======
+	paddbareq_parm = kzalloc(sizeof(struct addBaReq_parm), GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (paddbareq_parm == NULL) {
 		kfree(ph2c);
 		res = _FAIL;

@@ -1224,9 +1224,12 @@ static void armv8pmu_reset(void *info)
 
 	/* Initialize & Reset PMNC: C and P bits. */
 	armv8pmu_pmcr_write(ARMV8_PMCR_P | ARMV8_PMCR_C);
+<<<<<<< HEAD
 
 	/* Disable access from userspace. */
 	asm volatile("msr pmuserenr_el0, %0" :: "r" (0));
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int armv8_pmuv3_map_event(struct perf_event *event)
@@ -1332,9 +1335,15 @@ static void __init cpu_pmu_init(struct arm_pmu *armpmu)
 
 static int __init init_hw_perf_events(void)
 {
+<<<<<<< HEAD
 	u64 dfr = read_cpuid(ID_AA64DFR0_EL1);
 
 	switch ((dfr >> 8) & 0xf) {
+=======
+	u64 dfr = read_system_reg(SYS_ID_AA64DFR0_EL1);
+
+	switch (cpuid_feature_extract_field(dfr, ID_AA64DFR0_PMUVER_SHIFT)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 0x1:	/* PMUv3 */
 		cpu_pmu = armv8_pmuv3_pmu_init();
 		break;

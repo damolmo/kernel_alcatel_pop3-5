@@ -201,3 +201,7 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
 	memcpy(dst, src, len);
 	return csum_partial(dst, len, sum);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(csum_partial_copy_nocheck);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

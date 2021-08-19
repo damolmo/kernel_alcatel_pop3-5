@@ -185,6 +185,10 @@ static inline void ct_assert_unique_operations(void)
 {
 	switch (0) {
 #include GENL_MAGIC_INCLUDE_FILE
+<<<<<<< HEAD
+=======
+	case 0:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		;
 	}
 }
@@ -203,6 +207,10 @@ static inline void ct_assert_unique_top_level_attributes(void)
 {
 	switch (0) {
 #include GENL_MAGIC_INCLUDE_FILE
+<<<<<<< HEAD
+=======
+	case 0:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		;
 	}
 }
@@ -212,7 +220,12 @@ static inline void ct_assert_unique_top_level_attributes(void)
 static inline void ct_assert_unique_ ## s_name ## _attributes(void)	\
 {									\
 	switch (0) {							\
+<<<<<<< HEAD
 		s_fields						\
+=======
+	s_fields							\
+	case 0:								\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			;						\
 	}								\
 }

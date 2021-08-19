@@ -528,6 +528,15 @@ enable_vport(struct fc_vport *fc_vport)
 
 	spin_lock_irq(shost->host_lock);
 	vport->load_flag |= FC_LOADING;
+<<<<<<< HEAD
+=======
+	if (vport->fc_flag & FC_VPORT_NEEDS_INIT_VPI) {
+		spin_unlock_irq(shost->host_lock);
+		lpfc_issue_init_vpi(vport);
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vport->fc_flag |= FC_VPORT_NEEDS_REG_VPI;
 	spin_unlock_irq(shost->host_lock);
 
@@ -548,6 +557,11 @@ enable_vport(struct fc_vport *fc_vport)
 	} else {
 		lpfc_vport_set_state(vport, FC_VPORT_FAILED);
 	}
+<<<<<<< HEAD
+=======
+
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lpfc_printf_vlog(vport, KERN_ERR, LOG_VPORT,
 			 "1827 Vport Enabled.\n");
 	return VPORT_OK;
@@ -607,6 +621,7 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 		    vport->port_state < LPFC_VPORT_READY)
 			return -EAGAIN;
 	}
+<<<<<<< HEAD
 	/*
 	 * This is a bit of a mess.  We want to ensure the shost doesn't get
 	 * torn down until we're done with the embedded lpfc_vport structure.
@@ -628,6 +643,18 @@ lpfc_vport_delete(struct fc_vport *fc_vport)
 		scsi_host_put(shost);
 		return VPORT_INVAL;
 	}
+=======
+
+	/*
+	 * Take early refcount for outstanding I/O requests we schedule during
+	 * delete processing for unreg_vpi.  Always keep this before
+	 * scsi_remove_host() as we can no longer obtain a reference through
+	 * scsi_host_get() after scsi_host_remove as shost is set to SHOST_DEL.
+	 */
+	if (!scsi_host_get(shost))
+		return VPORT_INVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lpfc_free_sysfs_attr(vport);
 
 	lpfc_debugfs_terminate(vport);
@@ -774,8 +801,14 @@ skip_logo:
 		 */
 		if (lpfc_mbx_unreg_vpi(vport))
 			scsi_host_put(shost);
+<<<<<<< HEAD
 	} else
 		scsi_host_put(shost);
+=======
+	} else {
+		scsi_host_put(shost);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	lpfc_free_vpi(phba, vport->vpi);
 	vport->work_port_events = 0;

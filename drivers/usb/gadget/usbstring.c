@@ -13,7 +13,10 @@
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/nls.h>
 
 #include <linux/usb/ch9.h>
@@ -60,9 +63,15 @@ usb_gadget_get_string (struct usb_gadget_strings *table, int id, u8 *buf)
 		return -EINVAL;
 
 	/* string descriptors have length, tag, then UTF16-LE text */
+<<<<<<< HEAD
 	len = min ((size_t) 126, strlen (s->s));
 	len = utf8s_to_utf16s(s->s, len, UTF16_LITTLE_ENDIAN,
 			(wchar_t *) &buf[2], 126);
+=======
+	len = min((size_t)USB_MAX_STRING_LEN, strlen(s->s));
+	len = utf8s_to_utf16s(s->s, len, UTF16_LITTLE_ENDIAN,
+			(wchar_t *) &buf[2], USB_MAX_STRING_LEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (len < 0)
 		return -EINVAL;
 	buf [0] = (len + 1) * 2;

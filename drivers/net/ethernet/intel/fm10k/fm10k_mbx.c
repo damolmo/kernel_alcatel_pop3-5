@@ -1952,9 +1952,16 @@ static void fm10k_sm_mbx_create_reply(struct fm10k_hw *hw,
  *  function can also be used to respond to an error as the connection
  *  resetting would also be a means of dealing with errors.
  **/
+<<<<<<< HEAD
 static void fm10k_sm_mbx_process_reset(struct fm10k_hw *hw,
 				       struct fm10k_mbx_info *mbx)
 {
+=======
+static s32 fm10k_sm_mbx_process_reset(struct fm10k_hw *hw,
+				      struct fm10k_mbx_info *mbx)
+{
+	s32 err = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	const enum fm10k_mbx_state state = mbx->state;
 
 	switch (state) {
@@ -1967,6 +1974,10 @@ static void fm10k_sm_mbx_process_reset(struct fm10k_hw *hw,
 	case FM10K_STATE_OPEN:
 		/* flush any incomplete work */
 		fm10k_sm_mbx_connect_reset(mbx);
+<<<<<<< HEAD
+=======
+		err = FM10K_ERR_RESET_REQUESTED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case FM10K_STATE_CONNECT:
 		/* Update remote value to match local value */
@@ -1976,6 +1987,11 @@ static void fm10k_sm_mbx_process_reset(struct fm10k_hw *hw,
 	}
 
 	fm10k_sm_mbx_create_reply(hw, mbx, mbx->tail);
+<<<<<<< HEAD
+=======
+
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -2056,7 +2072,11 @@ static s32 fm10k_sm_mbx_process(struct fm10k_hw *hw,
 
 	switch (FM10K_MSG_HDR_FIELD_GET(mbx->mbx_hdr, SM_VER)) {
 	case 0:
+<<<<<<< HEAD
 		fm10k_sm_mbx_process_reset(hw, mbx);
+=======
+		err = fm10k_sm_mbx_process_reset(hw, mbx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case FM10K_SM_MBX_VERSION:
 		err = fm10k_sm_mbx_process_version_1(hw, mbx);

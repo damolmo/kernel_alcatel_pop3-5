@@ -118,8 +118,14 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 	struct dentry *dentry, *root = sb->s_root;
 	unsigned long size = 0;
 	char *name;
+<<<<<<< HEAD
 	int len, i;
 	int err = -ENOMEM;
+=======
+	int len;
+	int err = -ENOMEM;
+	bool is_removable = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 	if (!entry)
@@ -128,15 +134,26 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 	memcpy(entry->var.VariableName, name16, name_size);
 	memcpy(&(entry->var.VendorGuid), &vendor, sizeof(efi_guid_t));
 
+<<<<<<< HEAD
 	len = ucs2_strlen(entry->var.VariableName);
+=======
+	len = ucs2_utf8size(entry->var.VariableName);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* name, plus '-', plus GUID, plus NUL*/
 	name = kmalloc(len + 1 + EFI_VARIABLE_GUID_LEN + 1, GFP_KERNEL);
 	if (!name)
 		goto fail;
 
+<<<<<<< HEAD
 	for (i = 0; i < len; i++)
 		name[i] = entry->var.VariableName[i] & 0xFF;
+=======
+	ucs2_as_utf8(name, entry->var.VariableName, len);
+
+	if (efivar_variable_is_removable(entry->var.VendorGuid, name, len))
+		is_removable = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	name[len] = '-';
 
@@ -144,7 +161,15 @@ static int efivarfs_callback(efi_char16_t *name16, efi_guid_t vendor,
 
 	name[len + EFI_VARIABLE_GUID_LEN+1] = '\0';
 
+<<<<<<< HEAD
 	inode = efivarfs_get_inode(sb, root->d_inode, S_IFREG | 0644, 0);
+=======
+	/* replace invalid slashes like kobject_set_name_vargs does for /sys/firmware/efi/vars. */
+	strreplace(name, '/', '!');
+
+	inode = efivarfs_get_inode(sb, root->d_inode, S_IFREG | 0644, 0,
+				   is_removable);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!inode)
 		goto fail_name;
 
@@ -200,7 +225,11 @@ static int efivarfs_fill_super(struct super_block *sb, void *data, int silent)
 	sb->s_d_op		= &efivarfs_d_ops;
 	sb->s_time_gran         = 1;
 
+<<<<<<< HEAD
 	inode = efivarfs_get_inode(sb, NULL, S_IFDIR | 0755, 0);
+=======
+	inode = efivarfs_get_inode(sb, NULL, S_IFDIR | 0755, 0, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!inode)
 		return -ENOMEM;
 	inode->i_op = &efivarfs_dir_inode_operations;

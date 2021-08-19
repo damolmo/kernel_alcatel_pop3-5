@@ -67,7 +67,11 @@
 #endif
 
 /* Ensure if the instruction can be boostable */
+<<<<<<< HEAD
 extern int can_boost(kprobe_opcode_t *instruction);
+=======
+extern int can_boost(kprobe_opcode_t *instruction, void *addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Recover instruction if given address is probed */
 extern unsigned long recover_probed_instruction(kprobe_opcode_t *buf,
 					 unsigned long addr);

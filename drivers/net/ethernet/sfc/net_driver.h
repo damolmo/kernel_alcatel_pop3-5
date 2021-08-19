@@ -218,6 +218,10 @@ struct efx_tx_buffer {
  * @tso_packets: Number of packets via the TSO xmit path
  * @pushes: Number of times the TX push feature has been used
  * @pio_packets: Number of times the TX PIO feature has been used
+<<<<<<< HEAD
+=======
+ * @xmit_more_available: Are any packets waiting to be pushed to the NIC
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @empty_read_count: If the completion path has seen the queue as empty
  *	and the transmission path has not yet checked this, the value of
  *	@read_count bitwise-added to %EFX_EMPTY_COUNT_VALID; otherwise 0.
@@ -250,6 +254,10 @@ struct efx_tx_queue {
 	unsigned int tso_packets;
 	unsigned int pushes;
 	unsigned int pio_packets;
+<<<<<<< HEAD
+=======
+	bool xmit_more_available;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Statistics to supplement MAC stats */
 	unsigned long tx_packets;
 

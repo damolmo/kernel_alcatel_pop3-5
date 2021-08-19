@@ -209,6 +209,7 @@ config REGULATOR_DA9211
 	  step down converter 12A or 16A DC-DC Buck controlled through an I2C
 	  interface.
 
+<<<<<<< HEAD
 config REGULATOR_DA9212
 	tristate "Dialog Semiconductor DA9212 regulator"
 	depends on I2C
@@ -218,6 +219,8 @@ config REGULATOR_DA9212
 	  converter 12A DC-DC Buck controlled through an I2C
 	  interface.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config REGULATOR_DBX500_PRCMU
 	bool
 
@@ -442,6 +445,7 @@ config REGULATOR_MC13892
 	  Say y here to support the regulators found on the Freescale MC13892
 	  PMIC.
 
+<<<<<<< HEAD
 config REGULATOR_MT6323
 	tristate "MediaTek MT6323 PMIC"
 	depends on MFD_MT6323
@@ -460,6 +464,8 @@ config REGULATOR_MT6397
 	  This driver supports the control of different power rails of device
 	  through regulator interface.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config REGULATOR_PALMAS
 	tristate "TI Palmas PMIC Regulators"
 	depends on MFD_PALMAS
@@ -583,6 +589,7 @@ config REGULATOR_SKY81452
 	  This driver can also be built as a module. If so, the module
 	  will be called sky81452-regulator.
 
+<<<<<<< HEAD
 config REGULATOR_SYM827
 	tristate "Silergy SYM827 regulator"
 	depends on I2C
@@ -592,6 +599,8 @@ config REGULATOR_SYM827
 	  converter 6A DC-DC Buck controlled through an I2C
 	  interface.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config REGULATOR_TI_ABB
 	tristate "TI Adaptive Body Bias on-chip LDO"
 	depends on ARCH_OMAP

@@ -30,7 +30,11 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <asm-generic/kmap_types.h>
+=======
+#include <linux/highmem.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -86,7 +90,11 @@ static struct mlx5_profile profile[] = {
 	[2] = {
 		.mask		= MLX5_PROF_MASK_QP_SIZE |
 				  MLX5_PROF_MASK_MR_CACHE,
+<<<<<<< HEAD
 		.log_max_qp	= 17,
+=======
+		.log_max_qp	= 18,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.mr_cache[0]	= {
 			.size	= 500,
 			.limit	= 250

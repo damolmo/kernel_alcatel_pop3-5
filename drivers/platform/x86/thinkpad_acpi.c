@@ -2452,7 +2452,11 @@ static void hotkey_compare_and_issue_event(struct tp_nvram_state *oldn,
  */
 static int hotkey_kthread(void *data)
 {
+<<<<<<< HEAD
 	struct tp_nvram_state s[2];
+=======
+	struct tp_nvram_state s[2] = { 0 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 poll_mask, event_mask;
 	unsigned int si, so;
 	unsigned long t;
@@ -5642,6 +5646,10 @@ enum thermal_access_mode {
 enum { /* TPACPI_THERMAL_TPEC_* */
 	TP_EC_THERMAL_TMP0 = 0x78,	/* ACPI EC regs TMP 0..7 */
 	TP_EC_THERMAL_TMP8 = 0xC0,	/* ACPI EC regs TMP 8..15 */
+<<<<<<< HEAD
+=======
+	TP_EC_FUNCREV      = 0xEF,      /* ACPI EC Functional revision */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	TP_EC_THERMAL_TMP_NA = -128,	/* ACPI EC sensor not available */
 
 	TPACPI_THERMAL_SENSOR_NA = -128000, /* Sensor not available */
@@ -5840,7 +5848,11 @@ static const struct attribute_group thermal_temp_input8_group = {
 
 static int __init thermal_init(struct ibm_init_struct *iibm)
 {
+<<<<<<< HEAD
 	u8 t, ta1, ta2;
+=======
+	u8 t, ta1, ta2, ver = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 	int acpi_tmp7;
 	int res;
@@ -5855,7 +5867,18 @@ static int __init thermal_init(struct ibm_init_struct *iibm)
 		 * 0x78-0x7F, 0xC0-0xC7.  Registers return 0x00 for
 		 * non-implemented, thermal sensors return 0x80 when
 		 * not available
+<<<<<<< HEAD
 		 */
+=======
+		 * The above rule is unfortunately flawed. This has been seen with
+		 * 0xC2 (power supply ID) causing thermal control problems.
+		 * The EC version can be determined by offset 0xEF and at least for
+		 * version 3 the Lenovo firmware team confirmed that registers 0xC0-0xC7
+		 * are not thermal registers.
+		 */
+		if (!acpi_ec_read(TP_EC_FUNCREV, &ver))
+			pr_warn("Thinkpad ACPI EC unable to access EC version\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		ta1 = ta2 = 0;
 		for (i = 0; i < 8; i++) {
@@ -5865,11 +5888,21 @@ static int __init thermal_init(struct ibm_init_struct *iibm)
 				ta1 = 0;
 				break;
 			}
+<<<<<<< HEAD
 			if (acpi_ec_read(TP_EC_THERMAL_TMP8 + i, &t)) {
 				ta2 |= t;
 			} else {
 				ta1 = 0;
 				break;
+=======
+			if (ver < 3) {
+				if (acpi_ec_read(TP_EC_THERMAL_TMP8 + i, &t)) {
+					ta2 |= t;
+				} else {
+					ta1 = 0;
+					break;
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 		if (ta1 == 0) {
@@ -5885,9 +5918,18 @@ static int __init thermal_init(struct ibm_init_struct *iibm)
 				thermal_read_mode = TPACPI_THERMAL_NONE;
 			}
 		} else {
+<<<<<<< HEAD
 			thermal_read_mode =
 			    (ta2 != 0) ?
 			    TPACPI_THERMAL_TPEC_16 : TPACPI_THERMAL_TPEC_8;
+=======
+			if (ver >= 3)
+				thermal_read_mode = TPACPI_THERMAL_TPEC_8;
+			else
+				thermal_read_mode =
+					(ta2 != 0) ?
+					TPACPI_THERMAL_TPEC_16 : TPACPI_THERMAL_TPEC_8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	} else if (acpi_tmp7) {
 		if (tpacpi_is_ibm() &&
@@ -6238,8 +6280,15 @@ static int __init tpacpi_query_bcl_levels(acpi_handle handle)
 	list_for_each_entry(child, &device->children, node) {
 		acpi_status status = acpi_evaluate_object(child->handle, "_BCL",
 							  NULL, &buffer);
+<<<<<<< HEAD
 		if (ACPI_FAILURE(status))
 			continue;
+=======
+		if (ACPI_FAILURE(status)) {
+			buffer.length = ACPI_ALLOCATE_BUFFER;
+			continue;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		obj = (union acpi_object *)buffer.pointer;
 		if (!obj || (obj->type != ACPI_TYPE_PACKAGE)) {

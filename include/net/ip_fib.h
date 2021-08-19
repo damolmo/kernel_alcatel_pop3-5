@@ -54,11 +54,19 @@ struct fib_nh_exception {
 	int				fnhe_genid;
 	__be32				fnhe_daddr;
 	u32				fnhe_pmtu;
+<<<<<<< HEAD
+=======
+	bool				fnhe_mtu_locked;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__be32				fnhe_gw;
 	unsigned long			fnhe_expires;
 	struct rtable __rcu		*fnhe_rth_input;
 	struct rtable __rcu		*fnhe_rth_output;
 	unsigned long			fnhe_stamp;
+<<<<<<< HEAD
+=======
+	struct rcu_head			rcu;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct fnhe_hash_bucket {

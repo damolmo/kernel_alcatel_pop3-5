@@ -19,9 +19,12 @@
 #ifdef CONFIG_ZRAM_LZ4_COMPRESS
 #include "zcomp_lz4.h"
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ZRAM_LZ4K_COMPRESS
 #include "zcomp_lz4k.h"
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * single zcomp_strm backend
@@ -51,9 +54,12 @@ static struct zcomp_backend *backends[] = {
 #ifdef CONFIG_ZRAM_LZ4_COMPRESS
 	&zcomp_lz4,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_ZRAM_LZ4K_COMPRESS
 	&zcomp_lz4k,
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	NULL
 };
 
@@ -82,7 +88,11 @@ static void zcomp_strm_free(struct zcomp *comp, struct zcomp_strm *zstrm)
  */
 static struct zcomp_strm *zcomp_strm_alloc(struct zcomp *comp)
 {
+<<<<<<< HEAD
 	struct zcomp_strm *zstrm = kmalloc(sizeof(*zstrm), GFP_KERNEL);
+=======
+	struct zcomp_strm *zstrm = kmalloc(sizeof(*zstrm), GFP_NOIO);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!zstrm)
 		return NULL;
 
@@ -91,7 +101,11 @@ static struct zcomp_strm *zcomp_strm_alloc(struct zcomp *comp)
 	 * allocate 2 pages. 1 for compressed data, plus 1 extra for the
 	 * case when compressed size is larger than the original one
 	 */
+<<<<<<< HEAD
 	zstrm->buffer = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
+=======
+	zstrm->buffer = (void *)__get_free_pages(GFP_NOIO | __GFP_ZERO, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!zstrm->private || !zstrm->buffer) {
 		zcomp_strm_free(comp, zstrm);
 		zstrm = NULL;
@@ -306,6 +320,7 @@ void zcomp_strm_release(struct zcomp *comp, struct zcomp_strm *zstrm)
 {
 	comp->strm_release(comp, zstrm);
 }
+<<<<<<< HEAD
 #ifdef CONFIG_ZSM
 int zcomp_compress_zram(struct zcomp *comp, struct zcomp_strm *zstrm,
 		const unsigned char *src, size_t *dst_len, int *checksum)
@@ -314,13 +329,20 @@ int zcomp_compress_zram(struct zcomp *comp, struct zcomp_strm *zstrm,
 			zstrm->private, checksum);
 }
 #else
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int zcomp_compress(struct zcomp *comp, struct zcomp_strm *zstrm,
 		const unsigned char *src, size_t *dst_len)
 {
 	return comp->backend->compress(src, zstrm->buffer, dst_len,
 			zstrm->private);
 }
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int zcomp_decompress(struct zcomp *comp, const unsigned char *src,
 		size_t src_len, unsigned char *dst)
 {
@@ -338,12 +360,21 @@ void zcomp_destroy(struct zcomp *comp)
  * allocate new zcomp and initialize it. return compressing
  * backend pointer or ERR_PTR if things went bad. ERR_PTR(-EINVAL)
  * if requested algorithm is not supported, ERR_PTR(-ENOMEM) in
+<<<<<<< HEAD
  * case of allocation error.
+=======
+ * case of allocation error, or any other error potentially
+ * returned by functions zcomp_strm_{multi,single}_create.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct zcomp *zcomp_create(const char *compress, int max_strm)
 {
 	struct zcomp *comp;
 	struct zcomp_backend *backend;
+<<<<<<< HEAD
+=======
+	int error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	backend = find_backend(compress);
 	if (!backend)
@@ -355,12 +386,21 @@ struct zcomp *zcomp_create(const char *compress, int max_strm)
 
 	comp->backend = backend;
 	if (max_strm > 1)
+<<<<<<< HEAD
 		zcomp_strm_multi_create(comp, max_strm);
 	else
 		zcomp_strm_single_create(comp);
 	if (!comp->stream) {
 		kfree(comp);
 		return ERR_PTR(-ENOMEM);
+=======
+		error = zcomp_strm_multi_create(comp, max_strm);
+	else
+		error = zcomp_strm_single_create(comp);
+	if (error) {
+		kfree(comp);
+		return ERR_PTR(error);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return comp;
 }

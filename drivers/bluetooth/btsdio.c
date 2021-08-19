@@ -31,6 +31,10 @@
 #include <linux/errno.h>
 #include <linux/skbuff.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/mmc/host.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/mmc/sdio_ids.h>
 #include <linux/mmc/sdio_func.h>
 
@@ -303,6 +307,17 @@ static int btsdio_probe(struct sdio_func *func,
 		tuple = tuple->next;
 	}
 
+<<<<<<< HEAD
+=======
+	/* BCM43341 devices soldered onto the PCB (non-removable) use an
+	 * uart connection for bluetooth, ignore the BT SDIO interface.
+	 */
+	if (func->vendor == SDIO_VENDOR_ID_BROADCOM &&
+	    func->device == SDIO_DEVICE_ID_BROADCOM_43341 &&
+	    !mmc_card_is_removable(func->card->host))
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	data = devm_kzalloc(&func->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;

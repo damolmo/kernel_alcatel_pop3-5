@@ -12,6 +12,10 @@ targets += purgatory.ro
 
 KBUILD_CFLAGS := -fno-strict-aliasing -Wall -Wstrict-prototypes -fno-zero-initialized-in-bss -fno-builtin -ffreestanding -c -MD -Os -mcmodel=large
 KBUILD_CFLAGS += -m$(BITS)
+<<<<<<< HEAD
+=======
+KBUILD_CFLAGS += $(call cc-option,-fno-PIE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 $(obj)/purgatory.ro: $(PURGATORY_OBJS) FORCE
 		$(call if_changed,ld)
@@ -24,6 +28,10 @@ quiet_cmd_bin2c = BIN2C   $@
 
 $(obj)/kexec-purgatory.c: $(obj)/purgatory.ro FORCE
 	$(call if_changed,bin2c)
+<<<<<<< HEAD
+=======
+	@:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 obj-$(CONFIG_KEXEC_FILE)	+= kexec-purgatory.o

@@ -475,7 +475,12 @@ static void free_rxbuf_skb(struct pci_dev *hwdev, struct sk_buff *skb, dma_addr_
 /* Index to functions, as function prototypes. */
 
 static int	tc35815_open(struct net_device *dev);
+<<<<<<< HEAD
 static int	tc35815_send_packet(struct sk_buff *skb, struct net_device *dev);
+=======
+static netdev_tx_t	tc35815_send_packet(struct sk_buff *skb,
+					    struct net_device *dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static irqreturn_t	tc35815_interrupt(int irq, void *dev_id);
 static int	tc35815_rx(struct net_device *dev, int limit);
 static int	tc35815_poll(struct napi_struct *napi, int budget);
@@ -1279,7 +1284,12 @@ tc35815_open(struct net_device *dev)
  * invariant will hold if you make sure that the netif_*_queue()
  * calls are done at the proper times.
  */
+<<<<<<< HEAD
 static int tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct TxFD *txfd;
@@ -1528,7 +1538,11 @@ tc35815_rx(struct net_device *dev, int limit)
 			pci_unmap_single(lp->pci_dev,
 					 lp->rx_skbs[cur_bd].skb_dma,
 					 RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
 			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
+=======
+			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN != 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				memmove(skb->data, skb->data - NET_IP_ALIGN,
 					pkt_len);
 			data = skb_put(skb, pkt_len);

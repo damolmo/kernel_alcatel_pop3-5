@@ -2332,6 +2332,22 @@ static int bttv_g_fmt_vid_overlay(struct file *file, void *priv,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void bttv_get_width_mask_vid_cap(const struct bttv_format *fmt,
+					unsigned int *width_mask,
+					unsigned int *width_bias)
+{
+	if (fmt->flags & FORMAT_FLAGS_PLANAR) {
+		*width_mask = ~15; /* width must be a multiple of 16 pixels */
+		*width_bias = 8;   /* nearest */
+	} else {
+		*width_mask = ~3; /* width must be a multiple of 4 pixels */
+		*width_bias = 2;  /* nearest */
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int bttv_try_fmt_vid_cap(struct file *file, void *priv,
 						struct v4l2_format *f)
 {
@@ -2341,6 +2357,10 @@ static int bttv_try_fmt_vid_cap(struct file *file, void *priv,
 	enum v4l2_field field;
 	__s32 width, height;
 	__s32 height2;
+<<<<<<< HEAD
+=======
+	unsigned int width_mask, width_bias;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int rc;
 
 	fmt = format_by_fourcc(f->fmt.pix.pixelformat);
@@ -2373,9 +2393,15 @@ static int bttv_try_fmt_vid_cap(struct file *file, void *priv,
 	width = f->fmt.pix.width;
 	height = f->fmt.pix.height;
 
+<<<<<<< HEAD
 	rc = limit_scaled_size_lock(fh, &width, &height, field,
 			       /* width_mask: 4 pixels */ ~3,
 			       /* width_bias: nearest */ 2,
+=======
+	bttv_get_width_mask_vid_cap(fmt, &width_mask, &width_bias);
+	rc = limit_scaled_size_lock(fh, &width, &height, field,
+			       width_mask, width_bias,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       /* adjust_size */ 1,
 			       /* adjust_crop */ 0);
 	if (0 != rc)
@@ -2408,6 +2434,10 @@ static int bttv_s_fmt_vid_cap(struct file *file, void *priv,
 	struct bttv_fh *fh = priv;
 	struct bttv *btv = fh->btv;
 	__s32 width, height;
+<<<<<<< HEAD
+=======
+	unsigned int width_mask, width_bias;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	enum v4l2_field field;
 
 	retval = bttv_switch_type(fh, f->type);
@@ -2422,9 +2452,16 @@ static int bttv_s_fmt_vid_cap(struct file *file, void *priv,
 	height = f->fmt.pix.height;
 	field = f->fmt.pix.field;
 
+<<<<<<< HEAD
 	retval = limit_scaled_size_lock(fh, &width, &height, f->fmt.pix.field,
 			       /* width_mask: 4 pixels */ ~3,
 			       /* width_bias: nearest */ 2,
+=======
+	fmt = format_by_fourcc(f->fmt.pix.pixelformat);
+	bttv_get_width_mask_vid_cap(fmt, &width_mask, &width_bias);
+	retval = limit_scaled_size_lock(fh, &width, &height, f->fmt.pix.field,
+			       width_mask, width_bias,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       /* adjust_size */ 1,
 			       /* adjust_crop */ 1);
 	if (0 != retval)
@@ -2432,8 +2469,11 @@ static int bttv_s_fmt_vid_cap(struct file *file, void *priv,
 
 	f->fmt.pix.field = field;
 
+<<<<<<< HEAD
 	fmt = format_by_fourcc(f->fmt.pix.pixelformat);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* update our state informations */
 	fh->fmt              = fmt;
 	fh->cap.field        = f->fmt.pix.field;
@@ -4038,11 +4078,21 @@ static int bttv_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	btv->id  = dev->device;
 	if (pci_enable_device(dev)) {
 		pr_warn("%d: Can't enable device\n", btv->c.nr);
+<<<<<<< HEAD
 		return -EIO;
 	}
 	if (pci_set_dma_mask(dev, DMA_BIT_MASK(32))) {
 		pr_warn("%d: No suitable DMA available\n", btv->c.nr);
 		return -EIO;
+=======
+		result = -EIO;
+		goto free_mem;
+	}
+	if (pci_set_dma_mask(dev, DMA_BIT_MASK(32))) {
+		pr_warn("%d: No suitable DMA available\n", btv->c.nr);
+		result = -EIO;
+		goto free_mem;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (!request_mem_region(pci_resource_start(dev,0),
 				pci_resource_len(dev,0),
@@ -4050,7 +4100,12 @@ static int bttv_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 		pr_warn("%d: can't request iomem (0x%llx)\n",
 			btv->c.nr,
 			(unsigned long long)pci_resource_start(dev, 0));
+<<<<<<< HEAD
 		return -EBUSY;
+=======
+		result = -EBUSY;
+		goto free_mem;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	pci_set_master(dev);
 	pci_set_command(dev);
@@ -4235,6 +4290,13 @@ fail0:
 		iounmap(btv->bt848_mmio);
 	release_mem_region(pci_resource_start(btv->c.pci,0),
 			   pci_resource_len(btv->c.pci,0));
+<<<<<<< HEAD
+=======
+
+free_mem:
+	bttvs[btv->c.nr] = NULL;
+	kfree(btv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return result;
 }
 

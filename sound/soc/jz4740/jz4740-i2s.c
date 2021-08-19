@@ -279,10 +279,20 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	switch (clk_id) {
 	case JZ4740_I2S_CLKSRC_EXT:
 		parent = clk_get(NULL, "ext");
+<<<<<<< HEAD
+=======
+		if (IS_ERR(parent))
+			return PTR_ERR(parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clk_set_parent(i2s->clk_i2s, parent);
 		break;
 	case JZ4740_I2S_CLKSRC_PLL:
 		parent = clk_get(NULL, "pll half");
+<<<<<<< HEAD
+=======
+		if (IS_ERR(parent))
+			return PTR_ERR(parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clk_set_parent(i2s->clk_i2s, parent);
 		ret = clk_set_rate(i2s->clk_i2s, freq);
 		break;

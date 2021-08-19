@@ -483,13 +483,21 @@ static int bma150_register_input_device(struct bma150_data *bma150)
 	idev->close = bma150_irq_close;
 	input_set_drvdata(idev, bma150);
 
+<<<<<<< HEAD
+=======
+	bma150->input = idev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = input_register_device(idev);
 	if (error) {
 		input_free_device(idev);
 		return error;
 	}
 
+<<<<<<< HEAD
 	bma150->input = idev;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -512,15 +520,24 @@ static int bma150_register_polled_device(struct bma150_data *bma150)
 
 	bma150_init_input_device(bma150, ipoll_dev->input);
 
+<<<<<<< HEAD
+=======
+	bma150->input_polled = ipoll_dev;
+	bma150->input = ipoll_dev->input;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = input_register_polled_device(ipoll_dev);
 	if (error) {
 		input_free_polled_device(ipoll_dev);
 		return error;
 	}
 
+<<<<<<< HEAD
 	bma150->input_polled = ipoll_dev;
 	bma150->input = ipoll_dev->input;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

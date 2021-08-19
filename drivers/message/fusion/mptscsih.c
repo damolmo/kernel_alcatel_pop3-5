@@ -118,8 +118,11 @@ int 		mptscsih_suspend(struct pci_dev *pdev, pm_message_t state);
 int 		mptscsih_resume(struct pci_dev *pdev);
 #endif
 
+<<<<<<< HEAD
 #define SNS_LEN(scp)	SCSI_SENSE_BUFFERSIZE
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
 /*
@@ -1178,8 +1181,15 @@ mptscsih_remove(struct pci_dev *pdev)
 
 	scsi_remove_host(host);
 
+<<<<<<< HEAD
 	if((hd = shost_priv(host)) == NULL)
 		return;
+=======
+	if (host == NULL)
+		hd = NULL;
+	else
+		hd = shost_priv(host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mptscsih_shutdown(pdev);
 
@@ -1195,14 +1205,24 @@ mptscsih_remove(struct pci_dev *pdev)
 	    "Free'd ScsiLookup (%d) memory\n",
 	    ioc->name, sz1));
 
+<<<<<<< HEAD
 	kfree(hd->info_kbuf);
+=======
+	if (hd)
+		kfree(hd->info_kbuf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* NULL the Scsi_Host pointer
 	 */
 	ioc->sh = NULL;
 
+<<<<<<< HEAD
 	scsi_host_put(host);
 
+=======
+	if (host)
+		scsi_host_put(host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mpt_detach(pdev);
 
 }
@@ -2439,7 +2459,11 @@ mptscsih_copy_sense_data(struct scsi_cmnd *sc, MPT_SCSI_HOST *hd, MPT_FRAME_HDR 
 		/* Copy the sense received into the scsi command block. */
 		req_index = le16_to_cpu(mf->u.frame.hwhdr.msgctxu.fld.req_idx);
 		sense_data = ((u8 *)ioc->sense_buf_pool + (req_index * MPT_SENSE_BUFFER_ALLOC));
+<<<<<<< HEAD
 		memcpy(sc->sense_buffer, sense_data, SNS_LEN(sc));
+=======
+		memcpy(sc->sense_buffer, sense_data, MPT_SENSE_BUFFER_ALLOC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Log SMART data (asc = 0x5D, non-IM case only) if required.
 		 */

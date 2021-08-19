@@ -49,15 +49,35 @@ static inline void load_context(mm_context_t context)
 	mtctl(__space_to_prot(context), 8);
 }
 
+<<<<<<< HEAD
 static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next, struct task_struct *tsk)
 {
 
+=======
+static inline void switch_mm_irqs_off(struct mm_struct *prev,
+		struct mm_struct *next, struct task_struct *tsk)
+{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (prev != next) {
 		mtctl(__pa(next->pgd), 25);
 		load_context(next->context);
 	}
 }
 
+<<<<<<< HEAD
+=======
+static inline void switch_mm(struct mm_struct *prev,
+		struct mm_struct *next, struct task_struct *tsk)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	switch_mm_irqs_off(prev, next, tsk);
+	local_irq_restore(flags);
+}
+#define switch_mm_irqs_off switch_mm_irqs_off
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define deactivate_mm(tsk,mm)	do { } while (0)
 
 static inline void activate_mm(struct mm_struct *prev, struct mm_struct *next)

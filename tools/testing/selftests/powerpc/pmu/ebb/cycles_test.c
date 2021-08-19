@@ -40,8 +40,11 @@ int cycles(void)
 	ebb_global_disable();
 	ebb_freeze_pmcs();
 
+<<<<<<< HEAD
 	count_pmc(1, sample_period);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dump_ebb_state();
 
 	event_close(&event);

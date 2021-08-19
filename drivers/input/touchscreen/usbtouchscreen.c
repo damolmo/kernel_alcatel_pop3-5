@@ -196,6 +196,10 @@ static const struct usb_device_id usbtouch_devices[] = {
 #endif
 
 #ifdef CONFIG_TOUCHSCREEN_USB_IRTOUCH
+<<<<<<< HEAD
+=======
+	{USB_DEVICE(0x255e, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{USB_DEVICE(0x595a, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 	{USB_DEVICE(0x6615, 0x0001), .driver_info = DEVTYPE_IRTOUCH},
 #endif
@@ -625,6 +629,12 @@ static int dmc_tsc10_init(struct usbtouch_usb *usbtouch)
 		goto err_out;
 	}
 
+<<<<<<< HEAD
+=======
+	/* TSC-25 data sheet specifies a delay after the RESET command */
+	msleep(150);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* set coordinate output rate */
 	buf[0] = buf[1] = 0xFF;
 	ret = usb_control_msg(dev, usb_rcvctrlpipe (dev, 0),

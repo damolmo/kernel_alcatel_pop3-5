@@ -165,7 +165,12 @@ static int cipso_v4_bitmap_walk(const unsigned char *bitmap,
 		    (state == 0 && (byte & bitmask) == 0))
 			return bit_spot;
 
+<<<<<<< HEAD
 		bit_spot++;
+=======
+		if (++bit_spot >= bitmap_len)
+			return -1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		bitmask >>= 1;
 		if (bitmask == 0) {
 			byte = bitmap[++byte_offset];
@@ -554,6 +559,10 @@ void cipso_v4_doi_free(struct cipso_v4_doi *doi_def)
 		kfree(doi_def->map.std->lvl.local);
 		kfree(doi_def->map.std->cat.cipso);
 		kfree(doi_def->map.std->cat.local);
+<<<<<<< HEAD
+=======
+		kfree(doi_def->map.std);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 	kfree(doi_def);
@@ -735,7 +744,12 @@ static int cipso_v4_map_lvl_valid(const struct cipso_v4_doi *doi_def, u8 level)
 	case CIPSO_V4_MAP_PASS:
 		return 0;
 	case CIPSO_V4_MAP_TRANS:
+<<<<<<< HEAD
 		if (doi_def->map.std->lvl.cipso[level] < CIPSO_V4_INV_LVL)
+=======
+		if ((level < doi_def->map.std->lvl.cipso_size) &&
+		    (doi_def->map.std->lvl.cipso[level] < CIPSO_V4_INV_LVL))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return 0;
 		break;
 	}
@@ -1339,7 +1353,12 @@ static int cipso_v4_parsetag_rbm(const struct cipso_v4_doi *doi_def,
 			return ret_val;
 		}
 
+<<<<<<< HEAD
 		secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+=======
+		if (secattr->attr.mls.cat)
+			secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -1520,7 +1539,12 @@ static int cipso_v4_parsetag_rng(const struct cipso_v4_doi *doi_def,
 			return ret_val;
 		}
 
+<<<<<<< HEAD
 		secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+=======
+		if (secattr->attr.mls.cat)
+			secattr->flags |= NETLBL_SECATTR_MLS_CAT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -1580,7 +1604,11 @@ static int cipso_v4_parsetag_loc(const struct cipso_v4_doi *doi_def,
  *
  * Description:
  * Parse the packet's IP header looking for a CIPSO option.  Returns a pointer
+<<<<<<< HEAD
  * to the start of the CIPSO option on success, NULL if one if not found.
+=======
+ * to the start of the CIPSO option on success, NULL if one is not found.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  */
 unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
@@ -1590,10 +1618,28 @@ unsigned char *cipso_v4_optptr(const struct sk_buff *skb)
 	int optlen;
 	int taglen;
 
+<<<<<<< HEAD
 	for (optlen = iph->ihl*4 - sizeof(struct iphdr); optlen > 0; ) {
 		if (optptr[0] == IPOPT_CIPSO)
 			return optptr;
 		taglen = optptr[1];
+=======
+	for (optlen = iph->ihl*4 - sizeof(struct iphdr); optlen > 1; ) {
+		switch (optptr[0]) {
+		case IPOPT_END:
+			return NULL;
+		case IPOPT_NOOP:
+			taglen = 1;
+			break;
+		default:
+			taglen = optptr[1];
+		}
+		if (!taglen || taglen > optlen)
+			return NULL;
+		if (optptr[0] == IPOPT_CIPSO)
+			return optptr;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		optlen -= taglen;
 		optptr += taglen;
 	}
@@ -1655,6 +1701,13 @@ int cipso_v4_validate(const struct sk_buff *skb, unsigned char **option)
 				goto validate_return_locked;
 			}
 
+<<<<<<< HEAD
+=======
+		if (opt_iter + 1 == opt_len) {
+			err_offset = opt_iter;
+			goto validate_return_locked;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tag_len = tag[1];
 		if (tag_len > (opt_len - opt_iter)) {
 			err_offset = opt_iter + 1;
@@ -1788,6 +1841,7 @@ validate_return:
  */
 void cipso_v4_error(struct sk_buff *skb, int error, u32 gateway)
 {
+<<<<<<< HEAD
 	if (ip_hdr(skb)->protocol == IPPROTO_ICMP || error != -EACCES)
 		return;
 
@@ -1795,6 +1849,33 @@ void cipso_v4_error(struct sk_buff *skb, int error, u32 gateway)
 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_NET_ANO, 0);
 	else
 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_ANO, 0);
+=======
+	unsigned char optbuf[sizeof(struct ip_options) + 40];
+	struct ip_options *opt = (struct ip_options *)optbuf;
+	int res;
+
+	if (ip_hdr(skb)->protocol == IPPROTO_ICMP || error != -EACCES)
+		return;
+
+	/*
+	 * We might be called above the IP layer,
+	 * so we can not use icmp_send and IPCB here.
+	 */
+
+	memset(opt, 0, sizeof(struct ip_options));
+	opt->optlen = ip_hdr(skb)->ihl*4 - sizeof(struct iphdr);
+	rcu_read_lock();
+	res = __ip_options_compile(dev_net(skb->dev), opt, skb, NULL);
+	rcu_read_unlock();
+
+	if (res)
+		return;
+
+	if (gateway)
+		__icmp_send(skb, ICMP_DEST_UNREACH, ICMP_NET_ANO, 0, opt);
+	else
+		__icmp_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_ANO, 0, opt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

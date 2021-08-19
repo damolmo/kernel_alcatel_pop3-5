@@ -441,7 +441,12 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
 		return 1;
 
 	ptr = raw_data;
+<<<<<<< HEAD
 	ptr++; /* Skip report id */
+=======
+	if (report->id)
+		ptr++; /* Skip report id */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_irqsave(&pdata->lock, flags);
 

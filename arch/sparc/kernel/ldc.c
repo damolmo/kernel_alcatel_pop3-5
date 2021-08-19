@@ -1693,9 +1693,20 @@ static int read_nonraw(struct ldc_channel *lp, void *buf, unsigned int size)
 
 		lp->rcv_nxt = p->seqid;
 
+<<<<<<< HEAD
 		if (!(p->type & LDC_DATA)) {
 			new = rx_advance(lp, new);
 			goto no_data;
+=======
+		/*
+		 * If this is a control-only packet, there is nothing
+		 * else to do but advance the rx queue since the packet
+		 * was already processed above.
+		 */
+		if (!(p->type & LDC_DATA)) {
+			new = rx_advance(lp, new);
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		if (p->stype & (LDC_ACK | LDC_NACK)) {
 			err = data_ack_nack(lp, p);

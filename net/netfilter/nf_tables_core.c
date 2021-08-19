@@ -125,7 +125,11 @@ next_rule:
 	list_for_each_entry_continue_rcu(rule, &chain->rules, list) {
 
 		/* This rule is not active, skip. */
+<<<<<<< HEAD
 		if (unlikely(rule->genmask & (1 << gencursor)))
+=======
+		if (unlikely(rule->genmask & gencursor))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 
 		rulenum++;
@@ -168,7 +172,13 @@ next_rule:
 		if (unlikely(pkt->skb->nf_trace))
 			nft_trace_packet(pkt, chain, rulenum, NFT_TRACE_RULE);
 
+<<<<<<< HEAD
 		BUG_ON(stackptr >= NFT_JUMP_STACK_SIZE);
+=======
+		if (WARN_ON_ONCE(stackptr >= NFT_JUMP_STACK_SIZE))
+			return NF_DROP;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		jumpstack[stackptr].chain = chain;
 		jumpstack[stackptr].rule  = rule;
 		jumpstack[stackptr].rulenum = rulenum;

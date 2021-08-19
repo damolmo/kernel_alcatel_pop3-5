@@ -31,11 +31,14 @@
 #include <asm/smp_plat.h>
 #include <asm/suspend.h>
 #include <asm/system_misc.h>
+<<<<<<< HEAD
 #include <mtk_hibernate_core.h>
 
 #ifdef MTK_IRQ_NEW_DESIGN
 #include <linux/irqchip/mtk-gic-extend.h>
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define PSCI_POWER_STATE_TYPE_STANDBY		0
 #define PSCI_POWER_STATE_TYPE_POWER_DOWN	1
@@ -62,6 +65,12 @@ static struct psci_operations psci_ops;
 static int (*invoke_psci_fn)(u64, u64, u64, u64);
 typedef int (*psci_initcall_t)(const struct device_node *);
 
+<<<<<<< HEAD
+=======
+asmlinkage int __invoke_psci_fn_hvc(u64, u64, u64, u64);
+asmlinkage int __invoke_psci_fn_smc(u64, u64, u64, u64);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 enum psci_function {
 	PSCI_FN_CPU_SUSPEND,
 	PSCI_FN_CPU_ON,
@@ -114,6 +123,7 @@ static void psci_power_state_unpack(u32 power_state,
 			PSCI_0_2_POWER_STATE_AFFL_SHIFT;
 }
 
+<<<<<<< HEAD
 /*
  * The following two functions are invoked via the invoke_psci_fn pointer
  * and will not be inlined, allowing us to piggyback on the AAPCS.
@@ -148,6 +158,8 @@ static noinline int __invoke_psci_fn_smc(u64 function_id, u64 arg0, u64 arg1,
 	return function_id;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int psci_get_version(void)
 {
 	int err;
@@ -432,8 +444,11 @@ int __init psci_init(void)
 	return init_fn(np);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init cpu_psci_cpu_init(struct device_node *dn, unsigned int cpu)
 {
 	return 0;
@@ -454,9 +469,13 @@ static int cpu_psci_cpu_boot(unsigned int cpu)
 	int err = psci_ops.cpu_on(cpu_logical_map(cpu), __pa(secondary_entry));
 	if (err)
 		pr_err("failed to boot CPU%d (%d)\n", cpu, err);
+<<<<<<< HEAD
 #ifdef MTK_IRQ_NEW_DESIGN
 	gic_clear_primask();
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -471,7 +490,10 @@ static int cpu_psci_cpu_disable(unsigned int cpu)
 
 static void cpu_psci_cpu_die(unsigned int cpu)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * There are no known implementations of PSCI actually using the
 	 * power state field, pass a sensible default for now.
@@ -479,17 +501,27 @@ static void cpu_psci_cpu_die(unsigned int cpu)
 	struct psci_power_state state = {
 		.type = PSCI_POWER_STATE_TYPE_POWER_DOWN,
 	};
+<<<<<<< HEAD
 #ifdef MTK_IRQ_NEW_DESIGN
 	gic_set_primask();
 #endif
 	ret = psci_ops.cpu_off(state);
 
 	pr_crit("unable to power off CPU%u (%d)\n", cpu, ret);
+=======
+
+	psci_ops.cpu_off(state);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int cpu_psci_cpu_kill(unsigned int cpu)
 {
+<<<<<<< HEAD
 	int err, i;
+=======
+	int err;
+	unsigned long start, end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!psci_ops.affinity_info)
 		return 1;
@@ -499,6 +531,7 @@ static int cpu_psci_cpu_kill(unsigned int cpu)
 	 * while it is dying. So, try again a few times.
 	 */
 
+<<<<<<< HEAD
 	for (i = 0; i < 10; i++) {
 		err = psci_ops.affinity_info(cpu_logical_map(cpu), 0);
 		if (err == PSCI_0_2_AFFINITY_LEVEL_OFF) {
@@ -509,6 +542,20 @@ static int cpu_psci_cpu_kill(unsigned int cpu)
 		msleep(10);
 		pr_info("Retrying again to check for CPU kill\n");
 	}
+=======
+	start = jiffies;
+	end = start + msecs_to_jiffies(100);
+	do {
+		err = psci_ops.affinity_info(cpu_logical_map(cpu), 0);
+		if (err == PSCI_0_2_AFFINITY_LEVEL_OFF) {
+			pr_info("CPU%d killed (polled %d ms)\n", cpu,
+				jiffies_to_msecs(jiffies - start));
+			return 1;
+		}
+
+		usleep_range(100, 1000);
+	} while (time_before(jiffies, end));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_warn("CPU%d may not have shut down cleanly (AFFINITY_INFO reports %d)\n",
 			cpu, err);
@@ -516,12 +563,16 @@ static int cpu_psci_cpu_kill(unsigned int cpu)
 	return 0;
 }
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int psci_suspend_finisher(unsigned long index)
 {
 	struct psci_power_state *state = __get_cpu_var(psci_power_state);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 	if (index == POWERMODE_HIBERNATE) {
 		int ret;
@@ -533,6 +584,8 @@ static int psci_suspend_finisher(unsigned long index)
 		return ret;
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return psci_ops.cpu_suspend(state[index - 1],
 				    virt_to_phys(cpu_resume));
 }
@@ -548,10 +601,13 @@ static int __maybe_unused cpu_psci_cpu_suspend(unsigned long index)
 	if (WARN_ON_ONCE(!index))
 		return -EINVAL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 	if (index == POWERMODE_HIBERNATE)
 		return __cpu_suspend(index, psci_suspend_finisher);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (state[index - 1].type == PSCI_POWER_STATE_TYPE_STANDBY)
 		ret = psci_ops.cpu_suspend(state[index - 1], 0);
 	else
@@ -566,7 +622,10 @@ const struct cpu_operations cpu_psci_ops = {
 	.cpu_init_idle	= cpu_psci_cpu_init_idle,
 	.cpu_suspend	= cpu_psci_cpu_suspend,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.cpu_init	= cpu_psci_cpu_init,
 	.cpu_prepare	= cpu_psci_cpu_prepare,
 	.cpu_boot	= cpu_psci_cpu_boot,
@@ -575,6 +634,9 @@ const struct cpu_operations cpu_psci_ops = {
 	.cpu_die	= cpu_psci_cpu_die,
 	.cpu_kill	= cpu_psci_cpu_kill,
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 

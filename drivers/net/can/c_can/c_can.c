@@ -51,6 +51,10 @@
 #define CONTROL_EX_PDR		BIT(8)
 
 /* control register */
+<<<<<<< HEAD
+=======
+#define CONTROL_SWR		BIT(15)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CONTROL_TEST		BIT(7)
 #define CONTROL_CCE		BIT(6)
 #define CONTROL_DISABLE_AR	BIT(5)
@@ -96,6 +100,12 @@
 #define BTR_TSEG2_SHIFT		12
 #define BTR_TSEG2_MASK		(0x7 << BTR_TSEG2_SHIFT)
 
+<<<<<<< HEAD
+=======
+/* interrupt register */
+#define INT_STS_PENDING		0x8000
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* brp extension register */
 #define BRP_EXT_BRPE_MASK	0x0f
 #define BRP_EXT_BRPE_SHIFT	0
@@ -207,6 +217,7 @@ static const struct can_bittiming_const c_can_bittiming_const = {
 	.brp_inc = 1,
 };
 
+<<<<<<< HEAD
 static inline void c_can_pm_runtime_enable(const struct c_can_priv *priv)
 {
 	if (priv->device)
@@ -219,6 +230,8 @@ static inline void c_can_pm_runtime_disable(const struct c_can_priv *priv)
 		pm_runtime_disable(priv->device);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void c_can_pm_runtime_get_sync(const struct c_can_priv *priv)
 {
 	if (priv->device)
@@ -331,9 +344,29 @@ static void c_can_setup_tx_object(struct net_device *dev, int iface,
 
 	priv->write_reg(priv, C_CAN_IFACE(MSGCTRL_REG, iface), ctrl);
 
+<<<<<<< HEAD
 	for (i = 0; i < frame->can_dlc; i += 2) {
 		priv->write_reg(priv, C_CAN_IFACE(DATA1_REG, iface) + i / 2,
 				frame->data[i] | (frame->data[i + 1] << 8));
+=======
+	if (priv->type == BOSCH_D_CAN) {
+		u32 data = 0, dreg = C_CAN_IFACE(DATA1_REG, iface);
+
+		for (i = 0; i < frame->can_dlc; i += 4, dreg += 2) {
+			data = (u32)frame->data[i];
+			data |= (u32)frame->data[i + 1] << 8;
+			data |= (u32)frame->data[i + 2] << 16;
+			data |= (u32)frame->data[i + 3] << 24;
+			priv->write_reg32(priv, dreg, data);
+		}
+	} else {
+		for (i = 0; i < frame->can_dlc; i += 2) {
+			priv->write_reg(priv,
+					C_CAN_IFACE(DATA1_REG, iface) + i / 2,
+					frame->data[i] |
+					(frame->data[i + 1] << 8));
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -401,10 +434,27 @@ static int c_can_read_msg_object(struct net_device *dev, int iface, u32 ctrl)
 	} else {
 		int i, dreg = C_CAN_IFACE(DATA1_REG, iface);
 
+<<<<<<< HEAD
 		for (i = 0; i < frame->can_dlc; i += 2, dreg ++) {
 			data = priv->read_reg(priv, dreg);
 			frame->data[i] = data;
 			frame->data[i + 1] = data >> 8;
+=======
+		if (priv->type == BOSCH_D_CAN) {
+			for (i = 0; i < frame->can_dlc; i += 4, dreg += 2) {
+				data = priv->read_reg32(priv, dreg);
+				frame->data[i] = data;
+				frame->data[i + 1] = data >> 8;
+				frame->data[i + 2] = data >> 16;
+				frame->data[i + 3] = data >> 24;
+			}
+		} else {
+			for (i = 0; i < frame->can_dlc; i += 2, dreg++) {
+				data = priv->read_reg(priv, dreg);
+				frame->data[i] = data;
+				frame->data[i + 1] = data >> 8;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -544,6 +594,29 @@ static void c_can_configure_msg_objects(struct net_device *dev)
 				   IF_MCONT_RCV_EOB);
 }
 
+<<<<<<< HEAD
+=======
+static int c_can_software_reset(struct net_device *dev)
+{
+	struct c_can_priv *priv = netdev_priv(dev);
+	int retry = 0;
+
+	if (priv->type != BOSCH_D_CAN)
+		return 0;
+
+	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_SWR | CONTROL_INIT);
+	while (priv->read_reg(priv, C_CAN_CTRL_REG) & CONTROL_SWR) {
+		msleep(20);
+		if (retry++ > 100) {
+			netdev_err(dev, "CCTRL: software reset failed\n");
+			return -EIO;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Configure C_CAN chip:
  * - enable/disable auto-retransmission
@@ -553,6 +626,14 @@ static void c_can_configure_msg_objects(struct net_device *dev)
 static int c_can_chip_config(struct net_device *dev)
 {
 	struct c_can_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	int err;
+
+	err = c_can_software_reset(dev);
+	if (err)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* enable automatic retransmission */
 	priv->write_reg(priv, C_CAN_CTRL_REG, CONTROL_ENABLE_AR);
@@ -997,10 +1078,23 @@ static int c_can_poll(struct napi_struct *napi, int quota)
 	u16 curr, last = priv->last_status;
 	int work_done = 0;
 
+<<<<<<< HEAD
 	priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
 	/* Ack status on C_CAN. D_CAN is self clearing */
 	if (priv->type != BOSCH_D_CAN)
 		priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
+=======
+	/* Only read the status register if a status interrupt was pending */
+	if (atomic_xchg(&priv->sie_pending, 0)) {
+		priv->last_status = curr = priv->read_reg(priv, C_CAN_STS_REG);
+		/* Ack status on C_CAN. D_CAN is self clearing */
+		if (priv->type != BOSCH_D_CAN)
+			priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
+	} else {
+		/* no change detected ... */
+		curr = last;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* handle state changes */
 	if ((curr & STATUS_EWARN) && (!(last & STATUS_EWARN))) {
@@ -1051,10 +1145,23 @@ static irqreturn_t c_can_isr(int irq, void *dev_id)
 {
 	struct net_device *dev = (struct net_device *)dev_id;
 	struct c_can_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	if (!priv->read_reg(priv, C_CAN_INT_REG))
 		return IRQ_NONE;
 
+=======
+	int reg_int;
+
+	reg_int = priv->read_reg(priv, C_CAN_INT_REG);
+	if (!reg_int)
+		return IRQ_NONE;
+
+	/* save for later use */
+	if (reg_int & INT_STS_PENDING)
+		atomic_set(&priv->sie_pending, 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* disable all interrupts and schedule the NAPI */
 	c_can_irq_control(priv, false);
 	napi_schedule(&priv->napi);
@@ -1245,31 +1352,45 @@ static const struct net_device_ops c_can_netdev_ops = {
 
 int register_c_can_dev(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct c_can_priv *priv = netdev_priv(dev);
 	int err;
 
 	c_can_pm_runtime_enable(priv);
 
+=======
+	int err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->flags |= IFF_ECHO;	/* we support local echo */
 	dev->netdev_ops = &c_can_netdev_ops;
 
 	err = register_candev(dev);
+<<<<<<< HEAD
 	if (err)
 		c_can_pm_runtime_disable(priv);
 	else
 		devm_can_led_init(dev);
 
+=======
+	if (!err)
+		devm_can_led_init(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 EXPORT_SYMBOL_GPL(register_c_can_dev);
 
 void unregister_c_can_dev(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct c_can_priv *priv = netdev_priv(dev);
 
 	unregister_candev(dev);
 
 	c_can_pm_runtime_disable(priv);
+=======
+	unregister_candev(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(unregister_c_can_dev);
 

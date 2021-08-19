@@ -921,13 +921,18 @@ int kvm_vcpu_ioctl_get_one_reg(struct kvm_vcpu *vcpu, struct kvm_one_reg *reg)
 				r = -ENXIO;
 				break;
 			}
+<<<<<<< HEAD
 			vcpu->arch.vr.vr[reg->id - KVM_REG_PPC_VR0] = val.vval;
+=======
+			val.vval = vcpu->arch.vr.vr[reg->id - KVM_REG_PPC_VR0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case KVM_REG_PPC_VSCR:
 			if (!cpu_has_feature(CPU_FTR_ALTIVEC)) {
 				r = -ENXIO;
 				break;
 			}
+<<<<<<< HEAD
 			vcpu->arch.vr.vscr.u[3] = set_reg_val(reg->id, val);
 			break;
 		case KVM_REG_PPC_VRSAVE:
@@ -936,6 +941,12 @@ int kvm_vcpu_ioctl_get_one_reg(struct kvm_vcpu *vcpu, struct kvm_one_reg *reg)
 				break;
 			}
 			vcpu->arch.vrsave = set_reg_val(reg->id, val);
+=======
+			val = get_reg_val(reg->id, vcpu->arch.vr.vscr.u[3]);
+			break;
+		case KVM_REG_PPC_VRSAVE:
+			val = get_reg_val(reg->id, vcpu->arch.vrsave);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 #endif /* CONFIG_ALTIVEC */
 		default:
@@ -976,17 +987,32 @@ int kvm_vcpu_ioctl_set_one_reg(struct kvm_vcpu *vcpu, struct kvm_one_reg *reg)
 				r = -ENXIO;
 				break;
 			}
+<<<<<<< HEAD
 			val.vval = vcpu->arch.vr.vr[reg->id - KVM_REG_PPC_VR0];
+=======
+			vcpu->arch.vr.vr[reg->id - KVM_REG_PPC_VR0] = val.vval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case KVM_REG_PPC_VSCR:
 			if (!cpu_has_feature(CPU_FTR_ALTIVEC)) {
 				r = -ENXIO;
 				break;
 			}
+<<<<<<< HEAD
 			val = get_reg_val(reg->id, vcpu->arch.vr.vscr.u[3]);
 			break;
 		case KVM_REG_PPC_VRSAVE:
 			val = get_reg_val(reg->id, vcpu->arch.vrsave);
+=======
+			vcpu->arch.vr.vscr.u[3] = set_reg_val(reg->id, val);
+			break;
+		case KVM_REG_PPC_VRSAVE:
+			if (!cpu_has_feature(CPU_FTR_ALTIVEC)) {
+				r = -ENXIO;
+				break;
+			}
+			vcpu->arch.vrsave = set_reg_val(reg->id, val);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 #endif /* CONFIG_ALTIVEC */
 		default:

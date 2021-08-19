@@ -118,7 +118,11 @@ static int nf_ct_frag6_sysctl_register(struct net *net)
 	if (hdr == NULL)
 		goto err_reg;
 
+<<<<<<< HEAD
 	net->nf_frag.sysctl.frags_hdr = hdr;
+=======
+	net->nf_frag_frags_hdr = hdr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 err_reg:
@@ -132,8 +136,13 @@ static void __net_exit nf_ct_frags6_sysctl_unregister(struct net *net)
 {
 	struct ctl_table *table;
 
+<<<<<<< HEAD
 	table = net->nf_frag.sysctl.frags_hdr->ctl_table_arg;
 	unregister_net_sysctl_table(net->nf_frag.sysctl.frags_hdr);
+=======
+	table = net->nf_frag_frags_hdr->ctl_table_arg;
+	unregister_net_sysctl_table(net->nf_frag_frags_hdr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!net_eq(net, &init_net))
 		kfree(table);
 }
@@ -190,7 +199,11 @@ static void nf_ct_frag6_expire(unsigned long data)
 /* Creation primitives. */
 static inline struct frag_queue *fq_find(struct net *net, __be32 id,
 					 u32 user, struct in6_addr *src,
+<<<<<<< HEAD
 					 struct in6_addr *dst, u8 ecn)
+=======
+					 struct in6_addr *dst, int iif, u8 ecn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inet_frag_queue *q;
 	struct ip6_create_arg arg;
@@ -200,6 +213,10 @@ static inline struct frag_queue *fq_find(struct net *net, __be32 id,
 	arg.user = user;
 	arg.src = src;
 	arg.dst = dst;
+<<<<<<< HEAD
+=======
+	arg.iif = iif;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	arg.ecn = ecn;
 
 	local_bh_disable();
@@ -602,8 +619,18 @@ struct sk_buff *nf_ct_frag6_gather(struct sk_buff *skb, u32 user)
 	hdr = ipv6_hdr(clone);
 	fhdr = (struct frag_hdr *)skb_transport_header(clone);
 
+<<<<<<< HEAD
 	fq = fq_find(net, fhdr->identification, user, &hdr->saddr, &hdr->daddr,
 		     ip6_frag_ecn(hdr));
+=======
+	if (clone->len - skb_network_offset(clone) < IPV6_MIN_MTU &&
+	    fhdr->frag_off & htons(IP6_MF))
+		goto ret_orig;
+
+	skb_orphan(skb);
+	fq = fq_find(net, fhdr->identification, user, &hdr->saddr, &hdr->daddr,
+		     skb->dev ? skb->dev->ifindex : 0, ip6_frag_ecn(hdr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (fq == NULL) {
 		pr_debug("Can't find and can't create new queue\n");
 		goto ret_orig;

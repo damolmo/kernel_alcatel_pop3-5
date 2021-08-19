@@ -37,7 +37,12 @@
  *	Main PLL or any other PLLs in the device such as ARM PLL, DDR PLL
  *	or PA PLL available on keystone2. These PLLs are controlled by
  *	this register. Main PLL is controlled by a PLL controller.
+<<<<<<< HEAD
  * @pllm: PLL register map address
+=======
+ * @pllm: PLL register map address for multiplier bits
+ * @pllod: PLL register map address for post divider bits
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pll_ctl0: PLL controller map address
  * @pllm_lower_mask: multiplier lower mask
  * @pllm_upper_mask: multiplier upper mask
@@ -53,6 +58,10 @@ struct clk_pll_data {
 	u32 phy_pllm;
 	u32 phy_pll_ctl0;
 	void __iomem *pllm;
+<<<<<<< HEAD
+=======
+	void __iomem *pllod;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void __iomem *pll_ctl0;
 	u32 pllm_lower_mask;
 	u32 pllm_upper_mask;
@@ -102,7 +111,15 @@ static unsigned long clk_pllclk_recalc(struct clk_hw *hw,
 		/* read post divider from od bits*/
 		postdiv = ((val & pll_data->clkod_mask) >>
 				 pll_data->clkod_shift) + 1;
+<<<<<<< HEAD
 	else
+=======
+	else if (pll_data->pllod) {
+		postdiv = readl(pll_data->pllod);
+		postdiv = ((postdiv & pll_data->clkod_mask) >>
+				pll_data->clkod_shift) + 1;
+	} else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		postdiv = pll_data->postdiv;
 
 	rate /= (prediv + 1);
@@ -172,12 +189,27 @@ static void __init _of_pll_clk_init(struct device_node *node, bool pllctrl)
 		/* assume the PLL has output divider register bits */
 		pll_data->clkod_mask = CLKOD_MASK;
 		pll_data->clkod_shift = CLKOD_SHIFT;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Check if there is an post-divider register. If not
+		 * assume od bits are part of control register.
+		 */
+		i = of_property_match_string(node, "reg-names",
+					     "post-divider");
+		pll_data->pllod = of_iomap(node, i);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	i = of_property_match_string(node, "reg-names", "control");
 	pll_data->pll_ctl0 = of_iomap(node, i);
 	if (!pll_data->pll_ctl0) {
 		pr_err("%s: ioremap failed\n", __func__);
+<<<<<<< HEAD
+=======
+		iounmap(pll_data->pllod);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -193,6 +225,10 @@ static void __init _of_pll_clk_init(struct device_node *node, bool pllctrl)
 		pll_data->pllm = of_iomap(node, i);
 		if (!pll_data->pllm) {
 			iounmap(pll_data->pll_ctl0);
+<<<<<<< HEAD
+=======
+			iounmap(pll_data->pllod);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		}
 	}

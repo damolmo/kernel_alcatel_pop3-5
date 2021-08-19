@@ -65,6 +65,12 @@ static void cmd64x_program_timings(ide_drive_t *drive, u8 mode)
 	struct ide_timing t;
 	u8 arttim = 0;
 
+<<<<<<< HEAD
+=======
+	if (drive->dn >= ARRAY_SIZE(drwtim_regs))
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ide_timing_compute(drive, mode, &t, T, 0);
 
 	/*

@@ -231,8 +231,15 @@ static struct sa_info *sa1100_setup_mtd(struct platform_device *pdev,
 
 		info->mtd = mtd_concat_create(cdev, info->num_subdev,
 					      plat->name);
+<<<<<<< HEAD
 		if (info->mtd == NULL)
 			ret = -ENXIO;
+=======
+		if (info->mtd == NULL) {
+			ret = -ENXIO;
+			goto err;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (ret == 0)

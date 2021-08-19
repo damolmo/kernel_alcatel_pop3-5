@@ -66,8 +66,16 @@ static int ttm_bo_vm_fault_idle(struct ttm_buffer_object *bo,
 		if (vmf->flags & FAULT_FLAG_RETRY_NOWAIT)
 			goto out_unlock;
 
+<<<<<<< HEAD
 		up_read(&vma->vm_mm->mmap_sem);
 		(void) ttm_bo_wait(bo, false, true, false);
+=======
+		ttm_bo_reference(bo);
+		up_read(&vma->vm_mm->mmap_sem);
+		(void) ttm_bo_wait(bo, false, true, false);
+		ttm_bo_unreserve(bo);
+		ttm_bo_unref(&bo);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_unlock;
 	}
 
@@ -114,8 +122,15 @@ static int ttm_bo_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 
 		if (vmf->flags & FAULT_FLAG_ALLOW_RETRY) {
 			if (!(vmf->flags & FAULT_FLAG_RETRY_NOWAIT)) {
+<<<<<<< HEAD
 				up_read(&vma->vm_mm->mmap_sem);
 				(void) ttm_bo_wait_unreserved(bo);
+=======
+				ttm_bo_reference(bo);
+				up_read(&vma->vm_mm->mmap_sem);
+				(void) ttm_bo_wait_unreserved(bo);
+				ttm_bo_unref(&bo);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 
 			return VM_FAULT_RETRY;
@@ -160,6 +175,16 @@ static int ttm_bo_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	ret = ttm_bo_vm_fault_idle(bo, vma, vmf);
 	if (unlikely(ret != 0)) {
 		retval = ret;
+<<<<<<< HEAD
+=======
+
+		if (retval == VM_FAULT_RETRY &&
+		    !(vmf->flags & FAULT_FLAG_RETRY_NOWAIT)) {
+			/* The BO has already been unreserved. */
+			return retval;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_unlock;
 	}
 

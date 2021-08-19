@@ -218,7 +218,12 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt)
 		if (q->queues[i] != &noop_qdisc) {
 			struct Qdisc *child = q->queues[i];
 			q->queues[i] = &noop_qdisc;
+<<<<<<< HEAD
 			qdisc_tree_decrease_qlen(child, child->q.qlen);
+=======
+			qdisc_tree_reduce_backlog(child, child->q.qlen,
+						  child->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			qdisc_destroy(child);
 		}
 	}
@@ -238,8 +243,14 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt)
 				q->queues[i] = child;
 
 				if (old != &noop_qdisc) {
+<<<<<<< HEAD
 					qdisc_tree_decrease_qlen(old,
 								 old->q.qlen);
+=======
+					qdisc_tree_reduce_backlog(old,
+								  old->q.qlen,
+								  old->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					qdisc_destroy(old);
 				}
 				sch_tree_unlock(sch);
@@ -252,7 +263,11 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt)
 static int multiq_init(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct multiq_sched_data *q = qdisc_priv(sch);
+<<<<<<< HEAD
 	int i, err;
+=======
+	int i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	q->queues = NULL;
 
@@ -267,12 +282,16 @@ static int multiq_init(struct Qdisc *sch, struct nlattr *opt)
 	for (i = 0; i < q->max_bands; i++)
 		q->queues[i] = &noop_qdisc;
 
+<<<<<<< HEAD
 	err = multiq_tune(sch, opt);
 
 	if (err)
 		kfree(q->queues);
 
 	return err;
+=======
+	return multiq_tune(sch, opt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int multiq_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -303,6 +322,7 @@ static int multiq_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	if (new == NULL)
 		new = &noop_qdisc;
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = q->queues[band];
 	q->queues[band] = new;
@@ -310,6 +330,9 @@ static int multiq_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	qdisc_reset(*old);
 	sch_tree_unlock(sch);
 
+=======
+	*old = qdisc_replace(sch, new, &q->queues[band]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -360,7 +383,11 @@ static int multiq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
 	struct Qdisc *cl_q;
 
 	cl_q = q->queues[cl - 1];
+<<<<<<< HEAD
 	if (gnet_stats_copy_basic(d, NULL, &cl_q->bstats) < 0 ||
+=======
+	if (gnet_stats_copy_basic(d, cl_q->cpu_bstats, &cl_q->bstats) < 0 ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    gnet_stats_copy_queue(d, NULL, &cl_q->qstats, cl_q->q.qlen) < 0)
 		return -1;
 

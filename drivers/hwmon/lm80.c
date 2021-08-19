@@ -360,9 +360,17 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 	struct i2c_client *client = data->client;
 	unsigned long min, val;
 	u8 reg;
+<<<<<<< HEAD
 	int err = kstrtoul(buf, 10, &val);
 	if (err < 0)
 		return err;
+=======
+	int rv;
+
+	rv = kstrtoul(buf, 10, &val);
+	if (rv < 0)
+		return rv;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Save fan_min */
 	mutex_lock(&data->update_lock);
@@ -390,8 +398,18 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	reg = (lm80_read_value(client, LM80_REG_FANDIV) &
 	       ~(3 << (2 * (nr + 1)))) | (data->fan_div[nr] << (2 * (nr + 1)));
+=======
+	rv = lm80_read_value(client, LM80_REG_FANDIV);
+	if (rv < 0) {
+		mutex_unlock(&data->update_lock);
+		return rv;
+	}
+	reg = (rv & ~(3 << (2 * (nr + 1))))
+	    | (data->fan_div[nr] << (2 * (nr + 1)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lm80_write_value(client, LM80_REG_FANDIV, reg);
 
 	/* Restore fan_min */

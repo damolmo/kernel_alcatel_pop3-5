@@ -153,7 +153,11 @@ static struct sock *nr_find_listener(ax25_address *addr)
 	sk_for_each(s, &nr_list)
 		if (!ax25cmp(&nr_sk(s)->source_addr, addr) &&
 		    s->sk_state == TCP_LISTEN) {
+<<<<<<< HEAD
 			bh_lock_sock(s);
+=======
+			sock_hold(s);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto found;
 		}
 	s = NULL;
@@ -174,7 +178,11 @@ static struct sock *nr_find_socket(unsigned char index, unsigned char id)
 		struct nr_sock *nr = nr_sk(s);
 
 		if (nr->my_index == index && nr->my_id == id) {
+<<<<<<< HEAD
 			bh_lock_sock(s);
+=======
+			sock_hold(s);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto found;
 		}
 	}
@@ -198,7 +206,11 @@ static struct sock *nr_find_peer(unsigned char index, unsigned char id,
 
 		if (nr->your_index == index && nr->your_id == id &&
 		    !ax25cmp(&nr->dest_addr, dest)) {
+<<<<<<< HEAD
 			bh_lock_sock(s);
+=======
+			sock_hold(s);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto found;
 		}
 	}
@@ -224,7 +236,11 @@ static unsigned short nr_find_next_circuit(void)
 		if (i != 0 && j != 0) {
 			if ((sk=nr_find_socket(i, j)) == NULL)
 				break;
+<<<<<<< HEAD
 			bh_unlock_sock(sk);
+=======
+			sock_put(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		id++;
@@ -870,7 +886,11 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	unsigned short frametype, flags, window, timeout;
 	int ret;
 
+<<<<<<< HEAD
 	skb->sk = NULL;		/* Initially we don't know who it's for */
+=======
+	skb_orphan(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 *	skb->data points to the netrom frame start
@@ -918,6 +938,10 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	if (sk != NULL) {
+<<<<<<< HEAD
+=======
+		bh_lock_sock(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		skb_reset_transport_header(skb);
 
 		if (frametype == NR_CONNACK && skb->len == 22)
@@ -927,6 +951,10 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 
 		ret = nr_process_rx_frame(sk, skb);
 		bh_unlock_sock(sk);
+<<<<<<< HEAD
+=======
+		sock_put(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ret;
 	}
 
@@ -958,6 +986,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	    (make = nr_make_new(sk)) == NULL) {
 		nr_transmit_refusal(skb, 0);
 		if (sk)
+<<<<<<< HEAD
 			bh_unlock_sock(sk);
 		return 0;
 	}
@@ -965,6 +994,19 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	window = skb->data[20];
 
 	skb->sk             = make;
+=======
+			sock_put(sk);
+		return 0;
+	}
+
+	bh_lock_sock(sk);
+
+	window = skb->data[20];
+
+	sock_hold(make);
+	skb->sk             = make;
+	skb->destructor     = sock_efree;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	make->sk_state	    = TCP_ESTABLISHED;
 
 	/* Fill in his circuit details */
@@ -1014,6 +1056,10 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 		sk->sk_data_ready(sk);
 
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
+=======
+	sock_put(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	nr_insert_socket(make);
 

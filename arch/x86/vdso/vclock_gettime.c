@@ -46,8 +46,14 @@ static notrace cycle_t vread_hpet(void)
 notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
 {
 	long ret;
+<<<<<<< HEAD
 	asm("syscall" : "=a" (ret) :
 	    "0" (__NR_clock_gettime), "D" (clock), "S" (ts) : "memory");
+=======
+	asm ("syscall" : "=a" (ret), "=m" (*ts) :
+	     "0" (__NR_clock_gettime), "D" (clock), "S" (ts) :
+	     "memory", "rcx", "r11");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -55,8 +61,14 @@ notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 {
 	long ret;
 
+<<<<<<< HEAD
 	asm("syscall" : "=a" (ret) :
 	    "0" (__NR_gettimeofday), "D" (tv), "S" (tz) : "memory");
+=======
+	asm ("syscall" : "=a" (ret), "=m" (*tv), "=m" (*tz) :
+	     "0" (__NR_gettimeofday), "D" (tv), "S" (tz) :
+	     "memory", "rcx", "r11");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -136,6 +148,7 @@ notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
 {
 	long ret;
 
+<<<<<<< HEAD
 	asm(
 		"mov %%ebx, %%edx \n"
 		"mov %2, %%ebx \n"
@@ -143,6 +156,15 @@ notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
 		"mov %%edx, %%ebx \n"
 		: "=a" (ret)
 		: "0" (__NR_clock_gettime), "g" (clock), "c" (ts)
+=======
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[clock], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*ts)
+		: "0" (__NR_clock_gettime), [clock] "g" (clock), "c" (ts)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "memory", "edx");
 	return ret;
 }
@@ -151,6 +173,7 @@ notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 {
 	long ret;
 
+<<<<<<< HEAD
 	asm(
 		"mov %%ebx, %%edx \n"
 		"mov %2, %%ebx \n"
@@ -158,6 +181,15 @@ notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 		"mov %%edx, %%ebx \n"
 		: "=a" (ret)
 		: "0" (__NR_gettimeofday), "g" (tv), "c" (tz)
+=======
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[tv], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*tv), "=m" (*tz)
+		: "0" (__NR_gettimeofday), [tv] "g" (tv), "c" (tz)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "memory", "edx");
 	return ret;
 }

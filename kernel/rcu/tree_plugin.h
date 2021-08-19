@@ -328,6 +328,10 @@ void rcu_read_unlock_special(struct task_struct *t)
 	special = t->rcu_read_unlock_special;
 	if (special.b.need_qs) {
 		rcu_preempt_qs();
+<<<<<<< HEAD
+=======
+		t->rcu_read_unlock_special.b.need_qs = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!t->rcu_read_unlock_special.s) {
 			local_irq_restore(flags);
 			return;
@@ -2440,6 +2444,10 @@ static int rcu_nocb_kthread(void *arg)
 				cl++;
 			c++;
 			local_bh_enable();
+<<<<<<< HEAD
+=======
+			cond_resched_rcu_qs();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			list = next;
 		}
 		trace_rcu_batch_end(rdp->rsp->name, c, !!list, 0, 0, 1);

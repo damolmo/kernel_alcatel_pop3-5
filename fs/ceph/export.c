@@ -146,6 +146,14 @@ static struct dentry *__get_parent(struct super_block *sb,
 	}
 	req->r_num_caps = 1;
 	err = ceph_mdsc_do_request(mdsc, NULL, req);
+<<<<<<< HEAD
+=======
+	if (err) {
+		ceph_mdsc_put_request(req);
+		return ERR_PTR(err);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	inode = req->r_target_inode;
 	if (inode)
 		ihold(inode);

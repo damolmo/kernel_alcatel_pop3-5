@@ -26,7 +26,12 @@
 #include "pinctrl-imx.h"
 
 enum imx25_pads {
+<<<<<<< HEAD
 	MX25_PAD_RESERVE0 = 1,
+=======
+	MX25_PAD_RESERVE0 = 0,
+	MX25_PAD_RESERVE1 = 1,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	MX25_PAD_A10 = 2,
 	MX25_PAD_A13 = 3,
 	MX25_PAD_A14 = 4,
@@ -169,6 +174,10 @@ enum imx25_pads {
 /* Pad names for the pinmux subsystem */
 static const struct pinctrl_pin_desc imx25_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX25_PAD_RESERVE0),
+<<<<<<< HEAD
+=======
+	IMX_PINCTRL_PIN(MX25_PAD_RESERVE1),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	IMX_PINCTRL_PIN(MX25_PAD_A10),
 	IMX_PINCTRL_PIN(MX25_PAD_A13),
 	IMX_PINCTRL_PIN(MX25_PAD_A14),

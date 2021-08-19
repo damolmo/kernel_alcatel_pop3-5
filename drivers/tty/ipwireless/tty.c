@@ -217,7 +217,11 @@ static int ipw_write(struct tty_struct *linux_tty,
 	ret = ipwireless_send_packet(tty->hardware, IPW_CHANNEL_RAS,
 			       buf, count,
 			       ipw_write_packet_sent_callback, tty);
+<<<<<<< HEAD
 	if (ret == -1) {
+=======
+	if (ret < 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_unlock(&tty->ipw_tty_mutex);
 		return 0;
 	}

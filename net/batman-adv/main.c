@@ -127,7 +127,11 @@ int batadv_mesh_init(struct net_device *soft_iface)
 	INIT_HLIST_HEAD(&bat_priv->mcast.want_all_ipv6_list);
 #endif
 	INIT_LIST_HEAD(&bat_priv->tt.changes_list);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&bat_priv->tt.req_list);
+=======
+	INIT_HLIST_HEAD(&bat_priv->tt.req_list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&bat_priv->tt.roam_list);
 #ifdef CONFIG_BATMAN_ADV_MCAST
 	INIT_HLIST_HEAD(&bat_priv->mcast.mla_list);
@@ -1058,15 +1062,30 @@ void batadv_tvlv_handler_register(struct batadv_priv *bat_priv,
 {
 	struct batadv_tvlv_handler *tvlv_handler;
 
+<<<<<<< HEAD
 	tvlv_handler = batadv_tvlv_handler_get(bat_priv, type, version);
 	if (tvlv_handler) {
+=======
+	spin_lock_bh(&bat_priv->tvlv.handler_list_lock);
+
+	tvlv_handler = batadv_tvlv_handler_get(bat_priv, type, version);
+	if (tvlv_handler) {
+		spin_unlock_bh(&bat_priv->tvlv.handler_list_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		batadv_tvlv_handler_free_ref(tvlv_handler);
 		return;
 	}
 
 	tvlv_handler = kzalloc(sizeof(*tvlv_handler), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!tvlv_handler)
 		return;
+=======
+	if (!tvlv_handler) {
+		spin_unlock_bh(&bat_priv->tvlv.handler_list_lock);
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tvlv_handler->ogm_handler = optr;
 	tvlv_handler->unicast_handler = uptr;
@@ -1076,7 +1095,10 @@ void batadv_tvlv_handler_register(struct batadv_priv *bat_priv,
 	atomic_set(&tvlv_handler->refcount, 1);
 	INIT_HLIST_NODE(&tvlv_handler->list);
 
+<<<<<<< HEAD
 	spin_lock_bh(&bat_priv->tvlv.handler_list_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hlist_add_head_rcu(&tvlv_handler->list, &bat_priv->tvlv.handler_list);
 	spin_unlock_bh(&bat_priv->tvlv.handler_list_lock);
 }

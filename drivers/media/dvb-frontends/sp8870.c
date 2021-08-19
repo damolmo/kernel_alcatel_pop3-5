@@ -293,7 +293,13 @@ static int sp8870_set_frontend_parameters(struct dvb_frontend *fe)
 	sp8870_writereg(state, 0xc05, reg0xc05);
 
 	// read status reg in order to clear pending irqs
+<<<<<<< HEAD
 	sp8870_readreg(state, 0x200);
+=======
+	err = sp8870_readreg(state, 0x200);
+	if (err < 0)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	// system controller start
 	sp8870_microcontroller_start(state);

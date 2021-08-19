@@ -171,6 +171,11 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 				dev_dbg(&intf->dev, "extra CDC header\n");
 				goto bad_desc;
 			}
+<<<<<<< HEAD
+=======
+			if (len < sizeof(struct usb_cdc_header_desc))
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info->header = (void *) buf;
 			if (info->header->bLength != sizeof(*info->header)) {
 				dev_dbg(&intf->dev, "CDC header len %u\n",
@@ -184,6 +189,11 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 			 */
 			if (rndis) {
 				struct usb_cdc_acm_descriptor *acm;
+<<<<<<< HEAD
+=======
+				if (len < sizeof(struct usb_cdc_acm_descriptor))
+					break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 				acm = (void *) buf;
 				if (acm->bmCapabilities) {
@@ -200,6 +210,11 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 				dev_dbg(&intf->dev, "extra CDC union\n");
 				goto bad_desc;
 			}
+<<<<<<< HEAD
+=======
+			if (len < sizeof(struct usb_cdc_union_desc))
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info->u = (void *) buf;
 			if (info->u->bLength != sizeof(*info->u)) {
 				dev_dbg(&intf->dev, "CDC union len %u\n",
@@ -258,6 +273,11 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 				dev_dbg(&intf->dev, "extra CDC ether\n");
 				goto bad_desc;
 			}
+<<<<<<< HEAD
+=======
+			if (len < sizeof(struct usb_cdc_ether_desc))
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info->ether = (void *) buf;
 			if (info->ether->bLength != sizeof(*info->ether)) {
 				dev_dbg(&intf->dev, "CDC ether len %u\n",
@@ -275,7 +295,10 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 				dev_dbg(&intf->dev, "extra MDLM descriptor\n");
 				goto bad_desc;
 			}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			desc = (void *)buf;
 
 			if (desc->bLength != sizeof(*desc))
@@ -521,6 +544,10 @@ static const struct driver_info wwan_info = {
 #define DELL_VENDOR_ID		0x413C
 #define REALTEK_VENDOR_ID	0x0bda
 #define SAMSUNG_VENDOR_ID	0x04e8
+<<<<<<< HEAD
+=======
+#define HP_VENDOR_ID		0x03f0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static const struct usb_device_id	products[] = {
 /* BLACKLIST !!
@@ -667,6 +694,16 @@ static const struct usb_device_id	products[] = {
 	.driver_info = 0,
 },
 
+<<<<<<< HEAD
+=======
+/* HP lt2523 (Novatel E371) - handled by qmi_wwan */
+{
+	USB_DEVICE_AND_INTERFACE_INFO(HP_VENDOR_ID, 0x421d, USB_CLASS_COMM,
+				      USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
+	.driver_info = 0,
+},
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* AnyDATA ADU960S - handled by qmi_wwan */
 {
 	USB_DEVICE_AND_INTERFACE_INFO(0x16d5, 0x650a, USB_CLASS_COMM,
@@ -742,6 +779,15 @@ static const struct usb_device_id	products[] = {
 				      USB_CDC_PROTO_NONE),
 	.driver_info = (unsigned long)&wwan_info,
 }, {
+<<<<<<< HEAD
+=======
+	/* Cinterion AHS3 modem by GEMALTO */
+	USB_DEVICE_AND_INTERFACE_INFO(0x1e2d, 0x0055, USB_CLASS_COMM,
+				      USB_CDC_SUBCLASS_ETHERNET,
+				      USB_CDC_PROTO_NONE),
+	.driver_info = (unsigned long)&wwan_info,
+}, {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Telit modules */
 	USB_VENDOR_AND_INTERFACE_INFO(0x1bc7, USB_CLASS_COMM,
 			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),

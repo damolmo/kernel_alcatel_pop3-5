@@ -17,7 +17,11 @@
 
 #define fd_outb(val,port)			\
 	do {					\
+<<<<<<< HEAD
 		if ((port) == FD_DOR)		\
+=======
+		if ((port) == (u32)FD_DOR)	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			fd_setdor((val));	\
 		else				\
 			outb((val),(port));	\

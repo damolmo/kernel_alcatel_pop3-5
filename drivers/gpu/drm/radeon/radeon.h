@@ -1628,6 +1628,10 @@ struct radeon_pm {
 	struct device	        *int_hwmon_dev;
 	/* dpm */
 	bool                    dpm_enabled;
+<<<<<<< HEAD
+=======
+	bool                    sysfs_initialized;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct radeon_dpm       dpm;
 };
 

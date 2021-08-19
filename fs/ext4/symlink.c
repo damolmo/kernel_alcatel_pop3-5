@@ -49,7 +49,11 @@ static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
 		cpage = read_mapping_page(inode->i_mapping, 0, NULL);
 		if (IS_ERR(cpage))
 			return cpage;
+<<<<<<< HEAD
 		caddr = kmap(cpage);
+=======
+		caddr = page_address(cpage);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		caddr[size] = 0;
 	}
 
@@ -80,6 +84,7 @@ static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
 	if (res <= plen)
 		paddr[res] = '\0';
 	nd_set_link(nd, paddr);
+<<<<<<< HEAD
 	if (cpage) {
 		kunmap(cpage);
 		page_cache_release(cpage);
@@ -90,6 +95,14 @@ errout:
 		kunmap(cpage);
 		page_cache_release(cpage);
 	}
+=======
+	if (cpage)
+		page_cache_release(cpage);
+	return NULL;
+errout:
+	if (cpage)
+		page_cache_release(cpage);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(paddr);
 	return ERR_PTR(res);
 }

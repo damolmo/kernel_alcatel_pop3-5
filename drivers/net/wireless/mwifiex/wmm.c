@@ -241,7 +241,11 @@ mwifiex_wmm_setup_queue_priorities(struct mwifiex_private *priv,
 
 	dev_dbg(priv->adapter->dev, "info: WMM Parameter IE: version=%d, "
 		"qos_info Parameter Set Count=%d, Reserved=%#x\n",
+<<<<<<< HEAD
 		wmm_ie->vend_hdr.version, wmm_ie->qos_info_bitmap &
+=======
+		wmm_ie->version, wmm_ie->qos_info_bitmap &
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		IEEE80211_WMM_IE_AP_QOSINFO_PARAM_SET_CNT_MASK,
 		wmm_ie->reserved);
 
@@ -466,8 +470,15 @@ mwifiex_wmm_del_pkts_in_ralist_node(struct mwifiex_private *priv,
 	struct mwifiex_adapter *adapter = priv->adapter;
 	struct sk_buff *skb, *tmp;
 
+<<<<<<< HEAD
 	skb_queue_walk_safe(&ra_list->skb_head, skb, tmp)
 		mwifiex_write_data_complete(adapter, skb, 0, -1);
+=======
+	skb_queue_walk_safe(&ra_list->skb_head, skb, tmp) {
+		skb_unlink(skb, &ra_list->skb_head);
+		mwifiex_write_data_complete(adapter, skb, 0, -1);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -556,8 +567,15 @@ mwifiex_clean_txrx(struct mwifiex_private *priv)
 		priv->adapter->if_ops.clean_pcie_ring(priv->adapter);
 	spin_unlock_irqrestore(&priv->wmm.ra_list_spinlock, flags);
 
+<<<<<<< HEAD
 	skb_queue_walk_safe(&priv->tdls_txq, skb, tmp)
 		mwifiex_write_data_complete(priv->adapter, skb, 0, -1);
+=======
+	skb_queue_walk_safe(&priv->tdls_txq, skb, tmp) {
+		skb_unlink(skb, &priv->tdls_txq);
+		mwifiex_write_data_complete(priv->adapter, skb, 0, -1);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -791,6 +809,13 @@ int mwifiex_ret_wmm_get_status(struct mwifiex_private *priv,
 				wmm_param_ie->qos_info_bitmap &
 				IEEE80211_WMM_IE_AP_QOSINFO_PARAM_SET_CNT_MASK);
 
+<<<<<<< HEAD
+=======
+			if (wmm_param_ie->vend_hdr.len + 2 >
+				sizeof(struct ieee_types_wmm_parameter))
+				break;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			memcpy((u8 *) &priv->curr_bss_params.bss_descriptor.
 			       wmm_ie, wmm_param_ie,
 			       wmm_param_ie->vend_hdr.len + 2);

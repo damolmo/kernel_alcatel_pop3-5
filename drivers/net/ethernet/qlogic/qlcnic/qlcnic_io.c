@@ -268,13 +268,20 @@ static void qlcnic_add_lb_filter(struct qlcnic_adapter *adapter,
 }
 
 void qlcnic_82xx_change_filter(struct qlcnic_adapter *adapter, u64 *uaddr,
+<<<<<<< HEAD
 			       u16 vlan_id)
+=======
+			       u16 vlan_id, struct qlcnic_host_tx_ring *tx_ring)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct cmd_desc_type0 *hwdesc;
 	struct qlcnic_nic_req *req;
 	struct qlcnic_mac_req *mac_req;
 	struct qlcnic_vlan_req *vlan_req;
+<<<<<<< HEAD
 	struct qlcnic_host_tx_ring *tx_ring = adapter->tx_ring;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 producer;
 	u64 word;
 
@@ -301,7 +308,12 @@ void qlcnic_82xx_change_filter(struct qlcnic_adapter *adapter, u64 *uaddr,
 
 static void qlcnic_send_filter(struct qlcnic_adapter *adapter,
 			       struct cmd_desc_type0 *first_desc,
+<<<<<<< HEAD
 			       struct sk_buff *skb)
+=======
+			       struct sk_buff *skb,
+			       struct qlcnic_host_tx_ring *tx_ring)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct vlan_ethhdr *vh = (struct vlan_ethhdr *)(skb->data);
 	struct ethhdr *phdr = (struct ethhdr *)(skb->data);
@@ -335,7 +347,11 @@ static void qlcnic_send_filter(struct qlcnic_adapter *adapter,
 		    tmp_fil->vlan_id == vlan_id) {
 			if (jiffies > (QLCNIC_READD_AGE * HZ + tmp_fil->ftime))
 				qlcnic_change_filter(adapter, &src_addr,
+<<<<<<< HEAD
 						     vlan_id);
+=======
+						     vlan_id, tx_ring);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			tmp_fil->ftime = jiffies;
 			return;
 		}
@@ -350,7 +366,11 @@ static void qlcnic_send_filter(struct qlcnic_adapter *adapter,
 	if (!fil)
 		return;
 
+<<<<<<< HEAD
 	qlcnic_change_filter(adapter, &src_addr, vlan_id);
+=======
+	qlcnic_change_filter(adapter, &src_addr, vlan_id, tx_ring);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fil->ftime = jiffies;
 	fil->vlan_id = vlan_id;
 	memcpy(fil->faddr, &src_addr, ETH_ALEN);
@@ -766,7 +786,11 @@ netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	if (adapter->drv_mac_learn)
+<<<<<<< HEAD
 		qlcnic_send_filter(adapter, first_desc, skb);
+=======
+		qlcnic_send_filter(adapter, first_desc, skb, tx_ring);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tx_ring->tx_stats.tx_bytes += skb->len;
 	tx_ring->tx_stats.xmit_called++;
@@ -2198,7 +2222,11 @@ void qlcnic_83xx_process_rcv_ring_diag(struct qlcnic_host_sds_ring *sds_ring)
 	if (!opcode)
 		return;
 
+<<<<<<< HEAD
 	ring = QLCNIC_FETCH_RING_ID(qlcnic_83xx_hndl(sts_data[0]));
+=======
+	ring = QLCNIC_FETCH_RING_ID(sts_data[0]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	qlcnic_83xx_process_rcv_diag(adapter, ring, sts_data);
 	desc = &sds_ring->desc_head[consumer];
 	desc->status_desc_data[0] = cpu_to_le64(STATUS_OWNER_PHANTOM);

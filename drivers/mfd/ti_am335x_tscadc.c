@@ -227,14 +227,21 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 	 * The TSC_ADC_SS controller design assumes the OCP clock is
 	 * at least 6x faster than the ADC clock.
 	 */
+<<<<<<< HEAD
 	clk = clk_get(&pdev->dev, "adc_tsc_fck");
+=======
+	clk = devm_clk_get(&pdev->dev, "adc_tsc_fck");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "failed to get TSC fck\n");
 		err = PTR_ERR(clk);
 		goto err_disable_clk;
 	}
 	clock_rate = clk_get_rate(clk);
+<<<<<<< HEAD
 	clk_put(clk);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tscadc->clk_div = clock_rate / ADC_CLK;
 
 	/* TSCADC_CLKDIV needs to be configured to the value minus 1 */
@@ -283,8 +290,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
 		cell->pdata_size = sizeof(tscadc);
 	}
 
+<<<<<<< HEAD
 	err = mfd_add_devices(&pdev->dev, pdev->id, tscadc->cells,
 			tscadc->used_cells, NULL, 0, NULL);
+=======
+	err = mfd_add_devices(&pdev->dev, PLATFORM_DEVID_AUTO,
+			      tscadc->cells, tscadc->used_cells, NULL,
+			      0, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0)
 		goto err_disable_clk;
 

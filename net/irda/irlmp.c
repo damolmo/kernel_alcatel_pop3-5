@@ -1877,7 +1877,11 @@ static void *irlmp_seq_hb_idx(struct irlmp_iter_state *iter, loff_t *off)
 	for (element = hashbin_get_first(iter->hashbin);
 	     element != NULL;
 	     element = hashbin_get_next(iter->hashbin)) {
+<<<<<<< HEAD
 		if (!off || *off-- == 0) {
+=======
+		if (!off || (*off)-- == 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* NB: hashbin left locked */
 			return element;
 		}

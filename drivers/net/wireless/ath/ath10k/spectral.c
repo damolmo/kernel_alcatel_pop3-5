@@ -343,7 +343,11 @@ static ssize_t write_file_spec_scan_ctl(struct file *file,
 		} else {
 			res = -EINVAL;
 		}
+<<<<<<< HEAD
 	} else if (strncmp("background", buf, 9) == 0) {
+=======
+	} else if (strncmp("background", buf, 10) == 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		res = ath10k_spectral_scan_config(ar, SPECTRAL_BACKGROUND);
 	} else if (strncmp("manual", buf, 6) == 0) {
 		res = ath10k_spectral_scan_config(ar, SPECTRAL_MANUAL);

@@ -8,7 +8,13 @@ enum pid_type
 	PIDTYPE_PID,
 	PIDTYPE_PGID,
 	PIDTYPE_SID,
+<<<<<<< HEAD
 	PIDTYPE_MAX
+=======
+	PIDTYPE_MAX,
+	/* only valid to __task_pid_nr_ns() */
+	__PIDTYPE_TGID
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*

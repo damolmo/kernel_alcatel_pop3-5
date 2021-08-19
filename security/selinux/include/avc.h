@@ -142,7 +142,11 @@ static inline int avc_audit(u32 ssid, u32 tsid,
 }
 
 #define AVC_STRICT 1 /* Ignore permissive mode. */
+<<<<<<< HEAD
 #define AVC_OPERATION_CMD 2	/* ignore command when updating operations */
+=======
+#define AVC_EXTENDED_PERMS 2	/* update extended permissions */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int avc_has_perm_noaudit(u32 ssid, u32 tsid,
 			 u16 tclass, u32 requested,
 			 unsigned flags,
@@ -152,8 +156,13 @@ int avc_has_perm(u32 ssid, u32 tsid,
 		 u16 tclass, u32 requested,
 		 struct common_audit_data *auditdata);
 
+<<<<<<< HEAD
 int avc_has_operation(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 		u16 cmd, struct common_audit_data *ad);
+=======
+int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
+		u8 driver, u8 perm, struct common_audit_data *ad);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 u32 avc_policy_seqno(void);
 
@@ -165,7 +174,11 @@ u32 avc_policy_seqno(void);
 #define AVC_CALLBACK_AUDITALLOW_DISABLE	32
 #define AVC_CALLBACK_AUDITDENY_ENABLE	64
 #define AVC_CALLBACK_AUDITDENY_DISABLE	128
+<<<<<<< HEAD
 #define AVC_CALLBACK_ADD_OPERATION	256
+=======
+#define AVC_CALLBACK_ADD_XPERMS		256
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int avc_add_callback(int (*callback)(u32 event), u32 events);
 
@@ -180,10 +193,13 @@ void avc_disable(void);
 DECLARE_PER_CPU(struct avc_cache_stats, avc_cache_stats);
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_AEE_FEATURE
 extern struct sk_buff *audit_get_skb(struct audit_buffer *ab);
 extern void mtk_audit_hook(char *data);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _SELINUX_AVC_H_ */
 

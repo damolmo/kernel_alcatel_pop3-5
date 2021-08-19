@@ -23,10 +23,13 @@ static DEFINE_MUTEX(irq_domain_mutex);
 static DEFINE_MUTEX(revmap_trees_mutex);
 static struct irq_domain *irq_default_domain;
 
+<<<<<<< HEAD
 static int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
 				  irq_hw_number_t hwirq, int node);
 static void irq_domain_check_hierarchy(struct irq_domain *domain);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * __irq_domain_add() - Allocate a new irq_domain data structure
  * @of_node: optional device-tree node of the interrupt controller
@@ -34,7 +37,11 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain);
  * @hwirq_max: Maximum number of interrupts supported by controller
  * @direct_max: Maximum value of direct maps; Use ~0 for no limit; 0 for no
  *              direct mapping
+<<<<<<< HEAD
  * @ops: domain callbacks
+=======
+ * @ops: map/unmap domain callbacks
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @host_data: Controller private data pointer
  *
  * Allocates and initialize and irq_domain structure.
@@ -60,7 +67,10 @@ struct irq_domain *__irq_domain_add(struct device_node *of_node, int size,
 	domain->hwirq_max = hwirq_max;
 	domain->revmap_size = size;
 	domain->revmap_direct_max_irq = direct_max;
+<<<<<<< HEAD
 	irq_domain_check_hierarchy(domain);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&irq_domain_mutex);
 	list_add(&domain->link, &irq_domain_list);
@@ -114,7 +124,11 @@ EXPORT_SYMBOL_GPL(irq_domain_remove);
  * @first_irq: first number of irq block assigned to the domain,
  *	pass zero to assign irqs on-the-fly. If first_irq is non-zero, then
  *	pre-map all of the irqs in the domain to virqs starting at first_irq.
+<<<<<<< HEAD
  * @ops: domain callbacks
+=======
+ * @ops: map/unmap domain callbacks
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @host_data: Controller private data pointer
  *
  * Allocates an irq_domain, and optionally if first_irq is positive then also
@@ -179,8 +193,15 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
 
 	domain = __irq_domain_add(of_node, first_hwirq + size,
 				  first_hwirq + size, 0, ops, host_data);
+<<<<<<< HEAD
 	if (domain)
 		irq_domain_associate_many(domain, first_irq, first_hwirq, size);
+=======
+	if (!domain)
+		return NULL;
+
+	irq_domain_associate_many(domain, first_irq, first_hwirq, size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return domain;
 }
@@ -391,6 +412,10 @@ EXPORT_SYMBOL_GPL(irq_create_direct_mapping);
 unsigned int irq_create_mapping(struct irq_domain *domain,
 				irq_hw_number_t hwirq)
 {
+<<<<<<< HEAD
+=======
+	unsigned int hint;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int virq;
 
 	pr_debug("irq_create_mapping(0x%p, 0x%lx)\n", domain, hwirq);
@@ -412,8 +437,17 @@ unsigned int irq_create_mapping(struct irq_domain *domain,
 	}
 
 	/* Allocate a virtual interrupt number */
+<<<<<<< HEAD
 	virq = irq_domain_alloc_descs(-1, 1, hwirq,
 				      of_node_to_nid(domain->of_node));
+=======
+	hint = hwirq % nr_irqs;
+	if (hint == 0)
+		hint++;
+	virq = irq_alloc_desc_from(hint, of_node_to_nid(domain->of_node));
+	if (virq <= 0)
+		virq = irq_alloc_desc_from(1, of_node_to_nid(domain->of_node));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (virq <= 0) {
 		pr_debug("-> virq allocation failed\n");
 		return 0;
@@ -469,7 +503,11 @@ unsigned int irq_create_of_mapping(struct of_phandle_args *irq_data)
 	struct irq_domain *domain;
 	irq_hw_number_t hwirq;
 	unsigned int type = IRQ_TYPE_NONE;
+<<<<<<< HEAD
 	int virq;
+=======
+	unsigned int virq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	domain = irq_data->np ? irq_find_host(irq_data->np) : irq_default_domain;
 	if (!domain) {
@@ -487,6 +525,7 @@ unsigned int irq_create_of_mapping(struct of_phandle_args *irq_data)
 			return 0;
 	}
 
+<<<<<<< HEAD
 	if (irq_domain_is_hierarchy(domain)) {
 		/*
 		 * If we've already configured this interrupt,
@@ -505,6 +544,12 @@ unsigned int irq_create_of_mapping(struct of_phandle_args *irq_data)
 		if (!virq)
 			return virq;
 	}
+=======
+	/* Create mapping */
+	virq = irq_create_mapping(domain, hwirq);
+	if (!virq)
+		return virq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Set type if specified and different than the current one */
 	if (type != IRQ_TYPE_NONE &&
@@ -552,8 +597,13 @@ unsigned int irq_find_mapping(struct irq_domain *domain,
 		return 0;
 
 	if (hwirq < domain->revmap_direct_max_irq) {
+<<<<<<< HEAD
 		data = irq_domain_get_irq_data(domain, hwirq);
 		if (data && data->hwirq == hwirq)
+=======
+		data = irq_get_irq_data(hwirq);
+		if (data && (data->domain == domain) && (data->hwirq == hwirq))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return hwirq;
 	}
 
@@ -721,6 +771,7 @@ const struct irq_domain_ops irq_domain_simple_ops = {
 	.xlate = irq_domain_xlate_onetwocell,
 };
 EXPORT_SYMBOL_GPL(irq_domain_simple_ops);
+<<<<<<< HEAD
 
 static int irq_domain_alloc_descs(int virq, unsigned int cnt,
 				  irq_hw_number_t hwirq, int node)
@@ -1236,3 +1287,5 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
 {
 }
 #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

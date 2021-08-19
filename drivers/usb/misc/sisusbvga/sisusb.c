@@ -790,7 +790,11 @@ static int sisusb_write_mem_bulk(struct sisusb_usb_data *sisusb, u32 addr,
 	u8   swap8, fromkern = kernbuffer ? 1 : 0;
 	u16  swap16;
 	u32  swap32, flag = (length >> 28) & 1;
+<<<<<<< HEAD
 	char buf[4];
+=======
+	u8 buf[4];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* if neither kernbuffer not userbuffer are given, assume
 	 * data in obuf
@@ -1243,20 +1247,32 @@ static int sisusb_read_mem_bulk(struct sisusb_usb_data *sisusb, u32 addr,
 
 #ifdef INCL_SISUSB_CON
 int
+<<<<<<< HEAD
 sisusb_setreg(struct sisusb_usb_data *sisusb, int port, u8 data)
+=======
+sisusb_setreg(struct sisusb_usb_data *sisusb, u32 port, u8 data)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return sisusb_write_memio_byte(sisusb, SISUSB_TYPE_IO, port, data);
 }
 
 int
+<<<<<<< HEAD
 sisusb_getreg(struct sisusb_usb_data *sisusb, int port, u8 *data)
+=======
+sisusb_getreg(struct sisusb_usb_data *sisusb, u32 port, u8 *data)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return sisusb_read_memio_byte(sisusb, SISUSB_TYPE_IO, port, data);
 }
 #endif
 
 int
+<<<<<<< HEAD
 sisusb_setidxreg(struct sisusb_usb_data *sisusb, int port, u8 index, u8 data)
+=======
+sisusb_setidxreg(struct sisusb_usb_data *sisusb, u32 port, u8 index, u8 data)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int ret;
 	ret = sisusb_write_memio_byte(sisusb, SISUSB_TYPE_IO, port, index);
@@ -1265,7 +1281,11 @@ sisusb_setidxreg(struct sisusb_usb_data *sisusb, int port, u8 index, u8 data)
 }
 
 int
+<<<<<<< HEAD
 sisusb_getidxreg(struct sisusb_usb_data *sisusb, int port, u8 index, u8 *data)
+=======
+sisusb_getidxreg(struct sisusb_usb_data *sisusb, u32 port, u8 index, u8 *data)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int ret;
 	ret = sisusb_write_memio_byte(sisusb, SISUSB_TYPE_IO, port, index);
@@ -1274,7 +1294,11 @@ sisusb_getidxreg(struct sisusb_usb_data *sisusb, int port, u8 index, u8 *data)
 }
 
 int
+<<<<<<< HEAD
 sisusb_setidxregandor(struct sisusb_usb_data *sisusb, int port, u8 idx,
+=======
+sisusb_setidxregandor(struct sisusb_usb_data *sisusb, u32 port, u8 idx,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 							u8 myand, u8 myor)
 {
 	int ret;
@@ -1289,7 +1313,11 @@ sisusb_setidxregandor(struct sisusb_usb_data *sisusb, int port, u8 idx,
 }
 
 static int
+<<<<<<< HEAD
 sisusb_setidxregmask(struct sisusb_usb_data *sisusb, int port, u8 idx,
+=======
+sisusb_setidxregmask(struct sisusb_usb_data *sisusb, u32 port, u8 idx,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 							u8 data, u8 mask)
 {
 	int ret;
@@ -1303,13 +1331,21 @@ sisusb_setidxregmask(struct sisusb_usb_data *sisusb, int port, u8 idx,
 }
 
 int
+<<<<<<< HEAD
 sisusb_setidxregor(struct sisusb_usb_data *sisusb, int port, u8 index, u8 myor)
+=======
+sisusb_setidxregor(struct sisusb_usb_data *sisusb, u32 port, u8 index, u8 myor)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return(sisusb_setidxregandor(sisusb, port, index, 0xff, myor));
 }
 
 int
+<<<<<<< HEAD
 sisusb_setidxregand(struct sisusb_usb_data *sisusb, int port, u8 idx, u8 myand)
+=======
+sisusb_setidxregand(struct sisusb_usb_data *sisusb, u32 port, u8 idx, u8 myand)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return(sisusb_setidxregandor(sisusb, port, idx, myand, 0x00));
 }
@@ -2841,8 +2877,13 @@ static int
 sisusb_handle_command(struct sisusb_usb_data *sisusb, struct sisusb_command *y,
 							unsigned long arg)
 {
+<<<<<<< HEAD
 	int	retval, port, length;
 	u32	address;
+=======
+	int	retval, length;
+	u32	port, address;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* All our commands require the device
 	 * to be initialized.
@@ -3093,6 +3134,16 @@ static int sisusb_probe(struct usb_interface *intf,
 
 	mutex_init(&(sisusb->lock));
 
+<<<<<<< HEAD
+=======
+	sisusb->sisusb_dev = dev;
+	sisusb->vrambase   = SISUSB_PCI_MEMBASE;
+	sisusb->mmiobase   = SISUSB_PCI_MMIOBASE;
+	sisusb->mmiosize   = SISUSB_PCI_MMIOSIZE;
+	sisusb->ioportbase = SISUSB_PCI_IOPORTBASE;
+	/* Everything else is zero */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Register device */
 	if ((retval = usb_register_dev(intf, &usb_sisusb_class))) {
 		dev_err(&sisusb->sisusb_dev->dev, "Failed to get a minor for device %d\n",
@@ -3101,6 +3152,7 @@ static int sisusb_probe(struct usb_interface *intf,
 		goto error_1;
 	}
 
+<<<<<<< HEAD
 	sisusb->sisusb_dev = dev;
 	sisusb->minor      = intf->minor;
 	sisusb->vrambase   = SISUSB_PCI_MEMBASE;
@@ -3108,6 +3160,9 @@ static int sisusb_probe(struct usb_interface *intf,
 	sisusb->mmiosize   = SISUSB_PCI_MMIOSIZE;
 	sisusb->ioportbase = SISUSB_PCI_IOPORTBASE;
 	/* Everything else is zero */
+=======
+	sisusb->minor = intf->minor;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Allocate buffers */
 	sisusb->ibufsize = SISUSB_IBUF_SIZE;

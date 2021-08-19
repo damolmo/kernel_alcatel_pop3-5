@@ -264,6 +264,7 @@ DEFINE_EVENT_PRINT(mm_page, mm_page_pcpu_drain,
 		__entry->order, __entry->migratetype)
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(debug_allocate_large_pages,
 
 	TP_PROTO(struct page *page, unsigned int order, gfp_t gfp_mask),
@@ -322,6 +323,8 @@ TRACE_EVENT(dump_allocate_large_pages,
 	)
 );
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 TRACE_EVENT(mm_page_alloc_extfrag,
 
 	TP_PROTO(struct page *page,

@@ -216,7 +216,11 @@
 /* Various constants */
 
 /* Coalescing */
+<<<<<<< HEAD
 #define MVNETA_TXDONE_COAL_PKTS		1
+=======
+#define MVNETA_TXDONE_COAL_PKTS		0	/* interrupt per packet */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define MVNETA_RX_COAL_PKTS		32
 #define MVNETA_RX_COAL_USEC		100
 
@@ -748,6 +752,10 @@ static void mvneta_port_up(struct mvneta_port *pp)
 	}
 	mvreg_write(pp, MVNETA_TXQ_CMD, q_map);
 
+<<<<<<< HEAD
+=======
+	q_map = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Enable all initialized RXQs. */
 	q_map = 0;
 	for (queue = 0; queue < rxq_number; queue++) {
@@ -851,6 +859,13 @@ static void mvneta_port_disable(struct mvneta_port *pp)
 	val &= ~MVNETA_GMAC0_PORT_ENABLE;
 	mvreg_write(pp, MVNETA_GMAC_CTRL_0, val);
 
+<<<<<<< HEAD
+=======
+	pp->link = 0;
+	pp->duplex = -1;
+	pp->speed = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	udelay(200);
 }
 
@@ -2472,7 +2487,10 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
 	}
 
 	mvneta_start_dev(pp);
+<<<<<<< HEAD
 	mvneta_port_up(pp);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	netdev_update_features(dev);
 
@@ -3078,7 +3096,11 @@ static int mvneta_probe(struct platform_device *pdev)
 	dev->features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO;
 	dev->hw_features |= dev->features;
 	dev->vlan_features |= dev->features;
+<<<<<<< HEAD
 	dev->priv_flags |= IFF_UNICAST_FLT;
+=======
+	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->gso_max_segs = MVNETA_MAX_TSO_SEGS;
 
 	err = register_netdev(dev);

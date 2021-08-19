@@ -308,6 +308,15 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
 			vol->last_eb_bytes = vol->usable_leb_size;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Make volume "available" before it becomes accessible via sysfs */
+	spin_lock(&ubi->volumes_lock);
+	ubi->volumes[vol_id] = vol;
+	ubi->vol_count += 1;
+	spin_unlock(&ubi->volumes_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Register character device for the volume */
 	cdev_init(&vol->cdev, &ubi_vol_cdev_operations);
 	vol->cdev.owner = THIS_MODULE;
@@ -350,11 +359,14 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
 	if (err)
 		goto out_sysfs;
 
+<<<<<<< HEAD
 	spin_lock(&ubi->volumes_lock);
 	ubi->volumes[vol_id] = vol;
 	ubi->vol_count += 1;
 	spin_unlock(&ubi->volumes_lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_volume_notify(ubi, vol, UBI_VOLUME_ADDED);
 	self_check_volumes(ubi);
 	return err;
@@ -374,6 +386,13 @@ out_sysfs:
 out_cdev:
 	cdev_del(&vol->cdev);
 out_mapping:
+<<<<<<< HEAD
+=======
+	spin_lock(&ubi->volumes_lock);
+	ubi->volumes[vol_id] = NULL;
+	ubi->vol_count -= 1;
+	spin_unlock(&ubi->volumes_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (do_free)
 		kfree(vol->eba_tbl);
 out_acc:
@@ -534,6 +553,7 @@ int ubi_resize_volume(struct ubi_volume_desc *desc, int reserved_pebs)
 		spin_unlock(&ubi->volumes_lock);
 	}
 
+<<<<<<< HEAD
 	/* Change volume table record */
 	vtbl_rec = ubi->vtbl[vol_id];
 	vtbl_rec.reserved_pebs = cpu_to_be32(reserved_pebs);
@@ -541,6 +561,8 @@ int ubi_resize_volume(struct ubi_volume_desc *desc, int reserved_pebs)
 	if (err)
 		goto out_acc;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pebs < 0) {
 		for (i = 0; i < -pebs; i++) {
 			err = ubi_eba_unmap_leb(ubi, vol, reserved_pebs + i);
@@ -558,6 +580,27 @@ int ubi_resize_volume(struct ubi_volume_desc *desc, int reserved_pebs)
 		spin_unlock(&ubi->volumes_lock);
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * When we shrink a volume we have to flush all pending (erase) work.
+	 * Otherwise it can happen that upon next attach UBI finds a LEB with
+	 * lnum > highest_lnum and refuses to attach.
+	 */
+	if (pebs < 0) {
+		err = ubi_wl_flush(ubi, vol_id, UBI_ALL);
+		if (err)
+			goto out_acc;
+	}
+
+	/* Change volume table record */
+	vtbl_rec = ubi->vtbl[vol_id];
+	vtbl_rec.reserved_pebs = cpu_to_be32(reserved_pebs);
+	err = ubi_change_vtbl_record(ubi, vol_id, &vtbl_rec);
+	if (err)
+		goto out_acc;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vol->reserved_pebs = reserved_pebs;
 	if (vol->vol_type == UBI_DYNAMIC_VOLUME) {
 		vol->used_ebs = reserved_pebs;

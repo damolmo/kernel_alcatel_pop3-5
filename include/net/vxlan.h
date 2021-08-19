@@ -43,6 +43,14 @@ struct vxlan_sock {
 #define VXLAN_F_UDP_ZERO_CSUM6_TX	0x80
 #define VXLAN_F_UDP_ZERO_CSUM6_RX	0x100
 
+<<<<<<< HEAD
+=======
+/* Flags that are used in the receive path. These flags must match in
+ * order for a socket to be shareable
+ */
+#define VXLAN_F_RCV_FLAGS		VXLAN_F_UDP_ZERO_CSUM6_RX
+					 
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct vxlan_sock *vxlan_sock_add(struct net *net, __be16 port,
 				  vxlan_rcv_t *rcv, void *data,
 				  bool no_share, u32 flags);

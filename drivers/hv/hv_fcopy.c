@@ -239,14 +239,22 @@ void hv_fcopy_onchannelcallback(void *context)
 
 		fcopy_transaction.active = true;
 		fcopy_transaction.recv_len = recvlen;
+<<<<<<< HEAD
 		fcopy_transaction.recv_channel = channel;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fcopy_transaction.recv_req_id = requestid;
 		fcopy_transaction.fcopy_msg = fcopy_msg;
 
 		/*
 		 * Send the information to the user-level daemon.
 		 */
+<<<<<<< HEAD
 		schedule_delayed_work(&fcopy_work, 5*HZ);
+=======
+		schedule_delayed_work(&fcopy_work,
+				      HV_UTIL_TIMEOUT * HZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fcopy_send_data();
 		return;
 	}
@@ -394,6 +402,10 @@ static void fcopy_dev_deinit(void)
 int hv_fcopy_init(struct hv_util_service *srv)
 {
 	recv_buffer = srv->recv_buffer;
+<<<<<<< HEAD
+=======
+	fcopy_transaction.recv_channel = srv->channel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * When this driver loads, the user level daemon that

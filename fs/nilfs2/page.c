@@ -264,8 +264,12 @@ int nilfs_copy_dirty_pages(struct address_space *dmap,
 
 	pagevec_init(&pvec, 0);
 repeat:
+<<<<<<< HEAD
 	if (!pagevec_lookup_tag(&pvec, smap, &index, PAGECACHE_TAG_DIRTY,
 				PAGEVEC_SIZE))
+=======
+	if (!pagevec_lookup_tag(&pvec, smap, &index, PAGECACHE_TAG_DIRTY))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	for (i = 0; i < pagevec_count(&pvec); i++) {
@@ -384,8 +388,13 @@ void nilfs_clear_dirty_pages(struct address_space *mapping, bool silent)
 
 	pagevec_init(&pvec, 0);
 
+<<<<<<< HEAD
 	while (pagevec_lookup_tag(&pvec, mapping, &index, PAGECACHE_TAG_DIRTY,
 				  PAGEVEC_SIZE)) {
+=======
+	while (pagevec_lookup_tag(&pvec, mapping, &index,
+					PAGECACHE_TAG_DIRTY)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < pagevec_count(&pvec); i++) {
 			struct page *page = pvec.pages[i];
 

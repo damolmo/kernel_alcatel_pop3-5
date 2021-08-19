@@ -70,7 +70,11 @@ static int twl4030_pwrbutton_probe(struct platform_device *pdev)
 	pwr->phys = "twl4030_pwrbutton/input0";
 	pwr->dev.parent = &pdev->dev;
 
+<<<<<<< HEAD
 	err = devm_request_threaded_irq(&pwr->dev, irq, NULL, powerbutton_irq,
+=======
+	err = devm_request_threaded_irq(&pdev->dev, irq, NULL, powerbutton_irq,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
 			"twl4030_pwrbutton", pwr);
 	if (err < 0) {

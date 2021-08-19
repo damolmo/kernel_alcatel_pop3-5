@@ -218,8 +218,14 @@ void ath9k_hw_get_channel_centers(struct ath_hw *ah,
 /* Chip Revisions */
 /******************/
 
+<<<<<<< HEAD
 static void ath9k_hw_read_revisions(struct ath_hw *ah)
 {
+=======
+static bool ath9k_hw_read_revisions(struct ath_hw *ah)
+{
+	u32 srev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 val;
 
 	if (ah->get_mac_revision)
@@ -235,6 +241,7 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
 			val = REG_READ(ah, AR_SREV);
 			ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
 		}
+<<<<<<< HEAD
 		return;
 	case AR9300_DEVID_AR9340:
 		ah->hw_version.macVersion = AR_SREV_VERSION_9340;
@@ -251,6 +258,32 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
 
 	if (val == 0xFF) {
 		val = REG_READ(ah, AR_SREV);
+=======
+		return true;
+	case AR9300_DEVID_AR9340:
+		ah->hw_version.macVersion = AR_SREV_VERSION_9340;
+		return true;
+	case AR9300_DEVID_QCA955X:
+		ah->hw_version.macVersion = AR_SREV_VERSION_9550;
+		return true;
+	case AR9300_DEVID_AR953X:
+		ah->hw_version.macVersion = AR_SREV_VERSION_9531;
+		return true;
+	}
+
+	srev = REG_READ(ah, AR_SREV);
+
+	if (srev == -1) {
+		ath_err(ath9k_hw_common(ah),
+			"Failed to read SREV register");
+		return false;
+	}
+
+	val = srev & AR_SREV_ID;
+
+	if (val == 0xFF) {
+		val = srev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ah->hw_version.macVersion =
 			(val & AR_SREV_VERSION2) >> AR_SREV_TYPE2_S;
 		ah->hw_version.macRev = MS(val, AR_SREV_REVISION2);
@@ -269,6 +302,11 @@ static void ath9k_hw_read_revisions(struct ath_hw *ah)
 		if (ah->hw_version.macVersion == AR_SREV_VERSION_5416_PCIE)
 			ah->is_pciexpress = true;
 	}
+<<<<<<< HEAD
+=======
+
+	return true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /************************************/
@@ -508,7 +546,14 @@ static int __ath9k_hw_init(struct ath_hw *ah)
 	struct ath_common *common = ath9k_hw_common(ah);
 	int r = 0;
 
+<<<<<<< HEAD
 	ath9k_hw_read_revisions(ah);
+=======
+	if (!ath9k_hw_read_revisions(ah)) {
+		ath_err(common, "Could not read hardware revisions");
+		return -EOPNOTSUPP;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (ah->hw_version.macVersion) {
 	case AR_SREV_VERSION_5416_PCI:
@@ -1537,6 +1582,13 @@ bool ath9k_hw_check_alive(struct ath_hw *ah)
 	int count = 50;
 	u32 reg, last_val;
 
+<<<<<<< HEAD
+=======
+	/* Check if chip failed to wake up */
+	if (REG_READ(ah, AR_CFG) == 0xdeadbeef)
+		return false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (AR_SREV_9300(ah))
 		return !ath9k_hw_detect_mac_hang(ah);
 

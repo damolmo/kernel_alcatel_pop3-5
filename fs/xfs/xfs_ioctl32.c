@@ -348,6 +348,10 @@ xfs_compat_attrlist_by_handle(
 {
 	int			error;
 	attrlist_cursor_kern_t	*cursor;
+<<<<<<< HEAD
+=======
+	compat_xfs_fsop_attrlist_handlereq_t __user *p = arg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	compat_xfs_fsop_attrlist_handlereq_t al_hreq;
 	struct dentry		*dentry;
 	char			*kbuf;
@@ -382,6 +386,14 @@ xfs_compat_attrlist_by_handle(
 	if (error)
 		goto out_kfree;
 
+<<<<<<< HEAD
+=======
+	if (copy_to_user(&p->pos, cursor, sizeof(attrlist_cursor_kern_t))) {
+		error = -EFAULT;
+		goto out_kfree;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (copy_to_user(compat_ptr(al_hreq.buffer), kbuf, al_hreq.buflen))
 		error = -EFAULT;
 

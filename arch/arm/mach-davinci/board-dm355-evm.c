@@ -18,6 +18,10 @@
 #include <linux/i2c.h>
 #include <linux/gpio.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/dm9000.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/videodev2.h>
 #include <media/tvp514x.h>
 #include <linux/spi/spi.h>
@@ -170,11 +174,22 @@ static struct resource dm355evm_dm9000_rsrc[] = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct dm9000_plat_data dm335evm_dm9000_platdata;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct platform_device dm355evm_dm9000 = {
 	.name		= "dm9000",
 	.id		= -1,
 	.resource	= dm355evm_dm9000_rsrc,
 	.num_resources	= ARRAY_SIZE(dm355evm_dm9000_rsrc),
+<<<<<<< HEAD
+=======
+	.dev		= {
+		.platform_data = &dm335evm_dm9000_platdata,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static struct tvp514x_platform_data tvp5146_pdata = {

@@ -29,9 +29,20 @@ static inline struct tcphdr *tcp_hdr(const struct sk_buff *skb)
 	return (struct tcphdr *)skb_transport_header(skb);
 }
 
+<<<<<<< HEAD
 static inline unsigned int tcp_hdrlen(const struct sk_buff *skb)
 {
 	return tcp_hdr(skb)->doff * 4;
+=======
+static inline unsigned int __tcp_hdrlen(const struct tcphdr *th)
+{
+	return th->doff * 4;
+}
+
+static inline unsigned int tcp_hdrlen(const struct sk_buff *skb)
+{
+	return __tcp_hdrlen(tcp_hdr(skb));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline struct tcphdr *inner_tcp_hdr(const struct sk_buff *skb)
@@ -56,8 +67,18 @@ static inline unsigned int tcp_optlen(const struct sk_buff *skb)
 
 /* TCP Fast Open Cookie as stored in memory */
 struct tcp_fastopen_cookie {
+<<<<<<< HEAD
 	s8	len;
 	u8	val[TCP_FASTOPEN_COOKIE_MAX];
+=======
+	union {
+		u8	val[TCP_FASTOPEN_COOKIE_MAX];
+#if IS_ENABLED(CONFIG_IPV6)
+		struct in6_addr addr;
+#endif
+	};
+	s8	len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* This defines a selective acknowledgement block. */
@@ -240,10 +261,16 @@ struct tcp_sock {
 	struct sk_buff* lost_skb_hint;
 	struct sk_buff *retransmit_skb_hint;
 
+<<<<<<< HEAD
 	/* OOO segments go in this list. Note that socket lock must be held,
 	 * as we do not use sk_buff_head lock.
 	 */
 	struct sk_buff_head	out_of_order_queue;
+=======
+	/* OOO segments go in this rbtree. Socket lock must be held. */
+	struct rb_root	out_of_order_queue;
+	struct sk_buff	*ooo_last_skb; /* cache rb_last(out_of_order_queue) */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* SACKs data, these 2 need to be together (see tcp_options_write) */
 	struct tcp_sack_block duplicate_sack[1]; /* D-SACK block */
@@ -287,7 +314,11 @@ struct tcp_sock {
 
 /* Receiver queue space */
 	struct {
+<<<<<<< HEAD
 		int	space;
+=======
+		u32	space;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u32	seq;
 		u32	time;
 	} rcvq_space;
@@ -378,4 +409,10 @@ static inline int fastopen_init_queue(struct sock *sk, int backlog)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int tcp_skb_shift(struct sk_buff *to, struct sk_buff *from, int pcount,
+		  int shiftlen);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif	/* _LINUX_TCP_H */

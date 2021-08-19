@@ -443,7 +443,11 @@ static int nilfs_valid_sb(struct nilfs_super_block *sbp)
 	if (!sbp || le16_to_cpu(sbp->s_magic) != NILFS_SUPER_MAGIC)
 		return 0;
 	bytes = le16_to_cpu(sbp->s_bytes);
+<<<<<<< HEAD
 	if (bytes > BLOCK_SIZE)
+=======
+	if (bytes < sumoff + 4 || bytes > BLOCK_SIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	crc = crc32_le(le32_to_cpu(sbp->s_crc_seed), (unsigned char *)sbp,
 		       sumoff);

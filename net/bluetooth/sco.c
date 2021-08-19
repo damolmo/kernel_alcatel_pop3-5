@@ -390,7 +390,12 @@ static void sco_sock_cleanup_listen(struct sock *parent)
  */
 static void sco_sock_kill(struct sock *sk)
 {
+<<<<<<< HEAD
 	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
+=======
+	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket ||
+	    sock_flag(sk, SOCK_DEAD))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	BT_DBG("sk %p state %d", sk, sk->sk_state);
@@ -520,6 +525,12 @@ static int sco_sock_bind(struct socket *sock, struct sockaddr *addr, int addr_le
 	if (!addr || addr->sa_family != AF_BLUETOOTH)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (addr_len < sizeof(struct sockaddr_sco))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lock_sock(sk);
 
 	if (sk->sk_state != BT_OPEN) {

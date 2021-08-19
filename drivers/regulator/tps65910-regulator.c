@@ -1101,8 +1101,15 @@ static int tps65910_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, pmic);
 
 	/* Give control of all register to control port */
+<<<<<<< HEAD
 	tps65910_reg_set_bits(pmic->mfd, TPS65910_DEVCTRL,
 				DEVCTRL_SR_CTL_I2C_SEL_MASK);
+=======
+	err = tps65910_reg_set_bits(pmic->mfd, TPS65910_DEVCTRL,
+				DEVCTRL_SR_CTL_I2C_SEL_MASK);
+	if (err < 0)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (tps65910_chip_id(tps65910)) {
 	case TPS65910:
@@ -1110,6 +1117,15 @@ static int tps65910_probe(struct platform_device *pdev)
 		pmic->num_regulators = ARRAY_SIZE(tps65910_regs);
 		pmic->ext_sleep_control = tps65910_ext_sleep_control;
 		info = tps65910_regs;
+<<<<<<< HEAD
+=======
+		/* Work around silicon erratum SWCZ010: output programmed
+		 * voltage level can go higher than expected or crash
+		 * Workaround: use no synchronization of DCDC clocks
+		 */
+		tps65910_reg_clear_bits(pmic->mfd, TPS65910_DCDCCTRL,
+					DCDCCTRL_DCDCCKSYNC_MASK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case TPS65911:
 		pmic->get_ctrl_reg = &tps65911_get_ctrl_register;

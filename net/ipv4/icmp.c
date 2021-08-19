@@ -245,7 +245,11 @@ static struct {
 /**
  * icmp_global_allow - Are we allowed to send one more ICMP message ?
  *
+<<<<<<< HEAD
  * Uses a token bucket to limit our ICMP messages to sysctl_icmp_msgs_per_sec.
+=======
+ * Uses a token bucket to limit our ICMP messages to ~sysctl_icmp_msgs_per_sec.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Returns false if we reached the limit and can not send another packet.
  * Note: called with BH disabled
  */
@@ -255,10 +259,18 @@ bool icmp_global_allow(void)
 	bool rc = false;
 
 	/* Check if token bucket is empty and cannot be refilled
+<<<<<<< HEAD
 	 * without taking the spinlock.
 	 */
 	if (!icmp_global.credit) {
 		delta = min_t(u32, now - icmp_global.stamp, HZ);
+=======
+	 * without taking the spinlock. The READ_ONCE() are paired
+	 * with the following WRITE_ONCE() in this same function.
+	 */
+	if (!READ_ONCE(icmp_global.credit)) {
+		delta = min_t(u32, now - READ_ONCE(icmp_global.stamp), HZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (delta < HZ / 50)
 			return false;
 	}
@@ -268,6 +280,7 @@ bool icmp_global_allow(void)
 	if (delta >= HZ / 50) {
 		incr = sysctl_icmp_msgs_per_sec * delta / HZ ;
 		if (incr)
+<<<<<<< HEAD
 			icmp_global.stamp = now;
 	}
 	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
@@ -276,6 +289,19 @@ bool icmp_global_allow(void)
 		rc = true;
 	}
 	icmp_global.credit = credit;
+=======
+			WRITE_ONCE(icmp_global.stamp, now);
+	}
+	credit = min_t(u32, icmp_global.credit + incr, sysctl_icmp_msgs_burst);
+	if (credit) {
+		/* We want to use a credit of one in average, but need to randomize
+		 * it for security reasons.
+		 */
+		credit = max_t(int, credit - prandom_u32_max(3), 0);
+		rc = true;
+	}
+	WRITE_ONCE(icmp_global.credit, credit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&icmp_global.lock);
 	return rc;
 }
@@ -357,7 +383,10 @@ static void icmp_push_reply(struct icmp_bxm *icmp_param,
 	struct sk_buff *skb;
 
 	sk = icmp_sk(dev_net((*rt)->dst.dev));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ip_append_data(sk, fl4, icmp_glue_bits, icmp_param,
 			   icmp_param->data_len+icmp_param->head_len,
 			   icmp_param->head_len,
@@ -424,6 +453,10 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 	fl4.daddr = daddr;
 	fl4.saddr = saddr;
 	fl4.flowi4_mark = mark;
+<<<<<<< HEAD
+=======
+	fl4.flowi4_uid = sock_net_uid(net, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fl4.flowi4_tos = RT_TOS(ip_hdr(skb)->tos);
 	fl4.flowi4_proto = IPPROTO_ICMP;
 	security_skb_classify_flow(skb, flowi4_to_flowi(&fl4));
@@ -455,6 +488,10 @@ static struct rtable *icmp_route_lookup(struct net *net,
 		      param->replyopts.opt.opt.faddr : iph->saddr);
 	fl4->saddr = saddr;
 	fl4->flowi4_mark = mark;
+<<<<<<< HEAD
+=======
+	fl4->flowi4_uid = sock_net_uid(net, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fl4->flowi4_tos = RT_TOS(tos);
 	fl4->flowi4_proto = IPPROTO_ICMP;
 	fl4->fl4_icmp_type = type;
@@ -542,7 +579,12 @@ relookup_failed:
  *			MUST reply to only the first fragment.
  */
 
+<<<<<<< HEAD
 void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+=======
+void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+		 const struct ip_options *opt)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct iphdr *iph;
 	int room;
@@ -656,7 +698,11 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 					  iph->tos;
 	mark = IP4_REPLY_MARK(net, skb_in->mark);
 
+<<<<<<< HEAD
 	if (ip_options_echo(&icmp_param->replyopts.opt.opt, skb_in))
+=======
+	if (__ip_options_echo(&icmp_param->replyopts.opt.opt, skb_in, opt))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_unlock;
 
 
@@ -708,7 +754,11 @@ out_free:
 	kfree(icmp_param);
 out:;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(icmp_send);
+=======
+EXPORT_SYMBOL(__icmp_send);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
@@ -903,7 +953,10 @@ static void icmp_echo(struct sk_buff *skb)
  */
 static void icmp_timestamp(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	struct timespec tv;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct icmp_bxm icmp_param;
 	/*
 	 *	Too short.
@@ -914,9 +967,13 @@ static void icmp_timestamp(struct sk_buff *skb)
 	/*
 	 *	Fill in the current time as ms since midnight UT:
 	 */
+<<<<<<< HEAD
 	getnstimeofday(&tv);
 	icmp_param.data.times[1] = htonl((tv.tv_sec % 86400) * MSEC_PER_SEC +
 					 tv.tv_nsec / NSEC_PER_MSEC);
+=======
+	icmp_param.data.times[1] = inet_current_timestamp();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	icmp_param.data.times[2] = icmp_param.data.times[1];
 	if (skb_copy_bits(skb, 0, &icmp_param.data.times[0], 4))
 		BUG();
@@ -947,8 +1004,11 @@ int icmp_rcv(struct sk_buff *skb)
 	struct icmphdr *icmph;
 	struct rtable *rt = skb_rtable(skb);
 	struct net *net = dev_net(rt->dst.dev);
+<<<<<<< HEAD
 	/*mtk_net: save ping reply sk*/
 	struct sock *ping_sk = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
 		struct sec_path *sp = skb_sec_path(skb);
@@ -1017,6 +1077,7 @@ int icmp_rcv(struct sk_buff *skb)
 
 	icmp_pointers[icmph->type].handler(skb);
 
+<<<<<<< HEAD
 	if (icmph->type == ICMP_ECHOREPLY && skb->sk != NULL)
 		ping_sk = skb->sk;
 
@@ -1027,6 +1088,10 @@ drop:
 	} else {
 		kfree_skb(skb);
 	}
+=======
+drop:
+	kfree_skb(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 csum_error:
 	ICMP_INC_STATS_BH(net, ICMP_MIB_CSUMERRORS);

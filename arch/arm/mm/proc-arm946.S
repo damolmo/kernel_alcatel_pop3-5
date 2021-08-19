@@ -409,14 +409,22 @@ __arm946_setup:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.type	__arm946_proc_info,#object
 __arm946_proc_info:
 	.long	0x41009460
 	.long	0xff00fff0
 	.long	0
 	.long	0
+<<<<<<< HEAD
 	b	__arm946_setup
+=======
+	initfn	__arm946_setup, __arm946_proc_info
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

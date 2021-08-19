@@ -104,16 +104,35 @@ static int r_show(struct seq_file *m, void *v)
 {
 	struct resource *root = m->private;
 	struct resource *r = v, *p;
+<<<<<<< HEAD
+=======
+	unsigned long long start, end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int width = root->end < 0x10000 ? 4 : 8;
 	int depth;
 
 	for (depth = 0, p = r; depth < MAX_IORES_LEVEL; depth++, p = p->parent)
 		if (p->parent == root)
 			break;
+<<<<<<< HEAD
 	seq_printf(m, "%*s%0*llx-%0*llx : %s\n",
 			depth * 2, "",
 			width, (unsigned long long) r->start,
 			width, (unsigned long long) r->end,
+=======
+
+	if (file_ns_capable(m->file, &init_user_ns, CAP_SYS_ADMIN)) {
+		start = r->start;
+		end = r->end;
+	} else {
+		start = end = 0;
+	}
+
+	seq_printf(m, "%*s%0*llx-%0*llx : %s\n",
+			depth * 2, "",
+			width, start,
+			width, end,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			r->name ? r->name : "<BAD>");
 	return 0;
 }
@@ -162,7 +181,11 @@ static const struct file_operations proc_iomem_operations = {
 static int __init ioresources_init(void)
 {
 	proc_create("ioports", 0, NULL, &proc_ioports_operations);
+<<<<<<< HEAD
 	proc_create("iomem", S_IRUSR, NULL, &proc_iomem_operations);
+=======
+	proc_create("iomem", 0, NULL, &proc_iomem_operations);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 __initcall(ioresources_init);
@@ -590,7 +613,12 @@ static int __find_resource(struct resource *root, struct resource *old,
 			alloc.start = constraint->alignf(constraint->alignf_data, &avail,
 					size, constraint->align);
 			alloc.end = alloc.start + size - 1;
+<<<<<<< HEAD
 			if (resource_contains(&avail, &alloc)) {
+=======
+			if (alloc.start <= alloc.end &&
+			    resource_contains(&avail, &alloc)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				new->start = alloc.start;
 				new->end = alloc.end;
 				return 0;
@@ -1073,9 +1101,16 @@ struct resource * __request_region(struct resource *parent,
 		if (!conflict)
 			break;
 		if (conflict != parent) {
+<<<<<<< HEAD
 			parent = conflict;
 			if (!(conflict->flags & IORESOURCE_BUSY))
 				continue;
+=======
+			if (!(conflict->flags & IORESOURCE_BUSY)) {
+				parent = conflict;
+				continue;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		if (conflict->flags & flags & IORESOURCE_MUXED) {
 			add_wait_queue(&muxed_resource_wait, &wait);

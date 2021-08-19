@@ -9,7 +9,10 @@
 #include <linux/gfp.h>
 #include <linux/suspend.h>
 #include <linux/bootmem.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
@@ -143,7 +146,11 @@ static inline void resume_init_first_level_page_table(pgd_t *pg_dir)
 #endif
 }
 
+<<<<<<< HEAD
 int swsusp_arch_resume(void)
+=======
+asmlinkage int swsusp_arch_resume(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int error;
 
@@ -160,7 +167,10 @@ int swsusp_arch_resume(void)
 	restore_image();
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(swsusp_arch_resume);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	pfn_is_nosave - check if given pfn is in the 'nosave' section

@@ -33,15 +33,24 @@
 
 #include "power.h"
 
+<<<<<<< HEAD
 #define MTK_SOLUTION 1
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 const char *pm_labels[] = { "mem", "standby", "freeze", NULL };
 const char *pm_states[PM_SUSPEND_MAX];
 
 static const struct platform_suspend_ops *suspend_ops;
 static const struct platform_freeze_ops *freeze_ops;
 static DECLARE_WAIT_QUEUE_HEAD(suspend_freeze_wait_head);
+<<<<<<< HEAD
 static bool suspend_freeze_wake;
+=======
+
+enum freeze_state __read_mostly suspend_freeze_state;
+static DEFINE_SPINLOCK(suspend_freeze_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void freeze_set_ops(const struct platform_freeze_ops *ops)
 {
@@ -52,22 +61,66 @@ void freeze_set_ops(const struct platform_freeze_ops *ops)
 
 static void freeze_begin(void)
 {
+<<<<<<< HEAD
 	suspend_freeze_wake = false;
+=======
+	suspend_freeze_state = FREEZE_STATE_NONE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void freeze_enter(void)
 {
+<<<<<<< HEAD
 	cpuidle_use_deepest_state(true);
 	cpuidle_resume();
 	wait_event(suspend_freeze_wait_head, suspend_freeze_wake);
 	cpuidle_pause();
 	cpuidle_use_deepest_state(false);
+=======
+	spin_lock_irq(&suspend_freeze_lock);
+	if (pm_wakeup_pending())
+		goto out;
+
+	suspend_freeze_state = FREEZE_STATE_ENTER;
+	spin_unlock_irq(&suspend_freeze_lock);
+
+	get_online_cpus();
+	cpuidle_resume();
+
+	/* Push all the CPUs into the idle loop. */
+	wake_up_all_idle_cpus();
+	pr_debug("PM: suspend-to-idle\n");
+	/* Make the current CPU wait so it can enter the idle loop too. */
+	wait_event(suspend_freeze_wait_head,
+		   suspend_freeze_state == FREEZE_STATE_WAKE);
+	pr_debug("PM: resume from suspend-to-idle\n");
+
+	cpuidle_pause();
+	put_online_cpus();
+
+	spin_lock_irq(&suspend_freeze_lock);
+
+ out:
+	suspend_freeze_state = FREEZE_STATE_NONE;
+	spin_unlock_irq(&suspend_freeze_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void freeze_wake(void)
 {
+<<<<<<< HEAD
 	suspend_freeze_wake = true;
 	wake_up(&suspend_freeze_wait_head);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&suspend_freeze_lock, flags);
+	if (suspend_freeze_state > FREEZE_STATE_NONE) {
+		suspend_freeze_state = FREEZE_STATE_WAKE;
+		wake_up(&suspend_freeze_wait_head);
+	}
+	spin_unlock_irqrestore(&suspend_freeze_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(freeze_wake);
 
@@ -229,16 +282,28 @@ static int suspend_test(int level)
  */
 static int suspend_prepare(suspend_state_t state)
 {
+<<<<<<< HEAD
 	int error;
+=======
+	int error, nr_calls = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!sleep_state_supported(state))
 		return -EPERM;
 
 	pm_prepare_console();
 
+<<<<<<< HEAD
 	error = pm_notifier_call_chain(PM_SUSPEND_PREPARE);
 	if (error)
 		goto Finish;
+=======
+	error = __pm_notifier_call_chain(PM_SUSPEND_PREPARE, -1, &nr_calls);
+	if (error) {
+		nr_calls--;
+		goto Finish;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	trace_suspend_resume(TPS("freeze_processes"), 0, true);
 	error = suspend_freeze_processes();
@@ -249,7 +314,11 @@ static int suspend_prepare(suspend_state_t state)
 	suspend_stats.failed_freeze++;
 	dpm_save_failed_step(SUSPEND_FREEZE);
  Finish:
+<<<<<<< HEAD
 	pm_notifier_call_chain(PM_POST_SUSPEND);
+=======
+	__pm_notifier_call_chain(PM_POST_SUSPEND, nr_calls, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_restore_console();
 	return error;
 }
@@ -421,7 +490,10 @@ int suspend_devices_and_enter(suspend_state_t state)
 	platform_recover(state);
 	goto Resume_devices;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(suspend_devices_and_enter);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * suspend_finish - Clean up before finishing the suspend sequence.
@@ -436,6 +508,7 @@ static void suspend_finish(void)
 	pm_restore_console();
 }
 
+<<<<<<< HEAD
 #if MTK_SOLUTION
 
 #define SYS_SYNC_TIMEOUT 2000
@@ -487,6 +560,8 @@ int suspend_syssync_enqueue(void)
 
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * enter_state - Do common work needed to enter system sleep state.
  * @state: System sleep state to enter.
@@ -519,6 +594,7 @@ static int enter_state(suspend_state_t state)
 
 	trace_suspend_resume(TPS("sync_filesystems"), 0, true);
 	printk(KERN_INFO "PM: Syncing filesystems ... ");
+<<<<<<< HEAD
 #if MTK_SOLUTION
 	error = suspend_syssync_enqueue();
 	if (error) {
@@ -528,6 +604,9 @@ static int enter_state(suspend_state_t state)
 #else
 	sys_sync();
 #endif
+=======
+	sys_sync();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("done.\n");
 	trace_suspend_resume(TPS("sync_filesystems"), 0, false);
 
@@ -556,11 +635,19 @@ static int enter_state(suspend_state_t state)
 static void pm_suspend_marker(char *annotation)
 {
 	struct timespec ts;
+<<<<<<< HEAD
 	struct rtc_time tm;
 
 	getnstimeofday(&ts);
 	rtc_time_to_tm(ts.tv_sec, &tm);
 	pr_info("PM: suspend %s %d-%02d-%02d %02d:%02d:%02d.%09lu UTC\n",
+=======
+	struct tm tm;
+
+	getnstimeofday(&ts);
+	time_to_tm(ts.tv_sec, 0, &tm);
+	pr_info("PM: suspend %s %ld-%02d-%02d %02d:%02d:%02d.%09lu UTC\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		annotation, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
 		tm.tm_hour, tm.tm_min, tm.tm_sec, ts.tv_nsec);
 }

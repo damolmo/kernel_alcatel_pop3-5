@@ -131,6 +131,10 @@ extern int dump_task_regs(struct task_struct *, elf_gregset_t *);
 struct linux_binprm;
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,
 				       int executable_stack);
+<<<<<<< HEAD
+=======
+/* update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT entries changes */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ARCH_DLINFO \
 do { \
 	NEW_AUX_ENT(AT_SYSINFO_EHDR, VDSO_BASE); \

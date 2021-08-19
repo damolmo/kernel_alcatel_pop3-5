@@ -17,6 +17,22 @@
 
 		.text
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+		.macro	save_regs
+		mrc	p15, 0, ip, c3, c0, 0
+		stmfd	sp!, {r1, r2, r4 - r8, ip, lr}
+		uaccess_enable ip
+		.endm
+
+		.macro	load_regs
+		ldmfd	sp!, {r1, r2, r4 - r8, ip, lr}
+		mcr	p15, 0, ip, c3, c0, 0
+		ret	lr
+		.endm
+#else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.macro	save_regs
 		stmfd	sp!, {r1, r2, r4 - r8, lr}
 		.endm
@@ -24,6 +40,10 @@
 		.macro	load_regs
 		ldmfd	sp!, {r1, r2, r4 - r8, pc}
 		.endm
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		.macro	load1b,	reg1
 		ldrusr	\reg1, r0, 1
@@ -71,7 +91,15 @@
 		.pushsection .fixup,"ax"
 		.align	4
 9001:		mov	r4, #-EFAULT
+<<<<<<< HEAD
 		ldr	r5, [sp, #8*4]		@ *err_ptr
+=======
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+		ldr	r5, [sp, #9*4]		@ *err_ptr
+#else
+		ldr	r5, [sp, #8*4]		@ *err_ptr
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		str	r4, [r5]
 		ldmia	sp, {r1, r2}		@ retrieve dst, len
 		add	r2, r2, r1

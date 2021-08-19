@@ -455,7 +455,11 @@ static int sh_rtc_set_time(struct device *dev, struct rtc_time *tm)
 static inline int sh_rtc_read_alarm_value(struct sh_rtc *rtc, int reg_off)
 {
 	unsigned int byte;
+<<<<<<< HEAD
 	int value = 0xff;	/* return 0xff for ignored values */
+=======
+	int value = -1;			/* return -1 for ignored values */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	byte = readb(rtc->regbase + reg_off);
 	if (byte & AR_ENB) {

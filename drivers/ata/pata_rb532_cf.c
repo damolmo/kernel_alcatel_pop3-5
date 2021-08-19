@@ -33,6 +33,11 @@
 
 #include <asm/gpio.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/mach-rc32434/rb.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DRV_NAME	"pata-rb532-cf"
 #define DRV_VERSION	"0.1.0"
 #define DRV_DESC	"PATA driver for RouterBOARD 532 Compact Flash"
@@ -108,6 +113,10 @@ static int rb532_pata_driver_probe(struct platform_device *pdev)
 	int gpio;
 	struct resource *res;
 	struct ata_host *ah;
+<<<<<<< HEAD
+=======
+	struct cf_device *pdata;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct rb532_cf_info *info;
 	int ret;
 
@@ -123,7 +132,17 @@ static int rb532_pata_driver_probe(struct platform_device *pdev)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	gpio = irq_to_gpio(irq);
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+	if (!pdata) {
+		dev_err(&pdev->dev, "no platform data specified\n");
+		return -EINVAL;
+	}
+
+	gpio = pdata->gpio_pin;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (gpio < 0) {
 		dev_err(&pdev->dev, "no GPIO found for irq%d\n", irq);
 		return -ENOENT;

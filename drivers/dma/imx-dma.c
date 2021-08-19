@@ -291,7 +291,11 @@ static inline int imxdma_sg_next(struct imxdma_desc *d)
 	struct scatterlist *sg = d->sg;
 	unsigned long now;
 
+<<<<<<< HEAD
 	now = min(d->len, sg_dma_len(sg));
+=======
+	now = min_t(size_t, d->len, sg_dma_len(sg));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (d->len != IMX_DMA_LENGTH_LOOP)
 		d->len -= now;
 
@@ -624,7 +628,11 @@ static void imxdma_tasklet(unsigned long data)
 {
 	struct imxdma_channel *imxdmac = (void *)data;
 	struct imxdma_engine *imxdma = imxdmac->imxdma;
+<<<<<<< HEAD
 	struct imxdma_desc *desc;
+=======
+	struct imxdma_desc *desc, *next_desc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long flags;
 
 	spin_lock_irqsave(&imxdma->lock, flags);
@@ -654,10 +662,17 @@ static void imxdma_tasklet(unsigned long data)
 	list_move_tail(imxdmac->ld_active.next, &imxdmac->ld_free);
 
 	if (!list_empty(&imxdmac->ld_queue)) {
+<<<<<<< HEAD
 		desc = list_first_entry(&imxdmac->ld_queue, struct imxdma_desc,
 					node);
 		list_move_tail(imxdmac->ld_queue.next, &imxdmac->ld_active);
 		if (imxdma_xfer_desc(desc) < 0)
+=======
+		next_desc = list_first_entry(&imxdmac->ld_queue,
+					     struct imxdma_desc, node);
+		list_move_tail(imxdmac->ld_queue.next, &imxdmac->ld_active);
+		if (imxdma_xfer_desc(next_desc) < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev_warn(imxdma->dev, "%s: channel: %d couldn't xfer desc\n",
 				 __func__, imxdmac->channel);
 	}

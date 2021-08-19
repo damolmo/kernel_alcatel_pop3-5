@@ -1347,6 +1347,10 @@ rpc_gssd_dummy_populate(struct dentry *root, struct rpc_pipe *pipe_data)
 	q.len = strlen(gssd_dummy_clnt_dir[0].name);
 	clnt_dentry = d_hash_and_lookup(gssd_dentry, &q);
 	if (!clnt_dentry) {
+<<<<<<< HEAD
+=======
+		__rpc_depopulate(gssd_dentry, gssd_dummy_clnt_dir, 0, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pipe_dentry = ERR_PTR(-ENOENT);
 		goto out;
 	}
@@ -1375,6 +1379,10 @@ rpc_gssd_dummy_depopulate(struct dentry *pipe_dentry)
 	struct dentry *clnt_dir = pipe_dentry->d_parent;
 	struct dentry *gssd_dir = clnt_dir->d_parent;
 
+<<<<<<< HEAD
+=======
+	dget(pipe_dentry);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__rpc_rmpipe(clnt_dir->d_inode, pipe_dentry);
 	__rpc_depopulate(clnt_dir, gssd_dummy_info_file, 0, 1);
 	__rpc_depopulate(gssd_dir, gssd_dummy_clnt_dir, 0, 1);

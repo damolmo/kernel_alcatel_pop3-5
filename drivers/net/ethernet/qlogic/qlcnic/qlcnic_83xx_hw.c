@@ -489,7 +489,11 @@ irqreturn_t qlcnic_83xx_clear_legacy_intr(struct qlcnic_adapter *adapter)
 
 static inline void qlcnic_83xx_notify_mbx_response(struct qlcnic_mailbox *mbx)
 {
+<<<<<<< HEAD
 	atomic_set(&mbx->rsp_status, QLC_83XX_MBX_RESPONSE_ARRIVED);
+=======
+	mbx->rsp_status = QLC_83XX_MBX_RESPONSE_ARRIVED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	complete(&mbx->completion);
 }
 
@@ -508,7 +512,11 @@ static void qlcnic_83xx_poll_process_aen(struct qlcnic_adapter *adapter)
 	if (event &  QLCNIC_MBX_ASYNC_EVENT) {
 		__qlcnic_83xx_process_aen(adapter);
 	} else {
+<<<<<<< HEAD
 		if (atomic_read(&mbx->rsp_status) != rsp_status)
+=======
+		if (mbx->rsp_status != rsp_status)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			qlcnic_83xx_notify_mbx_response(mbx);
 	}
 out:
@@ -1023,7 +1031,11 @@ static void qlcnic_83xx_process_aen(struct qlcnic_adapter *adapter)
 		if (event &  QLCNIC_MBX_ASYNC_EVENT) {
 			__qlcnic_83xx_process_aen(adapter);
 		} else {
+<<<<<<< HEAD
 			if (atomic_read(&mbx->rsp_status) != rsp_status)
+=======
+			if (mbx->rsp_status != rsp_status)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				qlcnic_83xx_notify_mbx_response(mbx);
 		}
 	}
@@ -2132,7 +2144,12 @@ out:
 }
 
 void qlcnic_83xx_change_l2_filter(struct qlcnic_adapter *adapter, u64 *addr,
+<<<<<<< HEAD
 				  u16 vlan_id)
+=======
+				  u16 vlan_id,
+				  struct qlcnic_host_tx_ring *tx_ring)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u8 mac[ETH_ALEN];
 	memcpy(&mac, addr, ETH_ALEN);
@@ -2338,9 +2355,15 @@ static void qlcnic_83xx_handle_link_aen(struct qlcnic_adapter *adapter,
 
 static irqreturn_t qlcnic_83xx_handle_aen(int irq, void *data)
 {
+<<<<<<< HEAD
 	struct qlcnic_adapter *adapter = data;
 	struct qlcnic_mailbox *mbx;
 	u32 mask, resp, event;
+=======
+	u32 mask, resp, event, rsp_status = QLC_83XX_MBX_RESPONSE_ARRIVED;
+	struct qlcnic_adapter *adapter = data;
+	struct qlcnic_mailbox *mbx;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long flags;
 
 	mbx = adapter->ahw->mailbox;
@@ -2350,10 +2373,21 @@ static irqreturn_t qlcnic_83xx_handle_aen(int irq, void *data)
 		goto out;
 
 	event = readl(QLCNIC_MBX_FW(adapter->ahw, 0));
+<<<<<<< HEAD
 	if (event &  QLCNIC_MBX_ASYNC_EVENT)
 		__qlcnic_83xx_process_aen(adapter);
 	else
 		qlcnic_83xx_notify_mbx_response(mbx);
+=======
+	if (event &  QLCNIC_MBX_ASYNC_EVENT) {
+		__qlcnic_83xx_process_aen(adapter);
+	} else {
+		if (mbx->rsp_status != rsp_status)
+			qlcnic_83xx_notify_mbx_response(mbx);
+		else
+			adapter->stats.mbx_spurious_intr++;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	mask = QLCRDX(adapter->ahw, QLCNIC_DEF_INT_MASK);
@@ -3579,7 +3613,11 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
 	ahw->diag_cnt = 0;
 	ret = qlcnic_alloc_mbx_args(&cmd, adapter, QLCNIC_CMD_INTRPT_TEST);
 	if (ret)
+<<<<<<< HEAD
 		goto fail_diag_irq;
+=======
+		goto fail_mbx_args;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (adapter->flags & QLCNIC_MSIX_ENABLED)
 		intrpt_id = ahw->intr_tbl[0].id;
@@ -3609,6 +3647,11 @@ int qlcnic_83xx_interrupt_test(struct net_device *netdev)
 
 done:
 	qlcnic_free_mbx_args(&cmd);
+<<<<<<< HEAD
+=======
+
+fail_mbx_args:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	qlcnic_83xx_diag_free_res(netdev, drv_sds_rings);
 
 fail_diag_irq:
@@ -3821,7 +3864,11 @@ static void qlcnic_83xx_flush_mbx_queue(struct qlcnic_adapter *adapter)
 	struct list_head *head = &mbx->cmd_q;
 	struct qlcnic_cmd_args *cmd = NULL;
 
+<<<<<<< HEAD
 	spin_lock(&mbx->queue_lock);
+=======
+	spin_lock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (!list_empty(head)) {
 		cmd = list_entry(head->next, struct qlcnic_cmd_args, list);
@@ -3832,7 +3879,11 @@ static void qlcnic_83xx_flush_mbx_queue(struct qlcnic_adapter *adapter)
 		qlcnic_83xx_notify_cmd_completion(adapter, cmd);
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&mbx->queue_lock);
+=======
+	spin_unlock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int qlcnic_83xx_check_mbx_status(struct qlcnic_adapter *adapter)
@@ -3868,12 +3919,20 @@ static void qlcnic_83xx_dequeue_mbx_cmd(struct qlcnic_adapter *adapter,
 {
 	struct qlcnic_mailbox *mbx = adapter->ahw->mailbox;
 
+<<<<<<< HEAD
 	spin_lock(&mbx->queue_lock);
+=======
+	spin_lock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_del(&cmd->list);
 	mbx->num_cmds--;
 
+<<<<<<< HEAD
 	spin_unlock(&mbx->queue_lock);
+=======
+	spin_unlock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	qlcnic_83xx_notify_cmd_completion(adapter, cmd);
 }
@@ -3938,7 +3997,11 @@ static int qlcnic_83xx_enqueue_mbx_cmd(struct qlcnic_adapter *adapter,
 		init_completion(&cmd->completion);
 		cmd->rsp_opcode = QLC_83XX_MBX_RESPONSE_UNKNOWN;
 
+<<<<<<< HEAD
 		spin_lock(&mbx->queue_lock);
+=======
+		spin_lock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		list_add_tail(&cmd->list, &mbx->cmd_q);
 		mbx->num_cmds++;
@@ -3946,7 +4009,11 @@ static int qlcnic_83xx_enqueue_mbx_cmd(struct qlcnic_adapter *adapter,
 		*timeout = cmd->total_cmds * QLC_83XX_MBX_TIMEOUT;
 		queue_work(mbx->work_q, &mbx->work);
 
+<<<<<<< HEAD
 		spin_unlock(&mbx->queue_lock);
+=======
+		spin_unlock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		return 0;
 	}
@@ -4025,10 +4092,17 @@ static void qlcnic_83xx_mailbox_worker(struct work_struct *work)
 	struct qlcnic_adapter *adapter = mbx->adapter;
 	struct qlcnic_mbx_ops *mbx_ops = mbx->ops;
 	struct device *dev = &adapter->pdev->dev;
+<<<<<<< HEAD
 	atomic_t *rsp_status = &mbx->rsp_status;
 	struct list_head *head = &mbx->cmd_q;
 	struct qlcnic_hardware_context *ahw;
 	struct qlcnic_cmd_args *cmd = NULL;
+=======
+	struct list_head *head = &mbx->cmd_q;
+	struct qlcnic_hardware_context *ahw;
+	struct qlcnic_cmd_args *cmd = NULL;
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ahw = adapter->ahw;
 
@@ -4038,17 +4112,32 @@ static void qlcnic_83xx_mailbox_worker(struct work_struct *work)
 			return;
 		}
 
+<<<<<<< HEAD
 		atomic_set(rsp_status, QLC_83XX_MBX_RESPONSE_WAIT);
 
 		spin_lock(&mbx->queue_lock);
 
 		if (list_empty(head)) {
 			spin_unlock(&mbx->queue_lock);
+=======
+		spin_lock_irqsave(&mbx->aen_lock, flags);
+		mbx->rsp_status = QLC_83XX_MBX_RESPONSE_WAIT;
+		spin_unlock_irqrestore(&mbx->aen_lock, flags);
+
+		spin_lock_bh(&mbx->queue_lock);
+
+		if (list_empty(head)) {
+			spin_unlock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return;
 		}
 		cmd = list_entry(head->next, struct qlcnic_cmd_args, list);
 
+<<<<<<< HEAD
 		spin_unlock(&mbx->queue_lock);
+=======
+		spin_unlock_bh(&mbx->queue_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		mbx_ops->encode_cmd(adapter, cmd);
 		mbx_ops->nofity_fw(adapter, QLC_83XX_MBX_REQUEST);

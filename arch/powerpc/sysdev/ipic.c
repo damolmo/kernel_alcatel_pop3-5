@@ -844,12 +844,20 @@ void ipic_disable_mcp(enum ipic_mcp_irq mcp_irq)
 
 u32 ipic_get_mcp_status(void)
 {
+<<<<<<< HEAD
 	return ipic_read(primary_ipic->regs, IPIC_SERMR);
+=======
+	return ipic_read(primary_ipic->regs, IPIC_SERSR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void ipic_clear_mcp_status(u32 mask)
 {
+<<<<<<< HEAD
 	ipic_write(primary_ipic->regs, IPIC_SERMR, mask);
+=======
+	ipic_write(primary_ipic->regs, IPIC_SERSR, mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Return an interrupt vector or NO_IRQ if no interrupt is pending. */

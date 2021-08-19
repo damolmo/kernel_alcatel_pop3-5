@@ -668,8 +668,13 @@ EXPORT_SYMBOL(input_close_device);
  */
 static void input_dev_release_keys(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	int code;
 	bool need_sync = false;
+=======
+	bool need_sync = false;
+	int code;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (is_event_supported(EV_KEY, dev->evbit, EV_MAX)) {
 		for (code = 0; code <= KEY_MAX; code++) {
@@ -845,6 +850,7 @@ static int input_default_setkeycode(struct input_dev *dev,
 		}
 	}
 
+<<<<<<< HEAD
 	__clear_bit(*old_keycode, dev->keybit);
 	__set_bit(ke->keycode, dev->keybit);
 
@@ -855,6 +861,20 @@ static int input_default_setkeycode(struct input_dev *dev,
 		}
 	}
 
+=======
+	if (*old_keycode <= KEY_MAX) {
+		__clear_bit(*old_keycode, dev->keybit);
+		for (i = 0; i < dev->keycodemax; i++) {
+			if (input_fetch_keycode(dev, i) == *old_keycode) {
+				__set_bit(*old_keycode, dev->keybit);
+				/* Setting the bit twice is useless, so break */
+				break;
+			}
+		}
+	}
+
+	__set_bit(ke->keycode, dev->keybit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -910,9 +930,19 @@ int input_set_keycode(struct input_dev *dev,
 	 * Simulate keyup event if keycode is not present
 	 * in the keymap anymore
 	 */
+<<<<<<< HEAD
 	if (test_bit(EV_KEY, dev->evbit) &&
 	    !is_event_supported(old_keycode, dev->keybit, KEY_MAX) &&
 	    __test_and_clear_bit(old_keycode, dev->key)) {
+=======
+	if (old_keycode > KEY_MAX) {
+		dev_warn(dev->dev.parent ?: &dev->dev,
+			 "%s: got too big old keycode %#x\n",
+			 __func__, old_keycode);
+	} else if (test_bit(EV_KEY, dev->evbit) &&
+		   !is_event_supported(old_keycode, dev->keybit, KEY_MAX) &&
+		   __test_and_clear_bit(old_keycode, dev->key)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct input_value vals[] =  {
 			{ EV_KEY, old_keycode, 0 },
 			input_value_sync

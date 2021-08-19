@@ -207,14 +207,22 @@ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
 
 	if (tb[IPSET_ATTR_CIDR]) {
 		cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
+<<<<<<< HEAD
 		if (!cidr || cidr > HOST_MASK)
+=======
+		if (cidr > HOST_MASK)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -IPSET_ERR_INVALID_CIDR;
 		e.cidr[0] = cidr;
 	}
 
 	if (tb[IPSET_ATTR_CIDR2]) {
 		cidr = nla_get_u8(tb[IPSET_ATTR_CIDR2]);
+<<<<<<< HEAD
 		if (!cidr || cidr > HOST_MASK)
+=======
+		if (cidr > HOST_MASK)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -IPSET_ERR_INVALID_CIDR;
 		e.cidr[1] = cidr;
 	}
@@ -487,8 +495,12 @@ hash_netportnet6_uadt(struct ip_set *set, struct nlattr *tb[],
 	if (tb[IPSET_ATTR_CIDR2])
 		e.cidr[1] = nla_get_u8(tb[IPSET_ATTR_CIDR2]);
 
+<<<<<<< HEAD
 	if (unlikely(!e.cidr[0] || e.cidr[0] > HOST_MASK || !e.cidr[1] ||
 		     e.cidr[1] > HOST_MASK))
+=======
+	if (unlikely(e.cidr[0] > HOST_MASK || e.cidr[1] > HOST_MASK))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -IPSET_ERR_INVALID_CIDR;
 
 	ip6_netmask(&e.ip[0], e.cidr[0]);

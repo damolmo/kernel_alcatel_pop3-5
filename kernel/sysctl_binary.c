@@ -522,9 +522,12 @@ static const struct bin_table bin_net_ipv6_conf_var_table[] = {
 	{ CTL_INT,	NET_IPV6_PROXY_NDP,			"proxy_ndp" },
 	{ CTL_INT,	NET_IPV6_ACCEPT_SOURCE_ROUTE,		"accept_source_route" },
 	{ CTL_INT,	NET_IPV6_ACCEPT_RA_FROM_LOCAL,		"accept_ra_from_local" },
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_DHCPV6C_WIFI
 	{ CTL_INT,	NET_IPV6_RA_INFO_FLAG,		"ra_info_flag" },
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{}
 };
 
@@ -1323,7 +1326,11 @@ static ssize_t binary_sysctl(const int *name, int nlen,
 	}
 
 	mnt = task_active_pid_ns(current)->proc_mnt;
+<<<<<<< HEAD
 	file = file_open_root(mnt->mnt_root, mnt, pathname, flags);
+=======
+	file = file_open_root(mnt->mnt_root, mnt, pathname, flags, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	result = PTR_ERR(file);
 	if (IS_ERR(file))
 		goto out_putname;

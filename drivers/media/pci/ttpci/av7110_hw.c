@@ -56,11 +56,19 @@
    by Nathan Laredo <laredo@gnu.org> */
 
 int av7110_debiwrite(struct av7110 *av7110, u32 config,
+<<<<<<< HEAD
 		     int addr, u32 val, int count)
 {
 	struct saa7146_dev *dev = av7110->dev;
 
 	if (count <= 0 || count > 32764) {
+=======
+		     int addr, u32 val, unsigned int count)
+{
+	struct saa7146_dev *dev = av7110->dev;
+
+	if (count > 32764) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		printk("%s: invalid count %d\n", __func__, count);
 		return -1;
 	}
@@ -78,12 +86,20 @@ int av7110_debiwrite(struct av7110 *av7110, u32 config,
 	return 0;
 }
 
+<<<<<<< HEAD
 u32 av7110_debiread(struct av7110 *av7110, u32 config, int addr, int count)
+=======
+u32 av7110_debiread(struct av7110 *av7110, u32 config, int addr, unsigned int count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct saa7146_dev *dev = av7110->dev;
 	u32 result = 0;
 
+<<<<<<< HEAD
 	if (count > 32764 || count <= 0) {
+=======
+	if (count > 32764) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		printk("%s: invalid count %d\n", __func__, count);
 		return 0;
 	}

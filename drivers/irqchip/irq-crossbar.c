@@ -175,7 +175,12 @@ static const struct irq_domain_ops routable_irq_domain_ops = {
 
 static int __init crossbar_of_init(struct device_node *node)
 {
+<<<<<<< HEAD
 	int i, size, max = 0, reserved = 0, entry;
+=======
+	int i, size, reserved = 0;
+	u32 max = 0, entry, reg_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	const __be32 *irqsr;
 	int ret = -ENOMEM;
 
@@ -252,9 +257,15 @@ static int __init crossbar_of_init(struct device_node *node)
 	if (!cb->register_offsets)
 		goto err_irq_map;
 
+<<<<<<< HEAD
 	of_property_read_u32(node, "ti,reg-size", &size);
 
 	switch (size) {
+=======
+	of_property_read_u32(node, "ti,reg-size", &reg_size);
+
+	switch (reg_size) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 1:
 		cb->write = crossbar_writeb;
 		break;
@@ -280,7 +291,11 @@ static int __init crossbar_of_init(struct device_node *node)
 			continue;
 
 		cb->register_offsets[i] = reserved;
+<<<<<<< HEAD
 		reserved += size;
+=======
+		reserved += reg_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	of_property_read_u32(node, "ti,irqs-safe-map", &cb->safe_map);

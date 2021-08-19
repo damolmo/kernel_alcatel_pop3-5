@@ -194,6 +194,10 @@
 			rtc@fc900000 {
 				compatible = "st,spear600-rtc";
 				reg = <0xfc900000 0x1000>;
+<<<<<<< HEAD
+=======
+				interrupt-parent = <&vic0>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				interrupts = <10>;
 				status = "disabled";
 			};

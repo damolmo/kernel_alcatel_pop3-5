@@ -240,6 +240,7 @@ static struct nf_hook_ops ipv6_conntrack_ops[] __read_mostly = {
 static int
 ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 {
+<<<<<<< HEAD
 	const struct inet_sock *inet = inet_sk(sk);
 	const struct ipv6_pinfo *inet6 = inet6_sk(sk);
 	const struct nf_conntrack_tuple_hash *h;
@@ -247,13 +248,34 @@ ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 	struct nf_conntrack_tuple tuple = { .src.l3num = NFPROTO_IPV6 };
 	struct nf_conn *ct;
 
+=======
+	struct nf_conntrack_tuple tuple = { .src.l3num = NFPROTO_IPV6 };
+	const struct ipv6_pinfo *inet6 = inet6_sk(sk);
+	const struct inet_sock *inet = inet_sk(sk);
+	const struct nf_conntrack_tuple_hash *h;
+	struct sockaddr_in6 sin6;
+	struct nf_conn *ct;
+	__be32 flow_label;
+	int bound_dev_if;
+
+	lock_sock(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tuple.src.u3.in6 = sk->sk_v6_rcv_saddr;
 	tuple.src.u.tcp.port = inet->inet_sport;
 	tuple.dst.u3.in6 = sk->sk_v6_daddr;
 	tuple.dst.u.tcp.port = inet->inet_dport;
 	tuple.dst.protonum = sk->sk_protocol;
+<<<<<<< HEAD
 
 	if (sk->sk_protocol != IPPROTO_TCP && sk->sk_protocol != IPPROTO_SCTP)
+=======
+	bound_dev_if = sk->sk_bound_dev_if;
+	flow_label = inet6->flow_label;
+	release_sock(sk);
+
+	if (tuple.dst.protonum != IPPROTO_TCP &&
+	    tuple.dst.protonum != IPPROTO_SCTP)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOPROTOOPT;
 
 	if (*len < 0 || (unsigned int) *len < sizeof(sin6))
@@ -271,14 +293,22 @@ ipv6_getorigdst(struct sock *sk, int optval, void __user *user, int *len)
 
 	sin6.sin6_family = AF_INET6;
 	sin6.sin6_port = ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.dst.u.tcp.port;
+<<<<<<< HEAD
 	sin6.sin6_flowinfo = inet6->flow_label & IPV6_FLOWINFO_MASK;
+=======
+	sin6.sin6_flowinfo = flow_label & IPV6_FLOWINFO_MASK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(&sin6.sin6_addr,
 		&ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.dst.u3.in6,
 					sizeof(sin6.sin6_addr));
 
 	nf_ct_put(ct);
+<<<<<<< HEAD
 	sin6.sin6_scope_id = ipv6_iface_scope_id(&sin6.sin6_addr,
 						 sk->sk_bound_dev_if);
+=======
+	sin6.sin6_scope_id = ipv6_iface_scope_id(&sin6.sin6_addr, bound_dev_if);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return copy_to_user(user, &sin6, sizeof(sin6)) ? -EFAULT : 0;
 }
 

@@ -16,7 +16,11 @@
  */
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/div64.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/hardware/icst.h>
 
 /*
@@ -29,7 +33,15 @@ EXPORT_SYMBOL(icst525_s2div);
 
 unsigned long icst_hz(const struct icst_params *p, struct icst_vco vco)
 {
+<<<<<<< HEAD
 	return p->ref * 2 * (vco.v + 8) / ((vco.r + 2) * p->s2div[vco.s]);
+=======
+	u64 dividend = p->ref * 2 * (u64)(vco.v + 8);
+	u32 divisor = (vco.r + 2) * p->s2div[vco.s];
+
+	do_div(dividend, divisor);
+	return (unsigned long)dividend;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 EXPORT_SYMBOL(icst_hz);
@@ -58,6 +70,10 @@ icst_hz_to_vco(const struct icst_params *p, unsigned long freq)
 
 		if (f > p->vco_min && f <= p->vco_max)
 			break;
+<<<<<<< HEAD
+=======
+		i++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} while (i < 8);
 
 	if (i >= 8)

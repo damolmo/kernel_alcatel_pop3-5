@@ -627,6 +627,10 @@ config SIBYTE_SWARM
 	select SYS_SUPPORTS_HIGHMEM
 	select SYS_SUPPORTS_LITTLE_ENDIAN
 	select ZONE_DMA32 if 64BIT
+<<<<<<< HEAD
+=======
+	select SWIOTLB if ARCH_DMA_ADDR_T_64BIT && PCI
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config SIBYTE_LITTLESUR
 	bool "Sibyte BCM91250C2-LittleSur"
@@ -649,6 +653,10 @@ config SIBYTE_SENTOSA
 	select SYS_HAS_CPU_SB1
 	select SYS_SUPPORTS_BIG_ENDIAN
 	select SYS_SUPPORTS_LITTLE_ENDIAN
+<<<<<<< HEAD
+=======
+	select SWIOTLB if ARCH_DMA_ADDR_T_64BIT && PCI
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config SIBYTE_BIGSUR
 	bool "Sibyte BCM91480B-BigSur"
@@ -662,6 +670,10 @@ config SIBYTE_BIGSUR
 	select SYS_SUPPORTS_HIGHMEM
 	select SYS_SUPPORTS_LITTLE_ENDIAN
 	select ZONE_DMA32 if 64BIT
+<<<<<<< HEAD
+=======
+	select SWIOTLB if ARCH_DMA_ADDR_T_64BIT && PCI
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config SNI_RM
 	bool "SNI RM200/300/400"
@@ -2048,7 +2060,11 @@ config MIPS_CMP
 
 config MIPS_CPS
 	bool "MIPS Coherent Processing System support"
+<<<<<<< HEAD
 	depends on SYS_SUPPORTS_MIPS_CPS && !64BIT
+=======
+	depends on SYS_SUPPORTS_MIPS_CPS
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select MIPS_CM
 	select MIPS_CPC
 	select MIPS_CPS_PM if HOTPLUG_CPU

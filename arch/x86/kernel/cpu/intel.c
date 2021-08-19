@@ -59,7 +59,11 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	 * need the microcode to have already been loaded... so if it is
 	 * not, recommend a BIOS update and disable large pages.
 	 */
+<<<<<<< HEAD
 	if (c->x86 == 6 && c->x86_model == 0x1c && c->x86_mask <= 2 &&
+=======
+	if (c->x86 == 6 && c->x86_model == 0x1c && c->x86_stepping <= 2 &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    c->microcode < 0x20e) {
 		printk(KERN_WARNING "Atom PSE erratum detected, BIOS microcode update recommended\n");
 		clear_cpu_cap(c, X86_FEATURE_PSE);
@@ -75,7 +79,11 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 
 	/* CPUID workaround for 0F33/0F34 CPU */
 	if (c->x86 == 0xF && c->x86_model == 0x3
+<<<<<<< HEAD
 	    && (c->x86_mask == 0x3 || c->x86_mask == 0x4))
+=======
+	    && (c->x86_stepping == 0x3 || c->x86_stepping == 0x4))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		c->x86_phys_bits = 36;
 
 	/*
@@ -174,8 +182,13 @@ int ppro_with_ram_bug(void)
 	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
 	    boot_cpu_data.x86 == 6 &&
 	    boot_cpu_data.x86_model == 1 &&
+<<<<<<< HEAD
 	    boot_cpu_data.x86_mask < 8) {
 		printk(KERN_INFO "Pentium Pro with Errata#50 detected. Taking evasive action.\n");
+=======
+	    boot_cpu_data.x86_stepping < 8) {
+		pr_info("Pentium Pro with Errata#50 detected. Taking evasive action.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 1;
 	}
 	return 0;
@@ -191,7 +204,11 @@ static void intel_smp_check(struct cpuinfo_x86 *c)
 	 * Mask B, Pentium, but not Pentium MMX
 	 */
 	if (c->x86 == 5 &&
+<<<<<<< HEAD
 	    c->x86_mask >= 1 && c->x86_mask <= 4 &&
+=======
+	    c->x86_stepping >= 1 && c->x86_stepping <= 4 &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    c->x86_model <= 3) {
 		/*
 		 * Remember we have B step Pentia with bugs
@@ -234,7 +251,11 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	 * SEP CPUID bug: Pentium Pro reports SEP but doesn't have it until
 	 * model 3 mask 3
 	 */
+<<<<<<< HEAD
 	if ((c->x86<<8 | c->x86_model<<4 | c->x86_mask) < 0x633)
+=======
+	if ((c->x86<<8 | c->x86_model<<4 | c->x86_stepping) < 0x633)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clear_cpu_cap(c, X86_FEATURE_SEP);
 
 	/*
@@ -252,7 +273,11 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	 * P4 Xeon errata 037 workaround.
 	 * Hardware prefetcher may cause stale data to be loaded into the cache.
 	 */
+<<<<<<< HEAD
 	if ((c->x86 == 15) && (c->x86_model == 1) && (c->x86_mask == 1)) {
+=======
+	if ((c->x86 == 15) && (c->x86_model == 1) && (c->x86_stepping == 1)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (msr_set_bit(MSR_IA32_MISC_ENABLE,
 				MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE_BIT)
 		    > 0) {
@@ -268,7 +293,11 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	 * Specification Update").
 	 */
 	if (cpu_has_apic && (c->x86<<8 | c->x86_model<<4) == 0x520 &&
+<<<<<<< HEAD
 	    (c->x86_mask < 0x6 || c->x86_mask == 0xb))
+=======
+	    (c->x86_stepping < 0x6 || c->x86_stepping == 0xb))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_cpu_bug(c, X86_BUG_11AP);
 
 
@@ -452,7 +481,11 @@ static void init_intel(struct cpuinfo_x86 *c)
 		case 6:
 			if (l2 == 128)
 				p = "Celeron (Mendocino)";
+<<<<<<< HEAD
 			else if (c->x86_mask == 0 || c->x86_mask == 5)
+=======
+			else if (c->x86_stepping == 0 || c->x86_stepping == 5)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				p = "Celeron-A";
 			break;
 
@@ -561,6 +594,12 @@ static const struct _tlb_table intel_tlb_table[] = {
 	{ 0x5d, TLB_DATA_4K_4M,		256,	" TLB_DATA 4 KByte and 4 MByte pages" },
 	{ 0x61, TLB_INST_4K,		48,	" TLB_INST 4 KByte pages, full associative" },
 	{ 0x63, TLB_DATA_1G,		4,	" TLB_DATA 1 GByte pages, 4-way set associative" },
+<<<<<<< HEAD
+=======
+	{ 0x6b, TLB_DATA_4K,		256,	" TLB_DATA 4 KByte pages, 8-way associative" },
+	{ 0x6c, TLB_DATA_2M_4M,		128,	" TLB_DATA 2 MByte or 4 MByte pages, 8-way associative" },
+	{ 0x6d, TLB_DATA_1G,		16,	" TLB_DATA 1 GByte pages, fully associative" },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ 0x76, TLB_INST_2M_4M,		8,	" TLB_INST 2-MByte or 4-MByte pages, fully associative" },
 	{ 0xb0, TLB_INST_4K,		128,	" TLB_INST 4 KByte pages, 4-way set associative" },
 	{ 0xb1, TLB_INST_2M_4M,		4,	" TLB_INST 2M pages, 4-way, 8 entries or 4M pages, 4-way entries" },

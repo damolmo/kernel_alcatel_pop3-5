@@ -763,7 +763,11 @@ static int mv64x60_mc_err_probe(struct platform_device *pdev)
 		/* Non-ECC RAM? */
 		printk(KERN_WARNING "%s: No ECC DIMMs discovered\n", __func__);
 		res = -ENODEV;
+<<<<<<< HEAD
 		goto err2;
+=======
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	edac_dbg(3, "init mci\n");

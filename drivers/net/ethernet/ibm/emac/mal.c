@@ -402,7 +402,11 @@ static int mal_poll(struct napi_struct *napi, int budget)
 	unsigned long flags;
 
 	MAL_DBG2(mal, "poll(%d)" NL, budget);
+<<<<<<< HEAD
  again:
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Process TX skbs */
 	list_for_each(l, &mal->poll_list) {
 		struct mal_commac *mc =
@@ -451,7 +455,10 @@ static int mal_poll(struct napi_struct *napi, int budget)
 			spin_lock_irqsave(&mal->lock, flags);
 			mal_disable_eob_irq(mal);
 			spin_unlock_irqrestore(&mal->lock, flags);
+<<<<<<< HEAD
 			goto again;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		mc->ops->poll_tx(mc->dev);
 	}

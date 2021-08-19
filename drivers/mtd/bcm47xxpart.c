@@ -68,6 +68,10 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 	int trx_part = -1;
 	int last_trx_part = -1;
 	int possible_nvram_sizes[] = { 0x8000, 0xF000, 0x10000, };
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (blocksize <= 0x10000)
 		blocksize = 0x10000;
@@ -87,8 +91,13 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 	/* Parse block by block looking for magics */
 	for (offset = 0; offset <= master->size - blocksize;
 	     offset += blocksize) {
+<<<<<<< HEAD
 		/* Nothing more in higher memory */
 		if (offset >= 0x2000000)
+=======
+		/* Nothing more in higher memory on BCM47XX (MIPS) */
+		if (config_enabled(CONFIG_BCM47XX) && offset >= 0x2000000)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 		if (curr_part >= BCM47XXPART_MAX_PARTS) {
@@ -97,10 +106,18 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		}
 
 		/* Read beginning of the block */
+<<<<<<< HEAD
 		if (mtd_read(master, offset, BCM47XXPART_BYTES_TO_READ,
 			     &bytes_read, (uint8_t *)buf) < 0) {
 			pr_err("mtd_read error while parsing (offset: 0x%X)!\n",
 			       offset);
+=======
+		err = mtd_read(master, offset, BCM47XXPART_BYTES_TO_READ,
+			       &bytes_read, (uint8_t *)buf);
+		if (err && !mtd_is_bitflip(err)) {
+			pr_err("mtd_read error while parsing (offset: 0x%X): %d\n",
+			       offset, err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 
@@ -183,12 +200,19 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 
 			last_trx_part = curr_part - 1;
 
+<<<<<<< HEAD
 			/*
 			 * We have whole TRX scanned, skip to the next part. Use
 			 * roundown (not roundup), as the loop will increase
 			 * offset in next step.
 			 */
 			offset = rounddown(offset + trx->length, blocksize);
+=======
+			/* Jump to the end of TRX */
+			offset = roundup(offset + trx->length, blocksize);
+			/* Next loop iteration will increase the offset */
+			offset -= blocksize;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 
@@ -211,10 +235,18 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		}
 
 		/* Read middle of the block */
+<<<<<<< HEAD
 		if (mtd_read(master, offset + 0x8000, 0x4,
 			     &bytes_read, (uint8_t *)buf) < 0) {
 			pr_err("mtd_read error while parsing (offset: 0x%X)!\n",
 			       offset);
+=======
+		err = mtd_read(master, offset + 0x8000, 0x4, &bytes_read,
+			       (uint8_t *)buf);
+		if (err && !mtd_is_bitflip(err)) {
+			pr_err("mtd_read error while parsing (offset: 0x%X): %d\n",
+			       offset, err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 
@@ -234,10 +266,18 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		}
 
 		offset = master->size - possible_nvram_sizes[i];
+<<<<<<< HEAD
 		if (mtd_read(master, offset, 0x4, &bytes_read,
 			     (uint8_t *)buf) < 0) {
 			pr_err("mtd_read error while reading at offset 0x%X!\n",
 			       offset);
+=======
+		err = mtd_read(master, offset, 0x4, &bytes_read,
+			       (uint8_t *)buf);
+		if (err && !mtd_is_bitflip(err)) {
+			pr_err("mtd_read error while reading (offset 0x%X): %d\n",
+			       offset, err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 

@@ -98,6 +98,7 @@ bail:
  *
  * I'm sure we won't be so lucky with other iommu's, so FIXME.
  */
+<<<<<<< HEAD
 dma_addr_t qib_map_page(struct pci_dev *hwdev, struct page *page,
 			unsigned long offset, size_t size, int direction)
 {
@@ -108,13 +109,34 @@ dma_addr_t qib_map_page(struct pci_dev *hwdev, struct page *page,
 	if (phys == 0) {
 		pci_unmap_page(hwdev, phys, size, direction);
 		phys = pci_map_page(hwdev, page, offset, size, direction);
+=======
+int qib_map_page(struct pci_dev *hwdev, struct page *page, dma_addr_t *daddr)
+{
+	dma_addr_t phys;
+
+	phys = pci_map_page(hwdev, page, 0, PAGE_SIZE, PCI_DMA_FROMDEVICE);
+	if (pci_dma_mapping_error(hwdev, phys))
+		return -ENOMEM;
+
+	if (!phys) {
+		pci_unmap_page(hwdev, phys, PAGE_SIZE, PCI_DMA_FROMDEVICE);
+		phys = pci_map_page(hwdev, page, 0, PAGE_SIZE,
+				    PCI_DMA_FROMDEVICE);
+		if (pci_dma_mapping_error(hwdev, phys))
+			return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * FIXME: If we get 0 again, we should keep this page,
 		 * map another, then free the 0 page.
 		 */
 	}
+<<<<<<< HEAD
 
 	return phys;
+=======
+	*daddr = phys;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

@@ -23,6 +23,10 @@
 #define SPIDEV_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/ioctl.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* User space versions of kernel symbols for SPI clocking modes,
  * matching <linux/spi/spi.h>

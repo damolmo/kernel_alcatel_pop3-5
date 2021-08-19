@@ -182,7 +182,11 @@ struct at91_adc_caps {
 	u8	ts_pen_detect_sensitivity;
 
 	/* startup time calculate function */
+<<<<<<< HEAD
 	u32 (*calc_startup_ticks)(u8 startup_time, u32 adc_clk_khz);
+=======
+	u32 (*calc_startup_ticks)(u32 startup_time, u32 adc_clk_khz);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	u8	num_channels;
 	struct at91_adc_reg_desc registers;
@@ -201,7 +205,11 @@ struct at91_adc_state {
 	u8			num_channels;
 	void __iomem		*reg_base;
 	struct at91_adc_reg_desc *registers;
+<<<<<<< HEAD
 	u8			startup_time;
+=======
+	u32			startup_time;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8			sample_hold_time;
 	bool			sleep_mode;
 	struct iio_trigger	**trig;
@@ -245,12 +253,21 @@ static irqreturn_t at91_adc_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *idev = pf->indio_dev;
 	struct at91_adc_state *st = iio_priv(idev);
+<<<<<<< HEAD
+=======
+	struct iio_chan_spec const *chan;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i, j = 0;
 
 	for (i = 0; i < idev->masklength; i++) {
 		if (!test_bit(i, idev->active_scan_mask))
 			continue;
+<<<<<<< HEAD
 		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, i));
+=======
+		chan = idev->channels + i;
+		st->buffer[j] = at91_adc_readl(st, AT91_ADC_CHAN(st, chan->channel));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		j++;
 	}
 
@@ -276,6 +293,11 @@ static void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
 		iio_trigger_poll(idev->trig);
 	} else {
 		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
+<<<<<<< HEAD
+=======
+		/* Needed to ACK the DRDY interruption */
+		at91_adc_readl(st, AT91_ADC_LCDR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		st->done = true;
 		wake_up_interruptible(&st->wq_data_avail);
 	}
@@ -381,8 +403,13 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
 		st->ts_bufferedmeasure = false;
 		input_report_key(st->ts_input, BTN_TOUCH, 0);
 		input_sync(st->ts_input);
+<<<<<<< HEAD
 	} else if (status & AT91_ADC_EOC(3)) {
 		/* Conversion finished */
+=======
+	} else if (status & AT91_ADC_EOC(3) && st->ts_input) {
+		/* Conversion finished and we've a touchscreen */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (st->ts_bufferedmeasure) {
 			/*
 			 * Last measurement is always discarded, since it can
@@ -699,6 +726,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
 		ret = wait_event_interruptible_timeout(st->wq_data_avail,
 						       st->done,
 						       msecs_to_jiffies(1000));
+<<<<<<< HEAD
 		if (ret == 0)
 			ret = -ETIMEDOUT;
 		if (ret < 0) {
@@ -708,14 +736,38 @@ static int at91_adc_read_raw(struct iio_dev *idev,
 
 		*val = st->last_value;
 
+=======
+
+		/* Disable interrupts, regardless if adc conversion was
+		 * successful or not
+		 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		at91_adc_writel(st, AT91_ADC_CHDR,
 				AT91_ADC_CH(chan->channel));
 		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
 
+<<<<<<< HEAD
 		st->last_value = 0;
 		st->done = false;
 		mutex_unlock(&st->lock);
 		return IIO_VAL_INT;
+=======
+		if (ret > 0) {
+			/* a valid conversion took place */
+			*val = st->last_value;
+			st->last_value = 0;
+			st->done = false;
+			ret = IIO_VAL_INT;
+		} else if (ret == 0) {
+			/* conversion timeout */
+			dev_err(&idev->dev, "ADC Channel %d timeout.\n",
+				chan->channel);
+			ret = -ETIMEDOUT;
+		}
+
+		mutex_unlock(&st->lock);
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	case IIO_CHAN_INFO_SCALE:
 		*val = st->vref_mv;
@@ -780,7 +832,11 @@ ret:
 	return ret;
 }
 
+<<<<<<< HEAD
 static u32 calc_startup_ticks_9260(u8 startup_time, u32 adc_clk_khz)
+=======
+static u32 calc_startup_ticks_9260(u32 startup_time, u32 adc_clk_khz)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	/*
 	 * Number of ticks needed to cover the startup time of the ADC
@@ -791,7 +847,11 @@ static u32 calc_startup_ticks_9260(u8 startup_time, u32 adc_clk_khz)
 	return round_up((startup_time * adc_clk_khz / 1000) - 1, 8) / 8;
 }
 
+<<<<<<< HEAD
 static u32 calc_startup_ticks_9x5(u8 startup_time, u32 adc_clk_khz)
+=======
+static u32 calc_startup_ticks_9x5(u32 startup_time, u32 adc_clk_khz)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	/*
 	 * For sama5d3x and at91sam9x5, the formula changes to:

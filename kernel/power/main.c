@@ -18,6 +18,7 @@
 
 #include "power.h"
 
+<<<<<<< HEAD
 #define HIB_PM_DEBUG 1
 #define _TAG_HIB_M "HIB/PM"
 #if (HIB_PM_DEBUG)
@@ -31,6 +32,9 @@
 
 DEFINE_MUTEX(pm_mutex);
 EXPORT_SYMBOL_GPL(pm_mutex);
+=======
+DEFINE_MUTEX(pm_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_PM_SLEEP
 
@@ -50,6 +54,7 @@ int unregister_pm_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(unregister_pm_notifier);
 
+<<<<<<< HEAD
 int pm_notifier_call_chain(unsigned long val)
 {
 	int ret = blocking_notifier_call_chain(&pm_chain_head, val, NULL);
@@ -57,6 +62,21 @@ int pm_notifier_call_chain(unsigned long val)
 	return notifier_to_errno(ret);
 }
 EXPORT_SYMBOL_GPL(pm_notifier_call_chain);
+=======
+int __pm_notifier_call_chain(unsigned long val, int nr_to_call, int *nr_calls)
+{
+	int ret;
+
+	ret = __blocking_notifier_call_chain(&pm_chain_head, val, NULL,
+						nr_to_call, nr_calls);
+
+	return notifier_to_errno(ret);
+}
+int pm_notifier_call_chain(unsigned long val)
+{
+	return __pm_notifier_call_chain(val, -1, NULL);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* If set, devices may be suspended and resumed asynchronously. */
 int pm_async_enabled = 1;
@@ -290,7 +310,10 @@ static inline void pm_print_times_init(void) {}
 #endif /* CONFIG_PM_SLEEP_DEBUG */
 
 struct kobject *power_kobj;
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(power_kobj);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * state - control system sleep states.
@@ -355,11 +378,14 @@ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
 	suspend_state_t state;
 	int error;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 	char *p;
 	int len;
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = pm_autosleep_lock();
 	if (error)
 		return error;
@@ -370,6 +396,7 @@ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
 	}
 
 	state = decode_state(buf, n);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTK_HIBERNATION
 	p = memchr(buf, '\n', n);
@@ -399,6 +426,14 @@ static ssize_t state_store(struct kobject *kobj, struct kobj_attribute *attr,
 	} else {
 		error = -EINVAL;
 	}
+=======
+	if (state < PM_SUSPEND_MAX)
+		error = pm_suspend(state);
+	else if (state == PM_SUSPEND_MAX)
+		error = hibernate();
+	else
+		error = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
  out:
 	pm_autosleep_unlock();

@@ -291,7 +291,11 @@ sci_mpc_agent_validate_phy_configuration(struct isci_host *ihost,
 		 * Note: We have not moved the current phy_index so we will actually
 		 *       compare the startting phy with itself.
 		 *       This is expected and required to add the phy to the port. */
+<<<<<<< HEAD
 		while (phy_index < SCI_MAX_PHYS) {
+=======
+		for (; phy_index < SCI_MAX_PHYS; phy_index++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if ((phy_mask & (1 << phy_index)) == 0)
 				continue;
 			sci_phy_get_sas_address(&ihost->phys[phy_index],
@@ -311,7 +315,10 @@ sci_mpc_agent_validate_phy_configuration(struct isci_host *ihost,
 					      &ihost->phys[phy_index]);
 
 			assigned_phy_mask |= (1 << phy_index);
+<<<<<<< HEAD
 			phy_index++;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 	}

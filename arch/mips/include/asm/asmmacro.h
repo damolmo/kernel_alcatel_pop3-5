@@ -134,6 +134,10 @@
 	ldc1	$f28, THREAD_FPR28_LS64(\thread)
 	ldc1	$f30, THREAD_FPR30_LS64(\thread)
 	ctc1	\tmp, fcr31
+<<<<<<< HEAD
+=======
+	.set	pop
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.endm
 
 	.macro	fpu_restore_16odd thread

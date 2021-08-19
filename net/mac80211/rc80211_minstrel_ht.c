@@ -78,7 +78,11 @@
 
 #define CCK_GROUP						\
 	[MINSTREL_MAX_STREAMS * MINSTREL_STREAM_GROUPS] = {	\
+<<<<<<< HEAD
 		.streams = 0,					\
+=======
+		.streams = 1,					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.duration = {					\
 			CCK_DURATION_LIST(false),		\
 			CCK_DURATION_LIST(true)			\
@@ -413,7 +417,11 @@ minstrel_ht_update_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi)
 
 		/* (re)Initialize group rate indexes */
 		for(j = 0; j < MAX_THR_RATES; j++)
+<<<<<<< HEAD
 			tmp_group_tp_rate[j] = group;
+=======
+			tmp_group_tp_rate[j] = MCS_GROUP_RATES * group;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		for (i = 0; i < MCS_GROUP_RATES; i++) {
 			if (!(mg->supported & BIT(i)))
@@ -557,7 +565,11 @@ minstrel_aggr_check(struct ieee80211_sta *pubsta, struct sk_buff *skb)
 	if (skb_get_queue_mapping(skb) == IEEE80211_AC_VO)
 		return;
 
+<<<<<<< HEAD
 	ieee80211_start_tx_ba_session(pubsta, tid, 5000);
+=======
+	ieee80211_start_tx_ba_session(pubsta, tid, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void

@@ -95,7 +95,11 @@ struct rt6_info {
 	 * the same cache line.
 	 */
 	struct fib6_table		*rt6i_table;
+<<<<<<< HEAD
 	struct fib6_node		*rt6i_node;
+=======
+	struct fib6_node __rcu		*rt6i_node;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct in6_addr			rt6i_gateway;
 
@@ -193,6 +197,14 @@ static inline void rt6_set_from(struct rt6_info *rt, struct rt6_info *from)
 	rt->dst.from = new;
 }
 
+<<<<<<< HEAD
+=======
+static inline u32 rt6_get_cookie(const struct rt6_info *rt)
+{
+	return rt->rt6i_node ? rt->rt6i_node->fn_sernum : 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void ip6_rt_put(struct rt6_info *rt)
 {
 	/* dst_release() accepts a NULL parameter.

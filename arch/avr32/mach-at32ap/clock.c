@@ -80,6 +80,12 @@ int clk_enable(struct clk *clk)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&clk_lock, flags);
 	__clk_enable(clk);
 	spin_unlock_irqrestore(&clk_lock, flags);
@@ -106,6 +112,12 @@ void clk_disable(struct clk *clk)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
+=======
+	if (IS_ERR_OR_NULL(clk))
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&clk_lock, flags);
 	__clk_disable(clk);
 	spin_unlock_irqrestore(&clk_lock, flags);
@@ -117,6 +129,12 @@ unsigned long clk_get_rate(struct clk *clk)
 	unsigned long flags;
 	unsigned long rate;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&clk_lock, flags);
 	rate = clk->get_rate(clk);
 	spin_unlock_irqrestore(&clk_lock, flags);
@@ -129,6 +147,12 @@ long clk_round_rate(struct clk *clk, unsigned long rate)
 {
 	unsigned long flags, actual_rate;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!clk->set_rate)
 		return -ENOSYS;
 
@@ -145,6 +169,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	unsigned long flags;
 	long ret;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!clk->set_rate)
 		return -ENOSYS;
 
@@ -161,6 +191,12 @@ int clk_set_parent(struct clk *clk, struct clk *parent)
 	unsigned long flags;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!clk)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!clk->set_parent)
 		return -ENOSYS;
 
@@ -174,7 +210,11 @@ EXPORT_SYMBOL(clk_set_parent);
 
 struct clk *clk_get_parent(struct clk *clk)
 {
+<<<<<<< HEAD
 	return clk->parent;
+=======
+	return !clk ? NULL : clk->parent;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(clk_get_parent);
 

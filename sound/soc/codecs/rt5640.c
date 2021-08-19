@@ -342,9 +342,15 @@ static bool rt5640_readable_register(struct device *dev, unsigned int reg)
 }
 
 static const DECLARE_TLV_DB_SCALE(out_vol_tlv, -4650, 150, 0);
+<<<<<<< HEAD
 static const DECLARE_TLV_DB_SCALE(dac_vol_tlv, -65625, 375, 0);
 static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(adc_vol_tlv, -17625, 375, 0);
+=======
+static const DECLARE_TLV_DB_MINMAX(dac_vol_tlv, -6562, 0);
+static const DECLARE_TLV_DB_SCALE(in_vol_tlv, -3450, 150, 0);
+static const DECLARE_TLV_DB_MINMAX(adc_vol_tlv, -1762, 3000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const DECLARE_TLV_DB_SCALE(adc_bst_tlv, 0, 1200, 0);
 
 /* {0, +20, +24, +30, +35, +40, +44, +50, +52} dB */
@@ -361,7 +367,11 @@ static unsigned int bst_tlv[] = {
 
 /* Interface data select */
 static const char * const rt5640_data_select[] = {
+<<<<<<< HEAD
 	"Normal", "left copy to right", "right copy to left", "Swap"};
+=======
+	"Normal", "Swap", "left copy to right", "right copy to left"};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static SOC_ENUM_SINGLE_DECL(rt5640_if1_dac_enum, RT5640_DIG_INF_DATA,
 			    RT5640_IF1_DAC_SEL_SFT, rt5640_data_select);
@@ -984,6 +994,7 @@ static int rt5640_hp_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rt5640_lout_event(struct snd_soc_dapm_widget *w,
 	struct snd_kcontrol *kcontrol, int event)
 {
@@ -1013,6 +1024,8 @@ static int rt5640_lout_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int rt5640_hp_power_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
@@ -1208,16 +1221,23 @@ static const struct snd_soc_dapm_widget rt5640_dapm_widgets[] = {
 		0, rt5640_spo_l_mix, ARRAY_SIZE(rt5640_spo_l_mix)),
 	SND_SOC_DAPM_MIXER("SPOR MIX", SND_SOC_NOPM, 0,
 		0, rt5640_spo_r_mix, ARRAY_SIZE(rt5640_spo_r_mix)),
+<<<<<<< HEAD
 	SND_SOC_DAPM_MIXER("LOUT MIX", SND_SOC_NOPM, 0, 0,
+=======
+	SND_SOC_DAPM_MIXER("LOUT MIX", RT5640_PWR_ANLG1, RT5640_PWR_LM_BIT, 0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rt5640_lout_mix, ARRAY_SIZE(rt5640_lout_mix)),
 	SND_SOC_DAPM_SUPPLY_S("Improve HP Amp Drv", 1, SND_SOC_NOPM,
 		0, 0, rt5640_hp_power_event, SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_PGA_S("HP Amp", 1, SND_SOC_NOPM, 0, 0,
 		rt5640_hp_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
+<<<<<<< HEAD
 	SND_SOC_DAPM_PGA_S("LOUT amp", 1, SND_SOC_NOPM, 0, 0,
 		rt5640_lout_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SND_SOC_DAPM_SUPPLY("HP L Amp", RT5640_PWR_ANLG1,
 		RT5640_PWR_HP_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("HP R Amp", RT5640_PWR_ANLG1,
@@ -1532,10 +1552,15 @@ static const struct snd_soc_dapm_route rt5640_dapm_routes[] = {
 	{"HP R Playback", "Switch", "HP Amp"},
 	{"HPOL", NULL, "HP L Playback"},
 	{"HPOR", NULL, "HP R Playback"},
+<<<<<<< HEAD
 
 	{"LOUT amp", NULL, "LOUT MIX"},
 	{"LOUTL", NULL, "LOUT amp"},
 	{"LOUTR", NULL, "LOUT amp"},
+=======
+	{"LOUTL", NULL, "LOUT MIX"},
+	{"LOUTR", NULL, "LOUT MIX"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct snd_soc_dapm_route rt5640_specific_dapm_routes[] = {
@@ -2170,9 +2195,12 @@ static int rt5640_parse_dt(struct rt5640_priv *rt5640, struct device_node *np)
 	rt5640->pdata.in2_diff = of_property_read_bool(np,
 					"realtek,in2-differential");
 
+<<<<<<< HEAD
 	rt5640->pdata.dmic_en = of_property_read_bool(np,
 					"realtek,dmic-en");
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rt5640->pdata.ldo1_en = of_get_named_gpio(np,
 					"realtek,ldo1-en-gpios", 0);
 	/*

@@ -1741,7 +1741,12 @@ lstcon_session_new(char *name, int key, unsigned feats,
 	console_session.ses_feats_updated = 0;
 	console_session.ses_timeout = (timeout <= 0) ?
 				      LST_CONSOLE_TIMEOUT : timeout;
+<<<<<<< HEAD
 	strcpy(console_session.ses_name, name);
+=======
+	strlcpy(console_session.ses_name, name,
+		sizeof(console_session.ses_name));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rc = lstcon_batch_add(LST_DEFAULT_BATCH);
 	if (rc != 0)
@@ -1962,7 +1967,12 @@ lstcon_acceptor_handle (srpc_server_rpc_t *rpc)
 	if (grp->grp_userland == 0)
 		grp->grp_userland = 1;
 
+<<<<<<< HEAD
 	strcpy(jrep->join_session, console_session.ses_name);
+=======
+	strlcpy(jrep->join_session, console_session.ses_name,
+		sizeof(jrep->join_session));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jrep->join_timeout = console_session.ses_timeout;
 	jrep->join_status  = 0;
 

@@ -976,6 +976,12 @@ static int cci_probe(void)
 	if (!np)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (!of_device_is_available(np))
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cci_config = of_match_node(arm_cci_matches, np)->data;
 	if (!cci_config)
 		return -ENODEV;

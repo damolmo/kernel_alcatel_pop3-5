@@ -39,11 +39,19 @@
 #include "pci.h"
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_init - EEH platform dependent initialization
  *
  * EEH platform dependent initialization on powernv
  */
 static int powernv_eeh_init(void)
+=======
+ * pnv_eeh_init - EEH platform dependent initialization
+ *
+ * EEH platform dependent initialization on powernv
+ */
+static int pnv_eeh_init(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose;
 	struct pnv_phb *phb;
@@ -75,14 +83,22 @@ static int powernv_eeh_init(void)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_post_init - EEH platform dependent post initialization
+=======
+ * pnv_eeh_post_init - EEH platform dependent post initialization
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * EEH platform dependent post initialization on powernv. When
  * the function is called, the EEH PEs and devices should have
  * been built. If the I/O cache staff has been built, EEH is
  * ready to supply service.
  */
+<<<<<<< HEAD
 static int powernv_eeh_post_init(void)
+=======
+static int pnv_eeh_post_init(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose;
 	struct pnv_phb *phb;
@@ -102,7 +118,11 @@ static int powernv_eeh_post_init(void)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_dev_probe - Do probe on PCI device
+=======
+ * pnv_eeh_dev_probe - Do probe on PCI device
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @dev: PCI device
  * @flag: unused
  *
@@ -118,7 +138,11 @@ static int powernv_eeh_post_init(void)
  * was possiblly triggered by EEH core, the binding between EEH device
  * and the PCI device isn't built yet.
  */
+<<<<<<< HEAD
 static int powernv_eeh_dev_probe(struct pci_dev *dev, void *flag)
+=======
+static int pnv_eeh_dev_probe(struct pci_dev *dev, void *flag)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pci_bus_to_host(dev->bus);
 	struct pnv_phb *phb = hose->private_data;
@@ -210,7 +234,11 @@ static int powernv_eeh_dev_probe(struct pci_dev *dev, void *flag)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_set_option - Initialize EEH or MMIO/DMA reenable
+=======
+ * pnv_eeh_set_option - Initialize EEH or MMIO/DMA reenable
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  * @option: operation to be issued
  *
@@ -218,7 +246,11 @@ static int powernv_eeh_dev_probe(struct pci_dev *dev, void *flag)
  * Currently, following options are support according to PAPR:
  * Enable EEH, Disable EEH, Enable MMIO and Enable DMA
  */
+<<<<<<< HEAD
 static int powernv_eeh_set_option(struct eeh_pe *pe, int option)
+=======
+static int pnv_eeh_set_option(struct eeh_pe *pe, int option)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -235,19 +267,31 @@ static int powernv_eeh_set_option(struct eeh_pe *pe, int option)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_get_pe_addr - Retrieve PE address
+=======
+ * pnv_eeh_get_pe_addr - Retrieve PE address
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  *
  * Retrieve the PE address according to the given tranditional
  * PCI BDF (Bus/Device/Function) address.
  */
+<<<<<<< HEAD
 static int powernv_eeh_get_pe_addr(struct eeh_pe *pe)
+=======
+static int pnv_eeh_get_pe_addr(struct eeh_pe *pe)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return pe->addr;
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_get_state - Retrieve PE state
+=======
+ * pnv_eeh_get_state - Retrieve PE state
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  * @delay: delay while PE state is temporarily unavailable
  *
@@ -256,7 +300,11 @@ static int powernv_eeh_get_pe_addr(struct eeh_pe *pe)
  * we prefer passing down to hardware implementation to handle
  * it.
  */
+<<<<<<< HEAD
 static int powernv_eeh_get_state(struct eeh_pe *pe, int *delay)
+=======
+static int pnv_eeh_get_state(struct eeh_pe *pe, int *delay)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -281,13 +329,21 @@ static int powernv_eeh_get_state(struct eeh_pe *pe, int *delay)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_reset - Reset the specified PE
+=======
+ * pnv_eeh_reset - Reset the specified PE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  * @option: reset option
  *
  * Reset the specified PE
  */
+<<<<<<< HEAD
 static int powernv_eeh_reset(struct eeh_pe *pe, int option)
+=======
+static int pnv_eeh_reset(struct eeh_pe *pe, int option)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -300,20 +356,32 @@ static int powernv_eeh_reset(struct eeh_pe *pe, int option)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_wait_state - Wait for PE state
+=======
+ * pnv_eeh_wait_state - Wait for PE state
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  * @max_wait: maximal period in microsecond
  *
  * Wait for the state of associated PE. It might take some time
  * to retrieve the PE's state.
  */
+<<<<<<< HEAD
 static int powernv_eeh_wait_state(struct eeh_pe *pe, int max_wait)
+=======
+static int pnv_eeh_wait_state(struct eeh_pe *pe, int max_wait)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int ret;
 	int mwait;
 
 	while (1) {
+<<<<<<< HEAD
 		ret = powernv_eeh_get_state(pe, &mwait);
+=======
+		ret = pnv_eeh_get_state(pe, &mwait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * If the PE's state is temporarily unavailable,
@@ -337,7 +405,11 @@ static int powernv_eeh_wait_state(struct eeh_pe *pe, int max_wait)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_get_log - Retrieve error log
+=======
+ * pnv_eeh_get_log - Retrieve error log
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  * @severity: temporary or permanent error log
  * @drv_log: driver log to be combined with retrieved error log
@@ -345,8 +417,13 @@ static int powernv_eeh_wait_state(struct eeh_pe *pe, int max_wait)
  *
  * Retrieve the temporary or permanent error from the PE.
  */
+<<<<<<< HEAD
 static int powernv_eeh_get_log(struct eeh_pe *pe, int severity,
 			       char *drv_log, unsigned long len)
+=======
+static int pnv_eeh_get_log(struct eeh_pe *pe, int severity,
+			   char *drv_log, unsigned long len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -359,14 +436,22 @@ static int powernv_eeh_get_log(struct eeh_pe *pe, int severity,
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_configure_bridge - Configure PCI bridges in the indicated PE
+=======
+ * pnv_eeh_configure_bridge - Configure PCI bridges in the indicated PE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: EEH PE
  *
  * The function will be called to reconfigure the bridges included
  * in the specified PE so that the mulfunctional PE would be recovered
  * again.
  */
+<<<<<<< HEAD
 static int powernv_eeh_configure_bridge(struct eeh_pe *pe)
+=======
+static int pnv_eeh_configure_bridge(struct eeh_pe *pe)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -379,7 +464,11 @@ static int powernv_eeh_configure_bridge(struct eeh_pe *pe)
 }
 
 /**
+<<<<<<< HEAD
  * powernv_pe_err_inject - Inject specified error to the indicated PE
+=======
+ * pnv_pe_err_inject - Inject specified error to the indicated PE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: the indicated PE
  * @type: error type
  * @func: specific error type
@@ -390,8 +479,13 @@ static int powernv_eeh_configure_bridge(struct eeh_pe *pe)
  * determined by @type and @func, to the indicated PE for
  * testing purpose.
  */
+<<<<<<< HEAD
 static int powernv_eeh_err_inject(struct eeh_pe *pe, int type, int func,
 				  unsigned long addr, unsigned long mask)
+=======
+static int pnv_eeh_err_inject(struct eeh_pe *pe, int type, int func,
+			      unsigned long addr, unsigned long mask)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose = pe->phb;
 	struct pnv_phb *phb = hose->private_data;
@@ -403,7 +497,11 @@ static int powernv_eeh_err_inject(struct eeh_pe *pe, int type, int func,
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline bool powernv_eeh_cfg_blocked(struct device_node *dn)
+=======
+static inline bool pnv_eeh_cfg_blocked(struct device_node *dn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct eeh_dev *edev = of_node_to_eeh_dev(dn);
 
@@ -416,10 +514,17 @@ static inline bool powernv_eeh_cfg_blocked(struct device_node *dn)
 	return false;
 }
 
+<<<<<<< HEAD
 static int powernv_eeh_read_config(struct device_node *dn,
 				   int where, int size, u32 *val)
 {
 	if (powernv_eeh_cfg_blocked(dn)) {
+=======
+static int pnv_eeh_read_config(struct device_node *dn,
+			       int where, int size, u32 *val)
+{
+	if (pnv_eeh_cfg_blocked(dn)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*val = 0xFFFFFFFF;
 		return PCIBIOS_SET_FAILED;
 	}
@@ -427,22 +532,37 @@ static int powernv_eeh_read_config(struct device_node *dn,
 	return pnv_pci_cfg_read(dn, where, size, val);
 }
 
+<<<<<<< HEAD
 static int powernv_eeh_write_config(struct device_node *dn,
 				    int where, int size, u32 val)
 {
 	if (powernv_eeh_cfg_blocked(dn))
+=======
+static int pnv_eeh_write_config(struct device_node *dn,
+				int where, int size, u32 val)
+{
+	if (pnv_eeh_cfg_blocked(dn))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return PCIBIOS_SET_FAILED;
 
 	return pnv_pci_cfg_write(dn, where, size, val);
 }
 
 /**
+<<<<<<< HEAD
  * powernv_eeh_next_error - Retrieve next EEH error to handle
+=======
+ * pnv_eeh_next_error - Retrieve next EEH error to handle
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @pe: Affected PE
  *
  * Using OPAL API, to retrieve next EEH error for EEH core to handle
  */
+<<<<<<< HEAD
 static int powernv_eeh_next_error(struct eeh_pe **pe)
+=======
+static int pnv_eeh_next_error(struct eeh_pe **pe)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_controller *hose;
 	struct pnv_phb *phb = NULL;
@@ -458,7 +578,11 @@ static int powernv_eeh_next_error(struct eeh_pe **pe)
 	return -EEXIST;
 }
 
+<<<<<<< HEAD
 static int powernv_eeh_restore_config(struct device_node *dn)
+=======
+static int pnv_eeh_restore_config(struct device_node *dn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct eeh_dev *edev = of_node_to_eeh_dev(dn);
 	struct pnv_phb *phb;
@@ -479,6 +603,7 @@ static int powernv_eeh_restore_config(struct device_node *dn)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct eeh_ops powernv_eeh_ops = {
 	.name                   = "powernv",
 	.init                   = powernv_eeh_init,
@@ -497,6 +622,26 @@ static struct eeh_ops powernv_eeh_ops = {
 	.write_config           = powernv_eeh_write_config,
 	.next_error		= powernv_eeh_next_error,
 	.restore_config		= powernv_eeh_restore_config
+=======
+static struct eeh_ops pnv_eeh_ops = {
+	.name                   = "powernv",
+	.init                   = pnv_eeh_init,
+	.post_init              = pnv_eeh_post_init,
+	.of_probe               = NULL,
+	.dev_probe              = pnv_eeh_dev_probe,
+	.set_option             = pnv_eeh_set_option,
+	.get_pe_addr            = pnv_eeh_get_pe_addr,
+	.get_state              = pnv_eeh_get_state,
+	.reset                  = pnv_eeh_reset,
+	.wait_state             = pnv_eeh_wait_state,
+	.get_log                = pnv_eeh_get_log,
+	.configure_bridge       = pnv_eeh_configure_bridge,
+	.err_inject		= pnv_eeh_err_inject,
+	.read_config            = pnv_eeh_read_config,
+	.write_config           = pnv_eeh_write_config,
+	.next_error		= pnv_eeh_next_error,
+	.restore_config		= pnv_eeh_restore_config
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -510,7 +655,11 @@ static int __init eeh_powernv_init(void)
 	int ret = -EINVAL;
 
 	eeh_set_pe_aux_size(PNV_PCI_DIAG_BUF_SIZE);
+<<<<<<< HEAD
 	ret = eeh_ops_register(&powernv_eeh_ops);
+=======
+	ret = eeh_ops_register(&pnv_eeh_ops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ret)
 		pr_info("EEH: PowerNV platform initialized\n");
 	else

@@ -17,8 +17,11 @@
 #include <linux/kobj_map.h>
 #include <linux/mutex.h>
 #include <linux/idr.h>
+<<<<<<< HEAD
 #include <linux/ctype.h>
 #include <linux/fs_uuid.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/log2.h>
 #include <linux/pm_runtime.h>
 
@@ -159,6 +162,7 @@ struct hd_struct *disk_part_iter_next(struct disk_part_iter *piter)
 		part = rcu_dereference(ptbl->part[piter->idx]);
 		if (!part)
 			continue;
+<<<<<<< HEAD
 		if (!part_nr_sects_read(part) &&
 		    !(piter->flags & DISK_PITER_INCL_EMPTY) &&
 		    !(piter->flags & DISK_PITER_INCL_EMPTY_PART0 &&
@@ -167,6 +171,19 @@ struct hd_struct *disk_part_iter_next(struct disk_part_iter *piter)
 
 		get_device(part_to_dev(part));
 		piter->part = part;
+=======
+		get_device(part_to_dev(part));
+		piter->part = part;
+		if (!part_nr_sects_read(part) &&
+		    !(piter->flags & DISK_PITER_INCL_EMPTY) &&
+		    !(piter->flags & DISK_PITER_INCL_EMPTY_PART0 &&
+		      piter->idx == 0)) {
+			put_device(part_to_dev(part));
+			piter->part = NULL;
+			continue;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		piter->idx += inc;
 		break;
 	}
@@ -664,7 +681,10 @@ void del_gendisk(struct gendisk *disk)
 
 	kobject_put(disk->part0.holder_dir);
 	kobject_put(disk->slave_dir);
+<<<<<<< HEAD
 	disk->driverfs_dev = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!sysfs_deprecated)
 		sysfs_remove_link(block_depr, dev_name(disk_to_dev(disk)));
 	pm_runtime_set_memalloc_noio(disk_to_dev(disk), false);
@@ -1404,6 +1424,7 @@ int invalidate_partition(struct gendisk *disk, int partno)
 
 EXPORT_SYMBOL(invalidate_partition);
 
+<<<<<<< HEAD
 dev_t blk_lookup_fs_info(struct fs_info *seek)
 {
 	dev_t devt = MKDEV(0, 0);
@@ -1486,6 +1507,8 @@ out:
 }
 EXPORT_SYMBOL_GPL(next_bdev_of_type);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Disk events - monitor disk events like media change and eject request.
  */

@@ -119,5 +119,10 @@ bool adau17x1_has_dsp(struct adau *adau);
 
 #define ADAU17X1_CONVERTER0_CONVSR_MASK		0x7
 
+<<<<<<< HEAD
+=======
+#define ADAU17X1_CONVERTER0_ADOSR		BIT(3)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

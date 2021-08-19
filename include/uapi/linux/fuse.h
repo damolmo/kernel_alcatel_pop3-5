@@ -205,10 +205,18 @@ struct fuse_file_lock {
  * FOPEN_DIRECT_IO: bypass page cache for this open file
  * FOPEN_KEEP_CACHE: don't invalidate the data cache on open
  * FOPEN_NONSEEKABLE: the file is not seekable
+<<<<<<< HEAD
+=======
+ * FOPEN_STREAM: the file is stream-like (no file position at all)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 #define FOPEN_DIRECT_IO		(1 << 0)
 #define FOPEN_KEEP_CACHE	(1 << 1)
 #define FOPEN_NONSEEKABLE	(1 << 2)
+<<<<<<< HEAD
+=======
+#define FOPEN_STREAM		(1 << 4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * INIT request/reply flags
@@ -358,6 +366,10 @@ enum fuse_opcode {
 	FUSE_FALLOCATE     = 43,
 	FUSE_READDIRPLUS   = 44,
 	FUSE_RENAME2       = 45,
+<<<<<<< HEAD
+=======
+	FUSE_CANONICAL_PATH= 2016,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* CUSE specific operations */
 	CUSE_INIT          = 4096,

@@ -54,7 +54,10 @@ obj-$(CONFIG_I2C_IMX)		+= i2c-imx.o
 obj-$(CONFIG_I2C_IOP3XX)	+= i2c-iop3xx.o
 obj-$(CONFIG_I2C_KEMPLD)	+= i2c-kempld.o
 obj-$(CONFIG_I2C_MPC)		+= i2c-mpc.o
+<<<<<<< HEAD
 obj-$(CONFIG_I2C_MT65XX)	+= i2c-mt65xx.o
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_I2C_MV64XXX)	+= i2c-mv64xxx.o
 obj-$(CONFIG_I2C_MXS)		+= i2c-mxs.o
 obj-$(CONFIG_I2C_NOMADIK)	+= i2c-nomadik.o
@@ -85,10 +88,13 @@ obj-$(CONFIG_I2C_OCTEON)	+= i2c-octeon.o
 obj-$(CONFIG_I2C_XILINX)	+= i2c-xiic.o
 obj-$(CONFIG_I2C_XLR)		+= i2c-xlr.o
 obj-$(CONFIG_I2C_RCAR)		+= i2c-rcar.o
+<<<<<<< HEAD
 ifneq ($(CONFIG_MTK_I2C_EXTENSION),y)
 obj-$(CONFIG_MTK_I2C)		+= i2c-mtk.o
 obj-$(CONFIG_MTK_I2C)		+= i2c_mtk_debug.o
 endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 # External I2C/SMBus adapter drivers
 obj-$(CONFIG_I2C_DIOLAN_U2C)	+= i2c-diolan-u2c.o
@@ -109,4 +115,7 @@ obj-$(CONFIG_I2C_SIBYTE)	+= i2c-sibyte.o
 obj-$(CONFIG_SCx200_ACB)	+= scx200_acb.o
 
 ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG
+<<<<<<< HEAD
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/base/power/include
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

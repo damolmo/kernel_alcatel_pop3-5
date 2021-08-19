@@ -148,7 +148,15 @@ static char vendor_class_identifier[253] __initdata;
 
 /* Persistent data: */
 
+<<<<<<< HEAD
 static int ic_proto_used;			/* Protocol used, if any */
+=======
+#ifdef IPCONFIG_DYNAMIC
+static int ic_proto_used;			/* Protocol used, if any */
+#else
+#define ic_proto_used 0
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static __be32 ic_nameservers[CONF_NAMESERVERS_MAX]; /* DNS Server IP addresses */
 static u8 ic_domain[64];		/* DNS (not NIS) domain name */
 
@@ -772,6 +780,14 @@ static void __init ic_bootp_init_ext(u8 *e)
  */
 static inline void __init ic_bootp_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Re-initialise all name servers to NONE, in case any were set via the
+	 * "ip=" or "nfsaddrs=" kernel command line parameters: any IP addresses
+	 * specified there will already have been decoded but are no longer
+	 * needed
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ic_nameservers_predef();
 
 	dev_add_pack(&bootp_packet_type);
@@ -867,7 +883,11 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 
 
 /*
+<<<<<<< HEAD
  *  Copy BOOTP-supplied string if not already set.
+=======
+ *  Copy BOOTP-supplied string
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static int __init ic_bootp_string(char *dest, char *src, int len, int max)
 {
@@ -918,12 +938,24 @@ static void __init ic_do_bootp_ext(u8 *ext)
 		}
 		break;
 	case 12:	/* Host name */
+<<<<<<< HEAD
 		ic_bootp_string(utsname()->nodename, ext+1, *ext,
 				__NEW_UTS_LEN);
 		ic_host_name_set = 1;
 		break;
 	case 15:	/* Domain name (DNS) */
 		ic_bootp_string(ic_domain, ext+1, *ext, sizeof(ic_domain));
+=======
+		if (!ic_host_name_set) {
+			ic_bootp_string(utsname()->nodename, ext+1, *ext,
+					__NEW_UTS_LEN);
+			ic_host_name_set = 1;
+		}
+		break;
+	case 15:	/* Domain name (DNS) */
+		if (!ic_domain[0])
+			ic_bootp_string(ic_domain, ext+1, *ext, sizeof(ic_domain));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case 17:	/* Root path */
 		if (!root_server_path[0])
@@ -1404,6 +1436,16 @@ static int __init ip_auto_config(void)
 	int err;
 	unsigned int i;
 
+<<<<<<< HEAD
+=======
+	/* Initialise all name servers to NONE (but only if the "ip=" or
+	 * "nfsaddrs=" kernel command line parameters weren't decoded, otherwise
+	 * we'll overwrite the IP addresses specified there)
+	 */
+	if (ic_set_manually == 0)
+		ic_nameservers_predef();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_PROC_FS
 	proc_create("pnp", S_IRUGO, init_net.proc_net, &pnp_seq_fops);
 #endif /* CONFIG_PROC_FS */
@@ -1605,6 +1647,10 @@ static int __init ip_auto_config_setup(char *addrs)
 		return 1;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Initialise all name servers to NONE */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ic_nameservers_predef();
 
 	/* Parse string for static IP assignment.  */

@@ -25,6 +25,10 @@
 #include "lvb_table.h"
 #include "user.h"
 #include "ast.h"
+<<<<<<< HEAD
+=======
+#include "config.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static const char name_prefix[] = "dlm";
 static const struct file_operations device_fops;
@@ -346,6 +350,13 @@ static int dlm_device_register(struct dlm_ls *ls, char *name)
 	error = misc_register(&ls->ls_device);
 	if (error) {
 		kfree(ls->ls_device.name);
+<<<<<<< HEAD
+=======
+		/* this has to be set to NULL
+		 * to avoid a double-free in dlm_device_deregister
+		 */
+		ls->ls_device.name = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 fail:
 	return error;
@@ -392,7 +403,11 @@ static int device_create_lockspace(struct dlm_lspace_params *params)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 	error = dlm_new_lockspace(params->name, NULL, params->flags,
+=======
+	error = dlm_new_lockspace(params->name, dlm_config.ci_cluster_name, params->flags,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  DLM_USER_LVB_LEN, NULL, NULL, NULL,
 				  &lockspace);
 	if (error)
@@ -695,7 +710,11 @@ static int copy_result_to_user(struct dlm_user_args *ua, int compat,
 	result.version[0] = DLM_DEVICE_VERSION_MAJOR;
 	result.version[1] = DLM_DEVICE_VERSION_MINOR;
 	result.version[2] = DLM_DEVICE_VERSION_PATCH;
+<<<<<<< HEAD
 	memcpy(&result.lksb, &ua->lksb, sizeof(struct dlm_lksb));
+=======
+	memcpy(&result.lksb, &ua->lksb, offsetof(struct dlm_lksb, sb_lvbptr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	result.user_lksb = ua->user_lksb;
 
 	/* FIXME: dlm1 provides for the user's bastparam/addr to not be updated

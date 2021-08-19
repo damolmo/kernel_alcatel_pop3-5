@@ -221,7 +221,12 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
  */
 static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 			      struct snd_seq_event_cell **cellp,
+<<<<<<< HEAD
 			      int nonblock, struct file *file)
+=======
+			      int nonblock, struct file *file,
+			      struct mutex *mutexp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct snd_seq_event_cell *cell;
 	unsigned long flags;
@@ -245,7 +250,15 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 		set_current_state(TASK_INTERRUPTIBLE);
 		add_wait_queue(&pool->output_sleep, &wait);
 		spin_unlock_irq(&pool->lock);
+<<<<<<< HEAD
 		schedule();
+=======
+		if (mutexp)
+			mutex_unlock(mutexp);
+		schedule();
+		if (mutexp)
+			mutex_lock(mutexp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock_irq(&pool->lock);
 		remove_wait_queue(&pool->output_sleep, &wait);
 		/* interrupted? */
@@ -288,7 +301,11 @@ __error:
  */
 int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 		      struct snd_seq_event_cell **cellp, int nonblock,
+<<<<<<< HEAD
 		      struct file *file)
+=======
+		      struct file *file, struct mutex *mutexp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int ncells, err;
 	unsigned int extlen;
@@ -305,7 +322,11 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 	if (ncells >= pool->total_elements)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	err = snd_seq_cell_alloc(pool, &cell, nonblock, file);
+=======
+	err = snd_seq_cell_alloc(pool, &cell, nonblock, file, mutexp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0)
 		return err;
 
@@ -331,7 +352,12 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 			int size = sizeof(struct snd_seq_event);
 			if (len < size)
 				size = len;
+<<<<<<< HEAD
 			err = snd_seq_cell_alloc(pool, &tmp, nonblock, file);
+=======
+			err = snd_seq_cell_alloc(pool, &tmp, nonblock, file,
+						 mutexp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (err < 0)
 				goto __error;
 			if (cell->event.data.ext.ptr == NULL)
@@ -383,6 +409,7 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 
 	if (snd_BUG_ON(!pool))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (pool->ptr)			/* should be atomic? */
 		return 0;
 
@@ -394,6 +421,22 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 
 	/* add new cells to the free cell list */
 	spin_lock_irqsave(&pool->lock, flags);
+=======
+
+	cellptr = vmalloc(sizeof(struct snd_seq_event_cell) * pool->size);
+	if (!cellptr)
+		return -ENOMEM;
+
+	/* add new cells to the free cell list */
+	spin_lock_irqsave(&pool->lock, flags);
+	if (pool->ptr) {
+		spin_unlock_irqrestore(&pool->lock, flags);
+		vfree(cellptr);
+		return 0;
+	}
+
+	pool->ptr = cellptr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pool->free = NULL;
 
 	for (cell = 0; cell < pool->size; cell++) {
@@ -411,17 +454,36 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* refuse the further insertion to the pool */
+void snd_seq_pool_mark_closing(struct snd_seq_pool *pool)
+{
+	unsigned long flags;
+
+	if (snd_BUG_ON(!pool))
+		return;
+	spin_lock_irqsave(&pool->lock, flags);
+	pool->closing = 1;
+	spin_unlock_irqrestore(&pool->lock, flags);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* remove events */
 int snd_seq_pool_done(struct snd_seq_pool *pool)
 {
 	unsigned long flags;
 	struct snd_seq_event_cell *ptr;
+<<<<<<< HEAD
 	int max_count = 5 * HZ;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (snd_BUG_ON(!pool))
 		return -EINVAL;
 
 	/* wait for closing all threads */
+<<<<<<< HEAD
 	spin_lock_irqsave(&pool->lock, flags);
 	pool->closing = 1;
 	spin_unlock_irqrestore(&pool->lock, flags);
@@ -437,6 +499,13 @@ int snd_seq_pool_done(struct snd_seq_pool *pool)
 		schedule_timeout_uninterruptible(1);
 		max_count--;
 	}
+=======
+	if (waitqueue_active(&pool->output_sleep))
+		wake_up(&pool->output_sleep);
+
+	while (atomic_read(&pool->counter) > 0)
+		schedule_timeout_uninterruptible(1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	/* release all resources */
 	spin_lock_irqsave(&pool->lock, flags);
@@ -463,10 +532,15 @@ struct snd_seq_pool *snd_seq_pool_new(int poolsize)
 
 	/* create pool block */
 	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
+<<<<<<< HEAD
 	if (pool == NULL) {
 		pr_debug("ALSA: seq: malloc failed for pool\n");
 		return NULL;
 	}
+=======
+	if (!pool)
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_init(&pool->lock);
 	pool->ptr = NULL;
 	pool->free = NULL;
@@ -490,6 +564,10 @@ int snd_seq_pool_delete(struct snd_seq_pool **ppool)
 	*ppool = NULL;
 	if (pool == NULL)
 		return 0;
+<<<<<<< HEAD
+=======
+	snd_seq_pool_mark_closing(pool);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	snd_seq_pool_done(pool);
 	kfree(pool);
 	return 0;

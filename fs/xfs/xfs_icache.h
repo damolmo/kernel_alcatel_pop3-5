@@ -40,6 +40,14 @@ struct xfs_eofblocks {
 #define XFS_IGET_UNTRUSTED	0x2
 #define XFS_IGET_DONTCACHE	0x4
 
+<<<<<<< HEAD
+=======
+/*
+ * flags for AG inode iterator
+ */
+#define XFS_AGITER_INEW_WAIT	0x1	/* wait on new inodes */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int xfs_iget(struct xfs_mount *mp, struct xfs_trans *tp, xfs_ino_t ino,
 	     uint flags, uint lock_flags, xfs_inode_t **ipp);
 
@@ -64,6 +72,12 @@ void xfs_eofblocks_worker(struct work_struct *);
 int xfs_inode_ag_iterator(struct xfs_mount *mp,
 	int (*execute)(struct xfs_inode *ip, int flags, void *args),
 	int flags, void *args);
+<<<<<<< HEAD
+=======
+int xfs_inode_ag_iterator_flags(struct xfs_mount *mp,
+	int (*execute)(struct xfs_inode *ip, int flags, void *args),
+	int flags, void *args, int iter_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int xfs_inode_ag_iterator_tag(struct xfs_mount *mp,
 	int (*execute)(struct xfs_inode *ip, int flags, void *args),
 	int flags, void *args, int tag);

@@ -63,6 +63,10 @@ static const struct usb_device_id id_table_earthmate[] = {
 
 static const struct usb_device_id id_table_cyphidcomrs232[] = {
 	{ USB_DEVICE(VENDOR_ID_CYPRESS, PRODUCT_ID_CYPHIDCOM) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(VENDOR_ID_SAI, PRODUCT_ID_CYPHIDCOM) },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ USB_DEVICE(VENDOR_ID_POWERCOM, PRODUCT_ID_UPS) },
 	{ USB_DEVICE(VENDOR_ID_FRWD, PRODUCT_ID_CYPHIDCOM_FRWD) },
 	{ }						/* Terminating entry */
@@ -77,6 +81,10 @@ static const struct usb_device_id id_table_combined[] = {
 	{ USB_DEVICE(VENDOR_ID_DELORME, PRODUCT_ID_EARTHMATEUSB) },
 	{ USB_DEVICE(VENDOR_ID_DELORME, PRODUCT_ID_EARTHMATEUSB_LT20) },
 	{ USB_DEVICE(VENDOR_ID_CYPRESS, PRODUCT_ID_CYPHIDCOM) },
+<<<<<<< HEAD
+=======
+	{ USB_DEVICE(VENDOR_ID_SAI, PRODUCT_ID_CYPHIDCOM) },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ USB_DEVICE(VENDOR_ID_POWERCOM, PRODUCT_ID_UPS) },
 	{ USB_DEVICE(VENDOR_ID_FRWD, PRODUCT_ID_CYPHIDCOM_FRWD) },
 	{ USB_DEVICE(VENDOR_ID_DAZZLE, PRODUCT_ID_CA42) },
@@ -447,6 +455,14 @@ static int cypress_generic_port_probe(struct usb_serial_port *port)
 	struct usb_serial *serial = port->serial;
 	struct cypress_private *priv;
 
+<<<<<<< HEAD
+=======
+	if (!port->interrupt_out_urb || !port->interrupt_in_urb) {
+		dev_err(&port->dev, "required endpoint is missing\n");
+		return -ENODEV;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	priv = kzalloc(sizeof(struct cypress_private), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -606,12 +622,15 @@ static int cypress_open(struct tty_struct *tty, struct usb_serial_port *port)
 		cypress_set_termios(tty, port, &priv->tmp_termios);
 
 	/* setup the port and start reading from the device */
+<<<<<<< HEAD
 	if (!port->interrupt_in_urb) {
 		dev_err(&port->dev, "%s - interrupt_in_urb is empty!\n",
 			__func__);
 		return -1;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_fill_int_urb(port->interrupt_in_urb, serial->dev,
 		usb_rcvintpipe(serial->dev, port->interrupt_in_endpointAddress),
 		port->interrupt_in_urb->transfer_buffer,
@@ -774,7 +793,11 @@ send:
 
 	usb_fill_int_urb(port->interrupt_out_urb, port->serial->dev,
 		usb_sndintpipe(port->serial->dev, port->interrupt_out_endpointAddress),
+<<<<<<< HEAD
 		port->interrupt_out_buffer, port->interrupt_out_size,
+=======
+		port->interrupt_out_buffer, actual_size,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cypress_write_int_callback, port, priv->write_urb_interval);
 	result = usb_submit_urb(port->interrupt_out_urb, GFP_ATOMIC);
 	if (result) {

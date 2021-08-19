@@ -466,7 +466,11 @@ static struct renesas_usbhs_platform_info *usbhs_parse_dt(struct device *dev)
 		return NULL;
 
 	dparam = &info->driver_param;
+<<<<<<< HEAD
 	dparam->type = of_id ? (u32)of_id->data : 0;
+=======
+	dparam->type = of_id ? (uintptr_t)of_id->data : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!of_property_read_u32(dev->of_node, "renesas,buswait", &tmp))
 		dparam->buswait_bwait = tmp;
 	gpio = of_get_named_gpio_flags(dev->of_node, "renesas,enable-gpio", 0,
@@ -699,8 +703,15 @@ static int usbhsc_resume(struct device *dev)
 	struct usbhs_priv *priv = dev_get_drvdata(dev);
 	struct platform_device *pdev = usbhs_priv_to_pdev(priv);
 
+<<<<<<< HEAD
 	if (!usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
 		usbhsc_power_ctrl(priv, 1);
+=======
+	if (!usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL)) {
+		usbhsc_power_ctrl(priv, 1);
+		usbhs_mod_autonomy_mode(priv);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usbhs_platform_call(priv, phy_reset, pdev);
 

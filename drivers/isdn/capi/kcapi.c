@@ -845,13 +845,21 @@ EXPORT_SYMBOL(capi20_put_message);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_manufacturer(u32 contr, u8 *buf)
+=======
+u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN])
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct capi_ctr *ctr;
 	u16 ret;
 
 	if (contr == 0) {
+<<<<<<< HEAD
 		strlcpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, capi_manufakturer, CAPI_MANUFACTURER_LEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return CAPI_NOERROR;
 	}
 
@@ -859,7 +867,11 @@ u16 capi20_get_manufacturer(u32 contr, u8 *buf)
 
 	ctr = get_capi_ctr_by_nr(contr);
 	if (ctr && ctr->state == CAPI_CTR_RUNNING) {
+<<<<<<< HEAD
 		strlcpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+=======
+		strncpy(buf, ctr->manu, CAPI_MANUFACTURER_LEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = CAPI_NOERROR;
 	} else
 		ret = CAPI_REGNOTINSTALLED;
@@ -915,7 +927,11 @@ EXPORT_SYMBOL(capi20_get_version);
  * Return value: CAPI result code
  */
 
+<<<<<<< HEAD
 u16 capi20_get_serial(u32 contr, u8 *serial)
+=======
+u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN])
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct capi_ctr *ctr;
 	u16 ret;
@@ -1032,6 +1048,10 @@ static int old_capi_manufacturer(unsigned int cmd, void __user *data)
 						     sizeof(avmb1_carddef))))
 				return -EFAULT;
 			cdef.cardtype = AVM_CARDTYPE_B1;
+<<<<<<< HEAD
+=======
+			cdef.cardnr = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			if ((retval = copy_from_user(&cdef, data,
 						     sizeof(avmb1_extcarddef))))

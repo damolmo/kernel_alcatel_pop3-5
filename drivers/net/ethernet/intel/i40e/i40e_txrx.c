@@ -237,6 +237,12 @@ static int i40e_add_del_fdir_udpv4(struct i40e_vsi *vsi,
 				 "Filter deleted for PCTYPE %d loc = %d\n",
 				 fd_data->pctype, fd_data->fd_id);
 	}
+<<<<<<< HEAD
+=======
+	if (err)
+		kfree(raw_packet);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err ? -EOPNOTSUPP : 0;
 }
 
@@ -312,6 +318,12 @@ static int i40e_add_del_fdir_tcpv4(struct i40e_vsi *vsi,
 				 fd_data->pctype, fd_data->fd_id);
 	}
 
+<<<<<<< HEAD
+=======
+	if (err)
+		kfree(raw_packet);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err ? -EOPNOTSUPP : 0;
 }
 
@@ -387,6 +399,12 @@ static int i40e_add_del_fdir_ipv4(struct i40e_vsi *vsi,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (err)
+		kfree(raw_packet);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err ? -EOPNOTSUPP : 0;
 }
 
@@ -510,11 +528,15 @@ static void i40e_unmap_and_free_tx_resource(struct i40e_ring *ring,
 					    struct i40e_tx_buffer *tx_buffer)
 {
 	if (tx_buffer->skb) {
+<<<<<<< HEAD
 		if (tx_buffer->tx_flags & I40E_TX_FLAGS_FD_SB)
 			kfree(tx_buffer->raw_buf);
 		else
 			dev_kfree_skb_any(tx_buffer->skb);
 
+=======
+		dev_kfree_skb_any(tx_buffer->skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (dma_unmap_len(tx_buffer, len))
 			dma_unmap_single(ring->dev,
 					 dma_unmap_addr(tx_buffer, dma),
@@ -526,6 +548,13 @@ static void i40e_unmap_and_free_tx_resource(struct i40e_ring *ring,
 			       dma_unmap_len(tx_buffer, len),
 			       DMA_TO_DEVICE);
 	}
+<<<<<<< HEAD
+=======
+
+	if (tx_buffer->tx_flags & I40E_TX_FLAGS_FD_SB)
+		kfree(tx_buffer->raw_buf);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tx_buffer->next_to_watch = NULL;
 	tx_buffer->skb = NULL;
 	dma_unmap_len_set(tx_buffer, len, 0);
@@ -688,7 +717,11 @@ static bool i40e_clean_tx_irq(struct i40e_ring *tx_ring, int budget)
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* we have caught up to head, no work left to do */
 		if (tx_head == tx_desc)

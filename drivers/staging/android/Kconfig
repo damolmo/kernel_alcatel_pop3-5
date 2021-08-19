@@ -32,6 +32,31 @@ config ANDROID_BINDER_IPC_32BIT
 
 	  Note that enabling this will break newer Android user-space.
 
+<<<<<<< HEAD
+=======
+config ANDROID_BINDER_DEVICES
+	string "Android Binder devices"
+	depends on ANDROID_BINDER_IPC
+	default "binder,hwbinder,vndbinder"
+	---help---
+	  Default value for the binder.devices parameter.
+
+	  The binder.devices parameter is a comma-separated list of strings
+	  that specifies the names of the binder device nodes that will be
+	  created. Each binder device has its own context manager, and is
+	  therefore logically separated from the other devices.
+
+config ANDROID_BINDER_IPC_SELFTEST
+        bool "Android Binder IPC Driver Selftest"
+        depends on ANDROID_BINDER_IPC
+        ---help---
+          This feature allows binder selftest to run.
+
+          Binder selftest checks the allocation and free of binder buffers
+          exhaustively with combinations of various buffer sizes and
+          alignments.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config ASHMEM
 	bool "Enable the Anonymous Shared Memory Subsystem"
 	default n
@@ -67,6 +92,7 @@ config ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 	  /sys/module/lowmemorykiller/parameters/adj and convert them
 	  to oom_score_adj values.
 
+<<<<<<< HEAD
 config ANDROID_INTF_ALARM_DEV
 	bool "Android alarm driver"
 	depends on RTC_CLASS
@@ -77,6 +103,8 @@ config ANDROID_INTF_ALARM_DEV
 	  Espically for wake up alarm ioctl.
 	  Also exports the alarm interface to user-space.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config SYNC
 	bool "Synchronization framework"
 	default n
@@ -105,6 +133,7 @@ config SW_SYNC_USER
 	  *WARNING* improper use of this can result in deadlocking kernel
 	  drivers from userspace.
 
+<<<<<<< HEAD
 config MTK_GMO_RAM_OPTIMIZE
 	bool "MTK ram optimize"
 	default n
@@ -116,6 +145,19 @@ source "drivers/staging/android/ion/Kconfig"
 
 source "drivers/staging/android/fiq_debugger/Kconfig"
 
+=======
+config ANDROID_VSOC
+	tristate "Android Virtual SoC support"
+	default n
+	depends on PCI_MSI
+	---help---
+	  This option adds support for the Virtual SoC driver needed to boot
+	  a 'cuttlefish' Android image inside QEmu. The driver interacts with
+	  a QEmu ivshmem device. If built as a module, it will be called vsoc.
+
+source "drivers/staging/android/ion/Kconfig"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif # if ANDROID
 
 endmenu

@@ -145,6 +145,7 @@ static int hi3xxx_hotplug_init(void)
 	struct device_node *node;
 
 	node = of_find_compatible_node(NULL, NULL, "hisilicon,sysctrl");
+<<<<<<< HEAD
 	if (node) {
 		ctrl_base = of_iomap(node, 0);
 		id = HI3620_CTRL;
@@ -152,6 +153,22 @@ static int hi3xxx_hotplug_init(void)
 	}
 	id = ERROR_CTRL;
 	return -ENOENT;
+=======
+	if (!node) {
+		id = ERROR_CTRL;
+		return -ENOENT;
+	}
+
+	ctrl_base = of_iomap(node, 0);
+	of_node_put(node);
+	if (!ctrl_base) {
+		id = ERROR_CTRL;
+		return -ENOMEM;
+	}
+
+	id = HI3620_CTRL;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void hi3xxx_set_cpu(int cpu, bool enable)
@@ -170,11 +187,23 @@ static bool hix5hd2_hotplug_init(void)
 	struct device_node *np;
 
 	np = of_find_compatible_node(NULL, NULL, "hisilicon,cpuctrl");
+<<<<<<< HEAD
 	if (np) {
 		ctrl_base = of_iomap(np, 0);
 		return true;
 	}
 	return false;
+=======
+	if (!np)
+		return false;
+
+	ctrl_base = of_iomap(np, 0);
+	of_node_put(np);
+	if (!ctrl_base)
+		return false;
+
+	return true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void hix5hd2_set_cpu(int cpu, bool enable)

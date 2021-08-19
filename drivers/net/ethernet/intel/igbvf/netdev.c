@@ -808,7 +808,11 @@ static bool igbvf_clean_tx_irq(struct igbvf_ring *tx_ring)
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* if DD is not set pending work has not been completed */
 		if (!(eop_desc->wb.status & cpu_to_le32(E1000_TXD_STAT_DD)))

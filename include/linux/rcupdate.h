@@ -617,6 +617,7 @@ static inline void rcu_preempt_sleep_check(void)
 #define RCU_INITIALIZER(v) (typeof(*(v)) __force __rcu *)(v)
 
 /**
+<<<<<<< HEAD
  * lockless_dereference() - safely load a pointer for later dereference
  * @p: The pointer to load
  *
@@ -632,6 +633,8 @@ static inline void rcu_preempt_sleep_check(void)
 })
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * rcu_assign_pointer() - assign to RCU-protected pointer
  * @p: pointer to assign to
  * @v: value to assign (publish)
@@ -874,7 +877,11 @@ static inline void rcu_preempt_sleep_check(void)
  * read-side critical sections may be preempted and they may also block, but
  * only when acquiring spinlocks that are subject to priority inheritance.
  */
+<<<<<<< HEAD
 static inline void rcu_read_lock(void)
+=======
+static __always_inline void rcu_read_lock(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	__rcu_read_lock();
 	__acquire(RCU);

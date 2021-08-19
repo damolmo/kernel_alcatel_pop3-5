@@ -305,6 +305,11 @@ static s32 ixgbe_check_for_rst_pf(struct ixgbe_hw *hw, u16 vf_number)
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLRE(reg_offset));
 		break;
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vflre = IXGBE_READ_REG(hw, IXGBE_VFLREC(reg_offset));
 		break;
 	default:
@@ -426,6 +431,11 @@ void ixgbe_init_mbx_params_pf(struct ixgbe_hw *hw)
 	struct ixgbe_mbx_info *mbx = &hw->mbx;
 
 	if (hw->mac.type != ixgbe_mac_82599EB &&
+<<<<<<< HEAD
+=======
+	    hw->mac.type != ixgbe_mac_X550 &&
+	    hw->mac.type != ixgbe_mac_X550EM_x &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    hw->mac.type != ixgbe_mac_X540)
 		return;
 

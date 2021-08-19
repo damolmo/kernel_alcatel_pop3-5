@@ -26,9 +26,12 @@
 #include <linux/completion.h>
 #include <linux/cpufreq.h>
 #include <linux/irq_work.h>
+<<<<<<< HEAD
 #ifdef CONFIG_TRUSTY
 #include <linux/irqdomain.h>
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <linux/atomic.h>
 #include <asm/smp.h>
@@ -49,11 +52,14 @@
 #include <asm/virt.h>
 #include <asm/mach/arch.h>
 #include <asm/mpu.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #include "mt_sched_mon.h"
 #endif
 #include <mt-plat/mtk_ram_console.h>
 #include <hotplug.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/ipi.h>
@@ -81,6 +87,7 @@ enum ipi_msg_type {
 	IPI_IRQ_WORK,
 	IPI_COMPLETION,
 	IPI_CPU_BACKTRACE,
+<<<<<<< HEAD
 #ifdef CONFIG_TRUSTY
 	IPI_CUSTOM_FIRST,
 	IPI_CUSTOM_LAST = 15,
@@ -91,6 +98,10 @@ enum ipi_msg_type {
 struct irq_domain *ipi_custom_irq_domain;
 #endif
 
+=======
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static DECLARE_COMPLETION(cpu_running);
 
 static struct smp_operations smp_ops;
@@ -103,9 +114,17 @@ void __init smp_set_ops(struct smp_operations *ops)
 
 static unsigned long get_arch_pgd(pgd_t *pgd)
 {
+<<<<<<< HEAD
 	phys_addr_t pgdir = virt_to_idmap(pgd);
 	BUG_ON(pgdir & ARCH_PGD_MASK);
 	return pgdir >> ARCH_PGD_SHIFT;
+=======
+#ifdef CONFIG_ARM_LPAE
+	return __phys_to_pfn(virt_to_phys(pgd));
+#else
+	return virt_to_phys(pgd);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int __cpu_up(unsigned int cpu, struct task_struct *idle)
@@ -125,7 +144,11 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
 #endif
 
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 	secondary_data.pgdir = get_arch_pgd(idmap_pgd);
+=======
+	secondary_data.pgdir = virt_to_phys(idmap_pgd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	secondary_data.swapper_pg_dir = get_arch_pgd(swapper_pg_dir);
 #endif
 	sync_cache_w(&secondary_data);
@@ -255,6 +278,7 @@ void __cpu_die(unsigned int cpu)
 		printk("CPU%u: unable to kill\n", cpu);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_IRQ_NEW_DESIGN
 void  __attribute__((weak)) gic_set_primask(void)
 {
@@ -262,6 +286,8 @@ void  __attribute__((weak)) gic_set_primask(void)
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Called from the idle thread for the CPU which has been shutdown.
  *
@@ -274,6 +300,7 @@ void __ref cpu_die(void)
 {
 	unsigned int cpu = smp_processor_id();
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 51, 0);
 
 	idle_task_exit();
@@ -288,6 +315,12 @@ void __ref cpu_die(void)
 
 	aee_rr_rec_hoplug(cpu, 53, 0);
 
+=======
+	idle_task_exit();
+
+	local_irq_disable();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Flush the data out of the L1 cache for this CPU.  This must be
 	 * before the completion to ensure that data is safely written out
@@ -296,8 +329,11 @@ void __ref cpu_die(void)
 	 */
 	flush_cache_louis();
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 54, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Tell __cpu_die() that this CPU is now safe to dispose of.  Once
 	 * this returns, power and/or clocks can be removed at any point
@@ -305,8 +341,11 @@ void __ref cpu_die(void)
 	 */
 	complete(&cpu_died);
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 55, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Ensure that the cache lines associated with that completion are
 	 * written out.  This covers the case where _this_ CPU is doing the
@@ -315,8 +354,11 @@ void __ref cpu_die(void)
 	 */
 	flush_cache_louis();
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 56, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * The actual CPU shutdown procedure is at least platform (if not
 	 * CPU) specific.  This may remove power, or it may simply spin.
@@ -371,8 +413,11 @@ asmlinkage void secondary_start_kernel(void)
 	struct mm_struct *mm = &init_mm;
 	unsigned int cpu;
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 1, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * The identity mapping is uncached (strongly ordered), so
 	 * switch away from it before attempting any exclusive accesses.
@@ -382,20 +427,27 @@ asmlinkage void secondary_start_kernel(void)
 	enter_lazy_tlb(mm, current);
 	local_flush_tlb_all();
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 2, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * All kernel threads share the same mm context; grab a
 	 * reference and switch to it.
 	 */
 	cpu = smp_processor_id();
+<<<<<<< HEAD
 
 	aee_rr_rec_hoplug(cpu, 3, 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	atomic_inc(&mm->mm_count);
 	current->active_mm = mm;
 	cpumask_set_cpu(cpu, mm_cpumask(mm));
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 4, 0);
 
 	cpu_init();
@@ -412,12 +464,22 @@ asmlinkage void secondary_start_kernel(void)
 
 	aee_rr_rec_hoplug(cpu, 7, 0);
 
+=======
+	cpu_init();
+
+	printk("CPU%u: Booted secondary processor\n", cpu);
+
+	preempt_disable();
+	trace_hardirqs_off();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Give the platform a chance to do its own initialisation.
 	 */
 	if (smp_ops.smp_secondary_init)
 		smp_ops.smp_secondary_init(cpu);
 
+<<<<<<< HEAD
 	aee_rr_rec_hoplug(cpu, 8, 0);
 
 	notify_cpu_starting(cpu);
@@ -432,12 +494,21 @@ asmlinkage void secondary_start_kernel(void)
 
 	aee_rr_rec_hoplug(cpu, 11, 0);
 
+=======
+	notify_cpu_starting(cpu);
+
+	calibrate_delay();
+
+	smp_store_cpu_info(cpu);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * OK, now it's safe to let the boot CPU continue.  Wait for
 	 * the CPU migration code to notice that the CPU is online
 	 * before we continue - which happens after __cpu_up returns.
 	 */
 	set_cpu_online(cpu, true);
+<<<<<<< HEAD
 
 	aee_rr_rec_hoplug(cpu, 12, 0);
 
@@ -453,12 +524,22 @@ asmlinkage void secondary_start_kernel(void)
 
 	aee_rr_rec_hoplug(cpu, 15, 0);
 
+=======
+	complete(&cpu_running);
+
+	local_irq_enable();
+	local_fiq_enable();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * OK, it's off to the idle thread for us
 	 */
 	cpu_startup_entry(CPUHP_ONLINE);
+<<<<<<< HEAD
 
 	aee_rr_rec_hoplug(cpu, 16, 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __init smp_cpus_done(unsigned int max_cpus)
@@ -706,15 +787,19 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 	switch (ipinr) {
 	case IPI_WAKEUP:
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 #ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
 	case IPI_TIMER:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -722,6 +807,9 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		tick_receive_broadcast();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 #endif
@@ -732,6 +820,7 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 
 	case IPI_CALL_FUNC:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -739,11 +828,15 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		generic_smp_call_function_interrupt();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 
 	case IPI_CALL_FUNC_SINGLE:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -751,11 +844,15 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		generic_smp_call_function_single_interrupt();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 
 	case IPI_CPU_STOP:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -763,12 +860,16 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		ipi_cpu_stop(cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 
 #ifdef CONFIG_IRQ_WORK
 	case IPI_IRQ_WORK:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -776,12 +877,16 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		irq_work_run();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 #endif
 
 	case IPI_COMPLETION:
 		irq_enter();
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -789,10 +894,14 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_end(ipinr);
 #endif
+=======
+		ipi_complete(cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq_exit();
 		break;
 
 	case IPI_CPU_BACKTRACE:
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 		mt_trace_ISR_start(ipinr);
 #endif
@@ -808,6 +917,12 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 			handle_domain_irq(ipi_custom_irq_domain, ipinr, regs);
 		else
 #endif
+=======
+		ipi_cpu_backtrace(cpu, regs);
+		break;
+
+	default:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		printk(KERN_CRIT "CPU%u: Unknown IPI message 0x%x\n",
 		       cpu, ipinr);
 		break;
@@ -818,6 +933,7 @@ void handle_IPI(int ipinr, struct pt_regs *regs)
 	set_irq_regs(old_regs);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_TRUSTY
 static void custom_ipi_enable(struct irq_data *data)
 {
@@ -877,6 +993,8 @@ static int __init smp_custom_ipi_init(void)
 core_initcall(smp_custom_ipi_init);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void smp_send_reschedule(int cpu)
 {
 	smp_cross_call(cpumask_of(cpu), IPI_RESCHEDULE);
@@ -901,6 +1019,24 @@ void smp_send_stop(void)
 		pr_warn("SMP: failed to stop secondary CPUs\n");
 }
 
+<<<<<<< HEAD
+=======
+/* In case panic() and panic() called at the same time on CPU1 and CPU2,
+ * and CPU 1 calls panic_smp_self_stop() before crash_smp_send_stop()
+ * CPU1 can't receive the ipi irqs from CPU2, CPU1 will be always online,
+ * kdump fails. So split out the panic_smp_self_stop() and add
+ * set_cpu_online(smp_processor_id(), false).
+ */
+void panic_smp_self_stop(void)
+{
+	pr_debug("CPU %u will stop doing anything useful since another CPU has paniced\n",
+	         smp_processor_id());
+	set_cpu_online(smp_processor_id(), false);
+	while (1)
+		cpu_relax();
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * not supported here
  */

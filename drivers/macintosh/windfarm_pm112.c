@@ -13,6 +13,10 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/prom.h>
 #include <asm/smu.h>
 
@@ -133,6 +137,7 @@ static int create_cpu_loop(int cpu)
 	s32 tmax;
 	int fmin;
 
+<<<<<<< HEAD
 	/* Get PID params from the appropriate SAT */
 	hdr = smu_sat_get_sdb_partition(chip, 0xC8 + core, NULL);
 	if (hdr == NULL) {
@@ -141,6 +146,8 @@ static int create_cpu_loop(int cpu)
 	}
 	piddata = (struct smu_sdbp_cpupiddata *)&hdr[1];
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Get FVT params to get Tmax; if not found, assume default */
 	hdr = smu_sat_get_sdb_partition(chip, 0xC4 + core, NULL);
 	if (hdr) {
@@ -153,6 +160,19 @@ static int create_cpu_loop(int cpu)
 	if (tmax < cpu_all_tmax)
 		cpu_all_tmax = tmax;
 
+<<<<<<< HEAD
+=======
+	kfree(hdr);
+
+	/* Get PID params from the appropriate SAT */
+	hdr = smu_sat_get_sdb_partition(chip, 0xC8 + core, NULL);
+	if (hdr == NULL) {
+		printk(KERN_WARNING"windfarm: can't get CPU PID fan config\n");
+		return -EINVAL;
+	}
+	piddata = (struct smu_sdbp_cpupiddata *)&hdr[1];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Darwin has a minimum fan speed of 1000 rpm for the 4-way and
 	 * 515 for the 2-way.  That appears to be overkill, so for now,
@@ -175,6 +195,12 @@ static int create_cpu_loop(int cpu)
 		pid.min = fmin;
 
 	wf_cpu_pid_init(&cpu_pid[cpu], &pid);
+<<<<<<< HEAD
+=======
+
+	kfree(hdr);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

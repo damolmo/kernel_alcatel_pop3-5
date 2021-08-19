@@ -11,7 +11,10 @@
 #include <linux/gfp.h>
 #include <linux/smp.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/init.h>
 #include <asm/proto.h>
@@ -79,7 +82,11 @@ static int set_up_temporary_mappings(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 int swsusp_arch_resume(void)
+=======
+asmlinkage int swsusp_arch_resume(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int error;
 
@@ -96,7 +103,10 @@ int swsusp_arch_resume(void)
 	restore_image();
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(swsusp_arch_resume);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	pfn_is_nosave - check if given pfn is in the 'nosave' section
@@ -147,4 +157,7 @@ int arch_hibernation_header_restore(void *addr)
 	restore_cr3 = rdr->cr3;
 	return (rdr->magic == RESTORE_MAGIC) ? 0 : -EINVAL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(arch_hibernation_header_restore);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -74,7 +74,12 @@ extern void execve_tail(void);
 
 #else /* CONFIG_64BIT */
 
+<<<<<<< HEAD
 #define TASK_SIZE_OF(tsk)	((tsk)->mm->context.asce_limit)
+=======
+#define TASK_SIZE_OF(tsk)	((tsk)->mm ? \
+				 (tsk)->mm->context.asce_limit : TASK_MAX_SIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define TASK_UNMAPPED_BASE	(test_thread_flag(TIF_31BIT) ? \
 					(1UL << 30) : (1UL << 41))
 #define TASK_SIZE		TASK_SIZE_OF(current)

@@ -148,13 +148,21 @@ static int drm_open_helper(struct file *filp, struct drm_minor *minor)
 	if (dev->switch_power_state != DRM_SWITCH_POWER_ON && dev->switch_power_state != DRM_SWITCH_POWER_DYNAMIC_OFF)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	//DRM_DEBUG("pid = %d, minor = %d\n", task_pid_nr(current), minor->index);
+=======
+	DRM_DEBUG("pid = %d, minor = %d\n", task_pid_nr(current), minor->index);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
 	filp->private_data = priv;
+<<<<<<< HEAD
+=======
+	filp->f_mode |= FMODE_UNSIGNED_OFFSET;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	priv->filp = filp;
 	priv->uid = current_euid();
 	priv->pid = get_pid(task_pid(current));
@@ -167,7 +175,10 @@ static int drm_open_helper(struct file *filp, struct drm_minor *minor)
 	INIT_LIST_HEAD(&priv->lhead);
 	INIT_LIST_HEAD(&priv->fbs);
 	mutex_init(&priv->fbs_lock);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&priv->blobs);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&priv->event_list);
 	init_waitqueue_head(&priv->event_wait);
 	priv->event_space = 4096; /* set aside 4k for event buffer */
@@ -331,11 +342,19 @@ static void drm_legacy_dev_reinit(struct drm_device *dev)
  */
 int drm_lastclose(struct drm_device * dev)
 {
+<<<<<<< HEAD
 	//DRM_INFO("\n");
 
 	if (dev->driver->lastclose)
 		dev->driver->lastclose(dev);
 	//DRM_INFO("driver lastclose completed\n");
+=======
+	DRM_DEBUG("\n");
+
+	if (dev->driver->lastclose)
+		dev->driver->lastclose(dev);
+	DRM_DEBUG("driver lastclose completed\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dev->irq_enabled && !drm_core_check_feature(dev, DRIVER_MODESET))
 		drm_irq_uninstall(dev);
@@ -352,7 +371,11 @@ int drm_lastclose(struct drm_device * dev)
 
 	drm_legacy_dev_reinit(dev);
 
+<<<<<<< HEAD
 	//DRM_INFO("lastclose completed\n");
+=======
+	DRM_DEBUG("lastclose completed\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -377,7 +400,11 @@ int drm_release(struct inode *inode, struct file *filp)
 
 	mutex_lock(&drm_global_mutex);
 
+<<<<<<< HEAD
 	//DRM_INFO("open_count = %d\n", dev->open_count);
+=======
+	DRM_DEBUG("open_count = %d\n", dev->open_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&dev->struct_mutex);
 	list_del(&file_priv->lhead);
@@ -390,10 +417,17 @@ int drm_release(struct inode *inode, struct file *filp)
 	 * Begin inline drm_release
 	 */
 
+<<<<<<< HEAD
 	/*DRM_INFO("pid = %d, device = 0x%lx, open_count = %d\n",
 		  task_pid_nr(current),
 		  (long)old_encode_dev(file_priv->minor->kdev->devt),
 		  dev->open_count);*/
+=======
+	DRM_DEBUG("pid = %d, device = 0x%lx, open_count = %d\n",
+		  task_pid_nr(current),
+		  (long)old_encode_dev(file_priv->minor->kdev->devt),
+		  dev->open_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Release any auth tokens that might point to this file_priv,
 	   (do that under the drm_global_mutex) */
@@ -409,10 +443,15 @@ int drm_release(struct inode *inode, struct file *filp)
 
 	drm_events_release(file_priv);
 
+<<<<<<< HEAD
 	if (drm_core_check_feature(dev, DRIVER_MODESET)) {
 		drm_fb_release(file_priv);
 		drm_property_destroy_user_blobs(dev, file_priv);
 	}
+=======
+	if (drm_core_check_feature(dev, DRIVER_MODESET))
+		drm_fb_release(file_priv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (drm_core_check_feature(dev, DRIVER_GEM))
 		drm_gem_release(dev, file_priv);
@@ -528,7 +567,10 @@ ssize_t drm_read(struct file *filp, char __user *buffer,
 		if (copy_to_user(buffer + total,
 				 e->event, e->event->length)) {
 			total = -EFAULT;
+<<<<<<< HEAD
 			e->destroy(e);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 

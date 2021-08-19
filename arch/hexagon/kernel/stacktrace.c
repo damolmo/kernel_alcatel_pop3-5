@@ -23,8 +23,11 @@
 #include <linux/thread_info.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 register unsigned long current_frame_pointer asm("r30");
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct stackframe {
 	unsigned long fp;
 	unsigned long rets;
@@ -42,7 +45,11 @@ void save_stack_trace(struct stack_trace *trace)
 
 	low = (unsigned long)task_stack_page(current);
 	high = low + THREAD_SIZE;
+<<<<<<< HEAD
 	fp = current_frame_pointer;
+=======
+	fp = (unsigned long)__builtin_frame_address(0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (fp >= low && fp <= (high - sizeof(*frame))) {
 		frame = (struct stackframe *)fp;

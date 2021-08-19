@@ -34,6 +34,10 @@ static int ipt_init_target(struct xt_entry_target *t, char *table, unsigned int 
 {
 	struct xt_tgchk_param par;
 	struct xt_target *target;
+<<<<<<< HEAD
+=======
+	struct ipt_entry e = {};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	target = xt_request_find_target(AF_INET, t->u.user.name,
@@ -42,8 +46,14 @@ static int ipt_init_target(struct xt_entry_target *t, char *table, unsigned int 
 		return PTR_ERR(target);
 
 	t->u.kernel.target = target;
+<<<<<<< HEAD
 	par.table     = table;
 	par.entryinfo = NULL;
+=======
+	memset(&par, 0, sizeof(par));
+	par.table     = table;
+	par.entryinfo = &e;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	par.target    = target;
 	par.targinfo  = t->data;
 	par.hook_mask = hook;

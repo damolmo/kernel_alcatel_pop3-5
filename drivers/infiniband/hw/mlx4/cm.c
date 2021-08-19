@@ -39,7 +39,11 @@
 
 #include "mlx4_ib.h"
 
+<<<<<<< HEAD
 #define CM_CLEANUP_CACHE_TIMEOUT  (5 * HZ)
+=======
+#define CM_CLEANUP_CACHE_TIMEOUT  (30 * HZ)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct id_map_entry {
 	struct rb_node node;
@@ -309,6 +313,12 @@ static void schedule_delayed(struct ib_device *ibdev, struct id_map_entry *id)
 	if (!sriov->is_going_down) {
 		id->scheduled_delete = 1;
 		schedule_delayed_work(&id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
+<<<<<<< HEAD
+=======
+	} else if (id->scheduled_delete) {
+		/* Adjust timeout if already scheduled */
+		mod_delayed_work(system_wq, &id->timeout, CM_CLEANUP_CACHE_TIMEOUT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	spin_unlock_irqrestore(&sriov->going_down_lock, flags);
 	spin_unlock(&sriov->id_map_lock);

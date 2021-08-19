@@ -37,7 +37,11 @@ static void nft_queue_eval(const struct nft_expr *expr,
 
 	if (priv->queues_total > 1) {
 		if (priv->flags & NFT_QUEUE_FLAG_CPU_FANOUT) {
+<<<<<<< HEAD
 			int cpu = smp_processor_id();
+=======
+			int cpu = raw_smp_processor_id();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			queue = priv->queuenum + cpu % priv->queues_total;
 		} else {

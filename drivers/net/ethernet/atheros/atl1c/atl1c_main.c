@@ -1014,6 +1014,7 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 		sizeof(struct atl1c_recv_ret_status) * rx_desc_count +
 		8 * 4;
 
+<<<<<<< HEAD
 	ring_header->desc = pci_alloc_consistent(pdev, ring_header->size,
 				&ring_header->dma);
 	if (unlikely(!ring_header->desc)) {
@@ -1021,6 +1022,14 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 		goto err_nomem;
 	}
 	memset(ring_header->desc, 0, ring_header->size);
+=======
+	ring_header->desc = dma_zalloc_coherent(&pdev->dev, ring_header->size,
+						&ring_header->dma, GFP_KERNEL);
+	if (unlikely(!ring_header->desc)) {
+		dev_err(&pdev->dev, "could not get memory for DMA buffer\n");
+		goto err_nomem;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* init TPD ring */
 
 	tpd_ring[0].dma = roundup(ring_header->dma, 8);
@@ -1675,6 +1684,10 @@ static struct sk_buff *atl1c_alloc_skb(struct atl1c_adapter *adapter)
 	skb = build_skb(page_address(page) + adapter->rx_page_offset,
 			adapter->rx_frag_size);
 	if (likely(skb)) {
+<<<<<<< HEAD
+=======
+		skb_reserve(skb, NET_SKB_PAD);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		adapter->rx_page_offset += adapter->rx_frag_size;
 		if (adapter->rx_page_offset >= PAGE_SIZE)
 			adapter->rx_page = NULL;

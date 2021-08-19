@@ -944,6 +944,10 @@ static int vxlan_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
 		struct vxlan_fdb *f;
 		int err;
 
+<<<<<<< HEAD
+=======
+		rcu_read_lock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hlist_for_each_entry_rcu(f, &vxlan->fdb_head[h], hlist) {
 			struct vxlan_rdst *rd;
 
@@ -956,12 +960,23 @@ static int vxlan_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
 						     cb->nlh->nlmsg_seq,
 						     RTM_NEWNEIGH,
 						     NLM_F_MULTI, rd);
+<<<<<<< HEAD
 				if (err < 0)
 					goto out;
+=======
+				if (err < 0) {
+					rcu_read_unlock();
+					goto out;
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 skip:
 			++idx;
 		}
+<<<<<<< HEAD
+=======
+		rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	return idx;
@@ -985,7 +1000,11 @@ static bool vxlan_snoop(struct net_device *dev,
 			return false;
 
 		/* Don't migrate static entries, drop packets */
+<<<<<<< HEAD
 		if (f->state & NUD_NOARP)
+=======
+		if (f->state & (NUD_PERMANENT | NUD_NOARP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return true;
 
 		if (net_ratelimit())
@@ -1238,6 +1257,17 @@ static void vxlan_rcv(struct vxlan_sock *vs,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	rcu_read_lock();
+
+	if (unlikely(!(vxlan->dev->flags & IFF_UP))) {
+		rcu_read_unlock();
+		atomic_long_inc(&vxlan->dev->rx_dropped);
+		goto drop;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stats = this_cpu_ptr(vxlan->dev->tstats);
 	u64_stats_update_begin(&stats->syncp);
 	stats->rx_packets++;
@@ -1246,6 +1276,11 @@ static void vxlan_rcv(struct vxlan_sock *vs,
 
 	netif_rx(skb);
 
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return;
 drop:
 	/* Consume bad packet */
@@ -1367,6 +1402,13 @@ static struct sk_buff *vxlan_na_create(struct sk_buff *request,
 	daddr = eth_hdr(request)->h_source;
 	ns_olen = request->len - skb_transport_offset(request) - sizeof(*ns);
 	for (i = 0; i < ns_olen-1; i += (ns->opt[i+1]<<3)) {
+<<<<<<< HEAD
+=======
+		if (!ns->opt[i + 1]) {
+			kfree_skb(reply);
+			return NULL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ns->opt[i] == ND_OPT_SOURCE_LL_ADDR) {
 			daddr = ns->opt + i + sizeof(struct nd_opt_hdr);
 			break;
@@ -1665,7 +1707,11 @@ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
 	struct pcpu_sw_netstats *tx_stats, *rx_stats;
 	union vxlan_addr loopback;
 	union vxlan_addr *remote_ip = &dst_vxlan->default_dst.remote_ip;
+<<<<<<< HEAD
 	struct net_device *dev = skb->dev;
+=======
+	struct net_device *dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int len = skb->len;
 
 	tx_stats = this_cpu_ptr(src_vxlan->dev->tstats);
@@ -1685,8 +1731,20 @@ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
 #endif
 	}
 
+<<<<<<< HEAD
 	if (dst_vxlan->flags & VXLAN_F_LEARN)
 		vxlan_snoop(skb->dev, &loopback, eth_hdr(skb)->h_source);
+=======
+	rcu_read_lock();
+	dev = skb->dev;
+	if (unlikely(!(dev->flags & IFF_UP))) {
+		kfree_skb(skb);
+		goto drop;
+	}
+
+	if (dst_vxlan->flags & VXLAN_F_LEARN)
+		vxlan_snoop(dev, &loopback, eth_hdr(skb)->h_source);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	u64_stats_update_begin(&tx_stats->syncp);
 	tx_stats->tx_packets++;
@@ -1699,8 +1757,15 @@ static void vxlan_encap_bypass(struct sk_buff *skb, struct vxlan_dev *src_vxlan,
 		rx_stats->rx_bytes += len;
 		u64_stats_update_end(&rx_stats->syncp);
 	} else {
+<<<<<<< HEAD
 		dev->stats.rx_dropped++;
 	}
+=======
+drop:
+		dev->stats.rx_dropped++;
+	}
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
@@ -1957,7 +2022,11 @@ static void vxlan_cleanup(unsigned long arg)
 				= container_of(p, struct vxlan_fdb, hlist);
 			unsigned long timeout;
 
+<<<<<<< HEAD
 			if (f->state & NUD_PERMANENT)
+=======
+			if (f->state & (NUD_PERMANENT | NUD_NOARP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				continue;
 
 			timeout = f->used + vxlan->age_interval * HZ;
@@ -2260,7 +2329,11 @@ static int vxlan_validate(struct nlattr *tb[], struct nlattr *data[])
 
 	if (data[IFLA_VXLAN_ID]) {
 		__u32 id = nla_get_u32(data[IFLA_VXLAN_ID]);
+<<<<<<< HEAD
 		if (id >= VXLAN_VID_MASK)
+=======
+		if (id >= VXLAN_N_VID)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -ERANGE;
 	}
 
@@ -2433,7 +2506,11 @@ static int vxlan_newlink(struct net *net, struct net_device *dev,
 			 struct nlattr *tb[], struct nlattr *data[])
 {
 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
+<<<<<<< HEAD
 	struct vxlan_dev *vxlan = netdev_priv(dev);
+=======
+	struct vxlan_dev *vxlan = netdev_priv(dev), *tmp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct vxlan_rdst *dst = &vxlan->default_dst;
 	__u32 vni;
 	int err;
@@ -2554,9 +2631,19 @@ static int vxlan_newlink(struct net *net, struct net_device *dev,
 	    nla_get_u8(data[IFLA_VXLAN_UDP_ZERO_CSUM6_RX]))
 		vxlan->flags |= VXLAN_F_UDP_ZERO_CSUM6_RX;
 
+<<<<<<< HEAD
 	if (vxlan_find_vni(net, vni, use_ipv6 ? AF_INET6 : AF_INET,
 			   vxlan->dst_port)) {
 		pr_info("duplicate VNI %u\n", vni);
+=======
+	list_for_each_entry(tmp, &vn->vxlan_list, next) {
+		if (tmp->default_dst.remote_vni == vni &&
+		    (tmp->default_dst.remote_ip.sa.sa_family == AF_INET6 ||
+		     tmp->saddr.sa.sa_family == AF_INET6) == use_ipv6 &&
+		    tmp->dst_port == vxlan->dst_port &&
+		    (tmp->flags & VXLAN_F_RCV_FLAGS) ==
+		    (vxlan->flags & VXLAN_F_RCV_FLAGS))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EEXIST;
 	}
 

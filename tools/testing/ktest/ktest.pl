@@ -2450,7 +2450,11 @@ sub do_run_test {
     }
 
     waitpid $child_pid, 0;
+<<<<<<< HEAD
     $child_exit = $?;
+=======
+    $child_exit = $? >> 8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
     if (!$bug && $in_bisect) {
 	if (defined($bisect_ret_good)) {

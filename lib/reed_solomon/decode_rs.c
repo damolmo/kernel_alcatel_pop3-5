@@ -42,8 +42,23 @@
 	BUG_ON(pad < 0 || pad >= nn);
 
 	/* Does the caller provide the syndrome ? */
+<<<<<<< HEAD
 	if (s != NULL)
 		goto decode;
+=======
+	if (s != NULL) {
+		for (i = 0; i < nroots; i++) {
+			/* The syndrome is in index form,
+			 * so nn represents zero
+			 */
+			if (s[i] != nn)
+				goto decode;
+		}
+
+		/* syndrome is zero, no errors to correct  */
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* form the syndromes; i.e., evaluate data(x) at roots of
 	 * g(x) */
@@ -99,9 +114,15 @@
 	if (no_eras > 0) {
 		/* Init lambda to be the erasure locator polynomial */
 		lambda[1] = alpha_to[rs_modnn(rs,
+<<<<<<< HEAD
 					      prim * (nn - 1 - eras_pos[0]))];
 		for (i = 1; i < no_eras; i++) {
 			u = rs_modnn(rs, prim * (nn - 1 - eras_pos[i]));
+=======
+					prim * (nn - 1 - (eras_pos[0] + pad)))];
+		for (i = 1; i < no_eras; i++) {
+			u = rs_modnn(rs, prim * (nn - 1 - (eras_pos[i] + pad)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			for (j = i + 1; j > 0; j--) {
 				tmp = index_of[lambda[j - 1]];
 				if (tmp != nn) {

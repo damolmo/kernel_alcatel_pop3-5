@@ -215,21 +215,46 @@ int kgdb_arch_handle_exception(int exception_vector, int signo,
 
 static int kgdb_brk_fn(struct pt_regs *regs, unsigned int esr)
 {
+<<<<<<< HEAD
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
 	return 0;
+=======
+	if (user_mode(regs))
+		return DBG_HOOK_ERROR;
+
+	kgdb_handle_exception(1, SIGTRAP, 0, regs);
+	return DBG_HOOK_HANDLED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int kgdb_compiled_brk_fn(struct pt_regs *regs, unsigned int esr)
 {
+<<<<<<< HEAD
 	compiled_break = 1;
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
 
 	return 0;
+=======
+	if (user_mode(regs))
+		return DBG_HOOK_ERROR;
+
+	compiled_break = 1;
+	kgdb_handle_exception(1, SIGTRAP, 0, regs);
+
+	return DBG_HOOK_HANDLED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int kgdb_step_brk_fn(struct pt_regs *regs, unsigned int esr)
 {
+<<<<<<< HEAD
 	kgdb_handle_exception(1, SIGTRAP, 0, regs);
+=======
+	if (user_mode(regs))
+		return DBG_HOOK_ERROR;
+
+	kgdb_handle_exception(0, SIGTRAP, 0, regs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

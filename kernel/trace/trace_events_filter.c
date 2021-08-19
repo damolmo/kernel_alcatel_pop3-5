@@ -273,6 +273,12 @@ static int regex_match_full(char *str, struct regex *r, int len)
 
 static int regex_match_front(char *str, struct regex *r, int len)
 {
+<<<<<<< HEAD
+=======
+	if (len < r->len)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (strncmp(str, r->pattern, r->len) == 0)
 		return 1;
 	return 0;
@@ -1383,7 +1389,13 @@ static int check_preds(struct filter_parse_state *ps)
 			continue;
 		}
 		n_normal_preds++;
+<<<<<<< HEAD
 		WARN_ON_ONCE(cnt < 0);
+=======
+		/* all ops should have operands */
+		if (cnt < 0)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (cnt != 1 || !n_normal_preds || n_logical_preds >= n_normal_preds) {
@@ -1907,6 +1919,13 @@ static int create_filter(struct ftrace_event_call *call,
 		if (err && set_str)
 			append_filter_err(ps, filter);
 	}
+<<<<<<< HEAD
+=======
+	if (err && !set_str) {
+		free_event_filter(filter);
+		filter = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	create_filter_finish(ps);
 
 	*filterp = filter;

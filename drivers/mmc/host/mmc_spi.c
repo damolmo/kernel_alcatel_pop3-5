@@ -819,6 +819,13 @@ mmc_spi_readblock(struct mmc_spi_host *host, struct spi_transfer *t,
 	}
 
 	status = spi_sync_locked(spi, &host->m);
+<<<<<<< HEAD
+=======
+	if (status < 0) {
+		dev_dbg(&spi->dev, "read error %d\n", status);
+		return status;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (host->dma_dev) {
 		dma_sync_single_for_cpu(host->dma_dev,
@@ -1149,17 +1156,35 @@ static void mmc_spi_initsequence(struct mmc_spi_host *host)
 	 * SPI protocol.  Another is that when chipselect is released while
 	 * the card returns BUSY status, the clock must issue several cycles
 	 * with chipselect high before the card will stop driving its output.
+<<<<<<< HEAD
 	 */
 	host->spi->mode |= SPI_CS_HIGH;
+=======
+	 *
+	 * SPI_CS_HIGH means "asserted" here. In some cases like when using
+	 * GPIOs for chip select, SPI_CS_HIGH is set but this will be logically
+	 * inverted by gpiolib, so if we want to ascertain to drive it high
+	 * we should toggle the default with an XOR as we do here.
+	 */
+	host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (spi_setup(host->spi) != 0) {
 		/* Just warn; most cards work without it. */
 		dev_warn(&host->spi->dev,
 				"can't change chip-select polarity\n");
+<<<<<<< HEAD
 		host->spi->mode &= ~SPI_CS_HIGH;
 	} else {
 		mmc_spi_readbytes(host, 18);
 
 		host->spi->mode &= ~SPI_CS_HIGH;
+=======
+		host->spi->mode ^= SPI_CS_HIGH;
+	} else {
+		mmc_spi_readbytes(host, 18);
+
+		host->spi->mode ^= SPI_CS_HIGH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (spi_setup(host->spi) != 0) {
 			/* Wot, we can't get the same setup we had before? */
 			dev_err(&host->spi->dev,
@@ -1436,6 +1461,15 @@ static int mmc_spi_probe(struct spi_device *spi)
 					     host->pdata->cd_debounce);
 		if (status != 0)
 			goto fail_add_host;
+<<<<<<< HEAD
+=======
+
+		/* The platform has a CD GPIO signal that may support
+		 * interrupts, so let mmc_gpiod_request_cd_irq() decide
+		 * if polling is needed or not.
+		 */
+		mmc->caps &= ~MMC_CAP_NEEDS_POLL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mmc_gpiod_request_cd_irq(mmc);
 	}
 
@@ -1445,6 +1479,10 @@ static int mmc_spi_probe(struct spi_device *spi)
 		if (status != 0)
 			goto fail_add_host;
 	}
+<<<<<<< HEAD
+=======
+	mmc_detect_change(mmc, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev_info(&spi->dev, "SD/MMC host %s%s%s%s%s\n",
 			dev_name(&mmc->class_dev),

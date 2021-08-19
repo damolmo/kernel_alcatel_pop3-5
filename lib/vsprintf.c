@@ -1728,7 +1728,11 @@ int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 
 	/* Reject out-of-range values early.  Large positive sizes are
 	   used for unknown buffer sizes. */
+<<<<<<< HEAD
 	if (WARN_ON_ONCE((int) size < 0))
+=======
+	if (WARN_ON_ONCE(size > INT_MAX))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	str = buf;

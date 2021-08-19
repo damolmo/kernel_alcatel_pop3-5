@@ -2057,6 +2057,10 @@ int db8500_prcmu_config_hotmon(u8 low, u8 high)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_config_hotmon);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int config_hot_period(u16 val)
 {
@@ -2083,11 +2087,19 @@ int db8500_prcmu_start_temp_sense(u16 cycles32k)
 
 	return config_hot_period(cycles32k);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_start_temp_sense);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int db8500_prcmu_stop_temp_sense(void)
 {
 	return config_hot_period(0xFFFF);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_stop_temp_sense);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int prcmu_a9wdog(u8 cmd, u8 d0, u8 d1, u8 d2, u8 d3)
 {
@@ -2616,7 +2628,11 @@ static struct irq_chip prcmu_irq_chip = {
 	.irq_unmask	= prcmu_irq_unmask,
 };
 
+<<<<<<< HEAD
 static __init char *fw_project_name(u32 project)
+=======
+static char *fw_project_name(u32 project)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	switch (project) {
 	case PRCMU_FW_PROJECT_U8500:
@@ -2765,7 +2781,11 @@ void __init db8500_prcmu_early_init(u32 phy_base, u32 size)
 	INIT_WORK(&mb0_transfer.mask_work, prcmu_mask_work);
 }
 
+<<<<<<< HEAD
 static void __init init_prcm_registers(void)
+=======
+static void init_prcm_registers(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u32 val;
 

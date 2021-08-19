@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 subdir-ccflags-y += -Werror -I$(srctree)/drivers/misc/mediatek/include \
 -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include \
 -I$(srctree)/drivers/misc/mediatek/include/mt-plat
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_CLKSRC_OF)	+= clksrc-of.o
 obj-$(CONFIG_ATMEL_PIT)		+= timer-atmel-pit.o
 obj-$(CONFIG_ATMEL_TCB_CLKSRC)	+= tcb_clksrc.o
@@ -43,6 +46,7 @@ obj-$(CONFIG_FSL_FTM_TIMER)	+= fsl_ftm_timer.o
 obj-$(CONFIG_VF_PIT_TIMER)	+= vf_pit_timer.o
 obj-$(CONFIG_CLKSRC_QCOM)	+= qcom-timer.o
 obj-$(CONFIG_MTK_TIMER)		+= mtk_timer.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_MT6797)	+= cpuxgpt_mt6797.o gpt_mt6797.o arch_timer_mt6797.o
 obj-$(CONFIG_ARCH_MT6755)	+= mtk_cpuxgpt_mt6755.o mtk_timer_mt6755.o arm_arch_timer_mt6755.o
 obj-$(CONFIG_ARCH_MT8173)	+= cpuxgpt_mt8173.o
@@ -52,6 +56,10 @@ ifneq (,$(filter $(CONFIG_ARCH_MT6735) $(CONFIG_ARCH_MT6735M) $(CONFIG_ARCH_MT67
 else
 obj-$(CONFIG_ARM_ARCH_TIMER)    += arm_arch_timer.o
 endif
+=======
+
+obj-$(CONFIG_ARM_ARCH_TIMER)		+= arm_arch_timer.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_ARM_GLOBAL_TIMER)		+= arm_global_timer.o
 obj-$(CONFIG_CLKSRC_METAG_GENERIC)	+= metag_generic.o
 obj-$(CONFIG_ARCH_HAS_TICK_BROADCAST)	+= dummy_timer.o

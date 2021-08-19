@@ -137,7 +137,11 @@
 
 */
 
+<<<<<<< HEAD
 static bool verbose = 0;
+=======
+static int verbose;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int major = PG_MAJOR;
 static char *name = PG_NAME;
 static int disable = 0;
@@ -168,7 +172,11 @@ enum {D_PRT, D_PRO, D_UNI, D_MOD, D_SLV, D_DLY};
 
 #include <asm/uaccess.h>
 
+<<<<<<< HEAD
 module_param(verbose, bool, 0644);
+=======
+module_param(verbose, int, 0644);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 module_param(major, int, 0);
 module_param(name, charp, 0);
 module_param_array(drive0, int, NULL, 0);

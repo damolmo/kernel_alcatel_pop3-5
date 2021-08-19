@@ -62,7 +62,11 @@ static void free_fdtable_rcu(struct rcu_head *rcu)
  */
 static void copy_fdtable(struct fdtable *nfdt, struct fdtable *ofdt)
 {
+<<<<<<< HEAD
 	unsigned int cpy, set;
+=======
+	size_t cpy, set;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	BUG_ON(nfdt->max_fds < ofdt->max_fds);
 
@@ -439,6 +443,7 @@ struct files_struct init_files = {
 	.file_lock	= __SPIN_LOCK_UNLOCKED(init_files.file_lock),
 };
 
+<<<<<<< HEAD
 #ifdef FD_OVER_CHECK
 #define FD_CHECK_NAME_SIZE 256
 /* Declare a radix tree to construct fd set tree */
@@ -573,6 +578,8 @@ void fd_show_open_files(pid_t pid, struct files_struct *files, struct fdtable *f
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * allocate a file descriptor, mark it busy.
  */
@@ -631,6 +638,7 @@ repeat:
 
 out:
 	spin_unlock(&files->file_lock);
+<<<<<<< HEAD
 #ifdef FD_OVER_CHECK
 	if (error == -EMFILE && !dump_current_open_files) {
 		/*add Backbone into FD white list for skype*/
@@ -642,6 +650,8 @@ out:
 		/*}*/
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return error;
 }
 

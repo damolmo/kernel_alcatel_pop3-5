@@ -121,7 +121,11 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
 		   const void *value, size_t value_len, int flags)
 {
 	u64 offset = 0;
+<<<<<<< HEAD
 	int retval, msize, write_count;
+=======
+	int retval, msize, write_count, err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	p9_debug(P9_DEBUG_VFS, "name = %s value_len = %zu flags = %d\n",
 		 name, value_len, flags);
@@ -159,6 +163,12 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
 	retval = 0;
 err:
 	p9_client_clunk(fid);
+<<<<<<< HEAD
+=======
+	err = p9_client_clunk(fid);
+	if (!retval && err)
+		retval = err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return retval;
 }
 

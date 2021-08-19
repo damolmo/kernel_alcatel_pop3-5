@@ -272,6 +272,7 @@ struct drm_mode_get_connector {
 #define DRM_MODE_PROP_OBJECT		DRM_MODE_PROP_TYPE(1)
 #define DRM_MODE_PROP_SIGNED_RANGE	DRM_MODE_PROP_TYPE(2)
 
+<<<<<<< HEAD
 /* the PROP_ATOMIC flag is used to hide properties from userspace that
  * is not aware of atomic properties.  This is mostly to work around
  * older userspace (DDX drivers) that read/write each prop they find,
@@ -279,6 +280,8 @@ struct drm_mode_get_connector {
  */
 #define DRM_MODE_PROP_ATOMIC        0x80000000
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct drm_mode_property_enum {
 	__u64 value;
 	char name[DRM_PROP_NAME_LEN];
@@ -293,8 +296,11 @@ struct drm_mode_get_property {
 	char name[DRM_PROP_NAME_LEN];
 
 	__u32 count_values;
+<<<<<<< HEAD
 	/* This is only used to count enum values, not blobs. The _blobs is
 	 * simply because of a historical reason, i.e. backwards compat. */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__u32 count_enum_blobs;
 };
 
@@ -526,6 +532,7 @@ struct drm_mode_destroy_dumb {
 	uint32_t handle;
 };
 
+<<<<<<< HEAD
 /* page-flip flags are valid, plus: */
 #define DRM_MODE_ATOMIC_TEST_ONLY 0x0100
 #define DRM_MODE_ATOMIC_NONBLOCK  0x0200
@@ -569,4 +576,6 @@ struct drm_mode_destroy_blob {
 	__u32 blob_id;
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

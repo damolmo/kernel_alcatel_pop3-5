@@ -261,7 +261,11 @@ void perf_trace_del(struct perf_event *p_event, int flags)
 }
 
 void *perf_trace_buf_prepare(int size, unsigned short type,
+<<<<<<< HEAD
 			     struct pt_regs *regs, int *rctxp)
+=======
+			     struct pt_regs **regs, int *rctxp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct trace_entry *entry;
 	unsigned long flags;
@@ -280,6 +284,11 @@ void *perf_trace_buf_prepare(int size, unsigned short type,
 	if (*rctxp < 0)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	if (regs)
+		*regs = this_cpu_ptr(&__perf_regs[*rctxp]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	raw_data = this_cpu_ptr(perf_trace_buf[*rctxp]);
 
 	/* zero the dead bytes from align to not leak stack to user */

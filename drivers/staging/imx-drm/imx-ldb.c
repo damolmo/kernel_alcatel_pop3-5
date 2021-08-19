@@ -460,6 +460,12 @@ static int imx_ldb_bind(struct device *dev, struct device *master, void *data)
 		return PTR_ERR(imx_ldb->regmap);
 	}
 
+<<<<<<< HEAD
+=======
+	/* disable LDB by resetting the control register to POR default */
+	regmap_write(imx_ldb->regmap, IOMUXC_GPR2, 0);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	imx_ldb->dev = dev;
 
 	if (of_id)
@@ -497,14 +503,23 @@ static int imx_ldb_bind(struct device *dev, struct device *master, void *data)
 		if (ret || i < 0 || i > 1)
 			return -EINVAL;
 
+<<<<<<< HEAD
+=======
+		if (!of_device_is_available(child))
+			continue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (dual && i > 0) {
 			dev_warn(dev, "dual-channel mode, ignoring second output\n");
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (!of_device_is_available(child))
 			continue;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		channel = &imx_ldb->channel[i];
 		channel->ldb = imx_ldb;
 		channel->chno = i;

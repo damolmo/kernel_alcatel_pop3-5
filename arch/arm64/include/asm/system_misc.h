@@ -37,6 +37,7 @@ void hook_debug_fault_code(int nr, int (*fn)(unsigned long, unsigned int,
 					     struct pt_regs *),
 			   int sig, int code, const char *name);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEDIATEK_SOLUTION
 void hook_fault_code(int nr,
 		int (*fn)(unsigned long, unsigned int, struct pt_regs *),
@@ -44,11 +45,16 @@ void hook_fault_code(int nr,
 #endif
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct mm_struct;
 extern void show_pte(struct mm_struct *mm, unsigned long addr);
 extern void __show_regs(struct pt_regs *);
 
+<<<<<<< HEAD
 void soft_restart(unsigned long);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void (*arm_pm_restart)(enum reboot_mode reboot_mode, const char *cmd);
 
 #define UDBG_UNDEFINED	(1 << 0)

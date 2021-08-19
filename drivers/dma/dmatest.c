@@ -148,6 +148,15 @@ MODULE_PARM_DESC(run, "Run the test (default: false)");
 #define PATTERN_OVERWRITE	0x20
 #define PATTERN_COUNT_MASK	0x1f
 
+<<<<<<< HEAD
+=======
+/* poor man's completion - we want to use wait_event_freezable() on it */
+struct dmatest_done {
+	bool			done;
+	wait_queue_head_t	*wait;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct dmatest_thread {
 	struct list_head	node;
 	struct dmatest_info	*info;
@@ -156,6 +165,11 @@ struct dmatest_thread {
 	u8			**srcs;
 	u8			**dsts;
 	enum dma_transaction_type type;
+<<<<<<< HEAD
+=======
+	wait_queue_head_t done_wait;
+	struct dmatest_done test_done;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bool			done;
 };
 
@@ -316,18 +330,39 @@ static unsigned int dmatest_verify(u8 **bufs, unsigned int start,
 	return error_count;
 }
 
+<<<<<<< HEAD
 /* poor man's completion - we want to use wait_event_freezable() on it */
 struct dmatest_done {
 	bool			done;
 	wait_queue_head_t	*wait;
 };
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void dmatest_callback(void *arg)
 {
 	struct dmatest_done *done = arg;
+<<<<<<< HEAD
 
 	done->done = true;
 	wake_up_all(done->wait);
+=======
+	struct dmatest_thread *thread =
+		container_of(done, struct dmatest_thread, test_done);
+	if (!thread->done) {
+		done->done = true;
+		wake_up_all(done->wait);
+	} else {
+		/*
+		 * If thread->done, it means that this callback occurred
+		 * after the parent thread has cleaned up. This can
+		 * happen in the case that driver doesn't implement
+		 * the terminate_all() functionality and a dma operation
+		 * did not occur within the timeout period
+		 */
+		WARN(1, "dmatest: Kernel memory may be corrupted!!\n");
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned int min_odd(unsigned int x, unsigned int y)
@@ -398,9 +433,14 @@ static unsigned long long dmatest_KBs(s64 runtime, unsigned long long len)
  */
 static int dmatest_func(void *data)
 {
+<<<<<<< HEAD
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(done_wait);
 	struct dmatest_thread	*thread = data;
 	struct dmatest_done	done = { .wait = &done_wait };
+=======
+	struct dmatest_thread	*thread = data;
+	struct dmatest_done	*done = &thread->test_done;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct dmatest_info	*info;
 	struct dmatest_params	*params;
 	struct dma_chan		*chan;
@@ -478,8 +518,13 @@ static int dmatest_func(void *data)
 	flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
 
 	ktime = ktime_get();
+<<<<<<< HEAD
 	while (!kthread_should_stop()
 	       && !(params->iterations && total_tests >= params->iterations)) {
+=======
+	while (!(kthread_should_stop() ||
+	       (params->iterations && total_tests >= params->iterations))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct dma_async_tx_descriptor *tx = NULL;
 		struct dmaengine_unmap_data *um;
 		dma_addr_t srcs[src_cnt];
@@ -548,11 +593,17 @@ static int dmatest_func(void *data)
 			srcs[i] = um->addr[i] + src_off;
 			ret = dma_mapping_error(dev->dev, um->addr[i]);
 			if (ret) {
+<<<<<<< HEAD
 				dmaengine_unmap_put(um);
 				result("src mapping error", total_tests,
 				       src_off, dst_off, len, ret);
 				failed_tests++;
 				continue;
+=======
+				result("src mapping error", total_tests,
+				       src_off, dst_off, len, ret);
+				goto error_unmap_continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			um->to_cnt++;
 		}
@@ -567,11 +618,17 @@ static int dmatest_func(void *data)
 					       DMA_BIDIRECTIONAL);
 			ret = dma_mapping_error(dev->dev, dsts[i]);
 			if (ret) {
+<<<<<<< HEAD
 				dmaengine_unmap_put(um);
 				result("dst mapping error", total_tests,
 				       src_off, dst_off, len, ret);
 				failed_tests++;
 				continue;
+=======
+				result("dst mapping error", total_tests,
+				       src_off, dst_off, len, ret);
+				goto error_unmap_continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			um->bidi_cnt++;
 		}
@@ -596,6 +653,7 @@ static int dmatest_func(void *data)
 		}
 
 		if (!tx) {
+<<<<<<< HEAD
 			dmaengine_unmap_put(um);
 			result("prep error", total_tests, src_off,
 			       dst_off, len, ret);
@@ -620,10 +678,33 @@ static int dmatest_func(void *data)
 		dma_async_issue_pending(chan);
 
 		wait_event_freezable_timeout(done_wait, done.done,
+=======
+			result("prep error", total_tests, src_off,
+			       dst_off, len, ret);
+			msleep(100);
+			goto error_unmap_continue;
+		}
+
+		done->done = false;
+		tx->callback = dmatest_callback;
+		tx->callback_param = done;
+		cookie = tx->tx_submit(tx);
+
+		if (dma_submit_error(cookie)) {
+			result("submit error", total_tests, src_off,
+			       dst_off, len, ret);
+			msleep(100);
+			goto error_unmap_continue;
+		}
+		dma_async_issue_pending(chan);
+
+		wait_event_freezable_timeout(thread->done_wait, done->done,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					     msecs_to_jiffies(params->timeout));
 
 		status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
 
+<<<<<<< HEAD
 		if (!done.done) {
 			/*
 			 * We're leaving the timed out dma operation with
@@ -638,14 +719,25 @@ static int dmatest_func(void *data)
 			       len, 0);
 			failed_tests++;
 			continue;
+=======
+		if (!done->done) {
+			dmaengine_unmap_put(um);
+			result("test timed out", total_tests, src_off, dst_off,
+			       len, 0);
+			goto error_unmap_continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else if (status != DMA_COMPLETE) {
 			dmaengine_unmap_put(um);
 			result(status == DMA_ERROR ?
 			       "completion error status" :
 			       "completion busy status", total_tests, src_off,
 			       dst_off, len, ret);
+<<<<<<< HEAD
 			failed_tests++;
 			continue;
+=======
+			goto error_unmap_continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		dmaengine_unmap_put(um);
@@ -684,6 +776,15 @@ static int dmatest_func(void *data)
 			verbose_result("test passed", total_tests, src_off,
 				       dst_off, len, 0);
 		}
+<<<<<<< HEAD
+=======
+
+		continue;
+
+error_unmap_continue:
+		dmaengine_unmap_put(um);
+		failed_tests++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	runtime = ktime_us_delta(ktime_get(), ktime);
 
@@ -706,7 +807,11 @@ err_thread_type:
 		dmatest_KBs(runtime, total_len), ret);
 
 	/* terminate all transfers on specified channels */
+<<<<<<< HEAD
 	if (ret)
+=======
+	if (ret || failed_tests)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dmaengine_terminate_all(chan);
 
 	thread->done = true;
@@ -764,6 +869,11 @@ static int dmatest_add_threads(struct dmatest_info *info,
 		thread->info = info;
 		thread->chan = dtc->chan;
 		thread->type = type;
+<<<<<<< HEAD
+=======
+		thread->test_done.wait = &thread->done_wait;
+		init_waitqueue_head(&thread->done_wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		smp_wmb();
 		thread->task = kthread_create(dmatest_func, thread, "%s-%s%u",
 				dma_chan_name(chan), op, i);

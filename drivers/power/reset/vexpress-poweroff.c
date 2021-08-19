@@ -136,6 +136,10 @@ static struct platform_driver vexpress_reset_driver = {
 	.driver = {
 		.name = "vexpress-reset",
 		.of_match_table = vexpress_reset_of_match,
+<<<<<<< HEAD
+=======
+		.suppress_bind_attrs = true,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	.id_table = vexpress_reset_id_table,
 };

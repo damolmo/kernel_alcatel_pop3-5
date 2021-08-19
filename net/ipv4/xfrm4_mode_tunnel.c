@@ -63,7 +63,11 @@ static int xfrm4_mode_tunnel_output(struct xfrm_state *x, struct sk_buff *skb)
 
 	top_iph->saddr = x->props.saddr.a4;
 	top_iph->daddr = x->id.daddr.a4;
+<<<<<<< HEAD
 	ip_select_ident(skb, NULL);
+=======
+	ip_select_ident(dev_net(dst->dev), skb, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

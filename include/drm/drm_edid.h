@@ -207,6 +207,7 @@ struct detailed_timing {
 #define DRM_EDID_HDMI_DC_30               (1 << 4)
 #define DRM_EDID_HDMI_DC_Y444             (1 << 3)
 
+<<<<<<< HEAD
 /* ELD Header Block */
 #define DRM_ELD_HEADER_BLOCK_SIZE	4
 
@@ -262,6 +263,8 @@ struct detailed_timing {
 
 #define DRM_ELD_CEA_SAD(mnl, sad)	(20 + (mnl) + 3 * (sad))
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct edid {
 	u8 header[8];
 	/* Vendor & product info */
@@ -334,6 +337,7 @@ int
 drm_hdmi_vendor_infoframe_from_display_mode(struct hdmi_vendor_infoframe *frame,
 					    const struct drm_display_mode *mode);
 
+<<<<<<< HEAD
 /**
  * drm_eld_mnl - Get ELD monitor name length in bytes.
  * @eld: pointer to an eld memory structure with mnl set
@@ -386,4 +390,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 			      size_t len),
 	void *data);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* __DRM_EDID_H__ */

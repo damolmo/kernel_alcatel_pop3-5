@@ -133,6 +133,11 @@ static int __init parse_tag_initrd(const bp_tag_t* tag)
 
 __tagtable(BP_TAG_INITRD, parse_tag_initrd);
 
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_BLK_DEV_INITRD */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_OF
 
 static int __init parse_tag_fdt(const bp_tag_t *tag)
@@ -145,8 +150,11 @@ __tagtable(BP_TAG_FDT, parse_tag_fdt);
 
 #endif /* CONFIG_OF */
 
+<<<<<<< HEAD
 #endif /* CONFIG_BLK_DEV_INITRD */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init parse_tag_cmdline(const bp_tag_t* tag)
 {
 	strlcpy(command_line, (char *)(tag->data), COMMAND_LINE_SIZE);
@@ -712,7 +720,12 @@ c_start(struct seq_file *f, loff_t *pos)
 static void *
 c_next(struct seq_file *f, void *v, loff_t *pos)
 {
+<<<<<<< HEAD
 	return NULL;
+=======
+	++*pos;
+	return c_start(f, pos);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void

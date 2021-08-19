@@ -182,7 +182,10 @@ extern pgd_t swapper_pg_dir[PTRS_PER_PGD];
 #define pgd_offset_k(addr)	pgd_offset(&init_mm, addr)
 
 #define pmd_none(pmd)		(!pmd_val(pmd))
+<<<<<<< HEAD
 #define pmd_present(pmd)	(pmd_val(pmd))
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline pte_t *pmd_page_vaddr(pmd_t pmd)
 {

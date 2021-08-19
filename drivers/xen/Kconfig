@@ -222,7 +222,11 @@ config XEN_ACPI_HOTPLUG_CPU
 
 config XEN_ACPI_PROCESSOR
 	tristate "Xen ACPI processor"
+<<<<<<< HEAD
 	depends on XEN && X86 && ACPI_PROCESSOR && CPU_FREQ
+=======
+	depends on XEN && XEN_DOM0 && X86 && ACPI_PROCESSOR && CPU_FREQ
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default m
 	help
           This ACPI processor uploads Power Management information to the Xen

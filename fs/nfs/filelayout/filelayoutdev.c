@@ -729,7 +729,12 @@ nfs4_fl_prepare_ds(struct pnfs_layout_segment *lseg, u32 ds_idx)
 		nfs4_wait_ds_connect(ds);
 	}
 out_test_devid:
+<<<<<<< HEAD
 	if (filelayout_test_devid_unavailable(devid))
+=======
+	if (ret->ds_clp == NULL ||
+	    filelayout_test_devid_unavailable(devid))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = NULL;
 out:
 	return ret;

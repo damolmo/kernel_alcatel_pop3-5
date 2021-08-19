@@ -335,10 +335,13 @@ int del_mtd_partitions(struct mtd_info *master)
 	mutex_lock(&mtd_partitions_mutex);
 	list_for_each_entry_safe(slave, next, &mtd_partitions, list)
 		if (slave->master == master) {
+<<<<<<< HEAD
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE /* wschen 2011-01-05 */
 			my_mtd = NULL;
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = del_mtd_device(&slave->mtd);
 			if (ret < 0) {
 				err = ret;
@@ -535,8 +538,11 @@ static struct mtd_part *allocate_partition(struct mtd_info *master,
 	slave->mtd.ecc_strength = master->ecc_strength;
 	slave->mtd.bitflip_threshold = master->bitflip_threshold;
 
+<<<<<<< HEAD
 #ifndef CONFIG_MTK_MTD_NAND
 	/* since bad block is hidden in driver, no need to check bad block */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (master->_block_isbad) {
 		uint64_t offs = 0;
 
@@ -548,7 +554,10 @@ static struct mtd_part *allocate_partition(struct mtd_info *master,
 			offs += slave->mtd.erasesize;
 		}
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out_register:
 	return slave;
@@ -666,9 +675,13 @@ int add_mtd_partitions(struct mtd_info *master,
 
 		cur_offset = slave->offset + slave->mtd.size;
 	}
+<<<<<<< HEAD
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE /* wschen 2011-01-05 */
 	my_mtd = master;
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -784,6 +797,7 @@ int mtd_is_partition(const struct mtd_info *mtd)
 }
 EXPORT_SYMBOL_GPL(mtd_is_partition);
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_MTD_NAND
 u64 mtd_partition_start_address(struct mtd_info *mtd)
 {
@@ -794,6 +808,8 @@ u64 mtd_partition_start_address(struct mtd_info *mtd)
 EXPORT_SYMBOL_GPL(mtd_partition_start_address);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Returns the size of the entire flash chip */
 uint64_t mtd_get_device_size(const struct mtd_info *mtd)
 {
@@ -803,6 +819,7 @@ uint64_t mtd_get_device_size(const struct mtd_info *mtd)
 	return PART(mtd)->master->size;
 }
 EXPORT_SYMBOL_GPL(mtd_get_device_size);
+<<<<<<< HEAD
 
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE /* wschen 2011-01-05 */
 int mtd_writeable_proc_write(struct file *file, const char *buffer, unsigned long count, void *data)
@@ -882,3 +899,5 @@ int mtd_change_proc_write(struct file *file, const char *buffer, unsigned long c
 	return count;
 }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

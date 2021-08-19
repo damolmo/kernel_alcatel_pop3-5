@@ -2582,8 +2582,13 @@ static int __init at76_mod_init(void)
 	if (result < 0)
 		printk(KERN_ERR DRIVER_NAME
 		       ": usb_register failed (status %d)\n", result);
+<<<<<<< HEAD
 
 	led_trigger_register_simple("at76_usb-tx", &ledtrig_tx);
+=======
+	else
+		led_trigger_register_simple("at76_usb-tx", &ledtrig_tx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return result;
 }
 

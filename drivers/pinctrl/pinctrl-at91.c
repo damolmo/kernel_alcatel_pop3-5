@@ -322,6 +322,12 @@ static const struct pinctrl_ops at91_pctrl_ops = {
 static void __iomem *pin_to_controller(struct at91_pinctrl *info,
 				 unsigned int bank)
 {
+<<<<<<< HEAD
+=======
+	if (!gpio_chips[bank])
+		return NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return gpio_chips[bank]->regbase;
 }
 
@@ -731,6 +737,13 @@ static int at91_pmx_set(struct pinctrl_dev *pctldev, unsigned selector,
 		pin = &pins_conf[i];
 		at91_pin_dbg(info->dev, pin);
 		pio = pin_to_controller(info, pin->bank);
+<<<<<<< HEAD
+=======
+
+		if (!pio)
+			continue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mask = pin_to_mask(pin->pin);
 		at91_mux_disable_interrupt(pio, mask);
 		switch (pin->mux) {
@@ -850,6 +863,13 @@ static int at91_pinconf_get(struct pinctrl_dev *pctldev,
 	*config = 0;
 	dev_dbg(info->dev, "%s:%d, pin_id=%d", __func__, __LINE__, pin_id);
 	pio = pin_to_controller(info, pin_to_bank(pin_id));
+<<<<<<< HEAD
+=======
+
+	if (!pio)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pin = pin_id % MAX_NB_GPIO_PER_BANK;
 
 	if (at91_mux_get_multidrive(pio, pin))
@@ -891,6 +911,13 @@ static int at91_pinconf_set(struct pinctrl_dev *pctldev,
 			"%s:%d, pin_id=%d, config=0x%lx",
 			__func__, __LINE__, pin_id, config);
 		pio = pin_to_controller(info, pin_to_bank(pin_id));
+<<<<<<< HEAD
+=======
+
+		if (!pio)
+			return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pin = pin_id % MAX_NB_GPIO_PER_BANK;
 		mask = pin_to_mask(pin);
 
@@ -1484,7 +1511,11 @@ static unsigned int gpio_irq_startup(struct irq_data *d)
 	unsigned	pin = d->hwirq;
 	int ret;
 
+<<<<<<< HEAD
 	ret = gpio_lock_as_irq(&at91_gpio->chip, pin);
+=======
+	ret = gpiochip_lock_as_irq(&at91_gpio->chip, pin);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		dev_err(at91_gpio->chip.dev, "unable to lock pind %lu IRQ\n",
 			d->hwirq);
@@ -1500,7 +1531,11 @@ static void gpio_irq_shutdown(struct irq_data *d)
 	unsigned	pin = d->hwirq;
 
 	gpio_irq_mask(d);
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&at91_gpio->chip, pin);
+=======
+	gpiochip_unlock_as_irq(&at91_gpio->chip, pin);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_PM

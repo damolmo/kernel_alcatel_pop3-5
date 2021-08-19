@@ -1576,8 +1576,12 @@ pnfs_write_through_mds(struct nfs_pageio_descriptor *desc,
 		nfs_pageio_reset_write_mds(desc);
 		desc->pg_recoalesce = 1;
 	}
+<<<<<<< HEAD
 	nfs_pgio_data_destroy(hdr);
 	hdr->release(hdr);
+=======
+	hdr->completion_ops->completion(hdr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static enum pnfs_try_status
@@ -1693,8 +1697,12 @@ pnfs_read_through_mds(struct nfs_pageio_descriptor *desc,
 		nfs_pageio_reset_read_mds(desc);
 		desc->pg_recoalesce = 1;
 	}
+<<<<<<< HEAD
 	nfs_pgio_data_destroy(hdr);
 	hdr->release(hdr);
+=======
+	hdr->completion_ops->completion(hdr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

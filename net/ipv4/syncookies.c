@@ -291,7 +291,11 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
 		goto out;
 
 	ret = NULL;
+<<<<<<< HEAD
 	req = inet_reqsk_alloc(&tcp_request_sock_ops); /* for safety */
+=======
+	req = inet_reqsk_alloc(&tcp_request_sock_ops, sk); /* for safety */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!req)
 		goto out;
 
@@ -336,9 +340,14 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
 	flowi4_init_output(&fl4, sk->sk_bound_dev_if, ireq->ir_mark,
 			   RT_CONN_FLAGS(sk), RT_SCOPE_UNIVERSE, IPPROTO_TCP,
 			   inet_sk_flowi_flags(sk),
+<<<<<<< HEAD
 			   (opt && opt->srr) ? opt->faddr : ireq->ir_rmt_addr,
 			   ireq->ir_loc_addr, th->source, th->dest,
 			   sock_i_uid(sk));
+=======
+			   opt->srr ? opt->faddr : ireq->ir_rmt_addr,
+			   ireq->ir_loc_addr, th->source, th->dest, sk->sk_uid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	security_req_classify_flow(req, flowi4_to_flowi(&fl4));
 	rt = ip_route_output_key(sock_net(sk), &fl4);
 	if (IS_ERR(rt)) {

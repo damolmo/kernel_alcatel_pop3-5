@@ -12,6 +12,10 @@
 #include <linux/bitmap.h>
 #include <linux/bitops.h>
 #include <linux/bug.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/uaccess.h>
 
 /*
@@ -326,13 +330,19 @@ void bitmap_clear(unsigned long *map, unsigned int start, int len)
 }
 EXPORT_SYMBOL(bitmap_clear);
 
+<<<<<<< HEAD
 /*
  * bitmap_find_next_zero_area - find a contiguous aligned zero area
+=======
+/**
+ * bitmap_find_next_zero_area_off - find a contiguous aligned zero area
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @map: The address to base the search on
  * @size: The bitmap size in bits
  * @start: The bitnumber to start searching at
  * @nr: The number of zeroed bits we're looking for
  * @align_mask: Alignment mask for zero area
+<<<<<<< HEAD
  *
  * The @align_mask should be one less than a power of 2; the effect is that
  * the bit offset of all zero areas this function finds is multiples of that
@@ -343,13 +353,31 @@ unsigned long bitmap_find_next_zero_area(unsigned long *map,
 					 unsigned long start,
 					 unsigned int nr,
 					 unsigned long align_mask)
+=======
+ * @align_offset: Alignment offset for zero area.
+ *
+ * The @align_mask should be one less than a power of 2; the effect is that
+ * the bit offset of all zero areas this function finds plus @align_offset
+ * is multiple of that power of 2.
+ */
+unsigned long bitmap_find_next_zero_area_off(unsigned long *map,
+					     unsigned long size,
+					     unsigned long start,
+					     unsigned int nr,
+					     unsigned long align_mask,
+					     unsigned long align_offset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long index, end, i;
 again:
 	index = find_next_zero_bit(map, size, start);
 
 	/* Align allocation */
+<<<<<<< HEAD
 	index = __ALIGN_MASK(index, align_mask);
+=======
+	index = __ALIGN_MASK(index + align_offset, align_mask) - align_offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	end = index + nr;
 	if (end > size)
@@ -361,7 +389,11 @@ again:
 	}
 	return index;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(bitmap_find_next_zero_area);
+=======
+EXPORT_SYMBOL(bitmap_find_next_zero_area_off);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Bitmap printing & parsing functions: first version by Nadia Yvette Chambers,
@@ -610,12 +642,20 @@ static int __bitmap_parselist(const char *buf, unsigned int buflen,
 	unsigned a, b;
 	int c, old_c, totaldigits;
 	const char __user __force *ubuf = (const char __user __force *)buf;
+<<<<<<< HEAD
 	int exp_digit, in_range;
+=======
+	int at_start, in_range;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	totaldigits = c = 0;
 	bitmap_zero(maskp, nmaskbits);
 	do {
+<<<<<<< HEAD
 		exp_digit = 1;
+=======
+		at_start = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		in_range = 0;
 		a = b = 0;
 
@@ -644,11 +684,18 @@ static int __bitmap_parselist(const char *buf, unsigned int buflen,
 				break;
 
 			if (c == '-') {
+<<<<<<< HEAD
 				if (exp_digit || in_range)
 					return -EINVAL;
 				b = 0;
 				in_range = 1;
 				exp_digit = 1;
+=======
+				if (at_start || in_range)
+					return -EINVAL;
+				b = 0;
+				in_range = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				continue;
 			}
 
@@ -658,16 +705,28 @@ static int __bitmap_parselist(const char *buf, unsigned int buflen,
 			b = b * 10 + (c - '0');
 			if (!in_range)
 				a = b;
+<<<<<<< HEAD
 			exp_digit = 0;
+=======
+			at_start = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			totaldigits++;
 		}
 		if (!(a <= b))
 			return -EINVAL;
 		if (b >= nmaskbits)
 			return -ERANGE;
+<<<<<<< HEAD
 		while (a <= b) {
 			set_bit(a, maskp);
 			a++;
+=======
+		if (!at_start) {
+			while (a <= b) {
+				set_bit(a, maskp);
+				a++;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	} while (buflen && c == ',');
 	return 0;
@@ -1189,3 +1248,25 @@ void bitmap_copy_le(void *dst, const unsigned long *src, int nbits)
 	}
 }
 EXPORT_SYMBOL(bitmap_copy_le);
+<<<<<<< HEAD
+=======
+
+unsigned long *bitmap_alloc(unsigned int nbits, gfp_t flags)
+{
+	return kmalloc_array(BITS_TO_LONGS(nbits), sizeof(unsigned long),
+			     flags);
+}
+EXPORT_SYMBOL(bitmap_alloc);
+
+unsigned long *bitmap_zalloc(unsigned int nbits, gfp_t flags)
+{
+	return bitmap_alloc(nbits, flags | __GFP_ZERO);
+}
+EXPORT_SYMBOL(bitmap_zalloc);
+
+void bitmap_free(const unsigned long *bitmap)
+{
+	kfree(bitmap);
+}
+EXPORT_SYMBOL(bitmap_free);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

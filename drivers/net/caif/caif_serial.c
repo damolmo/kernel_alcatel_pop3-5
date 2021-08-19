@@ -282,7 +282,10 @@ static int caif_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ser_device *ser;
 
+<<<<<<< HEAD
 	BUG_ON(dev == NULL);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ser = netdev_priv(dev);
 
 	/* Send flow off once, on high water mark */

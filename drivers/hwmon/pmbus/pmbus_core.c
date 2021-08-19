@@ -20,6 +20,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/math64.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/err.h>
@@ -443,8 +447,13 @@ static long pmbus_reg2data_linear(struct pmbus_data *data,
 static long pmbus_reg2data_direct(struct pmbus_data *data,
 				  struct pmbus_sensor *sensor)
 {
+<<<<<<< HEAD
 	long val = (s16) sensor->data;
 	long m, b, R;
+=======
+	s64 b, val = (s16)sensor->data;
+	s32 m, R;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	m = data->info->m[sensor->class];
 	b = data->info->b[sensor->class];
@@ -472,11 +481,20 @@ static long pmbus_reg2data_direct(struct pmbus_data *data,
 		R--;
 	}
 	while (R < 0) {
+<<<<<<< HEAD
 		val = DIV_ROUND_CLOSEST(val, 10);
 		R++;
 	}
 
 	return (val - b) / m;
+=======
+		val = div_s64(val + 5LL, 10L);  /* round closest */
+		R++;
+	}
+
+	val = div_s64(val - b, m);
+	return clamp_val(val, LONG_MIN, LONG_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -588,7 +606,12 @@ static u16 pmbus_data2reg_linear(struct pmbus_data *data,
 static u16 pmbus_data2reg_direct(struct pmbus_data *data,
 				 struct pmbus_sensor *sensor, long val)
 {
+<<<<<<< HEAD
 	long m, b, R;
+=======
+	s64 b, val64 = val;
+	s32 m, R;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	m = data->info->m[sensor->class];
 	b = data->info->b[sensor->class];
@@ -605,6 +628,7 @@ static u16 pmbus_data2reg_direct(struct pmbus_data *data,
 		R -= 3;		/* Adjust R and b for data in milli-units */
 		b *= 1000;
 	}
+<<<<<<< HEAD
 	val = val * m + b;
 
 	while (R > 0) {
@@ -617,6 +641,20 @@ static u16 pmbus_data2reg_direct(struct pmbus_data *data,
 	}
 
 	return val;
+=======
+	val64 = val64 * m + b;
+
+	while (R > 0) {
+		val64 *= 10;
+		R--;
+	}
+	while (R < 0) {
+		val64 = div_s64(val64 + 5LL, 10L);  /* round closest */
+		R++;
+	}
+
+	return (u16)clamp_val(val64, S16_MIN, S16_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static u16 pmbus_data2reg_vid(struct pmbus_data *data,
@@ -984,14 +1022,23 @@ static int pmbus_add_sensor_attrs_one(struct i2c_client *client,
 				      const struct pmbus_driver_info *info,
 				      const char *name,
 				      int index, int page,
+<<<<<<< HEAD
 				      const struct pmbus_sensor_attr *attr)
+=======
+				      const struct pmbus_sensor_attr *attr,
+				      bool paged)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pmbus_sensor *base;
 	int ret;
 
 	if (attr->label) {
 		ret = pmbus_add_label(data, name, index, attr->label,
+<<<<<<< HEAD
 				      attr->paged ? page + 1 : 0);
+=======
+				      paged ? page + 1 : 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret)
 			return ret;
 	}
@@ -1023,6 +1070,33 @@ static int pmbus_add_sensor_attrs_one(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool pmbus_sensor_is_paged(const struct pmbus_driver_info *info,
+				  const struct pmbus_sensor_attr *attr)
+{
+	int p;
+
+	if (attr->paged)
+		return true;
+
+	/*
+	 * Some attributes may be present on more than one page despite
+	 * not being marked with the paged attribute. If that is the case,
+	 * then treat the sensor as being paged and add the page suffix to the
+	 * attribute name.
+	 * We don't just add the paged attribute to all such attributes, in
+	 * order to maintain the un-suffixed labels in the case where the
+	 * attribute is only on page 0.
+	 */
+	for (p = 1; p < info->pages; p++) {
+		if (info->func[p] & attr->func)
+			return true;
+	}
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int pmbus_add_sensor_attrs(struct i2c_client *client,
 				  struct pmbus_data *data,
 				  const char *name,
@@ -1036,14 +1110,24 @@ static int pmbus_add_sensor_attrs(struct i2c_client *client,
 	index = 1;
 	for (i = 0; i < nattrs; i++) {
 		int page, pages;
+<<<<<<< HEAD
 
 		pages = attrs->paged ? info->pages : 1;
+=======
+		bool paged = pmbus_sensor_is_paged(info, attrs);
+
+		pages = paged ? info->pages : 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (page = 0; page < pages; page++) {
 			if (!(info->func[page] & attrs->func))
 				continue;
 			ret = pmbus_add_sensor_attrs_one(client, data, info,
 							 name, index, page,
+<<<<<<< HEAD
 							 attrs);
+=======
+							 attrs, paged);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (ret)
 				return ret;
 			index++;
@@ -1702,7 +1786,14 @@ static int pmbus_init_common(struct i2c_client *client, struct pmbus_data *data,
 		}
 	}
 
+<<<<<<< HEAD
 	pmbus_clear_faults(client);
+=======
+	if (data->info->pages)
+		pmbus_clear_faults(client);
+	else
+		pmbus_clear_fault_page(client, -1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (info->identify) {
 		ret = (*info->identify)(client, info);

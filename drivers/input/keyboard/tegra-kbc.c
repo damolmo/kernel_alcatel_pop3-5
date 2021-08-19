@@ -376,7 +376,11 @@ static int tegra_kbc_start(struct tegra_kbc *kbc)
 	/* Reset the KBC controller to clear all previous status.*/
 	reset_control_assert(kbc->rst);
 	udelay(100);
+<<<<<<< HEAD
 	reset_control_assert(kbc->rst);
+=======
+	reset_control_deassert(kbc->rst);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	udelay(100);
 
 	tegra_kbc_config_pins(kbc);

@@ -56,7 +56,11 @@ xfs_dqcheck(
 	xfs_dqid_t	 id,
 	uint		 type,	  /* used only when IO_dorepair is true */
 	uint		 flags,
+<<<<<<< HEAD
 	char		 *str)
+=======
+	const char	 *str)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	xfs_dqblk_t	 *d = (xfs_dqblk_t *)ddq;
 	int		errs = 0;
@@ -193,8 +197,12 @@ xfs_dquot_buf_verify_crc(
 	if (mp->m_quotainfo)
 		ndquots = mp->m_quotainfo->qi_dqperchunk;
 	else
+<<<<<<< HEAD
 		ndquots = xfs_calc_dquots_per_chunk(
 					XFS_BB_TO_FSB(mp, bp->b_length));
+=======
+		ndquots = xfs_calc_dquots_per_chunk(bp->b_length);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < ndquots; i++, d++) {
 		if (!xfs_verify_cksum((char *)d, sizeof(struct xfs_dqblk),
@@ -209,7 +217,12 @@ xfs_dquot_buf_verify_crc(
 STATIC bool
 xfs_dquot_buf_verify(
 	struct xfs_mount	*mp,
+<<<<<<< HEAD
 	struct xfs_buf		*bp)
+=======
+	struct xfs_buf		*bp,
+	int			warn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct xfs_dqblk	*d = (struct xfs_dqblk *)bp->b_addr;
 	xfs_dqid_t		id = 0;
@@ -242,8 +255,12 @@ xfs_dquot_buf_verify(
 		if (i == 0)
 			id = be32_to_cpu(ddq->d_id);
 
+<<<<<<< HEAD
 		error = xfs_dqcheck(mp, ddq, id + i, 0, XFS_QMOPT_DOWARN,
 				       "xfs_dquot_buf_verify");
+=======
+		error = xfs_dqcheck(mp, ddq, id + i, 0, warn, __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (error)
 			return false;
 	}
@@ -258,7 +275,11 @@ xfs_dquot_buf_read_verify(
 
 	if (!xfs_dquot_buf_verify_crc(mp, bp))
 		xfs_buf_ioerror(bp, -EFSBADCRC);
+<<<<<<< HEAD
 	else if (!xfs_dquot_buf_verify(mp, bp))
+=======
+	else if (!xfs_dquot_buf_verify(mp, bp, XFS_QMOPT_DOWARN))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		xfs_buf_ioerror(bp, -EFSCORRUPTED);
 
 	if (bp->b_error)
@@ -266,6 +287,28 @@ xfs_dquot_buf_read_verify(
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * readahead errors are silent and simply leave the buffer as !done so a real
+ * read will then be run with the xfs_dquot_buf_ops verifier. See
+ * xfs_inode_buf_verify() for why we use EIO and ~XBF_DONE here rather than
+ * reporting the failure.
+ */
+static void
+xfs_dquot_buf_readahead_verify(
+	struct xfs_buf	*bp)
+{
+	struct xfs_mount	*mp = bp->b_target->bt_mount;
+
+	if (!xfs_dquot_buf_verify_crc(mp, bp) ||
+	    !xfs_dquot_buf_verify(mp, bp, 0)) {
+		xfs_buf_ioerror(bp, -EIO);
+		bp->b_flags &= ~XBF_DONE;
+	}
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * we don't calculate the CRC here as that is done when the dquot is flushed to
  * the buffer after the update is done. This ensures that the dquot in the
  * buffer always has an up-to-date CRC value.
@@ -276,7 +319,11 @@ xfs_dquot_buf_write_verify(
 {
 	struct xfs_mount	*mp = bp->b_target->bt_mount;
 
+<<<<<<< HEAD
 	if (!xfs_dquot_buf_verify(mp, bp)) {
+=======
+	if (!xfs_dquot_buf_verify(mp, bp, XFS_QMOPT_DOWARN)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		xfs_buf_ioerror(bp, -EFSCORRUPTED);
 		xfs_verifier_error(bp);
 		return;
@@ -284,7 +331,18 @@ xfs_dquot_buf_write_verify(
 }
 
 const struct xfs_buf_ops xfs_dquot_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_dquot",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_dquot_buf_read_verify,
 	.verify_write = xfs_dquot_buf_write_verify,
 };
 
+<<<<<<< HEAD
+=======
+const struct xfs_buf_ops xfs_dquot_buf_ra_ops = {
+	.verify_read = xfs_dquot_buf_readahead_verify,
+	.verify_write = xfs_dquot_buf_write_verify,
+};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

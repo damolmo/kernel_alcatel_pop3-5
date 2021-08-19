@@ -174,8 +174,17 @@ static void cs_automute(struct hda_codec *codec)
 	snd_hda_gen_update_outputs(codec);
 
 	if (spec->gpio_eapd_hp || spec->gpio_eapd_speaker) {
+<<<<<<< HEAD
 		spec->gpio_data = spec->gen.hp_jack_present ?
 			spec->gpio_eapd_hp : spec->gpio_eapd_speaker;
+=======
+		if (spec->gen.automute_speaker)
+			spec->gpio_data = spec->gen.hp_jack_present ?
+				spec->gpio_eapd_hp : spec->gpio_eapd_speaker;
+		else
+			spec->gpio_data =
+				spec->gpio_eapd_hp | spec->gpio_eapd_speaker;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		snd_hda_codec_write(codec, 0x01, 0,
 				    AC_VERB_SET_GPIO_DATA, spec->gpio_data);
 	}
@@ -390,6 +399,10 @@ static const struct snd_pci_quirk cs420x_fixup_tbl[] = {
 	/*SND_PCI_QUIRK(0x8086, 0x7270, "IMac 27 Inch", CS420X_IMAC27),*/
 
 	/* codec SSID */
+<<<<<<< HEAD
+=======
+	SND_PCI_QUIRK(0x106b, 0x0600, "iMac 14,1", CS420X_IMAC27_122),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SND_PCI_QUIRK(0x106b, 0x1c00, "MacBookPro 8,1", CS420X_MBP81),
 	SND_PCI_QUIRK(0x106b, 0x2000, "iMac 12,2", CS420X_IMAC27_122),
 	SND_PCI_QUIRK(0x106b, 0x2800, "MacBookPro 10,1", CS420X_MBP101),
@@ -614,6 +627,10 @@ enum {
 	CS4208_MAC_AUTO,
 	CS4208_MBA6,
 	CS4208_MBP11,
+<<<<<<< HEAD
+=======
+	CS4208_MACMINI,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	CS4208_GPIO0,
 };
 
@@ -621,6 +638,10 @@ static const struct hda_model_fixup cs4208_models[] = {
 	{ .id = CS4208_GPIO0, .name = "gpio0" },
 	{ .id = CS4208_MBA6, .name = "mba6" },
 	{ .id = CS4208_MBP11, .name = "mbp11" },
+<<<<<<< HEAD
+=======
+	{ .id = CS4208_MACMINI, .name = "macmini" },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{}
 };
 
@@ -632,8 +653,15 @@ static const struct snd_pci_quirk cs4208_fixup_tbl[] = {
 /* codec SSID matching */
 static const struct snd_pci_quirk cs4208_mac_fixup_tbl[] = {
 	SND_PCI_QUIRK(0x106b, 0x5e00, "MacBookPro 11,2", CS4208_MBP11),
+<<<<<<< HEAD
 	SND_PCI_QUIRK(0x106b, 0x7100, "MacBookAir 6,1", CS4208_MBA6),
 	SND_PCI_QUIRK(0x106b, 0x7200, "MacBookAir 6,2", CS4208_MBA6),
+=======
+	SND_PCI_QUIRK(0x106b, 0x6c00, "MacMini 7,1", CS4208_MACMINI),
+	SND_PCI_QUIRK(0x106b, 0x7100, "MacBookAir 6,1", CS4208_MBA6),
+	SND_PCI_QUIRK(0x106b, 0x7200, "MacBookAir 6,2", CS4208_MBA6),
+	SND_PCI_QUIRK(0x106b, 0x7b00, "MacBookPro 12,1", CS4208_MBP11),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{} /* terminator */
 };
 
@@ -665,6 +693,27 @@ static void cs4208_fixup_mac(struct hda_codec *codec,
 	snd_hda_apply_fixup(codec, action);
 }
 
+<<<<<<< HEAD
+=======
+/* MacMini 7,1 has the inverted jack detection */
+static void cs4208_fixup_macmini(struct hda_codec *codec,
+				 const struct hda_fixup *fix, int action)
+{
+	static const struct hda_pintbl pincfgs[] = {
+		{ 0x18, 0x00ab9150 }, /* mic (audio-in) jack: disable detect */
+		{ 0x21, 0x004be140 }, /* SPDIF: disable detect */
+		{ }
+	};
+
+	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
+		/* HP pin (0x10) has an inverted detection */
+		codec->inv_jack_detect = 1;
+		/* disable the bogus Mic and SPDIF jack detections */
+		snd_hda_apply_pincfgs(codec, pincfgs);
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int cs4208_spdif_sw_put(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
@@ -708,6 +757,15 @@ static const struct hda_fixup cs4208_fixups[] = {
 		.chained = true,
 		.chain_id = CS4208_GPIO0,
 	},
+<<<<<<< HEAD
+=======
+	[CS4208_MACMINI] = {
+		.type = HDA_FIXUP_FUNC,
+		.v.func = cs4208_fixup_macmini,
+		.chained = true,
+		.chain_id = CS4208_GPIO0,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	[CS4208_GPIO0] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = cs4208_fixup_gpio0,
@@ -1001,9 +1059,13 @@ static void cs4210_spdif_automute(struct hda_codec *codec,
 
 	spec->spdif_present = spdif_present;
 	/* SPDIF TX on/off */
+<<<<<<< HEAD
 	if (spdif_present)
 		snd_hda_set_pin_ctl(codec, spdif_pin,
 				    spdif_present ? PIN_OUT : 0);
+=======
+	snd_hda_set_pin_ctl(codec, spdif_pin, spdif_present ? PIN_OUT : 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cs_automute(codec);
 }

@@ -48,6 +48,14 @@ static inline uint8_t elf_sym__type(const GElf_Sym *sym)
 	return GELF_ST_TYPE(sym->st_info);
 }
 
+<<<<<<< HEAD
+=======
+static inline uint8_t elf_sym__visibility(const GElf_Sym *sym)
+{
+	return GELF_ST_VISIBILITY(sym->st_other);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifndef STT_GNU_IFUNC
 #define STT_GNU_IFUNC 10
 #endif
@@ -72,7 +80,13 @@ static inline int elf_sym__is_label(const GElf_Sym *sym)
 	return elf_sym__type(sym) == STT_NOTYPE &&
 		sym->st_name != 0 &&
 		sym->st_shndx != SHN_UNDEF &&
+<<<<<<< HEAD
 		sym->st_shndx != SHN_ABS;
+=======
+		sym->st_shndx != SHN_ABS &&
+		elf_sym__visibility(sym) != STV_HIDDEN &&
+		elf_sym__visibility(sym) != STV_INTERNAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static bool elf_sym__is_a(GElf_Sym *sym, enum map_type type)
@@ -1166,8 +1180,11 @@ out_close:
 static int kcore__init(struct kcore *kcore, char *filename, int elfclass,
 		       bool temp)
 {
+<<<<<<< HEAD
 	GElf_Ehdr *ehdr;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kcore->elfclass = elfclass;
 
 	if (temp)
@@ -1184,9 +1201,13 @@ static int kcore__init(struct kcore *kcore, char *filename, int elfclass,
 	if (!gelf_newehdr(kcore->elf, elfclass))
 		goto out_end;
 
+<<<<<<< HEAD
 	ehdr = gelf_getehdr(kcore->elf, &kcore->ehdr);
 	if (!ehdr)
 		goto out_end;
+=======
+	memset(&kcore->ehdr, 0, sizeof(GElf_Ehdr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 
@@ -1243,6 +1264,7 @@ static int kcore__copy_hdr(struct kcore *from, struct kcore *to, size_t count)
 static int kcore__add_phdr(struct kcore *kcore, int idx, off_t offset,
 			   u64 addr, u64 len)
 {
+<<<<<<< HEAD
 	GElf_Phdr gphdr;
 	GElf_Phdr *phdr;
 
@@ -1260,6 +1282,20 @@ static int kcore__add_phdr(struct kcore *kcore, int idx, off_t offset,
 	phdr->p_align	= page_size;
 
 	if (!gelf_update_phdr(kcore->elf, idx, phdr))
+=======
+	GElf_Phdr phdr = {
+		.p_type		= PT_LOAD,
+		.p_flags	= PF_R | PF_W | PF_X,
+		.p_offset	= offset,
+		.p_vaddr	= addr,
+		.p_paddr	= 0,
+		.p_filesz	= len,
+		.p_memsz	= len,
+		.p_align	= page_size,
+	};
+
+	if (!gelf_update_phdr(kcore->elf, idx, &phdr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -1;
 
 	return 0;

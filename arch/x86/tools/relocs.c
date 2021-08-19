@@ -20,7 +20,14 @@ struct relocs {
 
 static struct relocs relocs16;
 static struct relocs relocs32;
+<<<<<<< HEAD
 static struct relocs relocs64;
+=======
+#if ELF_BITS == 64
+static struct relocs relocs32neg;
+static struct relocs relocs64;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct section {
 	Elf_Shdr       shdr;
@@ -762,11 +769,27 @@ static int do_reloc64(struct section *sec, Elf_Rel *rel, ElfW(Sym) *sym,
 
 	switch (r_type) {
 	case R_X86_64_NONE:
+<<<<<<< HEAD
 	case R_X86_64_PC32:
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
 		 */
+=======
+		/* NONE can be ignored. */
+		break;
+
+	case R_X86_64_PC32:
+	case R_X86_64_PLT32:
+		/*
+		 * PC relative relocations don't need to be adjusted unless
+		 * referencing a percpu symbol.
+		 *
+		 * NB: R_X86_64_PLT32 can be treated as R_X86_64_PC32.
+		 */
+		if (is_percpu_sym(sym, symname))
+			add_reloc(&relocs32neg, offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	case R_X86_64_32:
@@ -828,9 +851,17 @@ static int do_reloc32(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
 	case R_386_PC32:
 	case R_386_PC16:
 	case R_386_PC8:
+<<<<<<< HEAD
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
+=======
+	case R_386_PLT32:
+		/*
+		 * NONE can be ignored and PC relative relocations don't need
+		 * to be adjusted. Because sym must be defined, R_386_PLT32 can
+		 * be treated the same way as R_386_PC32.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		break;
 
@@ -871,9 +902,17 @@ static int do_reloc_real(struct section *sec, Elf_Rel *rel, Elf_Sym *sym,
 	case R_386_PC32:
 	case R_386_PC16:
 	case R_386_PC8:
+<<<<<<< HEAD
 		/*
 		 * NONE can be ignored and PC relative relocations don't
 		 * need to be adjusted.
+=======
+	case R_386_PLT32:
+		/*
+		 * NONE can be ignored and PC relative relocations don't need
+		 * to be adjusted. Because sym must be defined, R_386_PLT32 can
+		 * be treated the same way as R_386_PC32.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		break;
 
@@ -984,9 +1023,19 @@ static void emit_relocs(int as_text, int use_real_mode)
 		die("Segment relocations found but --realmode not specified\n");
 
 	/* Order the relocations for more efficient processing */
+<<<<<<< HEAD
 	sort_relocs(&relocs16);
 	sort_relocs(&relocs32);
 	sort_relocs(&relocs64);
+=======
+	sort_relocs(&relocs32);
+#if ELF_BITS == 64
+	sort_relocs(&relocs32neg);
+	sort_relocs(&relocs64);
+#else
+	sort_relocs(&relocs16);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Print the relocations */
 	if (as_text) {
@@ -1007,6 +1056,7 @@ static void emit_relocs(int as_text, int use_real_mode)
 		for (i = 0; i < relocs32.count; i++)
 			write_reloc(relocs32.offset[i], stdout);
 	} else {
+<<<<<<< HEAD
 		if (ELF_BITS == 64) {
 			/* Print a stop */
 			write_reloc(0, stdout);
@@ -1015,6 +1065,23 @@ static void emit_relocs(int as_text, int use_real_mode)
 			for (i = 0; i < relocs64.count; i++)
 				write_reloc(relocs64.offset[i], stdout);
 		}
+=======
+#if ELF_BITS == 64
+		/* Print a stop */
+		write_reloc(0, stdout);
+
+		/* Now print each relocation */
+		for (i = 0; i < relocs64.count; i++)
+			write_reloc(relocs64.offset[i], stdout);
+
+		/* Print a stop */
+		write_reloc(0, stdout);
+
+		/* Now print each inverse 32-bit relocation */
+		for (i = 0; i < relocs32neg.count; i++)
+			write_reloc(relocs32neg.offset[i], stdout);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Print a stop */
 		write_reloc(0, stdout);

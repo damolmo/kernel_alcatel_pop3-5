@@ -112,7 +112,11 @@ static bool tcp_fastopen_cookie_gen(struct request_sock *req,
 		struct tcp_fastopen_cookie tmp;
 
 		if (__tcp_fastopen_cookie_gen(&ip6h->saddr, &tmp)) {
+<<<<<<< HEAD
 			struct in6_addr *buf = (struct in6_addr *) tmp.val;
+=======
+			struct in6_addr *buf = &tmp.addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			int i;
 
 			for (i = 0; i < 4; i++)
@@ -164,6 +168,10 @@ static bool tcp_fastopen_create_child(struct sock *sk,
 	 * scaled. So correct it appropriately.
 	 */
 	tp->snd_wnd = ntohs(tcp_hdr(skb)->window);
+<<<<<<< HEAD
+=======
+	tp->max_window = tp->snd_wnd;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Activate the retrans timer so that SYNACK can be retransmitted.
 	 * The request socket is not added to the SYN table of the parent

@@ -1479,7 +1479,11 @@ static long vphn_get_associativity(unsigned long cpu,
 
 	switch (rc) {
 	case H_FUNCTION:
+<<<<<<< HEAD
 		printk(KERN_INFO
+=======
+		printk_once(KERN_INFO
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			"VPHN is not supported. Disabling polling...\n");
 		stop_topology_update();
 		break;

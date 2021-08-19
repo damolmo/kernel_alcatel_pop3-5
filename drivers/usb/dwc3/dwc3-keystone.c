@@ -117,6 +117,13 @@ static int kdwc3_probe(struct platform_device *pdev)
 	dev->dma_mask = &kdwc3_dma_mask;
 
 	kdwc->clk = devm_clk_get(kdwc->dev, "usb");
+<<<<<<< HEAD
+=======
+	if (IS_ERR(kdwc->clk)) {
+		dev_err(kdwc->dev, "unable to get usb clock\n");
+		return PTR_ERR(kdwc->clk);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	error = clk_prepare_enable(kdwc->clk);
 	if (error < 0) {

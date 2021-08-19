@@ -60,6 +60,7 @@ config PSTORE_RAM
 	  "ramoops.ko".
 
 	  For more information, see Documentation/ramoops.txt.
+<<<<<<< HEAD
 
 config PSTORE_CONSOLE_SIZE
 	hex "Log kernel console buffer size"
@@ -86,3 +87,5 @@ config PSTORE_MEM_SIZE
 	depends on PSTORE
 	help
 	  The option is used as the default value of mem size.
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

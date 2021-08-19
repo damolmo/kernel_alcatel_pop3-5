@@ -610,7 +610,11 @@ static void kvm_ioapic_reset(struct kvm_ioapic *ioapic)
 	ioapic->ioregsel = 0;
 	ioapic->irr = 0;
 	ioapic->id = 0;
+<<<<<<< HEAD
 	memset(ioapic->irq_eoi, 0x00, IOAPIC_NUM_PINS);
+=======
+	memset(ioapic->irq_eoi, 0x00, sizeof(ioapic->irq_eoi));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rtc_irq_eoi_tracking_reset(ioapic);
 	update_handled_vectors(ioapic);
 }

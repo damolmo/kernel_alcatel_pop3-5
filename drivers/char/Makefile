@@ -55,7 +55,10 @@ obj-$(CONFIG_PCMCIA)		+= pcmcia/
 obj-$(CONFIG_HANGCHECK_TIMER)	+= hangcheck-timer.o
 obj-$(CONFIG_TCG_TPM)		+= tpm/
 
+<<<<<<< HEAD
 obj-$(CONFIG_DCC_TTY)		+= dcc_tty.o
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
 
 obj-$(CONFIG_JS_RTC)		+= js-rtc.o

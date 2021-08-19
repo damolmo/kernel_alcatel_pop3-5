@@ -56,7 +56,11 @@
    destination pages are in the dcache, but it is my guess that this is
    less important than the dcache miss case.  */
 
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.text
 	.align 4
 	.global copy_page
@@ -201,3 +205,7 @@ copy_page:
 	nop
 
 	.end copy_page
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(copy_page)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

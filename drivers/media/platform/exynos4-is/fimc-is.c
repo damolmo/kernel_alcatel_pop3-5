@@ -816,12 +816,21 @@ static int fimc_is_probe(struct platform_device *pdev)
 	is->irq = irq_of_parse_and_map(dev->of_node, 0);
 	if (is->irq < 0) {
 		dev_err(dev, "no irq found\n");
+<<<<<<< HEAD
 		return is->irq;
+=======
+		ret = is->irq;
+		goto err_iounmap;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = fimc_is_get_clocks(is);
 	if (ret < 0)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_iounmap;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	platform_set_drvdata(pdev, is);
 
@@ -881,6 +890,11 @@ err_irq:
 	free_irq(is->irq, is);
 err_clk:
 	fimc_is_put_clocks(is);
+<<<<<<< HEAD
+=======
+err_iounmap:
+	iounmap(is->pmu_regs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -936,6 +950,10 @@ static int fimc_is_remove(struct platform_device *pdev)
 	fimc_is_unregister_subdevs(is);
 	vb2_dma_contig_cleanup_ctx(is->alloc_ctx);
 	fimc_is_put_clocks(is);
+<<<<<<< HEAD
+=======
+	iounmap(is->pmu_regs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fimc_is_debugfs_remove(is);
 	if (is->fw.f_w)
 		release_firmware(is->fw.f_w);

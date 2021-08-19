@@ -492,8 +492,13 @@ static void _update_pll_mnp(struct tegra_clk_pll *pll,
 		pll_override_writel(val, params->pmc_divp_reg, pll);
 
 		val = pll_override_readl(params->pmc_divnm_reg, pll);
+<<<<<<< HEAD
 		val &= ~(divm_mask(pll) << div_nmp->override_divm_shift) |
 			~(divn_mask(pll) << div_nmp->override_divn_shift);
+=======
+		val &= ~((divm_mask(pll) << div_nmp->override_divm_shift) |
+			(divn_mask(pll) << div_nmp->override_divn_shift));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		val |= (cfg->m << div_nmp->override_divm_shift) |
 			(cfg->n << div_nmp->override_divn_shift);
 		pll_override_writel(val, params->pmc_divnm_reg, pll);

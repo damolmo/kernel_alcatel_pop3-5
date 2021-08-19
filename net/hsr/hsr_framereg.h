@@ -16,6 +16,10 @@
 
 struct hsr_node;
 
+<<<<<<< HEAD
+=======
+void hsr_del_node(struct list_head *self_node_db);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct hsr_node *hsr_add_node(struct list_head *node_db, unsigned char addr[],
 			      u16 seq_out);
 struct hsr_node *hsr_get_node(struct list_head *node_db, struct sk_buff *skb,

@@ -67,6 +67,7 @@ static int fanotify_get_response(struct fsnotify_group *group,
 
 	pr_debug("%s: group=%p event=%p\n", __func__, group, event);
 
+<<<<<<< HEAD
 	wait_event(group->fanotify_data.access_waitq, event->response ||
 				atomic_read(&group->fanotify_data.bypass_perm));
 
@@ -79,6 +80,9 @@ static int fanotify_get_response(struct fsnotify_group *group,
 		fsnotify_remove_event(group, &event->fae.fse);
 		return 0;
 	}
+=======
+	wait_event(group->fanotify_data.access_waitq, event->response);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* userspace responded, convert to something usable */
 	switch (event->response) {
@@ -103,7 +107,11 @@ static bool fanotify_should_send_event(struct fsnotify_mark *inode_mark,
 				       u32 event_mask,
 				       void *data, int data_type)
 {
+<<<<<<< HEAD
 	__u32 marks_mask, marks_ignored_mask;
+=======
+	__u32 marks_mask = 0, marks_ignored_mask = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct path *path = data;
 
 	pr_debug("%s: inode_mark=%p vfsmnt_mark=%p mask=%x data=%p"
@@ -119,6 +127,7 @@ static bool fanotify_should_send_event(struct fsnotify_mark *inode_mark,
 	    !S_ISDIR(path->dentry->d_inode->i_mode))
 		return false;
 
+<<<<<<< HEAD
 	if (inode_mark && vfsmnt_mark) {
 		marks_mask = (vfsmnt_mark->mask | inode_mark->mask);
 		marks_ignored_mask = (vfsmnt_mark->ignored_mask | inode_mark->ignored_mask);
@@ -137,6 +146,22 @@ static bool fanotify_should_send_event(struct fsnotify_mark *inode_mark,
 		marks_ignored_mask = vfsmnt_mark->ignored_mask;
 	} else {
 		BUG();
+=======
+	/*
+	 * if the event is for a child and this inode doesn't care about
+	 * events on the child, don't send it!
+	 */
+	if (inode_mark &&
+	    (!(event_mask & FS_EVENT_ON_CHILD) ||
+	     (inode_mark->mask & FS_EVENT_ON_CHILD))) {
+		marks_mask |= inode_mark->mask;
+		marks_ignored_mask |= inode_mark->ignored_mask;
+	}
+
+	if (vfsmnt_mark) {
+		marks_mask |= vfsmnt_mark->mask;
+		marks_ignored_mask |= vfsmnt_mark->ignored_mask;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (S_ISDIR(path->dentry->d_inode->i_mode) &&

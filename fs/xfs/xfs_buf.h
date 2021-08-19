@@ -131,6 +131,10 @@ struct xfs_buf_map {
 	struct xfs_buf_map (map) = { .bm_bn = (blkno), .bm_len = (numblk) };
 
 struct xfs_buf_ops {
+<<<<<<< HEAD
+=======
+	char *name;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void (*verify_read)(struct xfs_buf *);
 	void (*verify_write)(struct xfs_buf *);
 };
@@ -301,6 +305,10 @@ extern void xfs_buf_iomove(xfs_buf_t *, size_t, size_t, void *,
 extern xfs_caddr_t xfs_buf_offset(xfs_buf_t *, size_t);
 
 /* Delayed Write Buffer Routines */
+<<<<<<< HEAD
+=======
+extern void xfs_buf_delwri_cancel(struct list_head *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern bool xfs_buf_delwri_queue(struct xfs_buf *, struct list_head *);
 extern int xfs_buf_delwri_submit(struct list_head *);
 extern int xfs_buf_delwri_submit_nowait(struct list_head *);

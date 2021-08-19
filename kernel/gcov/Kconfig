@@ -34,6 +34,10 @@ config GCOV_KERNEL
 
 config GCOV_PROFILE_ALL
 	bool "Profile entire Kernel"
+<<<<<<< HEAD
+=======
+	depends on !COMPILE_TEST
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on GCOV_KERNEL
 	depends on SUPERH || S390 || X86 || PPC || MICROBLAZE || ARM || ARM64
 	default n

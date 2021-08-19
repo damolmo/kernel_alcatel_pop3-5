@@ -2174,6 +2174,10 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
 		   " %Zd bytes, size of tnode: %Zd bytes.\n",
 		   sizeof(struct leaf), sizeof(struct tnode));
 
+<<<<<<< HEAD
+=======
+	rcu_read_lock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (h = 0; h < FIB_TABLE_HASHSZ; h++) {
 		struct hlist_head *head = &net->ipv4.fib_table_hash[h];
 		struct fib_table *tb;
@@ -2193,7 +2197,13 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
 			trie_show_usage(seq, &t->stats);
 #endif
 		}
+<<<<<<< HEAD
 	}
+=======
+		cond_resched_rcu();
+	}
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

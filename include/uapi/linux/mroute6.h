@@ -3,6 +3,10 @@
 
 #include <linux/types.h>
 #include <linux/sockios.h>
+<<<<<<< HEAD
+=======
+#include <linux/in6.h>		/* For struct sockaddr_in6. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	Based on the MROUTING 3.5 defines primarily to keep

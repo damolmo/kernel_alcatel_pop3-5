@@ -61,7 +61,11 @@ static inline int of_property_notify(int action, struct device_node *np,
  * own the devtree lock or work on detached trees only.
  */
 struct property *__of_prop_dup(const struct property *prop, gfp_t allocflags);
+<<<<<<< HEAD
 struct device_node *__of_node_alloc(const char *full_name, gfp_t allocflags);
+=======
+__printf(2, 3) struct device_node *__of_node_dup(const struct device_node *np, const char *fmt, ...);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern const void *__of_get_property(const struct device_node *np,
 				     const char *name, int *lenp);
@@ -81,6 +85,12 @@ extern int __of_attach_node_sysfs(struct device_node *np);
 extern void __of_detach_node(struct device_node *np);
 extern void __of_detach_node_sysfs(struct device_node *np);
 
+<<<<<<< HEAD
+=======
+extern void __of_sysfs_remove_bin_file(struct device_node *np,
+				       struct property *prop);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* iterators for transactions, used for overlays */
 /* forward iterator */
 #define for_each_transaction_entry(_oft, _te) \

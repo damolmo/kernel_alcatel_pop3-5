@@ -71,6 +71,10 @@ struct snd_compr_runtime {
  * @direction: stream direction, playback/recording
  * @metadata_set: metadata set flag, true when set
  * @next_track: has userspace signall next track transistion, true when set
+<<<<<<< HEAD
+=======
+ * @partial_drain: undergoing partial_drain for stream, true when set
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @private_data: pointer to DSP private data
  */
 struct snd_compr_stream {
@@ -81,6 +85,10 @@ struct snd_compr_stream {
 	enum snd_compr_direction direction;
 	bool metadata_set;
 	bool next_track;
+<<<<<<< HEAD
+=======
+	bool partial_drain;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void *private_data;
 };
 
@@ -176,7 +184,18 @@ static inline void snd_compr_drain_notify(struct snd_compr_stream *stream)
 	if (snd_BUG_ON(!stream))
 		return;
 
+<<<<<<< HEAD
 	stream->runtime->state = SNDRV_PCM_STATE_SETUP;
+=======
+	/* for partial_drain case we are back to running state on success */
+	if (stream->partial_drain) {
+		stream->runtime->state = SNDRV_PCM_STATE_RUNNING;
+		stream->partial_drain = false; /* clear this flag as well */
+	} else {
+		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wake_up(&stream->runtime->sleep);
 }
 

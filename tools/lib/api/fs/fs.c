@@ -75,7 +75,11 @@ static int fs__valid_mount(const char *fs, long magic)
 
 	if (statfs(fs, &st_fs) < 0)
 		return -ENOENT;
+<<<<<<< HEAD
 	else if (st_fs.f_type != magic)
+=======
+	else if ((long)st_fs.f_type != magic)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOENT;
 
 	return 0;
@@ -118,6 +122,10 @@ static bool fs__env_override(struct fs *fs)
 	size_t name_len = strlen(fs->name);
 	/* name + "_PATH" + '\0' */
 	char upper_name[name_len + 5 + 1];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(upper_name, fs->name, name_len);
 	mem_toupper(upper_name, name_len);
 	strcpy(&upper_name[name_len], "_PATH");
@@ -127,7 +135,12 @@ static bool fs__env_override(struct fs *fs)
 		return false;
 
 	fs->found = true;
+<<<<<<< HEAD
 	strncpy(fs->path, override_path, sizeof(fs->path));
+=======
+	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
+	fs->path[sizeof(fs->path) - 1] = '\0';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 

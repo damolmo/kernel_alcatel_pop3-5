@@ -141,8 +141,21 @@ static int iforce_usb_probe(struct usb_interface *intf,
 
 	interface = intf->cur_altsetting;
 
+<<<<<<< HEAD
 	epirq = &interface->endpoint[0].desc;
 	epout = &interface->endpoint[1].desc;
+=======
+	if (interface->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+	epirq = &interface->endpoint[0].desc;
+	if (!usb_endpoint_is_int_in(epirq))
+		return -ENODEV;
+
+	epout = &interface->endpoint[1].desc;
+	if (!usb_endpoint_is_int_out(epout))
+		return -ENODEV;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!(iforce = kzalloc(sizeof(struct iforce) + 32, GFP_KERNEL)))
 		goto fail;

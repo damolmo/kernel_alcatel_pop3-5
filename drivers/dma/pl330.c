@@ -996,6 +996,10 @@ static void _stop(struct pl330_thread *thrd)
 {
 	void __iomem *regs = thrd->dmac->base;
 	u8 insn[6] = {0, 0, 0, 0, 0, 0};
+<<<<<<< HEAD
+=======
+	u32 inten = readl(regs + INTEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (_state(thrd) == PL330_STATE_FAULT_COMPLETING)
 		UNTIL(thrd, PL330_STATE_FAULTING | PL330_STATE_KILLING);
@@ -1008,10 +1012,20 @@ static void _stop(struct pl330_thread *thrd)
 
 	_emit_KILL(0, insn);
 
+<<<<<<< HEAD
 	/* Stop generating interrupts for SEV */
 	writel(readl(regs + INTEN) & ~(1 << thrd->ev), regs + INTEN);
 
 	_execute_DBGINSN(thrd, insn, is_manager(thrd));
+=======
+	_execute_DBGINSN(thrd, insn, is_manager(thrd));
+
+	/* clear the event */
+	if (inten & (1 << thrd->ev))
+		writel(1 << thrd->ev, regs + INTCLR);
+	/* Stop generating interrupts for SEV */
+	writel(inten & ~(1 << thrd->ev), regs + INTEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Start doing req 'idx' of thread 'thrd' */
@@ -1516,7 +1530,11 @@ static void pl330_dotask(unsigned long data)
 /* Returns 1 if state was updated, 0 otherwise */
 static int pl330_update(struct pl330_dmac *pl330)
 {
+<<<<<<< HEAD
 	struct dma_pl330_desc *descdone, *tmp;
+=======
+	struct dma_pl330_desc *descdone;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long flags;
 	void __iomem *regs;
 	u32 val;
@@ -1592,7 +1610,13 @@ static int pl330_update(struct pl330_dmac *pl330)
 	}
 
 	/* Now that we are in no hurry, do the callbacks */
+<<<<<<< HEAD
 	list_for_each_entry_safe(descdone, tmp, &pl330->req_done, rqd) {
+=======
+	while (!list_empty(&pl330->req_done)) {
+		descdone = list_first_entry(&pl330->req_done,
+					    struct dma_pl330_desc, rqd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		list_del(&descdone->rqd);
 		spin_unlock_irqrestore(&pl330->lock, flags);
 		dma_pl330_rqcb(descdone, PL330_ERR_NONE);
@@ -1638,7 +1662,10 @@ static bool _chan_ns(const struct pl330_dmac *pl330, int i)
 static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 {
 	struct pl330_thread *thrd = NULL;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int chans, i;
 
 	if (pl330->state == DYING)
@@ -1646,8 +1673,11 @@ static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 
 	chans = pl330->pcfg.num_chan;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&pl330->lock, flags);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < chans; i++) {
 		thrd = &pl330->channels[i];
 		if ((thrd->free) && (!_manager_ns(thrd) ||
@@ -1665,8 +1695,11 @@ static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 		thrd = NULL;
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pl330->lock, flags);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return thrd;
 }
 
@@ -1684,7 +1717,10 @@ static inline void _free_event(struct pl330_thread *thrd, int ev)
 static void pl330_release_channel(struct pl330_thread *thrd)
 {
 	struct pl330_dmac *pl330;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!thrd || thrd->free)
 		return;
@@ -1696,10 +1732,15 @@ static void pl330_release_channel(struct pl330_thread *thrd)
 
 	pl330 = thrd->dmac;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&pl330->lock, flags);
 	_free_event(thrd, thrd->ev);
 	thrd->free = true;
 	spin_unlock_irqrestore(&pl330->lock, flags);
+=======
+	_free_event(thrd, thrd->ev);
+	thrd->free = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Initialize the structure for PL330 configuration, that can be used
@@ -2044,20 +2085,32 @@ static int pl330_alloc_chan_resources(struct dma_chan *chan)
 	struct pl330_dmac *pl330 = pch->dmac;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&pch->lock, flags);
+=======
+	spin_lock_irqsave(&pl330->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dma_cookie_init(chan);
 	pch->cyclic = false;
 
 	pch->thread = pl330_request_channel(pl330);
 	if (!pch->thread) {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&pch->lock, flags);
+=======
+		spin_unlock_irqrestore(&pl330->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	}
 
 	tasklet_init(&pch->task, pl330_tasklet, (unsigned long) pch);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pch->lock, flags);
+=======
+	spin_unlock_irqrestore(&pl330->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 1;
 }
@@ -2134,11 +2187,19 @@ static int pl330_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd, unsigned 
 static void pl330_free_chan_resources(struct dma_chan *chan)
 {
 	struct dma_pl330_chan *pch = to_pchan(chan);
+<<<<<<< HEAD
+=======
+	struct pl330_dmac *pl330 = pch->dmac;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long flags;
 
 	tasklet_kill(&pch->task);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&pch->lock, flags);
+=======
+	spin_lock_irqsave(&pl330->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pl330_release_channel(pch->thread);
 	pch->thread = NULL;
@@ -2146,7 +2207,11 @@ static void pl330_free_chan_resources(struct dma_chan *chan)
 	if (pch->cyclic)
 		list_splice_tail_init(&pch->work_list, &pch->dmac->desc_pool);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&pch->lock, flags);
+=======
+	spin_unlock_irqrestore(&pl330->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static enum dma_status
@@ -2471,15 +2536,25 @@ pl330_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dst,
 	while (burst != (1 << desc->rqcfg.brst_size))
 		desc->rqcfg.brst_size++;
 
+<<<<<<< HEAD
+=======
+	desc->rqcfg.brst_len = get_burst_len(desc, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * If burst size is smaller than bus width then make sure we only
 	 * transfer one at a time to avoid a burst stradling an MFIFO entry.
 	 */
+<<<<<<< HEAD
 	if (desc->rqcfg.brst_size * 8 < pl330->pcfg.data_bus_width)
 		desc->rqcfg.brst_len = 1;
 
 	desc->rqcfg.brst_len = get_burst_len(desc, len);
 
+=======
+	if (burst * 8 < pl330->pcfg.data_bus_width)
+		desc->rqcfg.brst_len = 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	desc->txd.flags = flags;
 
 	return &desc->txd;

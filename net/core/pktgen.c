@@ -211,8 +211,13 @@
 #define T_REMDEV      (1<<3)	/* Remove one dev */
 
 /* If lock -- protects updating of if_list */
+<<<<<<< HEAD
 #define   if_lock(t)           spin_lock(&(t->if_lock));
 #define   if_unlock(t)           spin_unlock(&(t->if_lock));
+=======
+#define   if_lock(t)           mutex_lock(&(t->if_lock));
+#define   if_unlock(t)           mutex_unlock(&(t->if_lock));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Used to help with determining the pkts on receive */
 #define PKTGEN_MAGIC 0xbe9be955
@@ -418,7 +423,11 @@ struct pktgen_net {
 };
 
 struct pktgen_thread {
+<<<<<<< HEAD
 	spinlock_t if_lock;		/* for list of devices */
+=======
+	struct mutex if_lock;		/* for list of devices */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct list_head if_list;	/* All device here */
 	struct list_head th_list;
 	struct task_struct *tsk;
@@ -1952,11 +1961,21 @@ static void pktgen_change_name(const struct pktgen_net *pn, struct net_device *d
 {
 	struct pktgen_thread *t;
 
+<<<<<<< HEAD
 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
 		struct pktgen_dev *pkt_dev;
 
 		rcu_read_lock();
 		list_for_each_entry_rcu(pkt_dev, &t->if_list, list) {
+=======
+	mutex_lock(&pktgen_thread_lock);
+
+	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
+		struct pktgen_dev *pkt_dev;
+
+		if_lock(t);
+		list_for_each_entry(pkt_dev, &t->if_list, list) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (pkt_dev->odev != dev)
 				continue;
 
@@ -1971,8 +1990,14 @@ static void pktgen_change_name(const struct pktgen_net *pn, struct net_device *d
 				       dev->name);
 			break;
 		}
+<<<<<<< HEAD
 		rcu_read_unlock();
 	}
+=======
+		if_unlock(t);
+	}
+	mutex_unlock(&pktgen_thread_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int pktgen_device_event(struct notifier_block *unused,
@@ -3086,7 +3111,17 @@ static int pktgen_wait_thread_run(struct pktgen_thread *t)
 {
 	while (thread_is_running(t)) {
 
+<<<<<<< HEAD
 		msleep_interruptible(100);
+=======
+		/* note: 't' will still be around even after the unlock/lock
+		 * cycle because pktgen_thread threads are only cleared at
+		 * net exit
+		 */
+		mutex_unlock(&pktgen_thread_lock);
+		msleep_interruptible(100);
+		mutex_lock(&pktgen_thread_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (signal_pending(current))
 			goto signal;
@@ -3101,6 +3136,13 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
 	struct pktgen_thread *t;
 	int sig = 1;
 
+<<<<<<< HEAD
+=======
+	/* prevent from racing with rmmod */
+	if (!try_module_get(THIS_MODULE))
+		return sig;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&pktgen_thread_lock);
 
 	list_for_each_entry(t, &pn->pktgen_threads, th_list) {
@@ -3114,6 +3156,10 @@ static int pktgen_wait_all_threads_run(struct pktgen_net *pn)
 			t->control |= (T_STOP);
 
 	mutex_unlock(&pktgen_thread_lock);
+<<<<<<< HEAD
+=======
+	module_put(THIS_MODULE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return sig;
 }
 
@@ -3423,7 +3469,11 @@ static int pktgen_thread_worker(void *arg)
 	struct pktgen_dev *pkt_dev = NULL;
 	int cpu = t->cpu;
 
+<<<<<<< HEAD
 	BUG_ON(smp_processor_id() != cpu);
+=======
+	WARN_ON(smp_processor_id() != cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	init_waitqueue_head(&t->queue);
 	complete(&t->start_done);
@@ -3490,8 +3540,15 @@ static int pktgen_thread_worker(void *arg)
 	pktgen_rem_thread(t);
 
 	/* Wait for kthread_stop */
+<<<<<<< HEAD
 	while (!kthread_should_stop()) {
 		set_current_state(TASK_INTERRUPTIBLE);
+=======
+	for (;;) {
+		set_current_state(TASK_INTERRUPTIBLE);
+		if (kthread_should_stop())
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		schedule();
 	}
 	__set_current_state(TASK_RUNNING);
@@ -3654,7 +3711,11 @@ static int __net_init pktgen_create_thread(int cpu, struct pktgen_net *pn)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	spin_lock_init(&t->if_lock);
+=======
+	mutex_init(&t->if_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	t->cpu = cpu;
 
 	INIT_LIST_HEAD(&t->if_list);

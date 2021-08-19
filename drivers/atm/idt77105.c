@@ -261,7 +261,11 @@ static int idt77105_start(struct atm_dev *dev)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (!(dev->dev_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
+=======
+	if (!(dev->phy_data = kmalloc(sizeof(struct idt77105_priv),GFP_KERNEL)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	PRIV(dev)->dev = dev;
 	spin_lock_irqsave(&idt77105_priv_lock, flags);
@@ -340,7 +344,11 @@ static int idt77105_stop(struct atm_dev *dev)
                 else
                     idt77105_all = walk->next;
 	        dev->phy = NULL;
+<<<<<<< HEAD
                 dev->dev_data = NULL;
+=======
+                dev->phy_data = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
                 kfree(walk);
                 break;
             }

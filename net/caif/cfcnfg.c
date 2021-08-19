@@ -455,7 +455,11 @@ unlock:
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 void
+=======
+int
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 		     struct net_device *dev, struct cflayer *phy_layer,
 		     enum cfcnfg_phy_preference pref,
@@ -464,7 +468,11 @@ cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 {
 	struct cflayer *frml;
 	struct cfcnfg_phyinfo *phyinfo = NULL;
+<<<<<<< HEAD
 	int i;
+=======
+	int i, res = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 phyid;
 
 	mutex_lock(&cnfg->lock);
@@ -478,12 +486,23 @@ cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 			goto got_phyid;
 	}
 	pr_warn("Too many CAIF Link Layers (max 6)\n");
+<<<<<<< HEAD
+=======
+	res = -EEXIST;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	goto out;
 
 got_phyid:
 	phyinfo = kzalloc(sizeof(struct cfcnfg_phyinfo), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!phyinfo)
 		goto out_err;
+=======
+	if (!phyinfo) {
+		res = -ENOMEM;
+		goto out_err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	phy_layer->id = phyid;
 	phyinfo->pref = pref;
@@ -497,8 +516,15 @@ got_phyid:
 
 	frml = cffrml_create(phyid, fcs);
 
+<<<<<<< HEAD
 	if (!frml)
 		goto out_err;
+=======
+	if (!frml) {
+		res = -ENOMEM;
+		goto out_err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	phyinfo->frm_layer = frml;
 	layer_set_up(frml, cnfg->mux);
 
@@ -516,11 +542,19 @@ got_phyid:
 	list_add_rcu(&phyinfo->node, &cnfg->phys);
 out:
 	mutex_unlock(&cnfg->lock);
+<<<<<<< HEAD
 	return;
+=======
+	return res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out_err:
 	kfree(phyinfo);
 	mutex_unlock(&cnfg->lock);
+<<<<<<< HEAD
+=======
+	return res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(cfcnfg_add_phy_layer);
 

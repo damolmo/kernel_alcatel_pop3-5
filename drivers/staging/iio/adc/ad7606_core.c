@@ -186,7 +186,11 @@ static ssize_t ad7606_store_oversampling_ratio(struct device *dev,
 	mutex_lock(&indio_dev->mlock);
 	gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
 	gpio_set_value(st->pdata->gpio_os1, (ret >> 1) & 1);
+<<<<<<< HEAD
 	gpio_set_value(st->pdata->gpio_os1, (ret >> 2) & 1);
+=======
+	gpio_set_value(st->pdata->gpio_os2, (ret >> 2) & 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	st->oversampling = lval;
 	mutex_unlock(&indio_dev->mlock);
 

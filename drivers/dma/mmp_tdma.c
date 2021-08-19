@@ -335,6 +335,11 @@ static void mmp_tdma_free_descriptor(struct mmp_tdma_chan *tdmac)
 		gen_pool_free(gpool, (unsigned long)tdmac->desc_arr,
 				size);
 	tdmac->desc_arr = NULL;
+<<<<<<< HEAD
+=======
+	if (tdmac->status == DMA_ERROR)
+		tdmac->status = DMA_COMPLETE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return;
 }

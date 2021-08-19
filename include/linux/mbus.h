@@ -29,8 +29,13 @@ struct mbus_dram_target_info
 	struct mbus_dram_window {
 		u8	cs_index;
 		u8	mbus_attr;
+<<<<<<< HEAD
 		u32	base;
 		u32	size;
+=======
+		u64	base;
+		u64	size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} cs[4];
 };
 

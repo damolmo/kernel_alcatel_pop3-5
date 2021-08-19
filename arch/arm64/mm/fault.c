@@ -29,10 +29,21 @@
 #include <linux/sched.h>
 #include <linux/highmem.h>
 #include <linux/perf_event.h>
+<<<<<<< HEAD
 
 #include <asm/exception.h>
 #include <asm/debug-monitors.h>
 #include <asm/esr.h>
+=======
+#include <linux/preempt.h>
+
+#include <asm/bug.h>
+#include <asm/cpufeature.h>
+#include <asm/exception.h>
+#include <asm/debug-monitors.h>
+#include <asm/esr.h>
+#include <asm/sysreg.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/system_misc.h>
 #include <asm/pgtable.h>
 #include <asm/tlbflush.h>
@@ -62,21 +73,42 @@ void show_pte(struct mm_struct *mm, unsigned long addr)
 			break;
 
 		pud = pud_offset(pgd, addr);
+<<<<<<< HEAD
 		printk(", *pud=%016llx", pud_val(*pud));
+=======
+		pr_cont(", *pud=%016llx", pud_val(*pud));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (pud_none(*pud) || pud_bad(*pud))
 			break;
 
 		pmd = pmd_offset(pud, addr);
+<<<<<<< HEAD
 		printk(", *pmd=%016llx", pmd_val(*pmd));
+=======
+		pr_cont(", *pmd=%016llx", pmd_val(*pmd));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (pmd_none(*pmd) || pmd_bad(*pmd))
 			break;
 
 		pte = pte_offset_map(pmd, addr);
+<<<<<<< HEAD
 		printk(", *pte=%016llx", pte_val(*pte));
 		pte_unmap(pte);
 	} while(0);
 
 	printk("\n");
+=======
+		pr_cont(", *pte=%016llx", pte_val(*pte));
+		pte_unmap(pte);
+	} while(0);
+
+	pr_cont("\n");
+}
+
+static bool is_el1_instruction_abort(unsigned int esr)
+{
+	return ESR_ELx_EC(esr) == ESR_ELx_EC_IABT_CUR;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -87,8 +119,14 @@ static void __do_kernel_fault(struct mm_struct *mm, unsigned long addr,
 {
 	/*
 	 * Are we prepared to handle this kernel fault?
+<<<<<<< HEAD
 	 */
 	if (fixup_exception(regs))
+=======
+	 * We are almost certainly not prepared to handle instruction faults.
+	 */
+	if (!is_el1_instruction_abort(esr) && fixup_exception(regs))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	/*
@@ -151,8 +189,11 @@ static void do_bad_area(unsigned long addr, unsigned int esr, struct pt_regs *re
 #define VM_FAULT_BADMAP		0x010000
 #define VM_FAULT_BADACCESS	0x020000
 
+<<<<<<< HEAD
 #define ESR_LNX_EXEC		(1 << 24)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __do_page_fault(struct mm_struct *mm, unsigned long addr,
 			   unsigned int mm_flags, unsigned long vm_flags,
 			   struct task_struct *tsk)
@@ -191,6 +232,29 @@ out:
 	return fault;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool is_permission_fault(unsigned int esr, struct pt_regs *regs)
+{
+	unsigned int ec       = ESR_ELx_EC(esr);
+	unsigned int fsc_type = esr & ESR_ELx_FSC_TYPE;
+
+	if (ec != ESR_ELx_EC_DABT_CUR && ec != ESR_ELx_EC_IABT_CUR)
+		return false;
+
+	if (system_uses_ttbr0_pan())
+		return fsc_type == ESR_ELx_FSC_FAULT &&
+			(regs->pstate & PSR_PAN_BIT);
+	else
+		return fsc_type == ESR_ELx_FSC_PERM;
+}
+
+static bool is_el0_instruction_abort(unsigned int esr)
+{
+	return ESR_ELx_EC(esr) == ESR_ELx_EC_IABT_LOW;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
 				   struct pt_regs *regs)
 {
@@ -217,13 +281,34 @@ static int __kprobes do_page_fault(unsigned long addr, unsigned int esr,
 	if (user_mode(regs))
 		mm_flags |= FAULT_FLAG_USER;
 
+<<<<<<< HEAD
 	if (esr & ESR_LNX_EXEC) {
 		vm_flags = VM_EXEC;
 	} else if ((esr & ESR_EL1_WRITE) && !(esr & ESR_EL1_CM)) {
+=======
+	if (is_el0_instruction_abort(esr)) {
+		vm_flags = VM_EXEC;
+	} else if ((esr & ESR_ELx_WNR) && !(esr & ESR_ELx_CM)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vm_flags = VM_WRITE;
 		mm_flags |= FAULT_FLAG_WRITE;
 	}
 
+<<<<<<< HEAD
+=======
+	if (addr < USER_DS && is_permission_fault(esr, regs)) {
+		/* regs->orig_addr_limit may be 0 if we entered from EL0 */
+		if (regs->orig_addr_limit == KERNEL_DS)
+			die("Accessing user space memory with fs=KERNEL_DS", regs, esr);
+
+		if (is_el1_instruction_abort(esr))
+			die("Attempting to execute userspace memory", regs, esr);
+
+		if (!search_exception_tables(regs->pc))
+			panic("Accessing user space memory outside uaccess.h routines");
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * As per x86, we may deadlock here. However, since the kernel only
 	 * validly references user space from well defined areas of the code,
@@ -253,8 +338,16 @@ retry:
 	 * signal first. We do not need to release the mmap_sem because it
 	 * would already be released in __lock_page_or_retry in mm/filemap.c.
 	 */
+<<<<<<< HEAD
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return 0;
+=======
+	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current)) {
+		if (!user_mode(regs))
+			goto no_context;
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Major/minor page fault accounting is only done on the initial
@@ -279,6 +372,10 @@ retry:
 			 * starvation.
 			 */
 			mm_flags &= ~FAULT_FLAG_ALLOW_RETRY;
+<<<<<<< HEAD
+=======
+			mm_flags |= FAULT_FLAG_TRIED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto retry;
 		}
 	}
@@ -370,7 +467,11 @@ static int do_bad(unsigned long addr, unsigned int esr, struct pt_regs *regs)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct fault_info {
+=======
+static const struct fault_info {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int	(*fn)(unsigned long addr, unsigned int esr, struct pt_regs *regs);
 	int	sig;
 	int	code;
@@ -383,7 +484,11 @@ static struct fault_info {
 	{ do_translation_fault,	SIGSEGV, SEGV_MAPERR,	"input address range fault"	},
 	{ do_translation_fault,	SIGSEGV, SEGV_MAPERR,	"level 1 translation fault"	},
 	{ do_translation_fault,	SIGSEGV, SEGV_MAPERR,	"level 2 translation fault"	},
+<<<<<<< HEAD
 	{ do_page_fault,	SIGSEGV, SEGV_MAPERR,	"level 3 translation fault"	},
+=======
+	{ do_translation_fault,	SIGSEGV, SEGV_MAPERR,	"level 3 translation fault"	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ do_bad,		SIGBUS,  0,		"reserved access flag fault"	},
 	{ do_page_fault,	SIGSEGV, SEGV_ACCERR,	"level 1 access flag fault"	},
 	{ do_page_fault,	SIGSEGV, SEGV_ACCERR,	"level 2 access flag fault"	},
@@ -509,6 +614,7 @@ void __init hook_debug_fault_code(int nr,
 	debug_fault_info[nr].name	= name;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MEDIATEK_SOLUTION
 void __init hook_fault_code(int nr,
 		int (*fn)(unsigned long, unsigned int, struct pt_regs *),
@@ -525,10 +631,14 @@ void __init hook_fault_code(int nr,
 
 
 asmlinkage int __exception do_debug_exception(unsigned long addr,
+=======
+asmlinkage int __exception do_debug_exception(unsigned long addr_if_watchpoint,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					      unsigned int esr,
 					      struct pt_regs *regs)
 {
 	const struct fault_info *inf = debug_fault_info + DBG_ESR_EVT(esr);
+<<<<<<< HEAD
 	struct siginfo info;
 
 	if (!inf->fn(addr, esr, regs))
@@ -545,3 +655,64 @@ asmlinkage int __exception do_debug_exception(unsigned long addr,
 
 	return 0;
 }
+=======
+	unsigned long pc = instruction_pointer(regs);
+	struct siginfo info;
+	int rv;
+
+	/*
+	 * Tell lockdep we disabled irqs in entry.S. Do nothing if they were
+	 * already disabled to preserve the last enabled/disabled addresses.
+	 */
+	if (interrupts_enabled(regs))
+		trace_hardirqs_off();
+
+	if (!inf->fn(addr_if_watchpoint, esr, regs)) {
+		rv = 1;
+	} else {
+		pr_alert("Unhandled debug exception: %s (0x%08x) at 0x%016lx\n",
+			 inf->name, esr, pc);
+
+		info.si_signo = inf->sig;
+		info.si_errno = 0;
+		info.si_code  = inf->code;
+		info.si_addr  = (void __user *)pc;
+		arm64_notify_die("", regs, &info, 0);
+		rv = 0;
+	}
+
+	if (interrupts_enabled(regs))
+		trace_hardirqs_on();
+
+	return rv;
+}
+
+#ifdef CONFIG_ARM64_PAN
+int cpu_enable_pan(void *__unused)
+{
+	/*
+	 * We modify PSTATE. This won't work from irq context as the PSTATE
+	 * is discarded once we return from the exception.
+	 */
+	WARN_ON_ONCE(in_interrupt());
+
+	config_sctlr_el1(SCTLR_EL1_SPAN, 0);
+	asm(SET_PSTATE_PAN(1));
+	return 0;
+}
+#endif /* CONFIG_ARM64_PAN */
+
+#ifdef CONFIG_ARM64_UAO
+/*
+ * Kernel threads have fs=KERNEL_DS by default, and don't need to call
+ * set_fs(), devtmpfs in particular relies on this behaviour.
+ * We need to enable the feature at runtime (instead of adding it to
+ * PSR_MODE_EL1h) as the feature may not be implemented by the cpu.
+ */
+int cpu_enable_uao(void *__unused)
+{
+	asm(SET_PSTATE_UAO(1));
+	return 0;
+}
+#endif /* CONFIG_ARM64_UAO */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

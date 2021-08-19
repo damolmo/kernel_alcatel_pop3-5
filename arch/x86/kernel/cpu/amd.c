@@ -8,6 +8,10 @@
 #include <asm/processor.h>
 #include <asm/apic.h>
 #include <asm/cpu.h>
+<<<<<<< HEAD
+=======
+#include <asm/spec-ctrl.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/smp.h>
 #include <asm/pci-direct.h>
 
@@ -102,7 +106,11 @@ static void init_amd_k6(struct cpuinfo_x86 *c)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (c->x86_model == 6 && c->x86_mask == 1) {
+=======
+	if (c->x86_model == 6 && c->x86_stepping == 1) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		const int K6_BUG_LOOP = 1000000;
 		int n;
 		void (*f_vide)(void);
@@ -132,7 +140,11 @@ static void init_amd_k6(struct cpuinfo_x86 *c)
 
 	/* K6 with old style WHCR */
 	if (c->x86_model < 8 ||
+<<<<<<< HEAD
 	   (c->x86_model == 8 && c->x86_mask < 8)) {
+=======
+	   (c->x86_model == 8 && c->x86_stepping < 8)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* We can only write allocate on the low 508Mb */
 		if (mbytes > 508)
 			mbytes = 508;
@@ -151,7 +163,11 @@ static void init_amd_k6(struct cpuinfo_x86 *c)
 		return;
 	}
 
+<<<<<<< HEAD
 	if ((c->x86_model == 8 && c->x86_mask > 7) ||
+=======
+	if ((c->x86_model == 8 && c->x86_stepping > 7) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	     c->x86_model == 9 || c->x86_model == 13) {
 		/* The more serious chips .. */
 
@@ -204,7 +220,11 @@ static void init_amd_k7(struct cpuinfo_x86 *c)
 	 * are more robust with CLK_CTL set to 200xxxxx instead of 600xxxxx
 	 * As per AMD technical note 27212 0.2
 	 */
+<<<<<<< HEAD
 	if ((c->x86_model == 8 && c->x86_mask >= 1) || (c->x86_model > 8)) {
+=======
+	if ((c->x86_model == 8 && c->x86_stepping >= 1) || (c->x86_model > 8)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rdmsr(MSR_K7_CLK_CTL, l, h);
 		if ((l & 0xfff00000) != 0x20000000) {
 			printk(KERN_INFO
@@ -225,12 +245,21 @@ static void init_amd_k7(struct cpuinfo_x86 *c)
 	 * but they are not certified as MP capable.
 	 */
 	/* Athlon 660/661 is valid. */
+<<<<<<< HEAD
 	if ((c->x86_model == 6) && ((c->x86_mask == 0) ||
 	    (c->x86_mask == 1)))
 		return;
 
 	/* Duron 670 is valid */
 	if ((c->x86_model == 7) && (c->x86_mask == 0))
+=======
+	if ((c->x86_model == 6) && ((c->x86_stepping == 0) ||
+	    (c->x86_stepping == 1)))
+		return;
+
+	/* Duron 670 is valid */
+	if ((c->x86_model == 7) && (c->x86_stepping == 0))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	/*
@@ -240,8 +269,13 @@ static void init_amd_k7(struct cpuinfo_x86 *c)
 	 * See http://www.heise.de/newsticker/data/jow-18.10.01-000 for
 	 * more.
 	 */
+<<<<<<< HEAD
 	if (((c->x86_model == 6) && (c->x86_mask >= 2)) ||
 	    ((c->x86_model == 7) && (c->x86_mask >= 1)) ||
+=======
+	if (((c->x86_model == 6) && (c->x86_stepping >= 2)) ||
+	    ((c->x86_model == 7) && (c->x86_stepping >= 1)) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	     (c->x86_model > 7))
 		if (cpu_has(c, X86_FEATURE_MP))
 			return;
@@ -512,7 +546,11 @@ static void early_init_amd(struct cpuinfo_x86 *c)
 	/*  Set MTRR capability flag if appropriate */
 	if (c->x86 == 5)
 		if (c->x86_model == 13 || c->x86_model == 9 ||
+<<<<<<< HEAD
 		    (c->x86_model == 8 && c->x86_mask >= 8))
+=======
+		    (c->x86_model == 8 && c->x86_stepping >= 8))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			set_cpu_cap(c, X86_FEATURE_K6_MTRR);
 #endif
 #if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_PCI)
@@ -603,6 +641,20 @@ static void init_amd_gh(struct cpuinfo_x86 *c)
 		set_cpu_bug(c, X86_BUG_AMD_TLB_MMATCH);
 }
 
+<<<<<<< HEAD
+=======
+#define MSR_AMD64_DE_CFG	0xC0011029
+
+static void init_amd_ln(struct cpuinfo_x86 *c)
+{
+	/*
+	 * Apply erratum 665 fix unconditionally so machines without a BIOS
+	 * fix work.
+	 */
+	msr_set_bit(MSR_AMD64_DE_CFG, 31);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void init_amd_bd(struct cpuinfo_x86 *c)
 {
 	u64 value;
@@ -672,6 +724,10 @@ static void init_amd(struct cpuinfo_x86 *c)
 	case 6:	   init_amd_k7(c); break;
 	case 0xf:  init_amd_k8(c); break;
 	case 0x10: init_amd_gh(c); break;
+<<<<<<< HEAD
+=======
+	case 0x12: init_amd_ln(c); break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 0x15: init_amd_bd(c); break;
 	}
 
@@ -720,11 +776,19 @@ static unsigned int amd_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 	/* AMD errata T13 (order #21922) */
 	if ((c->x86 == 6)) {
 		/* Duron Rev A0 */
+<<<<<<< HEAD
 		if (c->x86_model == 3 && c->x86_mask == 0)
 			size = 64;
 		/* Tbird rev A1/A2 */
 		if (c->x86_model == 4 &&
 			(c->x86_mask == 0 || c->x86_mask == 1))
+=======
+		if (c->x86_model == 3 && c->x86_stepping == 0)
+			size = 64;
+		/* Tbird rev A1/A2 */
+		if (c->x86_model == 4 &&
+			(c->x86_stepping == 0 || c->x86_stepping == 1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			size = 256;
 	}
 	return size;
@@ -861,7 +925,11 @@ static bool cpu_has_amd_erratum(struct cpuinfo_x86 *cpu, const int *erratum)
 	}
 
 	/* OSVW unavailable or ID unknown, match family-model-stepping range */
+<<<<<<< HEAD
 	ms = (cpu->x86_model << 4) | cpu->x86_mask;
+=======
+	ms = (cpu->x86_model << 4) | cpu->x86_stepping;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while ((range = *erratum++))
 		if ((cpu->x86 == AMD_MODEL_RANGE_FAMILY(range)) &&
 		    (ms >= AMD_MODEL_RANGE_START(range)) &&

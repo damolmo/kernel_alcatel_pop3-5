@@ -863,6 +863,11 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
 {
 	pgste_t pgste;
 
+<<<<<<< HEAD
+=======
+	if (pte_present(entry))
+		pte_val(entry) &= ~_PAGE_UNUSED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (mm_has_pgste(mm)) {
 		pgste = pgste_get_lock(ptep);
 		pgste_val(pgste) &= ~_PGSTE_GPS_ZERO;

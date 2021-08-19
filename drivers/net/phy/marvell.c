@@ -157,6 +157,7 @@ static int marvell_config_aneg(struct phy_device *phydev)
 {
 	int err;
 
+<<<<<<< HEAD
 	/* The Marvell PHY has an errata which requires
 	 * that certain registers get written in order
 	 * to restart autonegotiation */
@@ -187,6 +188,11 @@ static int marvell_config_aneg(struct phy_device *phydev)
 
 	err = phy_write(phydev, MII_M1011_PHY_SCR,
 			MII_M1011_PHY_SCR_AUTO_CROSS);
+=======
+	err = phy_write(phydev, MII_M1011_PHY_SCR,
+			MII_M1011_PHY_SCR_AUTO_CROSS);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0)
 		return err;
 
@@ -219,6 +225,45 @@ static int marvell_config_aneg(struct phy_device *phydev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int m88e1101_config_aneg(struct phy_device *phydev)
+{
+	int err;
+
+	/* This Marvell PHY has an errata which requires
+	 * that certain registers get written in order
+	 * to restart autonegotiation
+	 */
+	err = phy_write(phydev, MII_BMCR, BMCR_RESET);
+
+	if (err < 0)
+		return err;
+
+	err = phy_write(phydev, 0x1d, 0x1f);
+	if (err < 0)
+		return err;
+
+	err = phy_write(phydev, 0x1e, 0x200c);
+	if (err < 0)
+		return err;
+
+	err = phy_write(phydev, 0x1d, 0x5);
+	if (err < 0)
+		return err;
+
+	err = phy_write(phydev, 0x1e, 0);
+	if (err < 0)
+		return err;
+
+	err = phy_write(phydev, 0x1e, 0x100);
+	if (err < 0)
+		return err;
+
+	return marvell_config_aneg(phydev);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_OF_MDIO
 /*
  * Set and/or override some configuration registers based on the
@@ -737,8 +782,11 @@ static int marvell_read_status(struct phy_device *phydev)
 		if (adv < 0)
 			return adv;
 
+<<<<<<< HEAD
 		lpa &= adv;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (status & MII_M1011_PHY_STATUS_FULLDUPLEX)
 			phydev->duplex = DUPLEX_FULL;
 		else
@@ -830,6 +878,18 @@ static int m88e1318_set_wol(struct phy_device *phydev, struct ethtool_wolinfo *w
 		if (err < 0)
 			return err;
 
+<<<<<<< HEAD
+=======
+		/* If WOL event happened once, the LED[2] interrupt pin
+		 * will not be cleared unless we reading the interrupt status
+		 * register. If interrupts are in use, the normal interrupt
+		 * handling will clear the WOL event. Clear the WOL event
+		 * before enabling it if !phy_interrupt_is_valid()
+		 */
+		if (!phy_interrupt_is_valid(phydev))
+			phy_read(phydev, MII_M1011_IEVENT);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Enable the WOL interrupt */
 		temp = phy_read(phydev, MII_88E1318S_PHY_CSIER);
 		temp |= MII_88E1318S_PHY_CSIER_WOL_EIE;
@@ -909,7 +969,11 @@ static struct phy_driver marvell_drivers[] = {
 		.name = "Marvell 88E1101",
 		.features = PHY_GBIT_FEATURES,
 		.flags = PHY_HAS_INTERRUPT,
+<<<<<<< HEAD
 		.config_aneg = &marvell_config_aneg,
+=======
+		.config_aneg = &m88e1101_config_aneg,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.read_status = &genphy_read_status,
 		.ack_interrupt = &marvell_ack_interrupt,
 		.config_intr = &marvell_config_intr,

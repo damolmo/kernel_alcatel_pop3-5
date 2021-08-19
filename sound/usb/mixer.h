@@ -23,6 +23,10 @@ struct usb_mixer_interface {
 
 	u8 audigy2nx_leds[3];
 	u8 xonar_u1_status;
+<<<<<<< HEAD
+=======
+	bool disconnected;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define MAX_CHANNELS	16	/* max logical channels */
@@ -34,6 +38,11 @@ enum {
 	USB_MIXER_U8,
 	USB_MIXER_S16,
 	USB_MIXER_U16,
+<<<<<<< HEAD
+=======
+	USB_MIXER_S32,
+	USB_MIXER_U32,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct usb_mixer_elem_info {
@@ -53,6 +62,10 @@ struct usb_mixer_elem_info {
 	int cached;
 	int cache_val[MAX_CHANNELS];
 	u8 initialized;
+<<<<<<< HEAD
+=======
+	u8 min_mute;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 int snd_usb_create_mixer(struct snd_usb_audio *chip, int ctrlif,

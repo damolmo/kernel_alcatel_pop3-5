@@ -285,8 +285,15 @@ static int snd_es968_pnp_detect(struct pnp_card_link *pcard,
 		return error;
 	}
 	error = snd_es1688_probe(card, dev);
+<<<<<<< HEAD
 	if (error < 0)
 		return error;
+=======
+	if (error < 0) {
+		snd_card_free(card);
+		return error;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pnp_set_card_drvdata(pcard, card);
 	snd_es968_pnp_is_probed = 1;
 	return 0;

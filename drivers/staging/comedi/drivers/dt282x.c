@@ -81,6 +81,7 @@
  * Register map
  */
 #define DT2821_ADCSR_REG		0x00
+<<<<<<< HEAD
 #define DT2821_ADCSR_ADERR		(1 << 15)
 #define DT2821_ADCSR_ADCLK		(1 << 9)
 #define DT2821_ADCSR_MUXBUSY		(1 << 8)
@@ -123,6 +124,51 @@
 #define DT2821_SUPCSR_XTRIG		(1 << 2)
 #define DT2821_SUPCSR_XCLK		(1 << 1)
 #define DT2821_SUPCSR_BDINIT		(1 << 0)
+=======
+#define DT2821_ADCSR_ADERR		BIT(15)
+#define DT2821_ADCSR_ADCLK		BIT(9)
+#define DT2821_ADCSR_MUXBUSY		BIT(8)
+#define DT2821_ADCSR_ADDONE		BIT(7)
+#define DT2821_ADCSR_IADDONE		BIT(6)
+#define DT2821_ADCSR_GS(x)		(((x) & 0x3) << 4)
+#define DT2821_ADCSR_CHAN(x)		(((x) & 0xf) << 0)
+#define DT2821_CHANCSR_REG		0x02
+#define DT2821_CHANCSR_LLE		BIT(15)
+#define DT2821_CHANCSR_TO_PRESLA(x)	(((x) >> 8) & 0xf)
+#define DT2821_CHANCSR_NUMB(x)		((((x) - 1) & 0xf) << 0)
+#define DT2821_ADDAT_REG		0x04
+#define DT2821_DACSR_REG		0x06
+#define DT2821_DACSR_DAERR		BIT(15)
+#define DT2821_DACSR_YSEL(x)		((x) << 9)
+#define DT2821_DACSR_SSEL		BIT(8)
+#define DT2821_DACSR_DACRDY		BIT(7)
+#define DT2821_DACSR_IDARDY		BIT(6)
+#define DT2821_DACSR_DACLK		BIT(5)
+#define DT2821_DACSR_HBOE		BIT(1)
+#define DT2821_DACSR_LBOE		BIT(0)
+#define DT2821_DADAT_REG		0x08
+#define DT2821_DIODAT_REG		0x0a
+#define DT2821_SUPCSR_REG		0x0c
+#define DT2821_SUPCSR_DMAD		BIT(15)
+#define DT2821_SUPCSR_ERRINTEN		BIT(14)
+#define DT2821_SUPCSR_CLRDMADNE		BIT(13)
+#define DT2821_SUPCSR_DDMA		BIT(12)
+#define DT2821_SUPCSR_DS(x)		(((x) & 0x3) << 10)
+#define DT2821_SUPCSR_DS_PIO		DT2821_SUPCSR_DS(0)
+#define DT2821_SUPCSR_DS_AD_CLK		DT2821_SUPCSR_DS(1)
+#define DT2821_SUPCSR_DS_DA_CLK		DT2821_SUPCSR_DS(2)
+#define DT2821_SUPCSR_DS_AD_TRIG	DT2821_SUPCSR_DS(3)
+#define DT2821_SUPCSR_BUFFB		BIT(9)
+#define DT2821_SUPCSR_SCDN		BIT(8)
+#define DT2821_SUPCSR_DACON		BIT(7)
+#define DT2821_SUPCSR_ADCINIT		BIT(6)
+#define DT2821_SUPCSR_DACINIT		BIT(5)
+#define DT2821_SUPCSR_PRLD		BIT(4)
+#define DT2821_SUPCSR_STRIG		BIT(3)
+#define DT2821_SUPCSR_XTRIG		BIT(2)
+#define DT2821_SUPCSR_XCLK		BIT(1)
+#define DT2821_SUPCSR_BDINIT		BIT(0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DT2821_TMRCTR_REG		0x0e
 
 static const struct comedi_lrange range_dt282x_ai_lo_bipolar = {
@@ -580,7 +626,12 @@ static irqreturn_t dt282x_interrupt(int irq, void *d)
 	}
 #endif
 	cfc_handle_events(dev, s);
+<<<<<<< HEAD
 	cfc_handle_events(dev, s_ao);
+=======
+	if (s_ao)
+		cfc_handle_events(dev, s_ao);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return IRQ_RETVAL(handled);
 }

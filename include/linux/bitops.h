@@ -10,7 +10,12 @@
 #define BIT_ULL_MASK(nr)	(1ULL << ((nr) % BITS_PER_LONG_LONG))
 #define BIT_ULL_WORD(nr)	((nr) / BITS_PER_LONG_LONG)
 #define BITS_PER_BYTE		8
+<<<<<<< HEAD
 #define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_BYTE * sizeof(long))
+=======
+#define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
+#define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*
@@ -19,10 +24,18 @@
  * GENMASK_ULL(39, 21) gives us the 64bit vector 0x000000ffffe00000.
  */
 #define GENMASK(h, l) \
+<<<<<<< HEAD
 	(((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
 
 #define GENMASK_ULL(h, l) \
 	(((~0ULL) << (l)) & (~0ULL >> (BITS_PER_LONG_LONG - 1 - (h))))
+=======
+	(((~0UL) - (1UL << (l)) + 1) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
+
+#define GENMASK_ULL(h, l) \
+	(((~0ULL) - (1ULL << (l)) + 1) & \
+	 (~0ULL >> (BITS_PER_LONG_LONG - 1 - (h))))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern unsigned int __sw_hweight8(unsigned int w);
 extern unsigned int __sw_hweight16(unsigned int w);
@@ -77,7 +90,11 @@ static __inline__ int get_count_order(unsigned int count)
 
 static inline unsigned long hweight_long(unsigned long w)
 {
+<<<<<<< HEAD
 	return sizeof(w) == 4 ? hweight32(w) : hweight64(w);
+=======
+	return sizeof(w) == 4 ? hweight32(w) : hweight64((__u64)w);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -87,7 +104,11 @@ static inline unsigned long hweight_long(unsigned long w)
  */
 static inline __u64 rol64(__u64 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (64 - shift));
+=======
+	return (word << (shift & 63)) | (word >> ((-shift) & 63));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -97,7 +118,11 @@ static inline __u64 rol64(__u64 word, unsigned int shift)
  */
 static inline __u64 ror64(__u64 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (64 - shift));
+=======
+	return (word >> (shift & 63)) | (word << ((-shift) & 63));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -107,7 +132,11 @@ static inline __u64 ror64(__u64 word, unsigned int shift)
  */
 static inline __u32 rol32(__u32 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (32 - shift));
+=======
+	return (word << (shift & 31)) | (word >> ((-shift) & 31));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -117,7 +146,11 @@ static inline __u32 rol32(__u32 word, unsigned int shift)
  */
 static inline __u32 ror32(__u32 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (32 - shift));
+=======
+	return (word >> (shift & 31)) | (word << ((-shift) & 31));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -127,7 +160,11 @@ static inline __u32 ror32(__u32 word, unsigned int shift)
  */
 static inline __u16 rol16(__u16 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (16 - shift));
+=======
+	return (word << (shift & 15)) | (word >> ((-shift) & 15));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -137,7 +174,11 @@ static inline __u16 rol16(__u16 word, unsigned int shift)
  */
 static inline __u16 ror16(__u16 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (16 - shift));
+=======
+	return (word >> (shift & 15)) | (word << ((-shift) & 15));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -147,7 +188,11 @@ static inline __u16 ror16(__u16 word, unsigned int shift)
  */
 static inline __u8 rol8(__u8 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word << shift) | (word >> (8 - shift));
+=======
+	return (word << (shift & 7)) | (word >> ((-shift) & 7));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -157,7 +202,11 @@ static inline __u8 rol8(__u8 word, unsigned int shift)
  */
 static inline __u8 ror8(__u8 word, unsigned int shift)
 {
+<<<<<<< HEAD
 	return (word >> shift) | (word << (8 - shift));
+=======
+	return (word >> (shift & 7)) | (word << ((-shift) & 7));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -171,6 +220,20 @@ static inline __s32 sign_extend32(__u32 value, int index)
 	return (__s32)(value << shift) >> shift;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * sign_extend64 - sign extend a 64-bit value using specified bit as sign-bit
+ * @value: value to sign extend
+ * @index: 0 based bit index (0<=index<64) to sign bit
+ */
+static inline __s64 sign_extend64(__u64 value, int index)
+{
+	__u8 shift = 63 - index;
+	return (__s64)(value << shift) >> shift;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline unsigned fls_long(unsigned long l)
 {
 	if (sizeof(l) == 4)

@@ -47,6 +47,7 @@ static void setup_cmd_submit_pdu(struct usbip_header *pdup,  struct urb *urb)
 static struct vhci_priv *dequeue_from_priv_tx(struct vhci_device *vdev)
 {
 	struct vhci_priv *priv, *tmp;
+<<<<<<< HEAD
 
 	spin_lock(&vdev->priv_lock);
 
@@ -57,6 +58,19 @@ static struct vhci_priv *dequeue_from_priv_tx(struct vhci_device *vdev)
 	}
 
 	spin_unlock(&vdev->priv_lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&vdev->priv_lock, flags);
+
+	list_for_each_entry_safe(priv, tmp, &vdev->priv_tx, list) {
+		list_move_tail(&priv->list, &vdev->priv_rx);
+		spin_unlock_irqrestore(&vdev->priv_lock, flags);
+		return priv;
+	}
+
+	spin_unlock_irqrestore(&vdev->priv_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return NULL;
 }
@@ -82,7 +96,12 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 		memset(&msg, 0, sizeof(msg));
 		memset(&iov, 0, sizeof(iov));
 
+<<<<<<< HEAD
 		usbip_dbg_vhci_tx("setup txdata urb %p\n", urb);
+=======
+		usbip_dbg_vhci_tx("setup txdata urb seqnum %lu\n",
+				  priv->seqnum);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* 1. setup usbip_header */
 		setup_cmd_submit_pdu(&pdu_header, urb);
@@ -136,6 +155,7 @@ static int vhci_send_cmd_submit(struct vhci_device *vdev)
 static struct vhci_unlink *dequeue_from_unlink_tx(struct vhci_device *vdev)
 {
 	struct vhci_unlink *unlink, *tmp;
+<<<<<<< HEAD
 
 	spin_lock(&vdev->priv_lock);
 
@@ -146,6 +166,19 @@ static struct vhci_unlink *dequeue_from_unlink_tx(struct vhci_device *vdev)
 	}
 
 	spin_unlock(&vdev->priv_lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&vdev->priv_lock, flags);
+
+	list_for_each_entry_safe(unlink, tmp, &vdev->unlink_tx, list) {
+		list_move_tail(&unlink->list, &vdev->unlink_rx);
+		spin_unlock_irqrestore(&vdev->priv_lock, flags);
+		return unlink;
+	}
+
+	spin_unlock_irqrestore(&vdev->priv_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return NULL;
 }

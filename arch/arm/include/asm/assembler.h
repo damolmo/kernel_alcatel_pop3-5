@@ -427,6 +427,56 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 #endif
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro	uaccess_disable, tmp, isb=1
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	/*
+	 * Whenever we re-enter userspace, the domains should always be
+	 * set appropriately.
+	 */
+	mov	\tmp, #DACR_UACCESS_DISABLE
+	mcr	p15, 0, \tmp, c3, c0, 0		@ Set domain register
+	.if	\isb
+	instr_sync
+	.endif
+#endif
+	.endm
+
+	.macro	uaccess_enable, tmp, isb=1
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	/*
+	 * Whenever we re-enter userspace, the domains should always be
+	 * set appropriately.
+	 */
+	mov	\tmp, #DACR_UACCESS_ENABLE
+	mcr	p15, 0, \tmp, c3, c0, 0
+	.if	\isb
+	instr_sync
+	.endif
+#endif
+	.endm
+
+	.macro	uaccess_save, tmp
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	mrc	p15, 0, \tmp, c3, c0, 0
+	str	\tmp, [sp, #S_FRAME_SIZE]
+#endif
+	.endm
+
+	.macro	uaccess_restore
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+	ldr	r0, [sp, #S_FRAME_SIZE]
+	mcr	p15, 0, r0, c3, c0, 0
+#endif
+	.endm
+
+	.macro	uaccess_save_and_disable, tmp
+	uaccess_save \tmp
+	uaccess_disable \tmp
+	.endm
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.irp	c,,eq,ne,cs,cc,mi,pl,vs,vc,hi,ls,ge,lt,gt,le,hs,lo
 	.macro	ret\c, reg
 #if __LINUX_ARM_ARCH__ < 6
@@ -448,4 +498,35 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 #endif
 	.endm
 
+<<<<<<< HEAD
+=======
+	.macro	bug, msg, line
+#ifdef CONFIG_THUMB2_KERNEL
+1:	.inst	0xde02
+#else
+1:	.inst	0xe7f001f2
+#endif
+#ifdef CONFIG_DEBUG_BUGVERBOSE
+	.pushsection .rodata.str, "aMS", %progbits, 1
+2:	.asciz	"\msg"
+	.popsection
+	.pushsection __bug_table, "aw"
+	.align	2
+	.word	1b, 2b
+	.hword	\line
+	.popsection
+#endif
+	.endm
+
+#ifdef CONFIG_KPROBES
+#define _ASM_NOKPROBE(entry)				\
+	.pushsection "_kprobe_blacklist", "aw" ;	\
+	.balign 4 ;					\
+	.long entry;					\
+	.popsection
+#else
+#define _ASM_NOKPROBE(entry)
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* __ASM_ASSEMBLER_H__ */

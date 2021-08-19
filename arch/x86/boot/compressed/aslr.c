@@ -1,5 +1,9 @@
 #include "misc.h"
 
+<<<<<<< HEAD
+=======
+#include <asm/asm.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/msr.h>
 #include <asm/archrandom.h>
 #include <asm/e820.h>
@@ -24,8 +28,13 @@ static inline u16 i8254(void)
 	u16 status, timer;
 
 	do {
+<<<<<<< HEAD
 		outb(I8254_PORT_CONTROL,
 		     I8254_CMD_READBACK | I8254_SELECT_COUNTER0);
+=======
+		outb(I8254_CMD_READBACK | I8254_SELECT_COUNTER0,
+		     I8254_PORT_CONTROL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status = inb(I8254_PORT_COUNTER0);
 		timer  = inb(I8254_PORT_COUNTER0);
 		timer |= inb(I8254_PORT_COUNTER0) << 8;
@@ -94,7 +103,11 @@ static unsigned long get_random_long(void)
 	}
 
 	/* Circular multiply for better bit diffusion */
+<<<<<<< HEAD
 	asm("mul %3"
+=======
+	asm(_ASM_MUL "%3"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    : "=a" (random), "=d" (raw)
 	    : "a" (random), "rm" (mix_const));
 	random += raw;

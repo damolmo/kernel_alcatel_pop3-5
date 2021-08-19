@@ -163,6 +163,10 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
 
 #define pmd_large(pmd)		(pmd_val(pmd) & 2)
 #define pmd_bad(pmd)		(pmd_val(pmd) & 2)
+<<<<<<< HEAD
+=======
+#define pmd_present(pmd)	(pmd_val(pmd))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define copy_pmd(pmdpd,pmdps)		\
 	do {				\

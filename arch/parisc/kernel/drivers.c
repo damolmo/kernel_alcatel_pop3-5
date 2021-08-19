@@ -648,6 +648,13 @@ static int match_pci_device(struct device *dev, int index,
 					(modpath->mod == PCI_FUNC(devfn)));
 	}
 
+<<<<<<< HEAD
+=======
+	/* index might be out of bounds for bc[] */
+	if (index >= 6)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	id = PCI_SLOT(pdev->devfn) | (PCI_FUNC(pdev->devfn) << 5);
 	return (modpath->bc[index] == id);
 }

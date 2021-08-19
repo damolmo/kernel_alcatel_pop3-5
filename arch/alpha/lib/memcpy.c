@@ -16,6 +16,10 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * This should be done in one go with ldq_u*2/mask/stq_u. Do it
@@ -158,6 +162,10 @@ void * memcpy(void * dest, const void *src, size_t n)
 	__memcpy_unaligned_up ((unsigned long) dest, (unsigned long) src, n);
 	return dest;
 }
+<<<<<<< HEAD
 
 /* For backward modules compatibility, define __memcpy.  */
 asm("__memcpy = memcpy; .globl __memcpy");
+=======
+EXPORT_SYMBOL(memcpy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -9,6 +9,7 @@
 #include <linux/device.h>
 #include <linux/mutex.h>
 #include <linux/pm_wakeup.h>
+<<<<<<< HEAD
 #include <mtk_hibernate_core.h>
 
 #include "power.h"
@@ -22,6 +23,11 @@
 #endif
 #define hib_autoslp_warn(fmt, ...)   pr_warn("[%s][%s]" fmt, _TAG_HIB_M, __func__, ##__VA_ARGS__)
 
+=======
+
+#include "power.h"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static suspend_state_t autosleep_state;
 static struct workqueue_struct *autosleep_wq;
 /*
@@ -49,6 +55,7 @@ static void try_to_suspend(struct work_struct *work)
 	}
 
 	if (autosleep_state == PM_SUSPEND_ON) {
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 		system_is_hibernating = false;
 #endif
@@ -70,11 +77,19 @@ static void try_to_suspend(struct work_struct *work)
 		}
 	}
 #else /* !CONFIG_MTK_HIBERNATION */
+=======
+		mutex_unlock(&autosleep_lock);
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (autosleep_state >= PM_SUSPEND_MAX)
 		hibernate();
 	else
 		pm_suspend(autosleep_state);
+<<<<<<< HEAD
 #endif /* CONFIG_MTK_HIBERNATION */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_unlock(&autosleep_lock);
 

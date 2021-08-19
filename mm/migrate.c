@@ -37,6 +37,10 @@
 #include <linux/gfp.h>
 #include <linux/balloon_compaction.h>
 #include <linux/mmu_notifier.h>
+<<<<<<< HEAD
+=======
+#include <linux/ptrace.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/tlbflush.h>
 
@@ -421,6 +425,10 @@ int migrate_page_move_mapping(struct address_space *mapping,
 
 	return MIGRATEPAGE_SUCCESS;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(migrate_page_move_mapping);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * The expected number of remaining references is the same as that
@@ -580,6 +588,10 @@ void migrate_page_copy(struct page *newpage, struct page *page)
 	if (PageWriteback(newpage))
 		end_page_writeback(newpage);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(migrate_page_copy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /************************************************************
  *                    Migration functions
@@ -940,6 +952,10 @@ static int unmap_and_move(new_page_t get_new_page, free_page_t put_new_page,
 	int rc = 0;
 	int *result = NULL;
 	struct page *newpage = get_new_page(page, private, &result);
+<<<<<<< HEAD
+=======
+	bool is_lru = !isolated_balloon_page(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!newpage)
 		return -ENOMEM;
@@ -972,12 +988,22 @@ out:
 	/*
 	 * If migration was not successful and there's a freeing callback, use
 	 * it.  Otherwise, putback_lru_page() will drop the reference grabbed
+<<<<<<< HEAD
 	 * during isolation.
+=======
+	 * during isolation. Use the old state of the isolated source page to
+	 * determine if we migrated a LRU page. newpage was already unlocked
+	 * and possibly modified by its owner - don't rely on the page state.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 */
 	if (rc != MIGRATEPAGE_SUCCESS && put_new_page) {
 		ClearPageSwapBacked(newpage);
 		put_new_page(newpage, private);
+<<<<<<< HEAD
 	} else if (unlikely(__is_movable_balloon_page(newpage))) {
+=======
+	} else if (rc == MIGRATEPAGE_SUCCESS && unlikely(!is_lru)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* drop our reference, page already in the balloon */
 		put_page(newpage);
 	} else
@@ -1044,6 +1070,19 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
 		lock_page(hpage);
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Check for pages which are in the process of being freed.  Without
+	 * page_mapping() set, hugetlbfs specific move page routine will not
+	 * be called and we could leak usage counts for subpools.
+	 */
+	if (page_private(hpage) && !page_mapping(hpage)) {
+		rc = -EBUSY;
+		goto out_unlock;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (PageAnon(hpage))
 		anon_vma = page_get_anon_vma(hpage);
 
@@ -1061,6 +1100,10 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
 	if (rc == MIGRATEPAGE_SUCCESS)
 		hugetlb_cgroup_migrate(hpage, new_hpage);
 
+<<<<<<< HEAD
+=======
+out_unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unlock_page(hpage);
 out:
 	if (rc != -EAGAIN)
@@ -1074,7 +1117,11 @@ out:
 	if (rc != MIGRATEPAGE_SUCCESS && put_new_page)
 		put_new_page(new_hpage, private);
 	else
+<<<<<<< HEAD
 		put_page(new_hpage);
+=======
+		putback_active_hugepage(new_hpage);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (result) {
 		if (rc)
@@ -1466,7 +1513,10 @@ SYSCALL_DEFINE6(move_pages, pid_t, pid, unsigned long, nr_pages,
 		const int __user *, nodes,
 		int __user *, status, int, flags)
 {
+<<<<<<< HEAD
 	const struct cred *cred = current_cred(), *tcred;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct task_struct *task;
 	struct mm_struct *mm;
 	int err;
@@ -1490,6 +1540,7 @@ SYSCALL_DEFINE6(move_pages, pid_t, pid, unsigned long, nr_pages,
 
 	/*
 	 * Check if this process has the right to modify the specified
+<<<<<<< HEAD
 	 * process. The right exists if the process has administrative
 	 * capabilities, superuser privileges or the same
 	 * userid as the target process.
@@ -1498,6 +1549,11 @@ SYSCALL_DEFINE6(move_pages, pid_t, pid, unsigned long, nr_pages,
 	if (!uid_eq(cred->euid, tcred->suid) && !uid_eq(cred->euid, tcred->uid) &&
 	    !uid_eq(cred->uid,  tcred->suid) && !uid_eq(cred->uid,  tcred->uid) &&
 	    !capable(CAP_SYS_NICE)) {
+=======
+	 * process. Use the regular "ptrace_may_access()" checks.
+	 */
+	if (!ptrace_may_access(task, PTRACE_MODE_READ_REALCREDS)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rcu_read_unlock();
 		err = -EPERM;
 		goto out;

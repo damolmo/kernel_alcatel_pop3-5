@@ -244,7 +244,11 @@ struct inode *v9fs_alloc_inode(struct super_block *sb)
 		return NULL;
 #ifdef CONFIG_9P_FSCACHE
 	v9inode->fscache = NULL;
+<<<<<<< HEAD
 	spin_lock_init(&v9inode->fscache_lock);
+=======
+	mutex_init(&v9inode->fscache_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	v9inode->writeback_fid = NULL;
 	v9inode->cache_validity = 0;
@@ -483,6 +487,12 @@ static int v9fs_test_inode(struct inode *inode, void *data)
 
 	if (v9inode->qid.type != st->qid.type)
 		return 0;
+<<<<<<< HEAD
+=======
+
+	if (v9inode->qid.path != st->qid.path)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 
@@ -535,13 +545,21 @@ static struct inode *v9fs_qid_iget(struct super_block *sb,
 	if (retval)
 		goto error;
 
+<<<<<<< HEAD
 	v9fs_stat2inode(st, inode, sb);
+=======
+	v9fs_stat2inode(st, inode, sb, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	v9fs_cache_inode_get_cookie(inode);
 	unlock_new_inode(inode);
 	return inode;
 error:
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	iput(inode);
+=======
+	iget_failed(inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ERR_PTR(retval);
 
 }
@@ -1072,7 +1090,11 @@ v9fs_vfs_getattr(struct vfsmount *mnt, struct dentry *dentry,
 	if (IS_ERR(st))
 		return PTR_ERR(st);
 
+<<<<<<< HEAD
 	v9fs_stat2inode(st, dentry->d_inode, dentry->d_inode->i_sb);
+=======
+	v9fs_stat2inode(st, dentry->d_inode, dentry->d_inode->i_sb, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	generic_fillattr(dentry->d_inode, stat);
 
 	p9stat_free(st);
@@ -1150,12 +1172,20 @@ static int v9fs_vfs_setattr(struct dentry *dentry, struct iattr *iattr)
  * @stat: Plan 9 metadata (mistat) structure
  * @inode: inode to populate
  * @sb: superblock of filesystem
+<<<<<<< HEAD
+=======
+ * @flags: control flags (e.g. V9FS_STAT2INODE_KEEP_ISIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  */
 
 void
 v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
+<<<<<<< HEAD
 	struct super_block *sb)
+=======
+		 struct super_block *sb, unsigned int flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	umode_t mode;
 	char ext[32];
@@ -1196,10 +1226,18 @@ v9fs_stat2inode(struct p9_wstat *stat, struct inode *inode,
 	mode = p9mode2perm(v9ses, stat);
 	mode |= inode->i_mode & ~S_IALLUGO;
 	inode->i_mode = mode;
+<<<<<<< HEAD
 	i_size_write(inode, stat->length);
 
 	/* not real number of blocks, but 512 byte ones ... */
 	inode->i_blocks = (i_size_read(inode) + 512 - 1) >> 9;
+=======
+
+	if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE))
+		v9fs_i_size_write(inode, stat->length);
+	/* not real number of blocks, but 512 byte ones ... */
+	inode->i_blocks = (stat->length + 512 - 1) >> 9;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	v9inode->cache_validity &= ~V9FS_INO_INVALID_ATTR;
 }
 
@@ -1463,9 +1501,15 @@ int v9fs_refresh_inode(struct p9_fid *fid, struct inode *inode)
 {
 	int umode;
 	dev_t rdev;
+<<<<<<< HEAD
 	loff_t i_size;
 	struct p9_wstat *st;
 	struct v9fs_session_info *v9ses;
+=======
+	struct p9_wstat *st;
+	struct v9fs_session_info *v9ses;
+	unsigned int flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	v9ses = v9fs_inode2v9ses(inode);
 	st = p9_client_stat(fid);
@@ -1478,16 +1522,25 @@ int v9fs_refresh_inode(struct p9_fid *fid, struct inode *inode)
 	if ((inode->i_mode & S_IFMT) != (umode & S_IFMT))
 		goto out;
 
+<<<<<<< HEAD
 	spin_lock(&inode->i_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * We don't want to refresh inode->i_size,
 	 * because we may have cached data
 	 */
+<<<<<<< HEAD
 	i_size = inode->i_size;
 	v9fs_stat2inode(st, inode, inode->i_sb);
 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
 		inode->i_size = i_size;
 	spin_unlock(&inode->i_lock);
+=======
+	flags = (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) ?
+		V9FS_STAT2INODE_KEEP_ISIZE : 0;
+	v9fs_stat2inode(st, inode, inode->i_sb, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	p9stat_free(st);
 	kfree(st);

@@ -724,7 +724,11 @@ static void ql_build_coredump_seg_header(
 	seg_hdr->cookie = MPI_COREDUMP_COOKIE;
 	seg_hdr->segNum = seg_number;
 	seg_hdr->segSize = seg_size;
+<<<<<<< HEAD
 	memcpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
+=======
+	strncpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -765,7 +769,11 @@ int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump)
 		sizeof(struct mpi_coredump_global_header);
 	mpi_coredump->mpi_global_header.imageSize =
 		sizeof(struct ql_mpi_coredump);
+<<<<<<< HEAD
 	memcpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+=======
+	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sizeof(mpi_coredump->mpi_global_header.idString));
 
 	/* Get generic NIC reg dump */
@@ -1255,7 +1263,11 @@ static void ql_gen_reg_dump(struct ql_adapter *qdev,
 		sizeof(struct mpi_coredump_global_header);
 	mpi_coredump->mpi_global_header.imageSize =
 		sizeof(struct ql_reg_dump);
+<<<<<<< HEAD
 	memcpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+=======
+	strncpy(mpi_coredump->mpi_global_header.idString, "MPI Coredump",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sizeof(mpi_coredump->mpi_global_header.idString));
 
 

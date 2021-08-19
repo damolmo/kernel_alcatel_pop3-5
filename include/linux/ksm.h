@@ -76,6 +76,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
 int rmap_walk_ksm(struct page *page, struct rmap_walk_control *rwc);
 void ksm_migrate_page(struct page *newpage, struct page *oldpage);
 
+<<<<<<< HEAD
 /*add for charing detect*/
 typedef enum {
 	KAL_FALSE = 0,
@@ -84,6 +85,8 @@ typedef enum {
 
 kal_bool bat_is_charger_exist(void);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else  /* !CONFIG_KSM */
 
 static inline int ksm_fork(struct mm_struct *mm, struct mm_struct *oldmm)

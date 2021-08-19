@@ -357,11 +357,21 @@ typedef enum {
 	 ipv4_is_anycast_6to4(a))
 
 /* Flags used for the bind address copy functions.  */
+<<<<<<< HEAD
 #define SCTP_ADDR6_ALLOWED	0x00000001	/* IPv6 address is allowed by
 						   local sock family */
 #define SCTP_ADDR4_PEERSUPP	0x00000002	/* IPv4 address is supported by
 						   peer */
 #define SCTP_ADDR6_PEERSUPP	0x00000004	/* IPv6 address is supported by
+=======
+#define SCTP_ADDR4_ALLOWED	0x00000001	/* IPv4 address is allowed by
+						   local sock family */
+#define SCTP_ADDR6_ALLOWED	0x00000002	/* IPv6 address is allowed by
+						   local sock family */
+#define SCTP_ADDR4_PEERSUPP	0x00000004	/* IPv4 address is supported by
+						   peer */
+#define SCTP_ADDR6_PEERSUPP	0x00000008	/* IPv6 address is supported by
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						   peer */
 
 /* Reasons to retransmit. */

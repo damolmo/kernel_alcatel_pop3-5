@@ -361,7 +361,11 @@ EXPORT(sys_call_table)
 	PTR	sys_writev
 	PTR	sys_cacheflush
 	PTR	sys_cachectl
+<<<<<<< HEAD
 	PTR	sys_sysmips
+=======
+	PTR	__sys_sysmips
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	PTR	sys_ni_syscall			/* 4150 */
 	PTR	sys_getsid
 	PTR	sys_fdatasync

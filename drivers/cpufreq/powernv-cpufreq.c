@@ -335,12 +335,24 @@ static int powernv_cpufreq_reboot_notifier(struct notifier_block *nb,
 				unsigned long action, void *unused)
 {
 	int cpu;
+<<<<<<< HEAD
 	struct cpufreq_policy cpu_policy;
 
 	rebooting = true;
 	for_each_online_cpu(cpu) {
 		cpufreq_get_policy(&cpu_policy, cpu);
 		powernv_cpufreq_target_index(&cpu_policy, get_nominal_index());
+=======
+	struct cpufreq_policy *cpu_policy;
+
+	rebooting = true;
+	for_each_online_cpu(cpu) {
+		cpu_policy = cpufreq_cpu_get(cpu);
+		if (!cpu_policy)
+			continue;
+		powernv_cpufreq_target_index(cpu_policy, get_nominal_index());
+		cpufreq_cpu_put(cpu_policy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return NOTIFY_DONE;

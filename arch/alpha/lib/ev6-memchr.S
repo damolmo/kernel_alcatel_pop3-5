@@ -27,7 +27,11 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  * Try not to change the actual algorithm if possible for consistency.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         .set noreorder
         .set noat
 
@@ -189,3 +193,7 @@ $not_found:
 	ret			# L0 :
 
         .end memchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(memchr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

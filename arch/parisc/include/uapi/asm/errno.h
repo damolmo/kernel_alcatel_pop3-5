@@ -97,10 +97,17 @@
 #define	ENOTCONN	235	/* Transport endpoint is not connected */
 #define	ESHUTDOWN	236	/* Cannot send after transport endpoint shutdown */
 #define	ETOOMANYREFS	237	/* Too many references: cannot splice */
+<<<<<<< HEAD
 #define EREFUSED	ECONNREFUSED	/* for HP's NFS apparently */
 #define	ETIMEDOUT	238	/* Connection timed out */
 #define	ECONNREFUSED	239	/* Connection refused */
 #define EREMOTERELEASE	240	/* Remote peer released connection */
+=======
+#define	ETIMEDOUT	238	/* Connection timed out */
+#define	ECONNREFUSED	239	/* Connection refused */
+#define	EREFUSED	ECONNREFUSED	/* for HP's NFS apparently */
+#define	EREMOTERELEASE	240	/* Remote peer released connection */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define	EHOSTDOWN	241	/* Host is down */
 #define	EHOSTUNREACH	242	/* No route to host */
 

@@ -47,7 +47,12 @@ static struct regulator_desc vmmc_regulator = {
 	.volt_table = stw481x_vmmc_voltages,
 	.enable_time = 200, /* FIXME: look this up */
 	.enable_reg = STW_CONF1,
+<<<<<<< HEAD
 	.enable_mask = STW_CONF1_PDN_VMMC,
+=======
+	.enable_mask = STW_CONF1_PDN_VMMC | STW_CONF1_MMC_LS_STATUS,
+	.enable_val = STW_CONF1_PDN_VMMC,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.vsel_reg = STW_CONF1,
 	.vsel_mask = STW_CONF1_VMMC_MASK,
 };

@@ -494,6 +494,11 @@ retry:
 	/* No reason to continue if interrupted by SIGKILL. */
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current)) {
 		fault = VM_FAULT_SIGNAL;
+<<<<<<< HEAD
+=======
+		if (flags & FAULT_FLAG_RETRY_NOWAIT)
+			goto out_up;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 	if (unlikely(fault & VM_FAULT_ERROR))

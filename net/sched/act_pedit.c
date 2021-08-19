@@ -50,14 +50,24 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
 	if (tb[TCA_PEDIT_PARMS] == NULL)
 		return -EINVAL;
 	parm = nla_data(tb[TCA_PEDIT_PARMS]);
+<<<<<<< HEAD
+=======
+	if (!parm->nkeys)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ksize = parm->nkeys * sizeof(struct tc_pedit_key);
 	if (nla_len(tb[TCA_PEDIT_PARMS]) < sizeof(*parm) + ksize)
 		return -EINVAL;
 
 	if (!tcf_hash_check(parm->index, a, bind)) {
+<<<<<<< HEAD
 		if (!parm->nkeys)
 			return -EINVAL;
 		ret = tcf_hash_create(parm->index, est, a, sizeof(*p), bind);
+=======
+			ret = tcf_hash_create(parm->index, est, a, sizeof(*p), bind);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret)
 			return ret;
 		p = to_pedit(a);
@@ -104,6 +114,20 @@ static void tcf_pedit_cleanup(struct tc_action *a, int bind)
 	kfree(keys);
 }
 
+<<<<<<< HEAD
+=======
+static bool offset_valid(struct sk_buff *skb, int offset)
+{
+	if (offset > 0 && offset > skb->len)
+		return false;
+
+	if  (offset < 0 && -offset > skb_headroom(skb))
+		return false;
+
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int tcf_pedit(struct sk_buff *skb, const struct tc_action *a,
 		     struct tcf_result *res)
 {
@@ -130,6 +154,14 @@ static int tcf_pedit(struct sk_buff *skb, const struct tc_action *a,
 			if (tkey->offmask) {
 				char *d, _d;
 
+<<<<<<< HEAD
+=======
+				if (!offset_valid(skb, off + tkey->at)) {
+					pr_info("tc filter pedit 'at' offset %d out of bounds\n",
+						off + tkey->at);
+					goto bad;
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				d = skb_header_pointer(skb, off + tkey->at, 1,
 						       &_d);
 				if (!d)
@@ -142,10 +174,17 @@ static int tcf_pedit(struct sk_buff *skb, const struct tc_action *a,
 					" offset must be on 32 bit boundaries\n");
 				goto bad;
 			}
+<<<<<<< HEAD
 			if (offset > 0 && offset > skb->len) {
 				pr_info("tc filter pedit"
 					" offset %d can't exceed pkt length %d\n",
 				       offset, skb->len);
+=======
+
+			if (!offset_valid(skb, off + offset)) {
+				pr_info("tc filter pedit offset %d out of bounds\n",
+					offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto bad;
 			}
 

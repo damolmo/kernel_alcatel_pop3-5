@@ -36,7 +36,11 @@ EXPORT_SYMBOL(copy_page);
 /*
  * Userspace access stuff.
  */
+<<<<<<< HEAD
 EXPORT_SYMBOL(copy_from_user);
+=======
+EXPORT_SYMBOL(___copy_from_user);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL(copy_to_user);
 EXPORT_SYMBOL(__copy_user);
 EXPORT_SYMBOL(strncpy_from_user);

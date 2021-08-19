@@ -30,6 +30,10 @@ struct efi __read_mostly efi = {
 	.acpi       = EFI_INVALID_TABLE_ADDR,
 	.acpi20     = EFI_INVALID_TABLE_ADDR,
 	.smbios     = EFI_INVALID_TABLE_ADDR,
+<<<<<<< HEAD
+=======
+	.smbios3    = EFI_INVALID_TABLE_ADDR,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.sal_systab = EFI_INVALID_TABLE_ADDR,
 	.boot_info  = EFI_INVALID_TABLE_ADDR,
 	.hcdp       = EFI_INVALID_TABLE_ADDR,
@@ -86,6 +90,11 @@ static ssize_t systab_show(struct kobject *kobj,
 		str += sprintf(str, "ACPI=0x%lx\n", efi.acpi);
 	if (efi.smbios != EFI_INVALID_TABLE_ADDR)
 		str += sprintf(str, "SMBIOS=0x%lx\n", efi.smbios);
+<<<<<<< HEAD
+=======
+	if (efi.smbios3 != EFI_INVALID_TABLE_ADDR)
+		str += sprintf(str, "SMBIOS3=0x%lx\n", efi.smbios3);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (efi.hcdp != EFI_INVALID_TABLE_ADDR)
 		str += sprintf(str, "HCDP=0x%lx\n", efi.hcdp);
 	if (efi.boot_info != EFI_INVALID_TABLE_ADDR)
@@ -96,8 +105,12 @@ static ssize_t systab_show(struct kobject *kobj,
 	return str - buf;
 }
 
+<<<<<<< HEAD
 static struct kobj_attribute efi_attr_systab =
 			__ATTR(systab, 0400, systab_show, NULL);
+=======
+static struct kobj_attribute efi_attr_systab = __ATTR_RO_MODE(systab, 0400);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define EFI_FIELD(var) efi.var
 
@@ -154,6 +167,10 @@ static int generic_ops_register(void)
 {
 	generic_ops.get_variable = efi.get_variable;
 	generic_ops.set_variable = efi.set_variable;
+<<<<<<< HEAD
+=======
+	generic_ops.set_variable_nonblocking = efi.set_variable_nonblocking;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	generic_ops.get_next_variable = efi.get_next_variable;
 	generic_ops.query_variable_store = efi_query_variable_store;
 
@@ -221,6 +238,7 @@ err_put:
 subsys_initcall(efisubsys_init);
 
 
+<<<<<<< HEAD
 /*
  * We can't ioremap data in EFI boot services RAM, because we've already mapped
  * it as RAM.  So, look it up in the existing EFI memory map instead.  Only
@@ -253,6 +271,8 @@ void __iomem *efi_lookup_mapped_addr(u64 phys_addr)
 	return NULL;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static __initdata efi_config_table_type_t common_tables[] = {
 	{ACPI_20_TABLE_GUID, "ACPI 2.0", &efi.acpi20},
 	{ACPI_TABLE_GUID, "ACPI", &efi.acpi},
@@ -260,6 +280,10 @@ static __initdata efi_config_table_type_t common_tables[] = {
 	{MPS_TABLE_GUID, "MPS", &efi.mps},
 	{SAL_SYSTEM_TABLE_GUID, "SALsystab", &efi.sal_systab},
 	{SMBIOS_TABLE_GUID, "SMBIOS", &efi.smbios},
+<<<<<<< HEAD
+=======
+	{SMBIOS3_TABLE_GUID, "SMBIOS 3.0", &efi.smbios3},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{UGA_IO_PROTOCOL_GUID, "UGA", &efi.uga},
 	{NULL_GUID, NULL, NULL},
 };
@@ -289,6 +313,7 @@ static __init int match_config_table(efi_guid_t *guid,
 	return 0;
 }
 
+<<<<<<< HEAD
 int __init efi_config_init(efi_config_table_type_t *arch_tables)
 {
 	void *config_tables, *tablep;
@@ -312,6 +337,17 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 	tablep = config_tables;
 	pr_info("");
 	for (i = 0; i < efi.systab->nr_tables; i++) {
+=======
+int __init efi_config_parse_tables(void *config_tables, int count, int sz,
+				   efi_config_table_type_t *arch_tables)
+{
+	void *tablep;
+	int i;
+
+	tablep = config_tables;
+	pr_info("");
+	for (i = 0; i < count; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		efi_guid_t guid;
 		unsigned long table;
 
@@ -324,8 +360,11 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 			if (table64 >> 32) {
 				pr_cont("\n");
 				pr_err("Table located above 4GB, disabling EFI.\n");
+<<<<<<< HEAD
 				early_memunmap(config_tables,
 					       efi.systab->nr_tables * sz);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return -EINVAL;
 			}
 #endif
@@ -340,6 +379,7 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 		tablep += sz;
 	}
 	pr_cont("\n");
+<<<<<<< HEAD
 	early_memunmap(config_tables, efi.systab->nr_tables * sz);
 
 	set_bit(EFI_CONFIG_TABLES, &efi.flags);
@@ -347,6 +387,39 @@ int __init efi_config_init(efi_config_table_type_t *arch_tables)
 	return 0;
 }
 
+=======
+	set_bit(EFI_CONFIG_TABLES, &efi.flags);
+	return 0;
+}
+
+int __init efi_config_init(efi_config_table_type_t *arch_tables)
+{
+	void *config_tables;
+	int sz, ret;
+
+	if (efi_enabled(EFI_64BIT))
+		sz = sizeof(efi_config_table_64_t);
+	else
+		sz = sizeof(efi_config_table_32_t);
+
+	/*
+	 * Let's see what config tables the firmware passed to us.
+	 */
+	config_tables = early_memremap(efi.systab->tables,
+				       efi.systab->nr_tables * sz);
+	if (config_tables == NULL) {
+		pr_err("Could not map Configuration table!\n");
+		return -ENOMEM;
+	}
+
+	ret = efi_config_parse_tables(config_tables, efi.systab->nr_tables, sz,
+				      arch_tables);
+
+	early_memunmap(config_tables, efi.systab->nr_tables * sz);
+	return ret;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_EFI_VARS_MODULE
 static int __init efi_load_efivars(void)
 {

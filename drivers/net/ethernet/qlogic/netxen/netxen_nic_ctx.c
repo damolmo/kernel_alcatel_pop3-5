@@ -247,7 +247,11 @@ nx_fw_cmd_set_mtu(struct netxen_adapter *adapter, int mtu)
 	cmd.req.arg3 = 0;
 
 	if (recv_ctx->state == NX_HOST_CTX_STATE_ACTIVE)
+<<<<<<< HEAD
 		netxen_issue_cmd(adapter, &cmd);
+=======
+		rcode = netxen_issue_cmd(adapter, &cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (rcode != NX_RCODE_SUCCESS)
 		return -EIO;

@@ -1580,7 +1580,11 @@ generic_add_lease(struct file *filp, long arg, struct file_lock **flp, void **pr
 {
 	struct file_lock *fl, **before, **my_before = NULL, *lease;
 	struct dentry *dentry = filp->f_path.dentry;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = file_inode(filp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bool is_deleg = (*flp)->fl_flags & FL_DELEG;
 	int error;
 	LIST_HEAD(dispose);
@@ -2127,7 +2131,10 @@ int fcntl_setlk(unsigned int fd, struct file *filp, unsigned int cmd,
 		goto out;
 	}
 
+<<<<<<< HEAD
 again:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = flock_to_posix_lock(filp, file_lock, &flock);
 	if (error)
 		goto out;
@@ -2166,6 +2173,7 @@ again:
 	error = do_lock_file_wait(filp, cmd, file_lock);
 
 	/*
+<<<<<<< HEAD
 	 * Attempt to detect a close/fcntl race and recover by
 	 * releasing the lock that was just acquired.
 	 */
@@ -2182,6 +2190,29 @@ again:
 		goto again;
 	}
 
+=======
+	 * Attempt to detect a close/fcntl race and recover by releasing the
+	 * lock that was just acquired. There is no need to do that when we're
+	 * unlocking though, or for OFD locks.
+	 */
+	if (!error && file_lock->fl_type != F_UNLCK &&
+	    !(file_lock->fl_flags & FL_OFDLCK)) {
+		/*
+		 * We need that spin_lock here - it prevents reordering between
+		 * update of i_flctx->flc_posix and check for it done in
+		 * close(). rcu_read_lock() wouldn't do.
+		 */
+		spin_lock(&current->files->file_lock);
+		f = fcheck(fd);
+		spin_unlock(&current->files->file_lock);
+		if (f != filp) {
+			file_lock->fl_type = F_UNLCK;
+			error = do_lock_file_wait(filp, cmd, file_lock);
+			WARN_ON_ONCE(error);
+			error = -EBADF;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	locks_free_lock(file_lock);
 	return error;
@@ -2267,7 +2298,10 @@ int fcntl_setlk64(unsigned int fd, struct file *filp, unsigned int cmd,
 		goto out;
 	}
 
+<<<<<<< HEAD
 again:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = flock64_to_posix_lock(filp, file_lock, &flock);
 	if (error)
 		goto out;
@@ -2306,6 +2340,7 @@ again:
 	error = do_lock_file_wait(filp, cmd, file_lock);
 
 	/*
+<<<<<<< HEAD
 	 * Attempt to detect a close/fcntl race and recover by
 	 * releasing the lock that was just acquired.
 	 */
@@ -2317,6 +2352,29 @@ again:
 		goto again;
 	}
 
+=======
+	 * Attempt to detect a close/fcntl race and recover by releasing the
+	 * lock that was just acquired. There is no need to do that when we're
+	 * unlocking though, or for OFD locks.
+	 */
+	if (!error && file_lock->fl_type != F_UNLCK &&
+	    !(file_lock->fl_flags & FL_OFDLCK)) {
+		/*
+		 * We need that spin_lock here - it prevents reordering between
+		 * update of i_flctx->flc_posix and check for it done in
+		 * close(). rcu_read_lock() wouldn't do.
+		 */
+		spin_lock(&current->files->file_lock);
+		f = fcheck(fd);
+		spin_unlock(&current->files->file_lock);
+		if (f != filp) {
+			file_lock->fl_type = F_UNLCK;
+			error = do_lock_file_wait(filp, cmd, file_lock);
+			WARN_ON_ONCE(error);
+			error = -EBADF;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	locks_free_lock(file_lock);
 	return error;
@@ -2531,7 +2589,11 @@ static void lock_get_status(struct seq_file *f, struct file_lock *fl,
 				inode->i_sb->s_id, inode->i_ino);
 #else
 		/* userspace relies on this representation of dev_t ;-( */
+<<<<<<< HEAD
 		seq_printf(f, "%d %02x:%02x:%ld ", fl_pid,
+=======
+		seq_printf(f, "%d %02x:%02x:%lu ", fl_pid,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				MAJOR(inode->i_sb->s_dev),
 				MINOR(inode->i_sb->s_dev), inode->i_ino);
 #endif

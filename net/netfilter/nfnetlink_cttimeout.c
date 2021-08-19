@@ -578,6 +578,10 @@ static void __exit cttimeout_exit(void)
 #ifdef CONFIG_NF_CONNTRACK_TIMEOUT
 	RCU_INIT_POINTER(nf_ct_timeout_find_get_hook, NULL);
 	RCU_INIT_POINTER(nf_ct_timeout_put_hook, NULL);
+<<<<<<< HEAD
+=======
+	synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
 }
 

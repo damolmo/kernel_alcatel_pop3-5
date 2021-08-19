@@ -32,6 +32,7 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
 {
 	char *s = out;
 	int i = 0;
+<<<<<<< HEAD
 
 	BUG_ON(!the_controller || !out);
 
@@ -49,6 +50,30 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
 	 */
 	out += sprintf(out,
 		       "prt sta spd bus dev socket           local_busid\n");
+=======
+	unsigned long flags;
+
+	BUG_ON(!the_controller || !out);
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+
+	/*
+	 * output example:
+	 * prt  sta spd dev      sockfd local_busid
+	 * 0000 004 000 00000000 000003 1-2.3
+	 * 0001 004 000 00000000 000004 2-3.4
+	 *
+	 * Output includes socket fd instead of socket pointer address to
+	 * avoid leaking kernel memory address in:
+	 *	/sys/devices/platform/vhci_hcd.0/status and in debug output.
+	 * The socket pointer address is not used at the moment and it was
+	 * made visible as a convenient way to find IP address from socket
+	 * pointer address by looking up /proc/net/{tcp,tcp6}. As this opens
+	 * a security hole, the change is made to use sockfd instead.
+	 */
+	out += sprintf(out,
+		       "prt sta spd dev      sockfd local_busid\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < VHCI_NPORTS; i++) {
 		struct vhci_device *vdev = port_to_vdev(i);
@@ -59,18 +84,30 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
 		if (vdev->ud.status == VDEV_ST_USED) {
 			out += sprintf(out, "%03u %08x ",
 				       vdev->speed, vdev->devid);
+<<<<<<< HEAD
 			out += sprintf(out, "%16p ", vdev->ud.tcp_socket);
 			out += sprintf(out, "%s", dev_name(&vdev->udev->dev));
 
 		} else {
 			out += sprintf(out, "000 000 000 0000000000000000 0-0");
 		}
+=======
+			out += sprintf(out, "%06u ", vdev->ud.sockfd);
+			out += sprintf(out, "%s", dev_name(&vdev->udev->dev));
+
+		} else
+			out += sprintf(out, "000 00000000 000000 0-0");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		out += sprintf(out, "\n");
 		spin_unlock(&vdev->ud.lock);
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return out - s;
 }
@@ -80,11 +117,19 @@ static DEVICE_ATTR_RO(status);
 static int vhci_port_disconnect(__u32 rhport)
 {
 	struct vhci_device *vdev;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usbip_dbg_vhci_sysfs("enter\n");
 
 	/* lock */
+<<<<<<< HEAD
 	spin_lock(&the_controller->lock);
+=======
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vdev = port_to_vdev(rhport);
 
@@ -94,14 +139,22 @@ static int vhci_port_disconnect(__u32 rhport)
 
 		/* unlock */
 		spin_unlock(&vdev->ud.lock);
+<<<<<<< HEAD
 		spin_unlock(&the_controller->lock);
+=======
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		return -EINVAL;
 	}
 
 	/* unlock */
 	spin_unlock(&vdev->ud.lock);
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usbip_event_add(&vdev->ud, VDEV_EVENT_DOWN);
 
@@ -177,6 +230,10 @@ static ssize_t store_attach(struct device *dev, struct device_attribute *attr,
 	int sockfd = 0;
 	__u32 rhport = 0, devid = 0, speed = 0;
 	int err;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * @rhport: port number of vhci_hcd
@@ -196,20 +253,41 @@ static ssize_t store_attach(struct device *dev, struct device_attribute *attr,
 
 	/* Extract socket from fd. */
 	socket = sockfd_lookup(sockfd, &err);
+<<<<<<< HEAD
 	if (!socket)
 		return -EINVAL;
+=======
+	if (!socket) {
+		dev_err(dev, "failed to lookup sock");
+		return -EINVAL;
+	}
+	if (socket->type != SOCK_STREAM) {
+		dev_err(dev, "Expecting SOCK_STREAM - found %d",
+			socket->type);
+		sockfd_put(socket);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* now need lock until setting vdev status as used */
 
 	/* begin a lock */
+<<<<<<< HEAD
 	spin_lock(&the_controller->lock);
+=======
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vdev = port_to_vdev(rhport);
 	spin_lock(&vdev->ud.lock);
 
 	if (vdev->ud.status != VDEV_ST_NULL) {
 		/* end of the lock */
 		spin_unlock(&vdev->ud.lock);
+<<<<<<< HEAD
 		spin_unlock(&the_controller->lock);
+=======
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		sockfd_put(socket);
 
@@ -223,11 +301,19 @@ static ssize_t store_attach(struct device *dev, struct device_attribute *attr,
 
 	vdev->devid         = devid;
 	vdev->speed         = speed;
+<<<<<<< HEAD
+=======
+	vdev->ud.sockfd     = sockfd;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vdev->ud.tcp_socket = socket;
 	vdev->ud.status     = VDEV_ST_NOTASSIGNED;
 
 	spin_unlock(&vdev->ud.lock);
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* end the lock */
 
 	vdev->ud.tcp_rx = kthread_get_run(vhci_rx_loop, &vdev->ud, "vhci_rx");

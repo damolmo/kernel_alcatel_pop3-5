@@ -109,7 +109,11 @@ static int crypto_gcm_setkey(struct crypto_aead *aead, const u8 *key,
 	struct crypto_ablkcipher *ctr = ctx->ctr;
 	struct {
 		be128 hash;
+<<<<<<< HEAD
 		u8 iv[8];
+=======
+		u8 iv[16];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		struct crypto_gcm_setkey_result result;
 
@@ -146,10 +150,15 @@ static int crypto_gcm_setkey(struct crypto_aead *aead, const u8 *key,
 
 	err = crypto_ablkcipher_encrypt(&data->req);
 	if (err == -EINPROGRESS || err == -EBUSY) {
+<<<<<<< HEAD
 		err = wait_for_completion_interruptible(
 			&data->result.completion);
 		if (!err)
 			err = data->result.err;
+=======
+		wait_for_completion(&data->result.completion);
+		err = data->result.err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (err)
@@ -716,7 +725,13 @@ static struct crypto_instance *crypto_gcm_alloc_common(struct rtattr **tb,
 
 	ghash_alg = crypto_find_alg(ghash_name, &crypto_ahash_type,
 				    CRYPTO_ALG_TYPE_HASH,
+<<<<<<< HEAD
 				    CRYPTO_ALG_TYPE_AHASH_MASK);
+=======
+				    CRYPTO_ALG_TYPE_AHASH_MASK |
+				    crypto_requires_sync(algt->type,
+							 algt->mask));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(ghash_alg))
 		return ERR_CAST(ghash_alg);
 
@@ -742,11 +757,18 @@ static struct crypto_instance *crypto_gcm_alloc_common(struct rtattr **tb,
 	ctr = crypto_skcipher_spawn_alg(&ctx->ctr);
 
 	/* We only support 16-byte blocks. */
+<<<<<<< HEAD
+=======
+	err = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ctr->cra_ablkcipher.ivsize != 16)
 		goto out_put_ctr;
 
 	/* Not a stream cipher? */
+<<<<<<< HEAD
 	err = -EINVAL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ctr->cra_blocksize != 1)
 		goto out_put_ctr;
 

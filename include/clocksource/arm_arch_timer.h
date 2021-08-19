@@ -16,7 +16,11 @@
 #ifndef __CLKSOURCE_ARM_ARCH_TIMER_H
 #define __CLKSOURCE_ARM_ARCH_TIMER_H
 
+<<<<<<< HEAD
 #include <linux/clocksource.h>
+=======
+#include <linux/timecounter.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/types.h>
 
 #define ARCH_TIMER_CTRL_ENABLE		(1 << 0)

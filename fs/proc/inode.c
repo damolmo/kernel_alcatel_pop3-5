@@ -424,7 +424,11 @@ const struct inode_operations proc_link_inode_operations = {
 
 struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
 {
+<<<<<<< HEAD
 	struct inode *inode = new_inode_pseudo(sb);
+=======
+	struct inode *inode = new_inode(sb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (inode) {
 		inode->i_ino = de->low_ino;

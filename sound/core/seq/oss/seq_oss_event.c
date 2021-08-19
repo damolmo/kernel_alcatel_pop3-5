@@ -26,6 +26,10 @@
 #include <sound/seq_oss_legacy.h>
 #include "seq_oss_readq.h"
 #include "seq_oss_writeq.h"
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 /*
@@ -287,10 +291,17 @@ note_on_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, st
 {
 	struct seq_oss_synthinfo *info;
 
+<<<<<<< HEAD
 	if (!snd_seq_oss_synth_is_valid(dp, dev))
 		return -ENXIO;
 
 	info = &dp->synths[dev];
+=======
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (info->arg.event_passing) {
 	case SNDRV_SEQ_OSS_PROCESS_EVENTS:
 		if (! info->ch || ch < 0 || ch >= info->nr_voices) {
@@ -298,6 +309,10 @@ note_on_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, st
 			return set_note_event(dp, dev, SNDRV_SEQ_EVENT_NOTEON, ch, note, vel, ev);
 		}
 
+<<<<<<< HEAD
+=======
+		ch = array_index_nospec(ch, info->nr_voices);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (note == 255 && info->ch[ch].note >= 0) {
 			/* volume control */
 			int type;
@@ -347,10 +362,17 @@ note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, s
 {
 	struct seq_oss_synthinfo *info;
 
+<<<<<<< HEAD
 	if (!snd_seq_oss_synth_is_valid(dp, dev))
 		return -ENXIO;
 
 	info = &dp->synths[dev];
+=======
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (info->arg.event_passing) {
 	case SNDRV_SEQ_OSS_PROCESS_EVENTS:
 		if (! info->ch || ch < 0 || ch >= info->nr_voices) {
@@ -358,6 +380,10 @@ note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, s
 			return set_note_event(dp, dev, SNDRV_SEQ_EVENT_NOTEON, ch, note, vel, ev);
 		}
 
+<<<<<<< HEAD
+=======
+		ch = array_index_nospec(ch, info->nr_voices);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (info->ch[ch].note >= 0) {
 			note = info->ch[ch].note;
 			info->ch[ch].vel = 0;
@@ -381,7 +407,11 @@ note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, s
 static int
 set_note_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int note, int vel, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
+=======
+	if (!snd_seq_oss_synth_info(dp, dev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENXIO;
 	
 	ev->type = type;
@@ -399,7 +429,11 @@ set_note_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int note, 
 static int
 set_control_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int param, int val, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
+=======
+	if (!snd_seq_oss_synth_info(dp, dev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENXIO;
 	
 	ev->type = type;

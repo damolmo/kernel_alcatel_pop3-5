@@ -130,20 +130,36 @@ static int snvs_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct snvs_rtc_data *data = dev_get_drvdata(dev);
 	unsigned long time;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rtc_tm_to_time(tm, &time);
 
 	/* Disable RTC first */
+<<<<<<< HEAD
 	snvs_rtc_enable(data, false);
+=======
+	ret = snvs_rtc_enable(data, false);
+	if (ret)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Write 32-bit time to 47-bit timer, leaving 15 LSBs blank */
 	writel(time << CNTR_TO_SECS_SH, data->ioaddr + SNVS_LPSRTCLR);
 	writel(time >> (32 - CNTR_TO_SECS_SH), data->ioaddr + SNVS_LPSRTCMR);
 
 	/* Enable RTC again */
+<<<<<<< HEAD
 	snvs_rtc_enable(data, true);
 
 	return 0;
+=======
+	ret = snvs_rtc_enable(data, true);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int snvs_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
@@ -271,7 +287,15 @@ static int snvs_rtc_probe(struct platform_device *pdev)
 	writel(0xffffffff, data->ioaddr + SNVS_LPSR);
 
 	/* Enable RTC */
+<<<<<<< HEAD
 	snvs_rtc_enable(data, true);
+=======
+	ret = snvs_rtc_enable(data, true);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to enable rtc %d\n", ret);
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	device_init_wakeup(&pdev->dev, true);
 

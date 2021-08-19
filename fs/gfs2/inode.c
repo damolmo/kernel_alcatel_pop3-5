@@ -1260,7 +1260,11 @@ static int gfs2_atomic_open(struct inode *dir, struct dentry *dentry,
 			return finish_no_open(file, dentry);
 		}
 		dput(d);
+<<<<<<< HEAD
 		return 0;
+=======
+		return excl && (flags & O_CREAT) ? -EEXIST : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	BUG_ON(d != NULL);

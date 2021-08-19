@@ -230,12 +230,25 @@ static inline void fsnotify_modify(struct file *file)
 static inline void fsnotify_open(struct file *file)
 {
 	struct path *path = &file->f_path;
+<<<<<<< HEAD
+=======
+	struct path lower_path;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct inode *inode = file_inode(file);
 	__u32 mask = FS_OPEN;
 
 	if (S_ISDIR(inode->i_mode))
 		mask |= FS_ISDIR;
 
+<<<<<<< HEAD
+=======
+	if (path->dentry->d_op && path->dentry->d_op->d_canonical_path) {
+		path->dentry->d_op->d_canonical_path(path, &lower_path);
+		fsnotify_parent(&lower_path, NULL, mask);
+		fsnotify(lower_path.dentry->d_inode, mask, &lower_path, FSNOTIFY_EVENT_PATH, NULL, 0);
+		path_put(&lower_path);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fsnotify_parent(path, NULL, mask);
 	fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
 }
@@ -310,6 +323,7 @@ static inline void fsnotify_change(struct dentry *dentry, unsigned int ia_valid)
 	}
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_FSNOTIFY)	/* notify helpers */
 
 /*
@@ -341,4 +355,6 @@ static inline void fsnotify_oldname_free(const unsigned char *old_name)
 
 #endif	/*  CONFIG_FSNOTIFY */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif	/* _LINUX_FS_NOTIFY_H */

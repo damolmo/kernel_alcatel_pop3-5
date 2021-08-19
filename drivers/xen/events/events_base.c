@@ -32,6 +32,10 @@
 #include <linux/slab.h>
 #include <linux/irqnr.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/spinlock.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_X86
 #include <asm/desc.h>
@@ -69,6 +73,26 @@ const struct evtchn_ops *evtchn_ops;
  */
 static DEFINE_MUTEX(irq_mapping_update_lock);
 
+<<<<<<< HEAD
+=======
+/*
+ * Lock protecting event handling loop against removing event channels.
+ * Adding of event channels is no issue as the associated IRQ becomes active
+ * only after everything is setup (before request_[threaded_]irq() the handler
+ * can't be entered for an event, as the event channel will be unmasked only
+ * then).
+ */
+static DEFINE_RWLOCK(evtchn_rwlock);
+
+/*
+ * Lock hierarchy:
+ *
+ * irq_mapping_update_lock
+ *   evtchn_rwlock
+ *     IRQ-desc lock
+ */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static LIST_HEAD(xen_irq_list_head);
 
 /* IRQ <-> VIRQ mapping. */
@@ -91,6 +115,10 @@ static bool (*pirq_needs_eoi)(unsigned irq);
 #define VALID_EVTCHN(chn)	((chn) != 0)
 
 static struct irq_chip xen_dynamic_chip;
+<<<<<<< HEAD
+=======
+static struct irq_chip xen_lateeoi_chip;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct irq_chip xen_percpu_chip;
 static struct irq_chip xen_pirq_chip;
 static void enable_dynirq(struct irq_data *data);
@@ -101,7 +129,11 @@ static void clear_evtchn_to_irq_row(unsigned row)
 	unsigned col;
 
 	for (col = 0; col < EVTCHN_PER_ROW; col++)
+<<<<<<< HEAD
 		evtchn_to_irq[row][col] = -1;
+=======
+		WRITE_ONCE(evtchn_to_irq[row][col], -1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void clear_evtchn_to_irq_all(void)
@@ -138,7 +170,11 @@ static int set_evtchn_to_irq(unsigned evtchn, unsigned irq)
 		clear_evtchn_to_irq_row(row);
 	}
 
+<<<<<<< HEAD
 	evtchn_to_irq[EVTCHN_ROW(evtchn)][EVTCHN_COL(evtchn)] = irq;
+=======
+	WRITE_ONCE(evtchn_to_irq[row][col], irq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -148,7 +184,11 @@ int get_evtchn_to_irq(unsigned evtchn)
 		return -1;
 	if (evtchn_to_irq[EVTCHN_ROW(evtchn)] == NULL)
 		return -1;
+<<<<<<< HEAD
 	return evtchn_to_irq[EVTCHN_ROW(evtchn)][EVTCHN_COL(evtchn)];
+=======
+	return READ_ONCE(evtchn_to_irq[EVTCHN_ROW(evtchn)][EVTCHN_COL(evtchn)]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Get info for IRQ */
@@ -246,10 +286,21 @@ static void xen_irq_info_cleanup(struct irq_info *info)
  */
 unsigned int evtchn_from_irq(unsigned irq)
 {
+<<<<<<< HEAD
 	if (unlikely(WARN(irq >= nr_irqs, "Invalid irq %d!\n", irq)))
 		return 0;
 
 	return info_for_irq(irq)->evtchn;
+=======
+	const struct irq_info *info = NULL;
+
+	if (likely(irq < nr_irqs))
+		info = info_for_irq(irq);
+	if (!info)
+		return 0;
+
+	return info->evtchn;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 unsigned irq_from_evtchn(unsigned int evtchn)
@@ -368,6 +419,36 @@ void notify_remote_via_irq(int irq)
 }
 EXPORT_SYMBOL_GPL(notify_remote_via_irq);
 
+<<<<<<< HEAD
+=======
+static void xen_irq_lateeoi_locked(struct irq_info *info)
+{
+	evtchn_port_t evtchn;
+
+	evtchn = info->evtchn;
+	if (!VALID_EVTCHN(evtchn))
+		return;
+
+	unmask_evtchn(evtchn);
+}
+
+void xen_irq_lateeoi(unsigned int irq, unsigned int eoi_flags)
+{
+	struct irq_info *info;
+	unsigned long flags;
+
+	read_lock_irqsave(&evtchn_rwlock, flags);
+
+	info = info_for_irq(irq);
+
+	if (info)
+		xen_irq_lateeoi_locked(info);
+
+	read_unlock_irqrestore(&evtchn_rwlock, flags);
+}
+EXPORT_SYMBOL_GPL(xen_irq_lateeoi);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void xen_irq_init(unsigned irq)
 {
 	struct irq_info *info;
@@ -432,17 +513,32 @@ static int __must_check xen_allocate_irq_gsi(unsigned gsi)
 
 static void xen_free_irq(unsigned irq)
 {
+<<<<<<< HEAD
 	struct irq_info *info = irq_get_handler_data(irq);
+=======
+	struct irq_info *info = info_for_irq(irq);
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (WARN_ON(!info))
 		return;
 
+<<<<<<< HEAD
+=======
+	write_lock_irqsave(&evtchn_rwlock, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_del(&info->list);
 
 	irq_set_handler_data(irq, NULL);
 
 	WARN_ON(info->refcnt > 0);
 
+<<<<<<< HEAD
+=======
+	write_unlock_irqrestore(&evtchn_rwlock, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(info);
 
 	/* Legacy IRQ descriptors are managed by the arch. */
@@ -483,9 +579,26 @@ static void eoi_pirq(struct irq_data *data)
 	struct physdev_eoi eoi = { .irq = pirq_from_irq(data->irq) };
 	int rc = 0;
 
+<<<<<<< HEAD
 	irq_move_irq(data);
 
 	if (VALID_EVTCHN(evtchn))
+=======
+	if (!VALID_EVTCHN(evtchn))
+		return;
+
+	if (unlikely(irqd_is_setaffinity_pending(data)) &&
+	    likely(!irqd_irq_disabled(data))) {
+		int masked = test_and_set_mask(evtchn);
+
+		clear_evtchn(evtchn);
+
+		irq_move_masked_irq(data);
+
+		if (!masked)
+			unmask_evtchn(evtchn);
+	} else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clear_evtchn(evtchn);
 
 	if (pirq_needs_eoi(data->irq)) {
@@ -625,8 +738,11 @@ static void __unbind_from_irq(unsigned int irq)
 		xen_irq_info_cleanup(info);
 	}
 
+<<<<<<< HEAD
 	BUG_ON(info_for_irq(irq)->type == IRQT_UNBOUND);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	xen_free_irq(irq);
 }
 
@@ -752,8 +868,13 @@ out:
 	mutex_unlock(&irq_mapping_update_lock);
 	return irq;
 error_irq:
+<<<<<<< HEAD
 	for (; i >= 0; i--)
 		__unbind_from_irq(irq + i);
+=======
+	while (nvec--)
+		__unbind_from_irq(irq + nvec);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&irq_mapping_update_lock);
 	return ret;
 }
@@ -825,7 +946,11 @@ int xen_pirq_from_irq(unsigned irq)
 }
 EXPORT_SYMBOL_GPL(xen_pirq_from_irq);
 
+<<<<<<< HEAD
 int bind_evtchn_to_irq(unsigned int evtchn)
+=======
+static int bind_evtchn_to_irq_chip(evtchn_port_t evtchn, struct irq_chip *chip)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int irq;
 	int ret;
@@ -842,7 +967,11 @@ int bind_evtchn_to_irq(unsigned int evtchn)
 		if (irq < 0)
 			goto out;
 
+<<<<<<< HEAD
 		irq_set_chip_and_handler_name(irq, &xen_dynamic_chip,
+=======
+		irq_set_chip_and_handler_name(irq, chip,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					      handle_edge_irq, "event");
 
 		ret = xen_irq_info_evtchn_setup(irq, evtchn);
@@ -863,8 +992,24 @@ out:
 
 	return irq;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(bind_evtchn_to_irq);
 
+=======
+
+int bind_evtchn_to_irq(evtchn_port_t evtchn)
+{
+	return bind_evtchn_to_irq_chip(evtchn, &xen_dynamic_chip);
+}
+EXPORT_SYMBOL_GPL(bind_evtchn_to_irq);
+
+int bind_evtchn_to_irq_lateeoi(evtchn_port_t evtchn)
+{
+	return bind_evtchn_to_irq_chip(evtchn, &xen_lateeoi_chip);
+}
+EXPORT_SYMBOL_GPL(bind_evtchn_to_irq_lateeoi);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
 {
 	struct evtchn_bind_ipi bind_ipi;
@@ -906,8 +1051,14 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
 	return irq;
 }
 
+<<<<<<< HEAD
 int bind_interdomain_evtchn_to_irq(unsigned int remote_domain,
 				   unsigned int remote_port)
+=======
+static int bind_interdomain_evtchn_to_irq_chip(unsigned int remote_domain,
+					       evtchn_port_t remote_port,
+					       struct irq_chip *chip)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct evtchn_bind_interdomain bind_interdomain;
 	int err;
@@ -918,10 +1069,33 @@ int bind_interdomain_evtchn_to_irq(unsigned int remote_domain,
 	err = HYPERVISOR_event_channel_op(EVTCHNOP_bind_interdomain,
 					  &bind_interdomain);
 
+<<<<<<< HEAD
 	return err ? : bind_evtchn_to_irq(bind_interdomain.local_port);
 }
 EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irq);
 
+=======
+	return err ? : bind_evtchn_to_irq_chip(bind_interdomain.local_port,
+					       chip);
+}
+
+int bind_interdomain_evtchn_to_irq(unsigned int remote_domain,
+				   evtchn_port_t remote_port)
+{
+	return bind_interdomain_evtchn_to_irq_chip(remote_domain, remote_port,
+						   &xen_dynamic_chip);
+}
+EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irq);
+
+int bind_interdomain_evtchn_to_irq_lateeoi(unsigned int remote_domain,
+					   evtchn_port_t remote_port)
+{
+	return bind_interdomain_evtchn_to_irq_chip(remote_domain, remote_port,
+						   &xen_lateeoi_chip);
+}
+EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irq_lateeoi);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int find_virq(unsigned int virq, unsigned int cpu)
 {
 	struct evtchn_status status;
@@ -1017,6 +1191,7 @@ static void unbind_from_irq(unsigned int irq)
 	mutex_unlock(&irq_mapping_update_lock);
 }
 
+<<<<<<< HEAD
 int bind_evtchn_to_irqhandler(unsigned int evtchn,
 			      irq_handler_t handler,
 			      unsigned long irqflags,
@@ -1025,6 +1200,17 @@ int bind_evtchn_to_irqhandler(unsigned int evtchn,
 	int irq, retval;
 
 	irq = bind_evtchn_to_irq(evtchn);
+=======
+static int bind_evtchn_to_irqhandler_chip(evtchn_port_t evtchn,
+					  irq_handler_t handler,
+					  unsigned long irqflags,
+					  const char *devname, void *dev_id,
+					  struct irq_chip *chip)
+{
+	int irq, retval;
+
+	irq = bind_evtchn_to_irq_chip(evtchn, chip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (irq < 0)
 		return irq;
 	retval = request_irq(irq, handler, irqflags, devname, dev_id);
@@ -1035,6 +1221,7 @@ int bind_evtchn_to_irqhandler(unsigned int evtchn,
 
 	return irq;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(bind_evtchn_to_irqhandler);
 
 int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
@@ -1047,6 +1234,40 @@ int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
 	int irq, retval;
 
 	irq = bind_interdomain_evtchn_to_irq(remote_domain, remote_port);
+=======
+
+int bind_evtchn_to_irqhandler(evtchn_port_t evtchn,
+			      irq_handler_t handler,
+			      unsigned long irqflags,
+			      const char *devname, void *dev_id)
+{
+	return bind_evtchn_to_irqhandler_chip(evtchn, handler, irqflags,
+					      devname, dev_id,
+					      &xen_dynamic_chip);
+}
+EXPORT_SYMBOL_GPL(bind_evtchn_to_irqhandler);
+
+int bind_evtchn_to_irqhandler_lateeoi(evtchn_port_t evtchn,
+				      irq_handler_t handler,
+				      unsigned long irqflags,
+				      const char *devname, void *dev_id)
+{
+	return bind_evtchn_to_irqhandler_chip(evtchn, handler, irqflags,
+					      devname, dev_id,
+					      &xen_lateeoi_chip);
+}
+EXPORT_SYMBOL_GPL(bind_evtchn_to_irqhandler_lateeoi);
+
+static int bind_interdomain_evtchn_to_irqhandler_chip(
+		unsigned int remote_domain, evtchn_port_t remote_port,
+		irq_handler_t handler, unsigned long irqflags,
+		const char *devname, void *dev_id, struct irq_chip *chip)
+{
+	int irq, retval;
+
+	irq = bind_interdomain_evtchn_to_irq_chip(remote_domain, remote_port,
+						  chip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (irq < 0)
 		return irq;
 
@@ -1058,8 +1279,38 @@ int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
 
 	return irq;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irqhandler);
 
+=======
+
+int bind_interdomain_evtchn_to_irqhandler(unsigned int remote_domain,
+					  evtchn_port_t remote_port,
+					  irq_handler_t handler,
+					  unsigned long irqflags,
+					  const char *devname,
+					  void *dev_id)
+{
+	return bind_interdomain_evtchn_to_irqhandler_chip(remote_domain,
+				remote_port, handler, irqflags, devname,
+				dev_id, &xen_dynamic_chip);
+}
+EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irqhandler);
+
+int bind_interdomain_evtchn_to_irqhandler_lateeoi(unsigned int remote_domain,
+						  evtchn_port_t remote_port,
+						  irq_handler_t handler,
+						  unsigned long irqflags,
+						  const char *devname,
+						  void *dev_id)
+{
+	return bind_interdomain_evtchn_to_irqhandler_chip(remote_domain,
+				remote_port, handler, irqflags, devname,
+				dev_id, &xen_lateeoi_chip);
+}
+EXPORT_SYMBOL_GPL(bind_interdomain_evtchn_to_irqhandler_lateeoi);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int bind_virq_to_irqhandler(unsigned int virq, unsigned int cpu,
 			    irq_handler_t handler,
 			    unsigned long irqflags, const char *devname, void *dev_id)
@@ -1218,6 +1469,11 @@ static void __xen_evtchn_do_upcall(void)
 	int cpu = get_cpu();
 	unsigned count;
 
+<<<<<<< HEAD
+=======
+	read_lock(&evtchn_rwlock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	do {
 		vcpu_info->evtchn_upcall_pending = 0;
 
@@ -1233,6 +1489,10 @@ static void __xen_evtchn_do_upcall(void)
 	} while (count != 1 || vcpu_info->evtchn_upcall_pending);
 
 out:
+<<<<<<< HEAD
+=======
+	read_unlock(&evtchn_rwlock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	put_cpu();
 }
@@ -1360,9 +1620,26 @@ static void ack_dynirq(struct irq_data *data)
 {
 	int evtchn = evtchn_from_irq(data->irq);
 
+<<<<<<< HEAD
 	irq_move_irq(data);
 
 	if (VALID_EVTCHN(evtchn))
+=======
+	if (!VALID_EVTCHN(evtchn))
+		return;
+
+	if (unlikely(irqd_is_setaffinity_pending(data)) &&
+	    likely(!irqd_irq_disabled(data))) {
+		int masked = test_and_set_mask(evtchn);
+
+		clear_evtchn(evtchn);
+
+		irq_move_masked_irq(data);
+
+		if (!masked)
+			unmask_evtchn(evtchn);
+	} else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clear_evtchn(evtchn);
 }
 
@@ -1582,6 +1859,24 @@ static struct irq_chip xen_dynamic_chip __read_mostly = {
 	.irq_retrigger		= retrigger_dynirq,
 };
 
+<<<<<<< HEAD
+=======
+static struct irq_chip xen_lateeoi_chip __read_mostly = {
+	/* The chip name needs to contain "xen-dyn" for irqbalance to work. */
+	.name			= "xen-dyn-lateeoi",
+
+	.irq_disable		= disable_dynirq,
+	.irq_mask		= disable_dynirq,
+	.irq_unmask		= enable_dynirq,
+
+	.irq_ack		= mask_ack_dynirq,
+	.irq_mask_ack		= mask_ack_dynirq,
+
+	.irq_set_affinity	= set_affinity_irq,
+	.irq_retrigger		= retrigger_dynirq,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct irq_chip xen_pirq_chip __read_mostly = {
 	.name			= "xen-pirq",
 

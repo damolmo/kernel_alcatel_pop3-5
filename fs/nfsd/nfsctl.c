@@ -1110,6 +1110,11 @@ static ssize_t write_v4_end_grace(struct file *file, char *buf, size_t size)
 		case 'Y':
 		case 'y':
 		case '1':
+<<<<<<< HEAD
+=======
+			if (!nn->nfsd_serv)
+				return -EBUSY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			nfsd4_end_grace(nn);
 			break;
 		default:

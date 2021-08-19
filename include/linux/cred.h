@@ -122,6 +122,10 @@ struct cred {
 	kernel_cap_t	cap_permitted;	/* caps we're permitted */
 	kernel_cap_t	cap_effective;	/* caps we can actually use */
 	kernel_cap_t	cap_bset;	/* capability bounding set */
+<<<<<<< HEAD
+=======
+	kernel_cap_t	cap_ambient;	/* Ambient capability set */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_KEYS
 	unsigned char	jit_keyring;	/* default keyring to attach requested
 					 * keys to */
@@ -136,7 +140,15 @@ struct cred {
 	struct user_struct *user;	/* real user ID subscription */
 	struct user_namespace *user_ns; /* user_ns the caps and keyrings are relative to. */
 	struct group_info *group_info;	/* supplementary groups for euid/fsgid */
+<<<<<<< HEAD
 	struct rcu_head	rcu;		/* RCU deletion hook */
+=======
+	/* RCU deletion */
+	union {
+		int non_rcu;			/* Can we skip RCU deletion? */
+		struct rcu_head	rcu;		/* RCU deletion hook */
+	};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 extern void __put_cred(struct cred *);
@@ -197,6 +209,16 @@ static inline void validate_process_creds(void)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static inline bool cap_ambient_invariant_ok(const struct cred *cred)
+{
+	return cap_issubset(cred->cap_ambient,
+			    cap_intersect(cred->cap_permitted,
+					  cred->cap_inheritable));
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * get_new_cred - Get a reference on a new set of credentials
  * @cred: The new credentials to reference
@@ -227,6 +249,10 @@ static inline const struct cred *get_cred(const struct cred *cred)
 {
 	struct cred *nonconst_cred = (struct cred *) cred;
 	validate_creds(cred);
+<<<<<<< HEAD
+=======
+	nonconst_cred->non_rcu = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return get_new_cred(nonconst_cred);
 }
 
@@ -354,7 +380,14 @@ extern struct user_namespace init_user_ns;
 #ifdef CONFIG_USER_NS
 #define current_user_ns()	(current_cred_xxx(user_ns))
 #else
+<<<<<<< HEAD
 #define current_user_ns()	(&init_user_ns)
+=======
+static inline struct user_namespace *current_user_ns(void)
+{
+	return &init_user_ns;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 

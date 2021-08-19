@@ -22,6 +22,10 @@
 #include <linux/kvm.h>
 #include <linux/kvm_host.h>
 #include <asm/kvm_emulate.h>
+<<<<<<< HEAD
+=======
+#include <asm/esr.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/kvm_coproc.h>
 #include <asm/kvm_mmu.h>
 #include <asm/kvm_psci.h>
@@ -34,7 +38,11 @@ static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 	ret = kvm_psci_call(vcpu);
 	if (ret < 0) {
+<<<<<<< HEAD
 		kvm_inject_undefined(vcpu);
+=======
+		*vcpu_reg(vcpu, 0) = ~0UL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 1;
 	}
 
@@ -43,7 +51,11 @@ static int handle_hvc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 
 static int handle_smc(struct kvm_vcpu *vcpu, struct kvm_run *run)
 {
+<<<<<<< HEAD
 	kvm_inject_undefined(vcpu);
+=======
+	*vcpu_reg(vcpu, 0) = ~0UL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 
@@ -71,7 +83,23 @@ static int kvm_handle_wfx(struct kvm_vcpu *vcpu, struct kvm_run *run)
 	return 1;
 }
 
+<<<<<<< HEAD
 static exit_handle_fn arm_exit_handlers[] = {
+=======
+static int kvm_handle_unknown_ec(struct kvm_vcpu *vcpu, struct kvm_run *run)
+{
+	u32 hsr = kvm_vcpu_get_hsr(vcpu);
+
+	kvm_pr_unimpl("Unknown exception class: hsr: %#08x -- %s\n",
+		      hsr, esr_get_class_string(hsr));
+
+	kvm_inject_undefined(vcpu);
+	return 1;
+}
+
+static exit_handle_fn arm_exit_handlers[] = {
+	[0 ... ESR_ELx_EC_MAX]	= kvm_handle_unknown_ec,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	[ESR_EL2_EC_WFI]	= kvm_handle_wfx,
 	[ESR_EL2_EC_CP15_32]	= kvm_handle_cp15_32,
 	[ESR_EL2_EC_CP15_64]	= kvm_handle_cp15_64,
@@ -91,6 +119,7 @@ static exit_handle_fn kvm_get_exit_handler(struct kvm_vcpu *vcpu)
 {
 	u8 hsr_ec = kvm_vcpu_trap_get_class(vcpu);
 
+<<<<<<< HEAD
 	if (hsr_ec >= ARRAY_SIZE(arm_exit_handlers) ||
 	    !arm_exit_handlers[hsr_ec]) {
 		kvm_err("Unknown exception class: hsr: %#08x\n",
@@ -98,6 +127,8 @@ static exit_handle_fn kvm_get_exit_handler(struct kvm_vcpu *vcpu)
 		BUG();
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return arm_exit_handlers[hsr_ec];
 }
 

@@ -265,7 +265,11 @@ static struct tty_audit_buf *tty_audit_buf_get(struct tty_struct *tty,
  *
  *	Audit @data of @size from @tty, if necessary.
  */
+<<<<<<< HEAD
 void tty_audit_add_data(struct tty_struct *tty, unsigned char *data,
+=======
+void tty_audit_add_data(struct tty_struct *tty, const void *data,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			size_t size, unsigned icanon)
 {
 	struct tty_audit_buf *buf;

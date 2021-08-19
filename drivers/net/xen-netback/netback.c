@@ -67,6 +67,10 @@ module_param(rx_drain_timeout_msecs, uint, 0444);
 unsigned int rx_stall_timeout_msecs = 60000;
 module_param(rx_stall_timeout_msecs, uint, 0444);
 
+<<<<<<< HEAD
+=======
+#define MAX_QUEUES_DEFAULT 8
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 unsigned int xenvif_max_queues;
 module_param_named(max_queues, xenvif_max_queues, uint, 0644);
 MODULE_PARM_DESC(max_queues,
@@ -819,6 +823,10 @@ static void tx_add_credit(struct xenvif_queue *queue)
 		max_credit = ULONG_MAX; /* wrapped: clamp to ULONG_MAX */
 
 	queue->remaining_credit = min(max_credit, max_burst);
+<<<<<<< HEAD
+=======
+	queue->rate_limited = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void tx_credit_callback(unsigned long data)
@@ -1336,8 +1344,15 @@ static bool tx_credit_exceeded(struct xenvif_queue *queue, unsigned size)
 		msecs_to_jiffies(queue->credit_usec / 1000);
 
 	/* Timer could already be pending in rare cases. */
+<<<<<<< HEAD
 	if (timer_pending(&queue->credit_timeout))
 		return true;
+=======
+	if (timer_pending(&queue->credit_timeout)) {
+		queue->rate_limited = true;
+		return true;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Passed the point where we can replenish credit? */
 	if (time_after_eq64(now, next_credit)) {
@@ -1354,6 +1369,10 @@ static bool tx_credit_exceeded(struct xenvif_queue *queue, unsigned size)
 		mod_timer(&queue->credit_timeout,
 			  next_credit);
 		queue->credit_window_start = next_credit;
+<<<<<<< HEAD
+=======
+		queue->rate_limited = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		return true;
 	}
@@ -1827,7 +1846,19 @@ int xenvif_tx_action(struct xenvif_queue *queue, int budget)
 				      NULL,
 				      queue->pages_to_map,
 				      nr_mops);
+<<<<<<< HEAD
 		BUG_ON(ret);
+=======
+		if (ret) {
+			unsigned int i;
+
+			netdev_err(queue->vif->dev, "Map fail: nr %u ret %d\n",
+				   nr_mops, ret);
+			for (i = 0; i < nr_mops; ++i)
+				WARN_ON_ONCE(queue->tx_map_ops[i].status ==
+				             GNTST_okay);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	work_done = xenvif_tx_submit(queue);
@@ -2185,8 +2216,17 @@ static int __init netback_init(void)
 	if (!xen_domain())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* Allow as many queues as there are CPUs, by default */
 	xenvif_max_queues = num_online_cpus();
+=======
+	/* Allow as many queues as there are CPUs but max. 8 if user has not
+	 * specified a value.
+	 */
+	if (xenvif_max_queues == 0)
+		xenvif_max_queues = min_t(unsigned int, MAX_QUEUES_DEFAULT,
+					  num_online_cpus());
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fatal_skb_slots < XEN_NETBK_LEGACY_SLOTS_MAX) {
 		pr_info("fatal_skb_slots too small (%d), bump it to XEN_NETBK_LEGACY_SLOTS_MAX (%d)\n",

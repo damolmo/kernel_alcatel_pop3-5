@@ -783,12 +783,24 @@ mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
 	 */
 	if (of_device_is_compatible(np, "marvell,mv78230-i2c")) {
 		drv_data->offload_enabled = true;
+<<<<<<< HEAD
 		drv_data->errata_delay = true;
+=======
+		/* The delay is only needed in standard mode (100kHz) */
+		if (bus_freq <= 100000)
+			drv_data->errata_delay = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (of_device_is_compatible(np, "marvell,mv78230-a0-i2c")) {
 		drv_data->offload_enabled = false;
+<<<<<<< HEAD
 		drv_data->errata_delay = true;
+=======
+		/* The delay is only needed in standard mode (100kHz) */
+		if (bus_freq <= 100000)
+			drv_data->errata_delay = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (of_device_is_compatible(np, "allwinner,sun6i-a31-i2c"))

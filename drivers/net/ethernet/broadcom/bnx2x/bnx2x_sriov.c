@@ -446,7 +446,13 @@ static int bnx2x_vf_mac_vlan_config(struct bnx2x *bp,
 
 	/* Add/Remove the filter */
 	rc = bnx2x_config_vlan_mac(bp, &ramrod);
+<<<<<<< HEAD
 	if (rc && rc != -EEXIST) {
+=======
+	if (rc == -EEXIST)
+		return 0;
+	if (rc) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		BNX2X_ERR("Failed to %s %s\n",
 			  filter->add ? "add" : "delete",
 			  filter->type == BNX2X_VF_FILTER_MAC ? "MAC" :
@@ -459,6 +465,11 @@ static int bnx2x_vf_mac_vlan_config(struct bnx2x *bp,
 		bnx2x_vf_vlan_credit(bp, ramrod.vlan_mac_obj,
 				     &bnx2x_vfq(vf, qid, vlan_count));
 
+<<<<<<< HEAD
+=======
+	filter->applied = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -486,6 +497,11 @@ int bnx2x_vf_mac_vlan_config_list(struct bnx2x *bp, struct bnx2x_virtf *vf,
 		BNX2X_ERR("Managed only %d/%d filters - rolling back\n",
 			  i, filters->count + 1);
 		while (--i >= 0) {
+<<<<<<< HEAD
+=======
+			if (!filters->filters[i].applied)
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			filters->filters[i].add = !filters->filters[i].add;
 			bnx2x_vf_mac_vlan_config(bp, vf, qid,
 						 &filters->filters[i],
@@ -1288,8 +1304,15 @@ int bnx2x_iov_init_one(struct bnx2x *bp, int int_mode_param,
 		goto failed;
 
 	/* SR-IOV capability was enabled but there are no VFs*/
+<<<<<<< HEAD
 	if (iov->total == 0)
 		goto failed;
+=======
+	if (iov->total == 0) {
+		err = -EINVAL;
+		goto failed;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	iov->nr_virtfn = min_t(u16, iov->total, num_vfs_param);
 
@@ -2437,15 +2460,32 @@ static int bnx2x_set_pf_tx_switching(struct bnx2x *bp, bool enable)
 	/* send the ramrod on all the queues of the PF */
 	for_each_eth_queue(bp, i) {
 		struct bnx2x_fastpath *fp = &bp->fp[i];
+<<<<<<< HEAD
+=======
+		int tx_idx;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Set the appropriate Queue object */
 		q_params.q_obj = &bnx2x_sp_obj(bp, fp).q_obj;
 
+<<<<<<< HEAD
 		/* Update the Queue state */
 		rc = bnx2x_queue_state_change(bp, &q_params);
 		if (rc) {
 			BNX2X_ERR("Failed to configure Tx switching\n");
 			return rc;
+=======
+		for (tx_idx = FIRST_TX_COS_INDEX;
+		     tx_idx < fp->max_cos; tx_idx++) {
+			q_params.params.update.cid_index = tx_idx;
+
+			/* Update the Queue state */
+			rc = bnx2x_queue_state_change(bp, &q_params);
+			if (rc) {
+				BNX2X_ERR("Failed to configure Tx switching\n");
+				return rc;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 

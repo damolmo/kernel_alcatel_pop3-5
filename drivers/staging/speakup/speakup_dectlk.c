@@ -51,7 +51,11 @@ static unsigned char get_index(void);
 static int in_escape;
 static int is_flushing;
 
+<<<<<<< HEAD
 static spinlock_t flush_lock;
+=======
+static DEFINE_SPINLOCK(flush_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static DECLARE_WAIT_QUEUE_HEAD(flush);
 
 static struct var_t vars[] = {

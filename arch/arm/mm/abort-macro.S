@@ -13,6 +13,10 @@
 	tst	\psr, #PSR_T_BIT
 	beq	not_thumb
 	ldrh	\tmp, [\pc]			@ Read aborted Thumb instruction
+<<<<<<< HEAD
+=======
+	uaccess_disable ip			@ disable userspace access
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	and	\tmp, \tmp, # 0xfe00		@ Mask opcode field
 	cmp	\tmp, # 0x5600			@ Is it ldrsb?
 	orreq	\tmp, \tmp, #1 << 11		@ Set L-bit if yes
@@ -29,6 +33,7 @@ not_thumb:
  *   [7:4] == 1101
  *    [20] == 0
  */
+<<<<<<< HEAD
 	.macro	do_ldrd_abort, tmp, insn
 	tst	\insn, #0x0e100000		@ [27:25,20] == 0
 	bne	not_ldrd
@@ -38,3 +43,11 @@ not_thumb:
 not_ldrd:
 	.endm
 
+=======
+	.macro	teq_ldrd, tmp, insn
+	mov	\tmp, #0x0e100000
+	orr	\tmp, #0x000000f0
+	and	\tmp, \insn, \tmp
+	teq	\tmp, #0x000000d0
+	.endm
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

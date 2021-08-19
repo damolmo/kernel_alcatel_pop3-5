@@ -265,6 +265,10 @@ enum
 	LINUX_MIB_TCPWANTZEROWINDOWADV,		/* TCPWantZeroWindowAdv */
 	LINUX_MIB_TCPSYNRETRANS,		/* TCPSynRetrans */
 	LINUX_MIB_TCPORIGDATASENT,		/* TCPOrigDataSent */
+<<<<<<< HEAD
+=======
+	LINUX_MIB_TCPWQUEUETOOBIG,		/* TCPWqueueTooBig */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__LINUX_MIB_MAX
 };
 

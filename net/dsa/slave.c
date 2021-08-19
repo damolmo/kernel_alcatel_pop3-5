@@ -140,10 +140,21 @@ static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
 	struct dsa_slave_priv *p = netdev_priv(dev);
 	struct net_device *master = p->parent->dst->master_netdev;
 
+<<<<<<< HEAD
 	if (change & IFF_ALLMULTI)
 		dev_set_allmulti(master, dev->flags & IFF_ALLMULTI ? 1 : -1);
 	if (change & IFF_PROMISC)
 		dev_set_promiscuity(master, dev->flags & IFF_PROMISC ? 1 : -1);
+=======
+	if (dev->flags & IFF_UP) {
+		if (change & IFF_ALLMULTI)
+			dev_set_allmulti(master,
+					 dev->flags & IFF_ALLMULTI ? 1 : -1);
+		if (change & IFF_PROMISC)
+			dev_set_promiscuity(master,
+					    dev->flags & IFF_PROMISC ? 1 : -1);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void dsa_slave_set_rx_mode(struct net_device *dev)
@@ -462,7 +473,11 @@ static void dsa_slave_phy_setup(struct dsa_slave_priv *p,
 	p->phy_interface = of_get_phy_mode(port_dn);
 
 	phy_dn = of_parse_phandle(port_dn, "phy-handle", 0);
+<<<<<<< HEAD
 	if (of_phy_is_fixed_link(port_dn)) {
+=======
+	if (!phy_dn && of_phy_is_fixed_link(port_dn)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* In the case of a fixed PHY, the DT node associated
 		 * to the fixed PHY is the Port DT node
 		 */
@@ -472,16 +487,29 @@ static void dsa_slave_phy_setup(struct dsa_slave_priv *p,
 			return;
 		}
 		phy_is_fixed = true;
+<<<<<<< HEAD
 		phy_dn = port_dn;
+=======
+		phy_dn = of_node_get(port_dn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (ds->drv->get_phy_flags)
 		phy_flags = ds->drv->get_phy_flags(ds, p->port);
 
+<<<<<<< HEAD
 	if (phy_dn)
 		p->phy = of_phy_connect(slave_dev, phy_dn,
 					dsa_slave_adjust_link, phy_flags,
 					p->phy_interface);
+=======
+	if (phy_dn) {
+		p->phy = of_phy_connect(slave_dev, phy_dn,
+					dsa_slave_adjust_link, phy_flags,
+					p->phy_interface);
+		of_node_put(phy_dn);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (p->phy && phy_is_fixed)
 		fixed_phy_set_link_update(p->phy, dsa_slave_fixed_link_update);
@@ -503,6 +531,12 @@ int dsa_slave_suspend(struct net_device *slave_dev)
 {
 	struct dsa_slave_priv *p = netdev_priv(slave_dev);
 
+<<<<<<< HEAD
+=======
+	if (!netif_running(slave_dev))
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_device_detach(slave_dev);
 
 	if (p->phy) {
@@ -520,6 +554,12 @@ int dsa_slave_resume(struct net_device *slave_dev)
 {
 	struct dsa_slave_priv *p = netdev_priv(slave_dev);
 
+<<<<<<< HEAD
+=======
+	if (!netif_running(slave_dev))
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_device_attach(slave_dev);
 
 	if (p->phy) {

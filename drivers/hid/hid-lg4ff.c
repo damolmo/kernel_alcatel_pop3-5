@@ -566,6 +566,16 @@ int lg4ff_init(struct hid_device *hid)
 	int error, i, j;
 	__u16 bcdDevice, rev_maj, rev_min;
 
+<<<<<<< HEAD
+=======
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "no inputs found\n");
+		return -ENODEV;
+	}
+	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
+	dev = hidinput->input;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Check that the report looks ok */
 	if (!hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 7))
 		return -1;

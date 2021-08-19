@@ -210,6 +210,12 @@ static int intel_mid_pci_irq_enable(struct pci_dev *dev)
 {
 	int polarity;
 
+<<<<<<< HEAD
+=======
+	if (dev->irq_managed && dev->irq > 0)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (intel_mid_identify_cpu() == INTEL_MID_CPU_CHIP_TANGIER)
 		polarity = 0; /* active high */
 	else
@@ -224,13 +230,26 @@ static int intel_mid_pci_irq_enable(struct pci_dev *dev)
 	if (mp_map_gsi_to_irq(dev->irq, IOAPIC_MAP_ALLOC) < 0)
 		return -EBUSY;
 
+<<<<<<< HEAD
+=======
+	dev->irq_managed = 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
 static void intel_mid_pci_irq_disable(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	if (!mp_should_keep_irq(&dev->dev) && dev->irq > 0)
 		mp_unmap_irq(dev->irq);
+=======
+	if (!mp_should_keep_irq(&dev->dev) && dev->irq_managed &&
+	    dev->irq > 0) {
+		mp_unmap_irq(dev->irq);
+		dev->irq_managed = 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 struct pci_ops intel_mid_pci_ops = {

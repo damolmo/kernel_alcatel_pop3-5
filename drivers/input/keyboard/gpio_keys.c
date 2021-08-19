@@ -91,7 +91,11 @@ struct gpio_keys_drvdata {
  * Return value of this function can be used to allocate bitmap
  * large enough to hold all bits for given type.
  */
+<<<<<<< HEAD
 static inline int get_n_events_by_type(int type)
+=======
+static int get_n_events_by_type(int type)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	BUG_ON(type != EV_SW && type != EV_KEY);
 
@@ -99,6 +103,25 @@ static inline int get_n_events_by_type(int type)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * get_bm_events_by_type() - returns bitmap of supported events per @type
+ * @input: input device from which bitmap is retrieved
+ * @type: type of button (%EV_KEY, %EV_SW)
+ *
+ * Return value of this function can be used to allocate bitmap
+ * large enough to hold all bits for given type.
+ */
+static const unsigned long *get_bm_events_by_type(struct input_dev *dev,
+						  int type)
+{
+	BUG_ON(type != EV_SW && type != EV_KEY);
+
+	return (type == EV_KEY) ? dev->keybit : dev->swbit;
+}
+
+/**
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * gpio_keys_disable_button() - disables given GPIO button
  * @bdata: button data for button to be disabled
  *
@@ -205,6 +228,10 @@ static ssize_t gpio_keys_attr_store_helper(struct gpio_keys_drvdata *ddata,
 					   const char *buf, unsigned int type)
 {
 	int n_events = get_n_events_by_type(type);
+<<<<<<< HEAD
+=======
+	const unsigned long *bitmap = get_bm_events_by_type(ddata->input, type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long *bits;
 	ssize_t error;
 	int i;
@@ -218,6 +245,14 @@ static ssize_t gpio_keys_attr_store_helper(struct gpio_keys_drvdata *ddata,
 		goto out;
 
 	/* First validate */
+<<<<<<< HEAD
+=======
+	if (!bitmap_subset(bits, bitmap, n_events)) {
+		error = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < ddata->pdata->nbuttons; i++) {
 		struct gpio_button_data *bdata = &ddata->data[i];
 

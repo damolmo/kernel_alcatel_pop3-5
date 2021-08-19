@@ -122,6 +122,19 @@ static const struct reg_default aic3x_reg[] = {
 	{ 108, 0x00 }, { 109, 0x00 },
 };
 
+<<<<<<< HEAD
+=======
+static bool aic3x_volatile_reg(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case AIC3X_RESET:
+		return true;
+	default:
+		return false;
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const struct regmap_config aic3x_regmap = {
 	.reg_bits = 8,
 	.val_bits = 8,
@@ -129,6 +142,12 @@ static const struct regmap_config aic3x_regmap = {
 	.max_register = DAC_ICC_ADJ,
 	.reg_defaults = aic3x_reg,
 	.num_reg_defaults = ARRAY_SIZE(aic3x_reg),
+<<<<<<< HEAD
+=======
+
+	.volatile_reg = aic3x_volatile_reg,
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.cache_type = REGCACHE_RBTREE,
 };
 

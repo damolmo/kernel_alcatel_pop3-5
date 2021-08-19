@@ -18,6 +18,10 @@
 #include <linux/major.h>
 #include <linux/fs.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/leds.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/mmc/host.h>
 #include <linux/mtd/physmap.h>
 #include <linux/pm.h>

@@ -59,7 +59,12 @@ struct vsock_sock {
 	struct list_head pending_links;
 	struct list_head accept_queue;
 	bool rejected;
+<<<<<<< HEAD
 	struct delayed_work dwork;
+=======
+	struct delayed_work connect_work;
+	struct delayed_work pending_work;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 peer_shutdown;
 	bool sent_request;
 	bool ignore_connecting_rst;
@@ -70,7 +75,10 @@ struct vsock_sock {
 
 s64 vsock_stream_has_data(struct vsock_sock *vsk);
 s64 vsock_stream_has_space(struct vsock_sock *vsk);
+<<<<<<< HEAD
 void vsock_pending_work(struct work_struct *work);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct sock *__vsock_create(struct net *net,
 			    struct socket *sock,
 			    struct sock *parent,

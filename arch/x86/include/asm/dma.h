@@ -73,7 +73,11 @@
 #define MAX_DMA_PFN   ((16 * 1024 * 1024) >> PAGE_SHIFT)
 
 /* 4GB broken PCI/AGP hardware bus master zone */
+<<<<<<< HEAD
 #define MAX_DMA32_PFN ((4UL * 1024 * 1024 * 1024) >> PAGE_SHIFT)
+=======
+#define MAX_DMA32_PFN (1UL << (32 - PAGE_SHIFT))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_X86_32
 /* The maximum address that we can perform a DMA transfer to on this platform */

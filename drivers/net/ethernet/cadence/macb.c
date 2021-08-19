@@ -464,7 +464,11 @@ static int macb_halt_tx(struct macb *bp)
 		if (!(status & MACB_BIT(TGO)))
 			return 0;
 
+<<<<<<< HEAD
 		usleep_range(10, 250);
+=======
+		udelay(250);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} while (time_before(halt_time, timeout));
 
 	return -ETIMEDOUT;
@@ -1777,6 +1781,12 @@ static struct net_device_stats *gem_get_stats(struct macb *bp)
 	struct gem_stats *hwstat = &bp->hw_stats.gem;
 	struct net_device_stats *nstat = &bp->stats;
 
+<<<<<<< HEAD
+=======
+	if (!netif_running(bp->dev))
+		return nstat;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	gem_update_stats(bp);
 
 	nstat->rx_errors = (hwstat->rx_frame_check_sequence_errors +

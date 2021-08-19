@@ -56,6 +56,10 @@ parameter is applicable:
 	BLACKFIN Blackfin architecture is enabled.
 	CLK	Common clock infrastructure is enabled.
 	CMA	Contiguous Memory Area support is enabled.
+<<<<<<< HEAD
+=======
+	DM	Device mapper support is enabled.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	DRM	Direct Rendering Management support is enabled.
 	DYNAMIC_DEBUG Build in debug messages and enable them at runtime
 	EDD	BIOS Enhanced Disk Drive Services (EDD) is enabled
@@ -880,6 +884,14 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			Disable PIN 1 of APIC timer
 			Can be useful to work around chipset bugs.
 
+<<<<<<< HEAD
+=======
+	dm=		[DM] Allows early creation of a device-mapper device.
+			See Documentation/device-mapper/boot.txt.
+
+	dmasound=	[HW,OSS] Sound subsystem buffers
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dma_debug=off	If the kernel is compiled with DMA_API_DEBUG support,
 			this option disables the debugging code at boot.
 
@@ -1159,6 +1171,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			When zero, profiling data is discarded and associated
 			debugfs files are removed at module unload time.
 
+<<<<<<< HEAD
+=======
+	goldfish	[X86] Enable the goldfish android emulator platform.
+			Don't use this when you are not running on the
+			android emulator
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	gpt		[EFI] Forces disk with valid GPT signature but
 			invalid Protective MBR to be treated as GPT. If the
 			primary GPT is corrupted, it enables the backup/alternate
@@ -2281,6 +2300,14 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 			register save and restore. The kernel will only save
 			legacy floating-point registers on task switch.
 
+<<<<<<< HEAD
+=======
+	nospectre_v2	[X86,PPC_FSL_BOOK3E] Disable all mitigations for the Spectre variant 2
+			(indirect branch prediction) vulnerability. System may
+			allow data leaks with this option, which is equivalent
+			to spectre_v2=off.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	noxsave		[BUGS=X86] Disables x86 extended register state save
 			and restore using xsave. The kernel will fallback to
 			enabling legacy floating-point and sse state.
@@ -2354,6 +2381,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 
 	nointroute	[IA-64]
 
+<<<<<<< HEAD
+=======
+	noinvpcid	[X86] Disable the INVPCID cpu feature.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nojitter	[IA-64] Disables jitter checking for ITC timers.
 
 	no-kvmclock	[X86,KVM] Disable paravirtualized KVM clock driver
@@ -2388,11 +2420,19 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 	nopat		[X86] Disable PAT (page attribute table extension of
 			pagetables) support.
 
+<<<<<<< HEAD
 	norandmaps	Don't use address space randomization.  Equivalent to
 			echo 0 > /proc/sys/kernel/randomize_va_space
 
 	noreplace-paravirt	[X86,IA-64,PV_OPS] Don't patch paravirt_ops
 
+=======
+	nopcid		[X86-64] Disable the PCID cpu feature.
+
+	norandmaps	Don't use address space randomization.  Equivalent to
+			echo 0 > /proc/sys/kernel/randomize_va_space
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	noreplace-smp	[X86-32,SMP] Don't replace SMP instructions
 			with UP alternatives
 
@@ -2875,6 +2915,24 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 	pt.		[PARIDE]
 			See Documentation/blockdev/paride.txt.
 
+<<<<<<< HEAD
+=======
+	pti=		[X86_64] Control Page Table Isolation of user and
+			kernel address spaces.  Disabling this feature
+			removes hardening, but improves performance of
+			system calls and interrupts.
+
+			on   - unconditionally enable
+			off  - unconditionally disable
+			auto - kernel detects whether your CPU model is
+			       vulnerable to issues that PTI mitigates
+
+			Not specifying this option is equivalent to pti=auto.
+
+	nopti		[X86_64]
+			Equivalent to pti=off
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pty.legacy_count=
 			[KNL] Number of legacy pty's. Overwrites compiled-in
 			default number.
@@ -3164,6 +3222,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 
 	ro		[KNL] Mount root device read-only on boot
 
+<<<<<<< HEAD
+=======
+	rodata=		[KNL]
+		on	Mark read-only kernel memory as read-only (default).
+		off	Leave read-only kernel memory writable for debugging.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	root=		[KNL] Root filesystem
 			See name_to_dev_t comment in init/do_mounts.c.
 
@@ -3319,11 +3384,47 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 	sonypi.*=	[HW] Sony Programmable I/O Control Device driver
 			See Documentation/laptops/sonypi.txt
 
+<<<<<<< HEAD
+=======
+	spectre_v2=	[X86] Control mitigation of Spectre variant 2
+			(indirect branch speculation) vulnerability.
+
+			on   - unconditionally enable
+			off  - unconditionally disable
+			auto - kernel detects whether your CPU model is
+			       vulnerable
+
+			Selecting 'on' will, and 'auto' may, choose a
+			mitigation method at run time according to the
+			CPU, the available microcode, the setting of the
+			CONFIG_RETPOLINE configuration option, and the
+			compiler with which the kernel was built.
+
+			Specific mitigations can also be selected manually:
+
+			retpoline	  - replace indirect branches
+			retpoline,generic - google's original retpoline
+			retpoline,amd     - AMD-specific minimal thunk
+
+			Not specifying this option is equivalent to
+			spectre_v2=auto.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spia_io_base=	[HW,MTD]
 	spia_fio_base=
 	spia_pedr=
 	spia_peddr=
 
+<<<<<<< HEAD
+=======
+	stack_guard_gap=	[MM]
+			override the default stack gap protection. The value
+			is in page units and it defines how many pages prior
+			to (for stacks growing down) resp. after (for stacks
+			growing up) the main stack are reserved for no other
+			mapping. Default value is 256 pages.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stacktrace	[FTRACE]
 			Enabled the stack tracer on boot up.
 
@@ -3651,6 +3752,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 					sector if the number is odd);
 				i = IGNORE_DEVICE (don't bind to this
 					device);
+<<<<<<< HEAD
+=======
+				j = NO_REPORT_LUNS (don't use report luns
+					command, uas only);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				l = NOT_LOCKABLE (don't try to lock and
 					unlock ejectable media);
 				m = MAX_SECTORS_64 (don't transfer more
@@ -3689,9 +3795,12 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
 					HIGHMEM regardless of setting
 					of CONFIG_HIGHPTE.
 
+<<<<<<< HEAD
 	uuid_debug=	(Boolean) whether to enable debugging of TuxOnIce's
 			uuid support.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vdso=		[X86,SH]
 			On X86_32, this is an alias for vdso32=.  Otherwise:
 

@@ -1298,8 +1298,15 @@ static int ath10k_pci_hif_exchange_bmi_msg(struct ath10k *ar,
 
 	req_paddr = dma_map_single(ar->dev, treq, req_len, DMA_TO_DEVICE);
 	ret = dma_mapping_error(ar->dev, req_paddr);
+<<<<<<< HEAD
 	if (ret)
 		goto err_dma;
+=======
+	if (ret) {
+		ret = -EIO;
+		goto err_dma;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (resp && resp_len) {
 		tresp = kzalloc(*resp_len, GFP_KERNEL);
@@ -1311,8 +1318,15 @@ static int ath10k_pci_hif_exchange_bmi_msg(struct ath10k *ar,
 		resp_paddr = dma_map_single(ar->dev, tresp, *resp_len,
 					    DMA_FROM_DEVICE);
 		ret = dma_mapping_error(ar->dev, resp_paddr);
+<<<<<<< HEAD
 		if (ret)
 			goto err_req;
+=======
+		if (ret) {
+			ret = EIO;
+			goto err_req;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		xfer.wait_for_resp = true;
 		xfer.resp_len = 0;

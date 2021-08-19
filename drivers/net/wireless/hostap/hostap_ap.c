@@ -2570,7 +2570,11 @@ static int prism2_hostapd_add_sta(struct ap_data *ap,
 		sta->supported_rates[0] = 2;
 	if (sta->tx_supp_rates & WLAN_RATE_2M)
 		sta->supported_rates[1] = 4;
+<<<<<<< HEAD
  	if (sta->tx_supp_rates & WLAN_RATE_5M5)
+=======
+	if (sta->tx_supp_rates & WLAN_RATE_5M5)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sta->supported_rates[2] = 11;
 	if (sta->tx_supp_rates & WLAN_RATE_11M)
 		sta->supported_rates[3] = 22;

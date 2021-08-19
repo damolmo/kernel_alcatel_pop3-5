@@ -74,9 +74,16 @@ int hfs_brec_insert(struct hfs_find_data *fd, void *entry, int entry_len)
 	if (!fd->bnode) {
 		if (!tree->root)
 			hfs_btree_inc_height(tree);
+<<<<<<< HEAD
 		fd->bnode = hfs_bnode_find(tree, tree->leaf_head);
 		if (IS_ERR(fd->bnode))
 			return PTR_ERR(fd->bnode);
+=======
+		node = hfs_bnode_find(tree, tree->leaf_head);
+		if (IS_ERR(node))
+			return PTR_ERR(node);
+		fd->bnode = node;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fd->record = -1;
 	}
 	new_node = NULL;
@@ -131,6 +138,7 @@ skip:
 	hfs_bnode_write(node, entry, data_off + key_len, entry_len);
 	hfs_bnode_dump(node);
 
+<<<<<<< HEAD
 	if (new_node) {
 		/* update parent key if we inserted a key
 		 * at the start of the first node
@@ -138,6 +146,18 @@ skip:
 		if (!rec && new_node != node)
 			hfs_brec_update_parent(fd);
 
+=======
+	/*
+	 * update parent key if we inserted a key
+	 * at the start of the node and it is not the new node
+	 */
+	if (!rec && new_node != node) {
+		hfs_bnode_read_key(node, fd->search_key, data_off + size);
+		hfs_brec_update_parent(fd);
+	}
+
+	if (new_node) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hfs_bnode_put(fd->bnode);
 		if (!new_node->parent) {
 			hfs_btree_inc_height(tree);
@@ -166,9 +186,12 @@ skip:
 		goto again;
 	}
 
+<<<<<<< HEAD
 	if (!rec)
 		hfs_brec_update_parent(fd);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -366,6 +389,11 @@ again:
 	if (IS_ERR(parent))
 		return PTR_ERR(parent);
 	__hfs_brec_find(parent, fd);
+<<<<<<< HEAD
+=======
+	if (fd->record < 0)
+		return -ENOENT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hfs_bnode_dump(parent);
 	rec = fd->record;
 
@@ -421,6 +449,13 @@ skip:
 	if (new_node) {
 		__be32 cnid;
 
+<<<<<<< HEAD
+=======
+		if (!new_node->parent) {
+			hfs_btree_inc_height(tree);
+			new_node->parent = tree->root;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fd->bnode = hfs_bnode_find(tree, new_node->parent);
 		/* create index key and entry */
 		hfs_bnode_read_key(new_node, fd->search_key, 14);
@@ -437,6 +472,10 @@ skip:
 			/* restore search_key */
 			hfs_bnode_read_key(node, fd->search_key, 14);
 		}
+<<<<<<< HEAD
+=======
+		new_node = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (!rec && node->parent)

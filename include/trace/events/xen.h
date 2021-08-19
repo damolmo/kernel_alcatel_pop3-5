@@ -377,6 +377,7 @@ DECLARE_EVENT_CLASS(xen_mmu_pgd,
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_pin);
 DEFINE_XEN_MMU_PGD_EVENT(xen_mmu_pgd_unpin);
 
+<<<<<<< HEAD
 TRACE_EVENT(xen_mmu_flush_tlb_all,
 	    TP_PROTO(int x),
 	    TP_ARGS(x),
@@ -393,6 +394,8 @@ TRACE_EVENT(xen_mmu_flush_tlb,
 	    TP_printk("%s", "")
 	);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 TRACE_EVENT(xen_mmu_flush_tlb_single,
 	    TP_PROTO(unsigned long addr),
 	    TP_ARGS(addr),

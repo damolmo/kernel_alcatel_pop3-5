@@ -18,6 +18,10 @@
 #include <linux/buffer_head.h> /* for inode_has_buffers */
 #include <linux/ratelimit.h>
 #include <linux/list_lru.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/writeback.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "internal.h"
 
 /*
@@ -30,7 +34,11 @@
  * inode_sb_list_lock protects:
  *   sb->s_inodes, inode->i_sb_list
  * bdi->wb.list_lock protects:
+<<<<<<< HEAD
  *   bdi->wb.b_{dirty,io,more_io}, inode->i_wb_list
+=======
+ *   bdi->wb.b_{dirty,io,more_io,dirty_time}, inode->i_wb_list
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * inode_hash_lock protects:
  *   inode_hashtable, inode->i_hash
  *
@@ -131,6 +139,10 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
 	inode->i_sb = sb;
 	inode->i_blkbits = sb->s_blocksize_bits;
 	inode->i_flags = 0;
+<<<<<<< HEAD
+=======
+	atomic64_set(&inode->i_sequence, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	atomic_set(&inode->i_count, 1);
 	inode->i_op = &empty_iops;
 	inode->i_fop = &empty_fops;
@@ -152,6 +164,15 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
 	inode->i_rdev = 0;
 	inode->dirtied_when = 0;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CGROUP_WRITEBACK
+	inode->i_wb_frn_winner = 0;
+	inode->i_wb_frn_avg_time = 0;
+	inode->i_wb_frn_history = 0;
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (security_inode_alloc(inode))
 		goto out;
 	spin_lock_init(&inode->i_lock);
@@ -414,7 +435,12 @@ static void inode_lru_list_add(struct inode *inode)
  */
 void inode_add_lru(struct inode *inode)
 {
+<<<<<<< HEAD
 	if (!(inode->i_state & (I_DIRTY | I_SYNC | I_FREEING | I_WILL_FREE)) &&
+=======
+	if (!(inode->i_state & (I_DIRTY_ALL | I_SYNC |
+				I_FREEING | I_WILL_FREE)) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    !atomic_read(&inode->i_count) && inode->i_sb->s_flags & MS_ACTIVE)
 		inode_lru_list_add(inode);
 }
@@ -621,6 +647,10 @@ void evict_inodes(struct super_block *sb)
 
 	dispose_list(&dispose);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(evict_inodes);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * invalidate_inodes	- attempt to free all inodes on a superblock
@@ -645,7 +675,11 @@ int invalidate_inodes(struct super_block *sb, bool kill_dirty)
 			spin_unlock(&inode->i_lock);
 			continue;
 		}
+<<<<<<< HEAD
 		if (inode->i_state & I_DIRTY && !kill_dirty) {
+=======
+		if (inode->i_state & I_DIRTY_ALL && !kill_dirty) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			spin_unlock(&inode->i_lock);
 			busy = 1;
 			continue;
@@ -1430,11 +1464,28 @@ static void iput_final(struct inode *inode)
  */
 void iput(struct inode *inode)
 {
+<<<<<<< HEAD
 	if (inode) {
 		BUG_ON(inode->i_state & I_CLEAR);
 
 		if (atomic_dec_and_lock(&inode->i_count, &inode->i_lock))
 			iput_final(inode);
+=======
+	if (!inode)
+		return;
+	BUG_ON(inode->i_state & I_CLEAR);
+retry:
+	if (atomic_dec_and_lock(&inode->i_count, &inode->i_lock)) {
+		if (inode->i_nlink && (inode->i_state & I_DIRTY_TIME)) {
+			atomic_inc(&inode->i_count);
+			inode->i_state &= ~I_DIRTY_TIME;
+			spin_unlock(&inode->i_lock);
+			trace_writeback_lazytime_iput(inode);
+			mark_inode_dirty_sync(inode);
+			goto retry;
+		}
+		iput_final(inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 EXPORT_SYMBOL(iput);
@@ -1493,6 +1544,7 @@ static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * This does the actual work of updating an inodes time or version.  Must have
  * had called mnt_want_write() before calling this.
@@ -1501,6 +1553,11 @@ static int update_time(struct inode *inode, struct timespec *time, int flags)
 {
 	if (inode->i_op->update_time)
 		return inode->i_op->update_time(inode, time, flags);
+=======
+int generic_update_time(struct inode *inode, struct timespec *time, int flags)
+{
+	int iflags = I_DIRTY_TIME;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (flags & S_ATIME)
 		inode->i_atime = *time;
@@ -1510,9 +1567,33 @@ static int update_time(struct inode *inode, struct timespec *time, int flags)
 		inode->i_ctime = *time;
 	if (flags & S_MTIME)
 		inode->i_mtime = *time;
+<<<<<<< HEAD
 	mark_inode_dirty_sync(inode);
 	return 0;
 }
+=======
+
+	if (!(inode->i_sb->s_flags & MS_LAZYTIME) || (flags & S_VERSION))
+		iflags |= I_DIRTY_SYNC;
+	__mark_inode_dirty(inode, iflags);
+	return 0;
+}
+EXPORT_SYMBOL(generic_update_time);
+
+/*
+ * This does the actual work of updating an inodes time or version.  Must have
+ * had called mnt_want_write() before calling this.
+ */
+static int update_time(struct inode *inode, struct timespec *time, int flags)
+{
+	int (*update_time)(struct inode *, struct timespec *, int);
+
+	update_time = inode->i_op->update_time ? inode->i_op->update_time :
+		generic_update_time;
+
+	return update_time(inode, time, flags);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  *	touch_atime	-	update the access time
@@ -1598,7 +1679,11 @@ int should_remove_suid(struct dentry *dentry)
 }
 EXPORT_SYMBOL(should_remove_suid);
 
+<<<<<<< HEAD
 static int __remove_suid(struct dentry *dentry, int kill)
+=======
+static int __remove_suid(struct vfsmount *mnt, struct dentry *dentry, int kill)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct iattr newattrs;
 
@@ -1607,7 +1692,11 @@ static int __remove_suid(struct dentry *dentry, int kill)
 	 * Note we call this on write, so notify_change will not
 	 * encounter any conflicting delegations:
 	 */
+<<<<<<< HEAD
 	return notify_change(dentry, &newattrs, NULL);
+=======
+	return notify_change2(mnt, dentry, &newattrs, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int file_remove_suid(struct file *file)
@@ -1618,8 +1707,18 @@ int file_remove_suid(struct file *file)
 	int killpriv;
 	int error = 0;
 
+<<<<<<< HEAD
 	/* Fast path for nothing security related */
 	if (IS_NOSEC(inode))
+=======
+	/*
+	 * Fast path for nothing security related.
+	 * As well for non-regular files, e.g. blkdev inodes.
+	 * For example, blkdev_write_iter() might get here
+	 * trying to remove privs which it is not allowed to.
+	 */
+	if (IS_NOSEC(inode) || !S_ISREG(inode->i_mode))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	killsuid = should_remove_suid(dentry);
@@ -1630,7 +1729,11 @@ int file_remove_suid(struct file *file)
 	if (killpriv)
 		error = security_inode_killpriv(dentry);
 	if (!error && killsuid)
+<<<<<<< HEAD
 		error = __remove_suid(dentry, killsuid);
+=======
+		error = __remove_suid(file->f_path.mnt, dentry, killsuid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!error)
 		inode_has_no_xattr(inode);
 
@@ -1821,8 +1924,19 @@ void inode_init_owner(struct inode *inode, const struct inode *dir,
 	inode->i_uid = current_fsuid();
 	if (dir && dir->i_mode & S_ISGID) {
 		inode->i_gid = dir->i_gid;
+<<<<<<< HEAD
 		if (S_ISDIR(mode))
 			mode |= S_ISGID;
+=======
+
+		/* Directories are special, and always inherit S_ISGID */
+		if (S_ISDIR(mode))
+			mode |= S_ISGID;
+		else if ((mode & (S_ISGID | S_IXGRP)) == (S_ISGID | S_IXGRP) &&
+			 !in_group_p(inode->i_gid) &&
+			 !capable_wrt_inode_uidgid(dir, CAP_FSETID))
+			mode &= ~S_ISGID;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		inode->i_gid = current_fsgid();
 	inode->i_mode = mode;
@@ -1927,3 +2041,36 @@ void inode_set_flags(struct inode *inode, unsigned int flags,
 				  new_flags) != old_flags));
 }
 EXPORT_SYMBOL(inode_set_flags);
+<<<<<<< HEAD
+=======
+
+void inode_nohighmem(struct inode *inode)
+{
+	mapping_set_gfp_mask(inode->i_mapping, GFP_USER);
+}
+EXPORT_SYMBOL(inode_nohighmem);
+
+/*
+ * Generic function to check FS_IOC_SETFLAGS values and reject any invalid
+ * configurations.
+ *
+ * Note: the caller should be holding i_mutex, or else be sure that they have
+ * exclusive access to the inode structure.
+ */
+int vfs_ioc_setflags_prepare(struct inode *inode, unsigned int oldflags,
+			     unsigned int flags)
+{
+	/*
+	 * The IMMUTABLE and APPEND_ONLY flags can only be changed by
+	 * the relevant capability.
+	 *
+	 * This test looks nicer. Thanks to Pauline Middelink
+	 */
+	if ((flags ^ oldflags) & (FS_APPEND_FL | FS_IMMUTABLE_FL) &&
+	    !capable(CAP_LINUX_IMMUTABLE))
+		return -EPERM;
+
+	return 0;
+}
+EXPORT_SYMBOL(vfs_ioc_setflags_prepare);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

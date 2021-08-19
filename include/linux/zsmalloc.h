@@ -36,7 +36,11 @@ enum zs_mapmode {
 
 struct zs_pool;
 
+<<<<<<< HEAD
 struct zs_pool *zs_create_pool(gfp_t flags);
+=======
+struct zs_pool *zs_create_pool(char *name, gfp_t flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void zs_destroy_pool(struct zs_pool *pool);
 
 unsigned long zs_malloc(struct zs_pool *pool, size_t size);
@@ -47,5 +51,9 @@ void *zs_map_object(struct zs_pool *pool, unsigned long handle,
 void zs_unmap_object(struct zs_pool *pool, unsigned long handle);
 
 unsigned long zs_get_total_pages(struct zs_pool *pool);
+<<<<<<< HEAD
+=======
+unsigned long zs_compact(struct zs_pool *pool);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

@@ -67,8 +67,11 @@ static int ecb_crypt(struct blkcipher_desc *desc, struct blkcipher_walk *walk,
 	void (*fn)(struct cast5_ctx *ctx, u8 *dst, const u8 *src);
 	int err;
 
+<<<<<<< HEAD
 	fn = (enc) ? cast5_ecb_enc_16way : cast5_ecb_dec_16way;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = blkcipher_walk_virt(desc, walk);
 	desc->flags &= ~CRYPTO_TFM_REQ_MAY_SLEEP;
 
@@ -80,6 +83,10 @@ static int ecb_crypt(struct blkcipher_desc *desc, struct blkcipher_walk *walk,
 
 		/* Process multi-block batch */
 		if (nbytes >= bsize * CAST5_PARALLEL_BLOCKS) {
+<<<<<<< HEAD
+=======
+			fn = (enc) ? cast5_ecb_enc_16way : cast5_ecb_dec_16way;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			do {
 				fn(ctx, wdst, wsrc);
 

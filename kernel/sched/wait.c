@@ -596,7 +596,11 @@ EXPORT_SYMBOL(bit_wait_io);
 
 __sched int bit_wait_timeout(struct wait_bit_key *word)
 {
+<<<<<<< HEAD
 	unsigned long now = ACCESS_ONCE(jiffies);
+=======
+	unsigned long now = READ_ONCE(jiffies);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (signal_pending_state(current->state, current))
 		return 1;
 	if (time_after_eq(now, word->timeout))
@@ -608,7 +612,11 @@ EXPORT_SYMBOL_GPL(bit_wait_timeout);
 
 __sched int bit_wait_io_timeout(struct wait_bit_key *word)
 {
+<<<<<<< HEAD
 	unsigned long now = ACCESS_ONCE(jiffies);
+=======
+	unsigned long now = READ_ONCE(jiffies);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (signal_pending_state(current->state, current))
 		return 1;
 	if (time_after_eq(now, word->timeout))

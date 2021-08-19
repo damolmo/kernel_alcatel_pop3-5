@@ -40,6 +40,33 @@
  * and don't forget to CC: the USB development list <linux-usb@vger.kernel.org>
  */
 
+<<<<<<< HEAD
+=======
+/* Reported-by: Till Dörges <doerges@pre-sense.de> */
+UNUSUAL_DEV(0x054c, 0x087d, 0x0000, 0x9999,
+		"Sony",
+		"PSZ-HA*",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_REPORT_OPCODES),
+
+/* Reported-by: Julian Groß <julian.g@posteo.de> */
+UNUSUAL_DEV(0x059f, 0x105f, 0x0000, 0x9999,
+		"LaCie",
+		"2Big Quadra USB3",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_REPORT_OPCODES),
+
+/*
+ * Apricorn USB3 dongle sometimes returns "USBSUSBSUSBS" in response to SCSI
+ * commands in UAS mode.  Observed with the 1.28 firmware; are there others?
+ */
+UNUSUAL_DEV(0x0984, 0x0301, 0x0128, 0x0128,
+		"Apricorn",
+		"",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_IGNORE_UAS),
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* https://bugzilla.kernel.org/show_bug.cgi?id=79511 */
 UNUSUAL_DEV(0x0bc2, 0x2312, 0x0000, 0x9999,
 		"Seagate",
@@ -54,6 +81,16 @@ UNUSUAL_DEV(0x0bc2, 0x3312, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_ATA_1X),
 
+<<<<<<< HEAD
+=======
+/* Reported-by: David Webb <djw@noc.ac.uk> */
+UNUSUAL_DEV(0x0bc2, 0x331a, 0x0000, 0x9999,
+		"Seagate",
+		"Expansion Desk",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_REPORT_LUNS),
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Reported-by: Hans de Goede <hdegoede@redhat.com> */
 UNUSUAL_DEV(0x0bc2, 0x3320, 0x0000, 0x9999,
 		"Seagate",
@@ -106,9 +143,15 @@ UNUSUAL_DEV(0x0bc2, 0xab2a, 0x0000, 0x9999,
 /* Reported-by: Benjamin Tissoires <benjamin.tissoires@redhat.com> */
 UNUSUAL_DEV(0x13fd, 0x3940, 0x0000, 0x9999,
 		"Initio Corporation",
+<<<<<<< HEAD
 		"",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_ATA_1X),
+=======
+		"INIC-3069",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_ATA_1X | US_FL_IGNORE_RESIDUE),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Reported-by: Tom Arild Naess <tanaess@gmail.com> */
 UNUSUAL_DEV(0x152d, 0x0539, 0x0000, 0x9999,
@@ -122,7 +165,11 @@ UNUSUAL_DEV(0x152d, 0x0567, 0x0000, 0x9999,
 		"JMicron",
 		"JMS567",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+<<<<<<< HEAD
 		US_FL_NO_REPORT_OPCODES),
+=======
+		US_FL_BROKEN_FUA | US_FL_NO_REPORT_OPCODES),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Most ASM1051 based devices have issues with uas, blacklist them all */
 /* Reported-by: Hans de Goede <hdegoede@redhat.com> */
@@ -132,6 +179,30 @@ UNUSUAL_DEV(0x174c, 0x5106, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_IGNORE_UAS),
 
+<<<<<<< HEAD
+=======
+/* Reported-by: David Kozub <zub@linux.fjfi.cvut.cz> */
+UNUSUAL_DEV(0x152d, 0x0578, 0x0000, 0x9999,
+		"JMicron",
+		"JMS567",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_BROKEN_FUA),
+
+/* Reported-by: Thinh Nguyen <thinhn@synopsys.com> */
+UNUSUAL_DEV(0x154b, 0xf00b, 0x0000, 0x9999,
+		"PNY",
+		"Pro Elite SSD",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_ATA_1X),
+
+/* Reported-by: Thinh Nguyen <thinhn@synopsys.com> */
+UNUSUAL_DEV(0x154b, 0xf00d, 0x0000, 0x9999,
+		"PNY",
+		"Pro Elite SSD",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_NO_ATA_1X),
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Reported-by: Hans de Goede <hdegoede@redhat.com> */
 UNUSUAL_DEV(0x2109, 0x0711, 0x0000, 0x9999,
 		"VIA",
@@ -139,12 +210,30 @@ UNUSUAL_DEV(0x2109, 0x0711, 0x0000, 0x9999,
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
 		US_FL_NO_ATA_1X),
 
+<<<<<<< HEAD
 /* Reported-by: Takeo Nakayama <javhera@gmx.com> */
+=======
+/* Reported-by: Icenowy Zheng <icenowy@aosc.io> */
+UNUSUAL_DEV(0x2537, 0x1068, 0x0000, 0x9999,
+		"Norelsys",
+		"NS1068X",
+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+		US_FL_IGNORE_UAS),
+
+/*
+ * Initially Reported-by: Takeo Nakayama <javhera@gmx.com>
+ * UAS Ignore Reported by Steven Ellis <sellis@redhat.com>
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 UNUSUAL_DEV(0x357d, 0x7788, 0x0000, 0x9999,
 		"JMicron",
 		"JMS566",
 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+<<<<<<< HEAD
 		US_FL_NO_REPORT_OPCODES),
+=======
+		US_FL_NO_REPORT_OPCODES | US_FL_IGNORE_UAS),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Reported-by: Hans de Goede <hdegoede@redhat.com> */
 UNUSUAL_DEV(0x4971, 0x1012, 0x0000, 0x9999,

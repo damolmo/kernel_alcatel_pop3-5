@@ -283,8 +283,17 @@ struct xhci_op_regs {
  */
 #define PORT_PLS_MASK	(0xf << 5)
 #define XDEV_U0		(0x0 << 5)
+<<<<<<< HEAD
 #define XDEV_U2		(0x2 << 5)
 #define XDEV_U3		(0x3 << 5)
+=======
+#define XDEV_U1		(0x1 << 5)
+#define XDEV_U2		(0x2 << 5)
+#define XDEV_U3		(0x3 << 5)
+#define XDEV_RECOVERY	(0x8 << 5)
+#define XDEV_POLLING	(0x7 << 5)
+#define XDEV_COMP_MODE  (0xa << 5)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define XDEV_RESUME	(0xf << 5)
 /* true: port has power (see HCC_PPC) */
 #define PORT_POWER	(1 << 9)
@@ -348,6 +357,13 @@ struct xhci_op_regs {
 #define PORT_PLC	(1 << 22)
 /* port configure error change - port failed to configure its link partner */
 #define PORT_CEC	(1 << 23)
+<<<<<<< HEAD
+=======
+#define PORT_CHANGE_MASK	(PORT_CSC | PORT_PEC | PORT_WRC | PORT_OCC | \
+				 PORT_RC | PORT_PLC | PORT_CEC)
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Cold Attach Status - xHC can set this bit to report device attached during
  * Sx state. Warm port reset should be perfomed to clear this bit and move port
  * to connected state.
@@ -649,7 +665,11 @@ struct xhci_ep_ctx {
  * 4 - TRB error
  * 5-7 - reserved
  */
+<<<<<<< HEAD
 #define EP_STATE_MASK		(0xf)
+=======
+#define EP_STATE_MASK		(0x7)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define EP_STATE_DISABLED	0
 #define EP_STATE_RUNNING	1
 #define EP_STATE_HALTED		2
@@ -1430,11 +1450,19 @@ struct xhci_bus_state {
  * It can take up to 20 ms to transition from RExit to U0 on the
  * Intel Lynx Point LP xHCI host.
  */
+<<<<<<< HEAD
 #define	XHCI_MAX_REXIT_TIMEOUT	(20 * 1000)
 
 static inline unsigned int hcd_index(struct usb_hcd *hcd)
 {
 	if (hcd->speed == HCD_USB3)
+=======
+#define	XHCI_MAX_REXIT_TIMEOUT_MS	20
+
+static inline unsigned int hcd_index(struct usb_hcd *hcd)
+{
+	if (hcd->speed >= HCD_USB3)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	else
 		return 1;
@@ -1452,12 +1480,15 @@ struct xhci_hcd {
 	/* Our HCD's current interrupter register set */
 	struct	xhci_intr_reg __iomem *ir_set;
 
+<<<<<<< HEAD
 	#ifdef CONFIG_USB_XHCI_MTK
 	unsigned long base_regs;
 	unsigned long sif_regs;
 	unsigned long sif2_regs;
 	#endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Cached register copies of read-only HC data */
 	__u32		hcs_params1;
 	__u32		hcs_params2;
@@ -1493,7 +1524,12 @@ struct xhci_hcd {
 #define CMD_RING_STATE_STOPPED         (1 << 2)
 	struct list_head        cmd_list;
 	unsigned int		cmd_ring_reserved_trbs;
+<<<<<<< HEAD
 	struct timer_list	cmd_timer;
+=======
+	struct delayed_work	cmd_timer;
+	struct completion	cmd_ring_stop_completion;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct xhci_command	*current_cmd;
 	struct xhci_ring	*event_ring;
 	struct xhci_erst	erst;
@@ -1511,9 +1547,13 @@ struct xhci_hcd {
 	struct xhci_virt_device	*devs[MAX_HC_SLOTS];
 	/* For keeping track of bandwidth domains per roothub. */
 	struct xhci_root_port_bw_info	*rh_bw;
+<<<<<<< HEAD
 #ifdef CONFIG_SSUSB_MTK_XHCI
 	void *sch_ports;
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* DMA pools */
 	struct dma_pool	*device_pool;
 	struct dma_pool	*segment_pool;
@@ -1539,15 +1579,23 @@ struct xhci_hcd {
  */
 #define XHCI_STATE_DYING	(1 << 0)
 #define XHCI_STATE_HALTED	(1 << 1)
+<<<<<<< HEAD
+=======
+#define XHCI_STATE_REMOVING	(1 << 2)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Statistics */
 	int			error_bitmask;
 	unsigned int		quirks;
 #define	XHCI_LINK_TRB_QUIRK	(1 << 0)
 #define XHCI_RESET_EP_QUIRK	(1 << 1)
 #define XHCI_NEC_HOST		(1 << 2)
+<<<<<<< HEAD
 #ifndef CONFIG_USB_XHCI_MTK
 #define XHCI_AMD_PLL_FIX	(1 << 3)
 #endif
+=======
+#define XHCI_AMD_PLL_FIX	(1 << 3)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define XHCI_SPURIOUS_SUCCESS	(1 << 4)
 /*
  * Certain Intel host controllers have a limit to the number of endpoint
@@ -1562,9 +1610,13 @@ struct xhci_hcd {
 #define XHCI_BROKEN_MSI		(1 << 6)
 #define XHCI_RESET_ON_RESUME	(1 << 7)
 #define	XHCI_SW_BW_CHECKING	(1 << 8)
+<<<<<<< HEAD
 #ifndef CONFIG_USB_XHCI_MTK
 #define XHCI_AMD_0x96_HOST	(1 << 9)
 #endif
+=======
+#define XHCI_AMD_0x96_HOST	(1 << 9)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define XHCI_TRUST_TX_LENGTH	(1 << 10)
 #define XHCI_LPM_SUPPORT	(1 << 11)
 #define XHCI_INTEL_HOST		(1 << 12)
@@ -1577,7 +1629,13 @@ struct xhci_hcd {
 /* For controllers with a broken beyond repair streams implementation */
 #define XHCI_BROKEN_STREAMS	(1 << 19)
 #define XHCI_PME_STUCK_QUIRK	(1 << 20)
+<<<<<<< HEAD
 #define XHCI_MTK_HOST		(1 << 21)
+=======
+#define XHCI_SSIC_PORT_UNUSED	(1 << 22)
+#define XHCI_NO_64BIT_SUPPORT	(1 << 23)
+#define XHCI_MISSING_CAS	(1 << 24)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int		num_active_eps;
 	unsigned int		limit_active_eps;
 	/* There are two roothubs to keep track of bus suspend info for */
@@ -1749,11 +1807,14 @@ void xhci_urb_free_priv(struct xhci_hcd *xhci, struct urb_priv *urb_priv);
 void xhci_free_command(struct xhci_hcd *xhci,
 		struct xhci_command *command);
 
+<<<<<<< HEAD
 #if defined(CONFIG_USB_XHCI_MTK)
 int xhci_register_plat(void);
 void xhci_unregister_plat(void);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* xHCI host controller glue */
 typedef void (*xhci_get_quirks_t)(struct device *, struct xhci_hcd *);
 int xhci_handshake(struct xhci_hcd *xhci, void __iomem *ptr,
@@ -1766,6 +1827,10 @@ int xhci_run(struct usb_hcd *hcd);
 void xhci_stop(struct usb_hcd *hcd);
 void xhci_shutdown(struct usb_hcd *hcd);
 int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+<<<<<<< HEAD
+=======
+void xhci_shutdown(struct usb_hcd *hcd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void xhci_init_driver(struct hc_driver *drv, int (*setup_fn)(struct usb_hcd *));
 
 #ifdef	CONFIG_PM
@@ -1853,7 +1918,11 @@ void xhci_queue_config_ep_quirk(struct xhci_hcd *xhci,
 		unsigned int slot_id, unsigned int ep_index,
 		struct xhci_dequeue_state *deq_state);
 void xhci_stop_endpoint_command_watchdog(unsigned long arg);
+<<<<<<< HEAD
 void xhci_handle_command_timeout(unsigned long data);
+=======
+void xhci_handle_command_timeout(struct work_struct *work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void xhci_ring_ep_doorbell(struct xhci_hcd *xhci, unsigned int slot_id,
 		unsigned int ep_index, unsigned int stream_id);

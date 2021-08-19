@@ -424,6 +424,7 @@ static int mlx4_en_vlan_rx_add_vid(struct net_device *dev,
 	mutex_lock(&mdev->state_lock);
 	if (mdev->device_up && priv->port_up) {
 		err = mlx4_SET_VLAN_FLTR(mdev->dev, priv);
+<<<<<<< HEAD
 		if (err)
 			en_err(priv, "Failed configuring VLAN filter\n");
 	}
@@ -432,6 +433,20 @@ static int mlx4_en_vlan_rx_add_vid(struct net_device *dev,
 	mutex_unlock(&mdev->state_lock);
 
 	return 0;
+=======
+		if (err) {
+			en_err(priv, "Failed configuring VLAN filter\n");
+			goto out;
+		}
+	}
+	err = mlx4_register_vlan(mdev->dev, priv->port, vid, &idx);
+	if (err)
+		en_dbg(HW, priv, "Failed adding vlan %d\n", vid);
+
+out:
+	mutex_unlock(&mdev->state_lock);
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int mlx4_en_vlan_rx_kill_vid(struct net_device *dev,
@@ -439,7 +454,11 @@ static int mlx4_en_vlan_rx_kill_vid(struct net_device *dev,
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
 	struct mlx4_en_dev *mdev = priv->mdev;
+<<<<<<< HEAD
 	int err;
+=======
+	int err = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	en_dbg(HW, priv, "Killing VID:%d\n", vid);
 
@@ -456,7 +475,11 @@ static int mlx4_en_vlan_rx_kill_vid(struct net_device *dev,
 	}
 	mutex_unlock(&mdev->state_lock);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void mlx4_en_u64_to_mac(unsigned char dst_mac[ETH_ALEN + 2], u64 src_mac)
@@ -1300,8 +1323,15 @@ static void mlx4_en_tx_timeout(struct net_device *dev)
 	}
 
 	priv->port_stats.tx_timeout++;
+<<<<<<< HEAD
 	en_dbg(DRV, priv, "Scheduling watchdog\n");
 	queue_work(mdev->workqueue, &priv->watchdog_task);
+=======
+	if (!test_and_set_bit(MLX4_EN_STATE_FLAG_RESTARTING, &priv->state)) {
+		en_dbg(DRV, priv, "Scheduling port restart\n");
+		queue_work(mdev->workqueue, &priv->restart_task);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -1500,17 +1530,26 @@ static int mlx4_en_init_affinity_hint(struct mlx4_en_priv *priv, int ring_idx)
 {
 	struct mlx4_en_rx_ring *ring = priv->rx_ring[ring_idx];
 	int numa_node = priv->mdev->dev->numa_node;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!zalloc_cpumask_var(&ring->affinity_mask, GFP_KERNEL))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ret = cpumask_set_cpu_local_first(ring_idx, numa_node,
 					  ring->affinity_mask);
 	if (ret)
 		free_cpumask_var(ring->affinity_mask);
 
 	return ret;
+=======
+	cpumask_set_cpu(cpumask_local_spread(ring_idx, numa_node),
+			ring->affinity_mask);
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void mlx4_en_free_affinity_hint(struct mlx4_en_priv *priv, int ring_idx)
@@ -1705,6 +1744,20 @@ int mlx4_en_start_port(struct net_device *dev)
 		vxlan_get_rx_port(dev);
 #endif
 	priv->port_up = true;
+<<<<<<< HEAD
+=======
+
+	/* Process all completions if exist to prevent
+	 * the queues freezing if they are full
+	 */
+	for (i = 0; i < priv->rx_ring_num; i++) {
+		local_bh_disable();
+		napi_schedule(&priv->rx_cq[i]->napi);
+		local_bh_enable();
+	}
+
+	clear_bit(MLX4_EN_STATE_FLAG_RESTARTING, &priv->state);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_tx_start_all_queues(dev);
 	netif_device_attach(dev);
 
@@ -1863,7 +1916,11 @@ void mlx4_en_stop_port(struct net_device *dev, int detach)
 static void mlx4_en_restart(struct work_struct *work)
 {
 	struct mlx4_en_priv *priv = container_of(work, struct mlx4_en_priv,
+<<<<<<< HEAD
 						 watchdog_task);
+=======
+						 restart_task);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mlx4_en_dev *mdev = priv->mdev;
 	struct net_device *dev = priv->dev;
 
@@ -2098,7 +2155,11 @@ static int mlx4_en_change_mtu(struct net_device *dev, int new_mtu)
 	if (netif_running(dev)) {
 		mutex_lock(&mdev->state_lock);
 		if (!mdev->device_up) {
+<<<<<<< HEAD
 			/* NIC is probably restarting - let watchdog task reset
+=======
+			/* NIC is probably restarting - let restart task reset
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 * the port */
 			en_dbg(DRV, priv, "Change MTU called with card down!?\n");
 		} else {
@@ -2107,7 +2168,13 @@ static int mlx4_en_change_mtu(struct net_device *dev, int new_mtu)
 			if (err) {
 				en_err(priv, "Failed restarting port:%d\n",
 					 priv->port);
+<<<<<<< HEAD
 				queue_work(mdev->workqueue, &priv->watchdog_task);
+=======
+				if (!test_and_set_bit(MLX4_EN_STATE_FLAG_RESTARTING,
+						      &priv->state))
+					queue_work(mdev->workqueue, &priv->restart_task);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 		mutex_unlock(&mdev->state_lock);
@@ -2217,7 +2284,11 @@ static int mlx4_en_set_vf_mac(struct net_device *dev, int queue, u8 *mac)
 	struct mlx4_en_dev *mdev = en_priv->mdev;
 	u64 mac_u64 = mlx4_mac_to_u64(mac);
 
+<<<<<<< HEAD
 	if (!is_valid_ether_addr(mac))
+=======
+	if (is_multicast_ether_addr(mac))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	return mlx4_set_vf_mac(mdev->dev, en_priv->port, queue, mac_u64);
@@ -2465,6 +2536,10 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
 
 	priv = netdev_priv(dev);
 	memset(priv, 0, sizeof(struct mlx4_en_priv));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	priv->dev = dev;
 	priv->mdev = mdev;
 	priv->ddev = &mdev->pdev->dev;
@@ -2498,7 +2573,11 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
 	priv->msg_enable = MLX4_EN_MSG_LEVEL;
 	spin_lock_init(&priv->stats_lock);
 	INIT_WORK(&priv->rx_mode_task, mlx4_en_do_set_rx_mode);
+<<<<<<< HEAD
 	INIT_WORK(&priv->watchdog_task, mlx4_en_restart);
+=======
+	INIT_WORK(&priv->restart_task, mlx4_en_restart);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_WORK(&priv->linkstate_task, mlx4_en_linkstate);
 	INIT_DELAYED_WORK(&priv->stats_task, mlx4_en_do_get_stats);
 	INIT_DELAYED_WORK(&priv->service_task, mlx4_en_service_task);
@@ -2642,9 +2721,14 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
 	}
 	queue_delayed_work(mdev->workqueue, &priv->stats_task, STATS_DELAY);
 
+<<<<<<< HEAD
 	if (mdev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_TS)
 		queue_delayed_work(mdev->workqueue, &priv->service_task,
 				   SERVICE_TASK_DELAY);
+=======
+	queue_delayed_work(mdev->workqueue, &priv->service_task,
+			   SERVICE_TASK_DELAY);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = register_netdev(dev);
 	if (err) {

@@ -659,6 +659,13 @@ tty3270_irq(struct tty3270 *tp, struct raw3270_request *rq, struct irb *irb)
 		else
 			/* Normal end. Copy residual count. */
 			rq->rescnt = irb->scsw.cmd.count;
+<<<<<<< HEAD
+=======
+	} else if (irb->scsw.cmd.dstat & DEV_STAT_DEV_END) {
+		/* Interrupt without an outstanding request -> update all */
+		tp->update_flags = TTY_UPDATE_ALL;
+		tty3270_set_timer(tp, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return RAW3270_IO_DONE;
 }
@@ -933,7 +940,12 @@ static int tty3270_install(struct tty_driver *driver, struct tty_struct *tty)
 		return PTR_ERR(tp);
 
 	rc = raw3270_add_view(&tp->view, &tty3270_fn,
+<<<<<<< HEAD
 			      tty->index + RAW3270_FIRSTMINOR);
+=======
+			      tty->index + RAW3270_FIRSTMINOR,
+			      RAW3270_VIEW_LOCK_BH);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rc) {
 		tty3270_free_view(tp);
 		return rc;

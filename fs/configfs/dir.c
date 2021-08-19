@@ -58,6 +58,7 @@ static void configfs_d_iput(struct dentry * dentry,
 	if (sd) {
 		/* Coordinate with configfs_readdir */
 		spin_lock(&configfs_dirent_lock);
+<<<<<<< HEAD
 		/* Coordinate with configfs_attach_attr where will increase
 		 * sd->s_count and update sd->s_dentry to new allocated one.
 		 * Only set sd->dentry to null when this dentry is the only
@@ -67,6 +68,15 @@ static void configfs_d_iput(struct dentry * dentry,
 		 * even it's still in use.
 		 */
 		if (atomic_read(&sd->s_count) <= 2)
+=======
+		/*
+		 * Set sd->s_dentry to null only when this dentry is the one
+		 * that is going to be killed.  Otherwise configfs_d_iput may
+		 * run just after configfs_attach_attr and set sd->s_dentry to
+		 * NULL even it's still in use.
+		 */
+		if (sd->s_dentry == dentry)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sd->s_dentry = NULL;
 
 		spin_unlock(&configfs_dirent_lock);

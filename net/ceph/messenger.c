@@ -6,6 +6,10 @@
 #include <linux/inet.h>
 #include <linux/kthread.h>
 #include <linux/net.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/slab.h>
 #include <linux/socket.h>
 #include <linux/string.h>
@@ -477,11 +481,23 @@ static int ceph_tcp_connect(struct ceph_connection *con)
 {
 	struct sockaddr_storage *paddr = &con->peer_addr.in_addr;
 	struct socket *sock;
+<<<<<<< HEAD
 	int ret;
 
 	BUG_ON(con->sock);
 	ret = sock_create_kern(con->peer_addr.in_addr.ss_family, SOCK_STREAM,
 			       IPPROTO_TCP, &sock);
+=======
+	unsigned int noio_flag;
+	int ret;
+
+	BUG_ON(con->sock);
+	/* sock_create_kern() allocates with GFP_KERNEL */
+	noio_flag = memalloc_noio_save();
+	ret = sock_create_kern(con->peer_addr.in_addr.ss_family, SOCK_STREAM,
+			       IPPROTO_TCP, &sock);
+	memalloc_noio_restore(noio_flag);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		return ret;
 	sock->sk->sk_allocation = GFP_NOFS;
@@ -1979,6 +1995,26 @@ static int process_connect(struct ceph_connection *con)
 
 	dout("process_connect on %p tag %d\n", con, (int)con->in_tag);
 
+<<<<<<< HEAD
+=======
+	if (con->auth_reply_buf) {
+		int len = le32_to_cpu(con->in_reply.authorizer_len);
+
+		/*
+		 * Any connection that defines ->get_authorizer()
+		 * should also define ->verify_authorizer_reply().
+		 * See get_connect_authorizer().
+		 */
+		if (len) {
+			ret = con->ops->verify_authorizer_reply(con, 0);
+			if (ret < 0) {
+				con->error_msg = "bad authorize reply";
+				return ret;
+			}
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (con->in_reply.tag) {
 	case CEPH_MSGR_TAG_FEATURES:
 		pr_err("%s%lld %s feature set mismatch,"
@@ -2287,7 +2323,11 @@ static int read_partial_message(struct ceph_connection *con)
 		con->in_base_pos = -front_len - middle_len - data_len -
 			sizeof(m->footer);
 		con->in_tag = CEPH_MSGR_TAG_READY;
+<<<<<<< HEAD
 		return 0;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if ((s64)seq - (s64)con->in_seq > 1) {
 		pr_err("read_partial_message bad seq %lld expected %lld\n",
 		       seq, con->in_seq + 1);
@@ -2320,7 +2360,11 @@ static int read_partial_message(struct ceph_connection *con)
 				sizeof(m->footer);
 			con->in_tag = CEPH_MSGR_TAG_READY;
 			con->in_seq++;
+<<<<<<< HEAD
 			return 0;
+=======
+			return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		BUG_ON(!con->in_msg);
@@ -2436,6 +2480,14 @@ static int try_write(struct ceph_connection *con)
 	int ret = 1;
 
 	dout("try_write start %p state %lu\n", con, con->state);
+<<<<<<< HEAD
+=======
+	if (con->state != CON_STATE_PREOPEN &&
+	    con->state != CON_STATE_CONNECTING &&
+	    con->state != CON_STATE_NEGOTIATING &&
+	    con->state != CON_STATE_OPEN)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 more:
 	dout("try_write out_kvec_bytes %d\n", con->out_kvec_bytes);
@@ -2461,6 +2513,11 @@ more:
 	}
 
 more_kvec:
+<<<<<<< HEAD
+=======
+	BUG_ON(!con->sock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* kvec data queued? */
 	if (con->out_skip) {
 		ret = write_partial_skip(con);
@@ -2857,6 +2914,14 @@ static void con_fault(struct ceph_connection *con)
 		con->in_msg = NULL;
 		con->ops->put(con);
 	}
+<<<<<<< HEAD
+=======
+	if (con->out_msg) {
+		BUG_ON(con->out_msg->con != con);
+		ceph_msg_put(con->out_msg);
+		con->out_msg = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Requeue anything that hasn't been acked */
 	list_splice_init(&con->out_sent, &con->out_queue);
@@ -3048,9 +3113,16 @@ void ceph_con_keepalive(struct ceph_connection *con)
 	dout("con_keepalive %p\n", con);
 	mutex_lock(&con->mutex);
 	clear_standby(con);
+<<<<<<< HEAD
 	mutex_unlock(&con->mutex);
 	if (con_flag_test_and_set(con, CON_FLAG_KEEPALIVE_PENDING) == 0 &&
 	    con_flag_test_and_set(con, CON_FLAG_WRITE_PENDING) == 0)
+=======
+	con_flag_set(con, CON_FLAG_KEEPALIVE_PENDING);
+	mutex_unlock(&con->mutex);
+
+	if (con_flag_test_and_set(con, CON_FLAG_WRITE_PENDING) == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		queue_con(con);
 }
 EXPORT_SYMBOL(ceph_con_keepalive);

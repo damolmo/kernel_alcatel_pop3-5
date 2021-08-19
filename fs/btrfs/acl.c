@@ -82,6 +82,7 @@ static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
 	switch (type) {
 	case ACL_TYPE_ACCESS:
 		name = POSIX_ACL_XATTR_ACCESS;
+<<<<<<< HEAD
 		if (acl) {
 			ret = posix_acl_equiv_mode(acl, &inode->i_mode);
 			if (ret < 0)
@@ -90,6 +91,8 @@ static int __btrfs_set_acl(struct btrfs_trans_handle *trans,
 				acl = NULL;
 		}
 		ret = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case ACL_TYPE_DEFAULT:
 		if (!S_ISDIR(inode->i_mode))
@@ -125,7 +128,22 @@ out:
 
 int btrfs_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 {
+<<<<<<< HEAD
 	return __btrfs_set_acl(NULL, inode, acl, type);
+=======
+	int ret;
+	umode_t old_mode = inode->i_mode;
+
+	if (type == ACL_TYPE_ACCESS && acl) {
+		ret = posix_acl_update_mode(inode, &inode->i_mode, &acl);
+		if (ret)
+			return ret;
+	}
+	ret = __btrfs_set_acl(NULL, inode, acl, type);
+	if (ret)
+		inode->i_mode = old_mode;
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

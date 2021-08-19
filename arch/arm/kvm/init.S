@@ -110,7 +110,10 @@ __do_hyp_init:
 	@  - Write permission implies XN: disabled
 	@  - Instruction cache: enabled
 	@  - Data/Unified cache: enabled
+<<<<<<< HEAD
 	@  - Memory alignment checks: enabled
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	@  - MMU: enabled (this code must be run from an identity mapping)
 	mrc	p15, 4, r0, c1, c0, 0	@ HSCR
 	ldr	r2, =HSCTLR_MASK
@@ -118,8 +121,13 @@ __do_hyp_init:
 	mrc	p15, 0, r1, c1, c0, 0	@ SCTLR
 	ldr	r2, =(HSCTLR_EE | HSCTLR_FI | HSCTLR_I | HSCTLR_C)
 	and	r1, r1, r2
+<<<<<<< HEAD
  ARM(	ldr	r2, =(HSCTLR_M | HSCTLR_A)			)
  THUMB(	ldr	r2, =(HSCTLR_M | HSCTLR_A | HSCTLR_TE)		)
+=======
+ ARM(	ldr	r2, =(HSCTLR_M)					)
+ THUMB(	ldr	r2, =(HSCTLR_M | HSCTLR_TE)			)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	orr	r1, r1, r2
 	orr	r0, r0, r1
 	isb

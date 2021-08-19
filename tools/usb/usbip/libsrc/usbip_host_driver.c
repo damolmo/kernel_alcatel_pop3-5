@@ -39,13 +39,27 @@ struct udev *udev_context;
 static int32_t read_attr_usbip_status(struct usbip_usb_device *udev)
 {
 	char status_attr_path[SYSFS_PATH_MAX];
+<<<<<<< HEAD
+=======
+	int size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int fd;
 	int length;
 	char status;
 	int value = 0;
 
+<<<<<<< HEAD
 	snprintf(status_attr_path, SYSFS_PATH_MAX, "%s/usbip_status",
 		 udev->path);
+=======
+	size = snprintf(status_attr_path, SYSFS_PATH_MAX, "%s/usbip_status",
+			udev->path);
+	if (size < 0 || (unsigned int)size >= sizeof(status_attr_path)) {
+		err("usbip_status path length %i >= %lu or < 0", size,
+		    (unsigned long)sizeof(status_attr_path));
+		return -1;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	fd = open(status_attr_path, O_RDONLY);
 	if (fd < 0) {
@@ -225,6 +239,10 @@ int usbip_host_export_device(struct usbip_exported_device *edev, int sockfd)
 {
 	char attr_name[] = "usbip_sockfd";
 	char sockfd_attr_path[SYSFS_PATH_MAX];
+<<<<<<< HEAD
+=======
+	int size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char sockfd_buff[30];
 	int ret;
 
@@ -244,10 +262,27 @@ int usbip_host_export_device(struct usbip_exported_device *edev, int sockfd)
 	}
 
 	/* only the first interface is true */
+<<<<<<< HEAD
 	snprintf(sockfd_attr_path, sizeof(sockfd_attr_path), "%s/%s",
 		 edev->udev.path, attr_name);
 
 	snprintf(sockfd_buff, sizeof(sockfd_buff), "%d\n", sockfd);
+=======
+	size = snprintf(sockfd_attr_path, sizeof(sockfd_attr_path), "%s/%s",
+			edev->udev.path, attr_name);
+	if (size < 0 || (unsigned int)size >= sizeof(sockfd_attr_path)) {
+		err("exported device path length %i >= %lu or < 0", size,
+		    (unsigned long)sizeof(sockfd_attr_path));
+		return -1;
+	}
+
+	size = snprintf(sockfd_buff, sizeof(sockfd_buff), "%d\n", sockfd);
+	if (size < 0 || (unsigned int)size >= sizeof(sockfd_buff)) {
+		err("socket length %i >= %lu or < 0", size,
+		    (unsigned long)sizeof(sockfd_buff));
+		return -1;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = write_sysfs_attribute(sockfd_attr_path, sockfd_buff,
 				    strlen(sockfd_buff));

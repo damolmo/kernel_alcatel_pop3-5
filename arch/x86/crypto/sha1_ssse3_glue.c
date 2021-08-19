@@ -224,8 +224,14 @@ static bool __init avx_usable(void)
 #ifdef CONFIG_AS_AVX2
 static bool __init avx2_usable(void)
 {
+<<<<<<< HEAD
 	if (avx_usable() && cpu_has_avx2 && boot_cpu_has(X86_FEATURE_BMI1) &&
 	    boot_cpu_has(X86_FEATURE_BMI2))
+=======
+	if (avx_usable() && boot_cpu_has(X86_FEATURE_AVX2)
+		&& boot_cpu_has(X86_FEATURE_BMI1)
+		&& boot_cpu_has(X86_FEATURE_BMI2))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return true;
 
 	return false;

@@ -360,6 +360,10 @@ struct rds_message {
 		} rdma;
 		struct rm_data_op {
 			unsigned int		op_active:1;
+<<<<<<< HEAD
+=======
+			unsigned int		op_notify:1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			unsigned int		op_nents;
 			unsigned int		op_count;
 			struct scatterlist	*op_sg;
@@ -380,6 +384,14 @@ struct rds_notifier {
 	int			n_status;
 };
 
+<<<<<<< HEAD
+=======
+/* Available as part of RDS core, so doesn't need to participate
+ * in get_preferred transport etc
+ */
+#define	RDS_TRANS_LOOP	3
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * struct rds_transport -  transport specific behavioural hooks
  *

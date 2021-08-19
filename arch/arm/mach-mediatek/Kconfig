@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menuconfig ARCH_MEDIATEK
 	bool "Mediatek MT65xx & MT81xx SoC" if ARCH_MULTI_V7
 	select ARM_GIC
@@ -15,3 +16,11 @@ config MACH_MT2701
 	select MTK_BASE_POWER
 
 endif
+=======
+config ARCH_MEDIATEK
+	bool "Mediatek MT6589 SoC" if ARCH_MULTI_V7
+	select ARM_GIC
+	select MTK_TIMER
+	help
+	  Support for Mediatek Cortex-A7 Quad-Core-SoC MT6589.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

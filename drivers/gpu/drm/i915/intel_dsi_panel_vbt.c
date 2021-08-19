@@ -171,7 +171,16 @@ static u8 *mipi_exec_gpio(struct intel_dsi *intel_dsi, u8 *data)
 	gpio = *data++;
 
 	/* pull up/down */
+<<<<<<< HEAD
 	action = *data++;
+=======
+	action = *data++ & 1;
+
+	if (gpio >= ARRAY_SIZE(gtable)) {
+		DRM_DEBUG_KMS("unknown gpio %u\n", gpio);
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	function = gtable[gpio].function_reg;
 	pad = gtable[gpio].pad_reg;
@@ -190,6 +199,10 @@ static u8 *mipi_exec_gpio(struct intel_dsi *intel_dsi, u8 *data)
 	vlv_gpio_nc_write(dev_priv, pad, val);
 	mutex_unlock(&dev_priv->dpio_lock);
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return data;
 }
 

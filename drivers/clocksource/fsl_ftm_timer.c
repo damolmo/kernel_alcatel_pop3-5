@@ -282,7 +282,11 @@ static int __init __ftm_clk_init(struct device_node *np, char *cnt_name,
 
 static unsigned long __init ftm_clk_init(struct device_node *np)
 {
+<<<<<<< HEAD
 	unsigned long freq;
+=======
+	long freq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	freq = __ftm_clk_init(np, "ftm-evt-counter-en", "ftm-evt");
 	if (freq <= 0)

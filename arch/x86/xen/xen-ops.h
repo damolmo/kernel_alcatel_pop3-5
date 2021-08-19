@@ -94,17 +94,27 @@ struct dom0_vga_console_info;
 
 #ifdef CONFIG_XEN_DOM0
 void __init xen_init_vga(const struct dom0_vga_console_info *, size_t size);
+<<<<<<< HEAD
 void __init xen_init_apic(void);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 static inline void __init xen_init_vga(const struct dom0_vga_console_info *info,
 				       size_t size)
 {
 }
+<<<<<<< HEAD
 static inline void __init xen_init_apic(void)
 {
 }
 #endif
 
+=======
+#endif
+
+void __init xen_init_apic(void);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_XEN_EFI
 extern void xen_efi_init(void);
 #else

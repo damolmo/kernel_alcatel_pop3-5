@@ -64,11 +64,28 @@ static inline bool rt6_need_strict(const struct in6_addr *daddr)
 
 void ip6_route_input(struct sk_buff *skb);
 
+<<<<<<< HEAD
 struct dst_entry *ip6_route_output(struct net *net, const struct sock *sk,
 				   struct flowi6 *fl6);
 struct dst_entry *ip6_route_lookup(struct net *net, struct flowi6 *fl6,
 				   int flags);
 
+=======
+struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
+					 struct flowi6 *fl6, int flags);
+
+static inline struct dst_entry *ip6_route_output(struct net *net,
+						 const struct sock *sk,
+						 struct flowi6 *fl6)
+{
+	return ip6_route_output_flags(net, sk, fl6, 0);
+}
+
+struct dst_entry *ip6_route_lookup(struct net *net, struct flowi6 *fl6,
+				   int flags);
+
+void ip6_route_init_special_entries(void);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ip6_route_init(void);
 void ip6_route_cleanup(void);
 
@@ -110,7 +127,12 @@ int rt6_route_rcv(struct net_device *dev, u8 *opt, int len,
 void ip6_update_pmtu(struct sk_buff *skb, struct net *net, __be32 mtu, int oif,
 		     u32 mark, kuid_t uid);
 void ip6_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, __be32 mtu);
+<<<<<<< HEAD
 void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark);
+=======
+void ip6_redirect(struct sk_buff *skb, struct net *net, int oif, u32 mark,
+		  kuid_t uid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void ip6_redirect_no_header(struct sk_buff *skb, struct net *net, int oif,
 			    u32 mark);
 void ip6_sk_redirect(struct sk_buff *skb, struct sock *sk);
@@ -145,7 +167,11 @@ static inline void __ip6_dst_store(struct sock *sk, struct dst_entry *dst,
 #ifdef CONFIG_IPV6_SUBTREES
 	np->saddr_cache = saddr;
 #endif
+<<<<<<< HEAD
 	np->dst_cookie = rt->rt6i_node ? rt->rt6i_node->fn_sernum : 0;
+=======
+	np->dst_cookie = rt6_get_cookie(rt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void ip6_dst_store(struct sock *sk, struct dst_entry *dst,

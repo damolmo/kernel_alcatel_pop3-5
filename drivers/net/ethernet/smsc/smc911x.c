@@ -511,7 +511,12 @@ static void smc911x_hardware_send_pkt(struct net_device *dev)
  * now, or set the card to generates an interrupt when ready
  * for the packet.
  */
+<<<<<<< HEAD
 static int smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct smc911x_local *lp = netdev_priv(dev);
 	unsigned int free;
@@ -944,7 +949,11 @@ static void smc911x_phy_configure(struct work_struct *work)
 	if (lp->ctl_rspeed != 100)
 		my_ad_caps &= ~(ADVERTISE_100BASE4|ADVERTISE_100FULL|ADVERTISE_100HALF);
 
+<<<<<<< HEAD
 	 if (!lp->ctl_rfduplx)
+=======
+	if (!lp->ctl_rfduplx)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		my_ad_caps &= ~(ADVERTISE_100FULL|ADVERTISE_10FULL);
 
 	/* Update our Auto-Neg Advertisement Register */

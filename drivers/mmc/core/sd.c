@@ -138,6 +138,12 @@ static int mmc_decode_csd(struct mmc_card *card)
 			csd->erase_size = UNSTUFF_BITS(resp, 39, 7) + 1;
 			csd->erase_size <<= csd->write_blkbits - 9;
 		}
+<<<<<<< HEAD
+=======
+
+		if (UNSTUFF_BITS(resp, 13, 1))
+			mmc_card_set_readonly(card);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case 1:
 		/*
@@ -172,6 +178,12 @@ static int mmc_decode_csd(struct mmc_card *card)
 		csd->write_blkbits = 9;
 		csd->write_partial = 0;
 		csd->erase_size = 1;
+<<<<<<< HEAD
+=======
+
+		if (UNSTUFF_BITS(resp, 13, 1))
+			mmc_card_set_readonly(card);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		pr_err("%s: unrecognised CSD structure version %d\n",
@@ -216,6 +228,17 @@ static int mmc_decode_scr(struct mmc_card *card)
 
 	if (scr->sda_spec3)
 		scr->cmds = UNSTUFF_BITS(resp, 32, 2);
+<<<<<<< HEAD
+=======
+
+	/* SD Spec says: any SD Card shall set at least bits 0 and 2 */
+	if (!(scr->bus_widths & SD_SCR_BUS_WIDTH_1) ||
+	    !(scr->bus_widths & SD_SCR_BUS_WIDTH_4)) {
+		pr_err("%s: invalid bus width\n", mmc_hostname(card->host));
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -329,6 +352,10 @@ static int mmc_read_switch(struct mmc_card *card)
 		card->sw_caps.sd3_bus_mode = status[13];
 		/* Driver Strengths supported by the card */
 		card->sw_caps.sd3_drv_type = status[9];
+<<<<<<< HEAD
+=======
+		card->sw_caps.sd3_curr_limit = status[7] | status[6] << 8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 out:
@@ -580,6 +607,7 @@ static int sd_set_current_limit(struct mmc_card *card, u8 *status)
 	 * when we set current limit to 200ma, the card will draw 200ma, and
 	 * when we set current limit to 400/600/800ma, the card will draw its
 	 * maximum 300ma from the host.
+<<<<<<< HEAD
 	 */
 	if (max_current >= 800)
 		current_limit = SD_SET_CURRENT_LIMIT_800;
@@ -588,6 +616,27 @@ static int sd_set_current_limit(struct mmc_card *card, u8 *status)
 	else if (max_current >= 400)
 		current_limit = SD_SET_CURRENT_LIMIT_400;
 	else if (max_current >= 200)
+=======
+	 *
+	 * The above is incorrect: if we try to set a current limit that is
+	 * not supported by the card, the card can rightfully error out the
+	 * attempt, and remain at the default current limit.  This results
+	 * in a 300mA card being limited to 200mA even though the host
+	 * supports 800mA. Failures seen with SanDisk 8GB UHS cards with
+	 * an iMX6 host. --rmk
+	 */
+	if (max_current >= 800 &&
+	    card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_800)
+		current_limit = SD_SET_CURRENT_LIMIT_800;
+	else if (max_current >= 600 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_600)
+		current_limit = SD_SET_CURRENT_LIMIT_600;
+	else if (max_current >= 400 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_400)
+		current_limit = SD_SET_CURRENT_LIMIT_400;
+	else if (max_current >= 200 &&
+		 card->sw_caps.sd3_curr_limit & SD_MAX_CURRENT_200)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		current_limit = SD_SET_CURRENT_LIMIT_200;
 
 	if (current_limit != SD_SET_CURRENT_NO_CHANGE) {
@@ -660,6 +709,7 @@ static int mmc_sd_init_uhs_card(struct mmc_card *card)
 	 * SPI mode doesn't define CMD19 and tuning is only valid for SDR50 and
 	 * SDR104 mode SD-cards. Note that tuning is mandatory for SDR104.
 	 */
+<<<<<<< HEAD
 	if (!mmc_host_is_spi(card->host) && card->host->ops->execute_tuning &&
 			(card->sd_bus_speed == UHS_SDR50_BUS_SPEED ||
 			 card->sd_bus_speed == UHS_SDR104_BUS_SPEED)) {
@@ -667,6 +717,26 @@ static int mmc_sd_init_uhs_card(struct mmc_card *card)
 		err = card->host->ops->execute_tuning(card->host,
 						      MMC_SEND_TUNING_BLOCK);
 		mmc_host_clk_release(card->host);
+=======
+	if (!mmc_host_is_spi(card->host) &&
+		(card->host->ios.timing == MMC_TIMING_UHS_SDR50 ||
+		 card->host->ios.timing == MMC_TIMING_UHS_DDR50 ||
+		 card->host->ios.timing == MMC_TIMING_UHS_SDR104)) {
+		err = mmc_execute_tuning(card);
+
+		/*
+		 * As SD Specifications Part1 Physical Layer Specification
+		 * Version 3.01 says, CMD19 tuning is available for unlocked
+		 * cards in transfer state of 1.8V signaling mode. The small
+		 * difference between v3.00 and 3.01 spec means that CMD19
+		 * tuning is also available for DDR50 mode.
+		 */
+		if (err && card->host->ios.timing == MMC_TIMING_UHS_DDR50) {
+			pr_warn("%s: ddr50 tuning failed\n",
+				mmc_hostname(card->host));
+			err = 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 out:
@@ -1035,6 +1105,7 @@ free_card:
 }
 
 /*
+<<<<<<< HEAD
  * SD card power cycle, if SD use MMC_CAP_HW_RESET, please remove this function
  */
 int mmc_sd_power_cycle(struct mmc_host *host, u32 ocr, struct mmc_card *card)
@@ -1043,6 +1114,8 @@ int mmc_sd_power_cycle(struct mmc_host *host, u32 ocr, struct mmc_card *card)
 }
 
 /*
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Host is being removed. Free up the current card.
  */
 static void mmc_sd_remove(struct mmc_host *host)
@@ -1248,10 +1321,22 @@ static int mmc_sd_runtime_resume(struct mmc_host *host)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mmc_sd_reset(struct mmc_host *host)
 {
 	mmc_power_cycle(host, host->card->ocr);
 	return mmc_sd_init_card(host, host->card->ocr, host->card);
+=======
+static int mmc_sd_power_restore(struct mmc_host *host)
+{
+	int ret;
+
+	mmc_claim_host(host);
+	ret = mmc_sd_init_card(host, host->card->ocr, host->card);
+	mmc_release_host(host);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct mmc_bus_ops mmc_sd_ops = {
@@ -1261,9 +1346,15 @@ static const struct mmc_bus_ops mmc_sd_ops = {
 	.runtime_resume = mmc_sd_runtime_resume,
 	.suspend = mmc_sd_suspend,
 	.resume = mmc_sd_resume,
+<<<<<<< HEAD
 	.alive = mmc_sd_alive,
 	.shutdown = mmc_sd_suspend,
 	.reset = mmc_sd_reset,
+=======
+	.power_restore = mmc_sd_power_restore,
+	.alive = mmc_sd_alive,
+	.shutdown = mmc_sd_suspend,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -1299,6 +1390,15 @@ int mmc_attach_sd(struct mmc_host *host)
 			goto err;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Some SD cards claims an out of spec VDD voltage range. Let's treat
+	 * these bits as being in-valid and especially also bit7.
+	 */
+	ocr &= ~0x7FFF;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rocr = mmc_select_voltage(host, ocr);
 
 	/*

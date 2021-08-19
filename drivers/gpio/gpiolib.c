@@ -147,6 +147,17 @@ int gpiod_get_direction(const struct gpio_desc *desc)
 	chip = gpiod_to_chip(desc);
 	offset = gpio_chip_hwgpio(desc);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Open drain emulation using input mode may incorrectly report
+	 * input here, fix that up.
+	 */
+	if (test_bit(FLAG_OPEN_DRAIN, &desc->flags) &&
+	    test_bit(FLAG_IS_OUT, &desc->flags))
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!chip->get_direction)
 		return status;
 
@@ -356,7 +367,11 @@ struct gpio_chip *gpiochip_find(void *data,
 
 	spin_lock_irqsave(&gpio_lock, flags);
 	list_for_each_entry(chip, &gpio_chips, list)
+<<<<<<< HEAD
 		if (match(chip, data))
+=======
+		if (chip && match(chip, data))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 	/* No match? */
@@ -497,7 +512,11 @@ static int gpiochip_irq_reqres(struct irq_data *d)
 {
 	struct gpio_chip *chip = irq_data_get_irq_chip_data(d);
 
+<<<<<<< HEAD
 	if (gpio_lock_as_irq(chip, d->hwirq)) {
+=======
+	if (gpiochip_lock_as_irq(chip, d->hwirq)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		chip_err(chip,
 			"unable to lock HW IRQ %lu for IRQ\n",
 			d->hwirq);
@@ -510,7 +529,11 @@ static void gpiochip_irq_relres(struct irq_data *d)
 {
 	struct gpio_chip *chip = irq_data_get_irq_chip_data(d);
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(chip, d->hwirq);
+=======
+	gpiochip_unlock_as_irq(chip, d->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int gpiochip_to_irq(struct gpio_chip *chip, unsigned offset)
@@ -1334,14 +1357,22 @@ int gpiod_to_irq(const struct gpio_desc *desc)
 EXPORT_SYMBOL_GPL(gpiod_to_irq);
 
 /**
+<<<<<<< HEAD
  * gpio_lock_as_irq() - lock a GPIO to be used as IRQ
+=======
+ * gpiochip_lock_as_irq() - lock a GPIO to be used as IRQ
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @chip: the chip the GPIO to lock belongs to
  * @offset: the offset of the GPIO to lock as IRQ
  *
  * This is used directly by GPIO drivers that want to lock down
  * a certain GPIO line to be used for IRQs.
  */
+<<<<<<< HEAD
 int gpio_lock_as_irq(struct gpio_chip *chip, unsigned int offset)
+=======
+int gpiochip_lock_as_irq(struct gpio_chip *chip, unsigned int offset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (offset >= chip->ngpio)
 		return -EINVAL;
@@ -1356,24 +1387,39 @@ int gpio_lock_as_irq(struct gpio_chip *chip, unsigned int offset)
 	set_bit(FLAG_USED_AS_IRQ, &chip->desc[offset].flags);
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(gpio_lock_as_irq);
 
 /**
  * gpio_unlock_as_irq() - unlock a GPIO used as IRQ
+=======
+EXPORT_SYMBOL_GPL(gpiochip_lock_as_irq);
+
+/**
+ * gpiochip_unlock_as_irq() - unlock a GPIO used as IRQ
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @chip: the chip the GPIO to lock belongs to
  * @offset: the offset of the GPIO to lock as IRQ
  *
  * This is used directly by GPIO drivers that want to indicate
  * that a certain GPIO is no longer used exclusively for IRQ.
  */
+<<<<<<< HEAD
 void gpio_unlock_as_irq(struct gpio_chip *chip, unsigned int offset)
+=======
+void gpiochip_unlock_as_irq(struct gpio_chip *chip, unsigned int offset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (offset >= chip->ngpio)
 		return;
 
 	clear_bit(FLAG_USED_AS_IRQ, &chip->desc[offset].flags);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(gpio_unlock_as_irq);
+=======
+EXPORT_SYMBOL_GPL(gpiochip_unlock_as_irq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * gpiod_get_raw_value_cansleep() - return a gpio's raw value
@@ -1584,8 +1630,14 @@ static struct gpio_desc *gpiod_find(struct device *dev, const char *con_id,
 
 		if (chip->ngpio <= p->chip_hwnum) {
 			dev_err(dev,
+<<<<<<< HEAD
 				"requested GPIO %d is out of range [0..%d] for chip %s\n",
 				idx, chip->ngpio, chip->label);
+=======
+				"requested GPIO %u (%u) is out of range [0..%u] for chip %s\n",
+				idx, p->chip_hwnum, chip->ngpio - 1,
+				chip->label);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ERR_PTR(-EINVAL);
 		}
 
@@ -1655,6 +1707,11 @@ struct gpio_desc *__must_check __gpiod_get_index(struct device *dev,
 	struct gpio_desc *desc = NULL;
 	int status;
 	enum gpio_lookup_flags lookupflags = 0;
+<<<<<<< HEAD
+=======
+	/* Maybe we have a device name, maybe not */
+	const char *devname = dev ? dev_name(dev) : "?";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev_dbg(dev, "GPIO lookup for consumer %s\n", con_id);
 
@@ -1681,8 +1738,16 @@ struct gpio_desc *__must_check __gpiod_get_index(struct device *dev,
 		return desc;
 	}
 
+<<<<<<< HEAD
 	status = gpiod_request(desc, con_id);
 
+=======
+	/*
+	 * If a connection label was passed use that, else attempt to use
+	 * the device name as label
+	 */
+	status = gpiod_request(desc, con_id ? con_id : devname);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (status < 0)
 		return ERR_PTR(status);
 

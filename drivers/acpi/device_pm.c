@@ -1102,9 +1102,25 @@ static void acpi_dev_pm_detach(struct device *dev, bool power_off)
  */
 int acpi_dev_pm_attach(struct device *dev, bool power_on)
 {
+<<<<<<< HEAD
 	struct acpi_device *adev = ACPI_COMPANION(dev);
 
 	if (!adev)
+=======
+	/*
+	 * Skip devices whose ACPI companions match the device IDs below,
+	 * because they require special power management handling incompatible
+	 * with the generic ACPI PM domain.
+	 */
+	static const struct acpi_device_id special_pm_ids[] = {
+		{"PNP0C0B", }, /* Generic ACPI fan */
+		{"INT3404", }, /* Fan */
+		{}
+	};
+	struct acpi_device *adev = ACPI_COMPANION(dev);
+
+	if (!adev || !acpi_match_device_ids(adev, special_pm_ids))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENODEV;
 
 	if (dev->pm_domain)

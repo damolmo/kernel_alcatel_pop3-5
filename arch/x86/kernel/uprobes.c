@@ -200,10 +200,18 @@ static volatile u32 good_2byte_insns[256 / 32] = {
 
 static bool is_prefix_bad(struct insn *insn)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < insn->prefixes.nbytes; i++) {
 		switch (insn->prefixes.bytes[i]) {
+=======
+	insn_byte_t p;
+	int i;
+
+	for_each_insn_prefix(insn, i, p) {
+		switch (p) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case 0x26:	/* INAT_PFX_ES   */
 		case 0x2E:	/* INAT_PFX_CS   */
 		case 0x36:	/* INAT_PFX_DS   */
@@ -222,12 +230,23 @@ static int uprobe_init_insn(struct arch_uprobe *auprobe, struct insn *insn, bool
 	insn_init(insn, auprobe->insn, x86_64);
 	/* has the side-effect of processing the entire instruction */
 	insn_get_length(insn);
+<<<<<<< HEAD
 	if (WARN_ON_ONCE(!insn_complete(insn)))
+=======
+	if (!insn_complete(insn))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOEXEC;
 
 	if (is_prefix_bad(insn))
 		return -ENOTSUPP;
 
+<<<<<<< HEAD
+=======
+	/* We should not singlestep on the exception masking instructions */
+	if (insn_masking_exception(insn))
+		return -ENOTSUPP;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (x86_64)
 		good_insns = good_insns_64;
 	else
@@ -294,20 +313,38 @@ static void riprel_analyze(struct arch_uprobe *auprobe, struct insn *insn)
 		*cursor &= 0xfe;
 	}
 	/*
+<<<<<<< HEAD
 	 * Similar treatment for VEX3 prefix.
 	 * TODO: add XOP/EVEX treatment when insn decoder supports them
 	 */
 	if (insn->vex_prefix.nbytes == 3) {
+=======
+	 * Similar treatment for VEX3/EVEX prefix.
+	 * TODO: add XOP treatment when insn decoder supports them
+	 */
+	if (insn->vex_prefix.nbytes >= 3) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * vex2:     c5    rvvvvLpp   (has no b bit)
 		 * vex3/xop: c4/8f rxbmmmmm wvvvvLpp
 		 * evex:     62    rxbR00mm wvvvv1pp zllBVaaa
+<<<<<<< HEAD
 		 *   (evex will need setting of both b and x since
 		 *   in non-sib encoding evex.x is 4th bit of MODRM.rm)
 		 * Setting VEX3.b (setting because it has inverted meaning):
 		 */
 		cursor = auprobe->insn + insn_offset_vex_prefix(insn) + 1;
 		*cursor |= 0x20;
+=======
+		 * Setting VEX3.b (setting because it has inverted meaning).
+		 * Setting EVEX.x since (in non-SIB encoding) EVEX.x
+		 * is the 4th bit of MODRM.rm, and needs the same treatment.
+		 * For VEX3-encoded insns, VEX3.x value has no effect in
+		 * non-SIB encoding, the change is superfluous but harmless.
+		 */
+		cursor = auprobe->insn + insn_offset_vex_prefix(insn) + 1;
+		*cursor |= 0x60;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*
@@ -352,12 +389,19 @@ static void riprel_analyze(struct arch_uprobe *auprobe, struct insn *insn)
 
 	reg = MODRM_REG(insn);	/* Fetch modrm.reg */
 	reg2 = 0xff;		/* Fetch vex.vvvv */
+<<<<<<< HEAD
 	if (insn->vex_prefix.nbytes == 2)
 		reg2 = insn->vex_prefix.bytes[1];
 	else if (insn->vex_prefix.nbytes == 3)
 		reg2 = insn->vex_prefix.bytes[2];
 	/*
 	 * TODO: add XOP, EXEV vvvv reading.
+=======
+	if (insn->vex_prefix.nbytes)
+		reg2 = insn->vex_prefix.bytes[2];
+	/*
+	 * TODO: add XOP vvvv reading.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 *
 	 * vex.vvvv field is in bits 6-3, bits are inverted.
 	 * But in 32-bit mode, high-order bit may be ignored.
@@ -645,6 +689,10 @@ static struct uprobe_xol_ops branch_xol_ops = {
 static int branch_setup_xol_ops(struct arch_uprobe *auprobe, struct insn *insn)
 {
 	u8 opc1 = OPCODE1(insn);
+<<<<<<< HEAD
+=======
+	insn_byte_t p;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	switch (opc1) {
@@ -675,8 +723,13 @@ static int branch_setup_xol_ops(struct arch_uprobe *auprobe, struct insn *insn)
 	 * Intel and AMD behavior differ in 64-bit mode: Intel ignores 66 prefix.
 	 * No one uses these insns, reject any branch insns with such prefix.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < insn->prefixes.nbytes; i++) {
 		if (insn->prefixes.bytes[i] == 0x66)
+=======
+	for_each_insn_prefix(insn, i, p) {
+		if (p == 0x66)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -ENOTSUPP;
 	}
 
@@ -921,7 +974,11 @@ arch_uretprobe_hijack_return_addr(unsigned long trampoline_vaddr, struct pt_regs
 		pr_err("uprobe: return address clobbered: pid=%d, %%sp=%#lx, "
 			"%%ip=%#lx\n", current->pid, regs->sp, regs->ip);
 
+<<<<<<< HEAD
 		force_sig_info(SIGSEGV, SEND_SIG_FORCED, current);
+=======
+		force_sig(SIGSEGV, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return -1;

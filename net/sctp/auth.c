@@ -487,6 +487,10 @@ int sctp_auth_init_hmacs(struct sctp_endpoint *ep, gfp_t gfp)
 out_err:
 	/* Clean up any successful allocations */
 	sctp_auth_destroy_hmacs(ep->auth_hmacs);
+<<<<<<< HEAD
+=======
+	ep->auth_hmacs = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return -ENOMEM;
 }
 
@@ -800,8 +804,13 @@ int sctp_auth_ep_set_hmacs(struct sctp_endpoint *ep,
 	if (!has_sha1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	memcpy(ep->auth_hmacs_list->hmac_ids, &hmacs->shmac_idents[0],
 		hmacs->shmac_num_idents * sizeof(__u16));
+=======
+	for (i = 0; i < hmacs->shmac_num_idents; i++)
+		ep->auth_hmacs_list->hmac_ids[i] = htons(hmacs->shmac_idents[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ep->auth_hmacs_list->param_hdr.length = htons(sizeof(sctp_paramhdr_t) +
 				hmacs->shmac_num_idents * sizeof(__u16));
 	return 0;

@@ -379,7 +379,10 @@ static int wsm_multi_tx_confirm(struct cw1200_common *priv,
 {
 	int ret;
 	int count;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	count = WSM_GET32(buf);
 	if (WARN_ON(count <= 0))
@@ -395,11 +398,18 @@ static int wsm_multi_tx_confirm(struct cw1200_common *priv,
 	}
 
 	cw1200_debug_txed_multi(priv, count);
+<<<<<<< HEAD
 	for (i = 0; i < count; ++i) {
 		ret = wsm_tx_confirm(priv, buf, link_id);
 		if (ret)
 			return ret;
 	}
+=======
+	do {
+		ret = wsm_tx_confirm(priv, buf, link_id);
+	} while (!ret && --count);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 
 underflow:
@@ -1807,6 +1817,7 @@ static int wsm_buf_reserve(struct wsm_buf *buf, size_t extra_size)
 {
 	size_t pos = buf->data - buf->begin;
 	size_t size = pos + extra_size;
+<<<<<<< HEAD
 
 	size = round_up(size, FWLOAD_BLOCK_SIZE);
 
@@ -1819,4 +1830,20 @@ static int wsm_buf_reserve(struct wsm_buf *buf, size_t extra_size)
 		buf->end = buf->data = buf->begin;
 		return -ENOMEM;
 	}
+=======
+	u8 *tmp;
+
+	size = round_up(size, FWLOAD_BLOCK_SIZE);
+
+	tmp = krealloc(buf->begin, size, GFP_KERNEL | GFP_DMA);
+	if (!tmp) {
+		wsm_buf_deinit(buf);
+		return -ENOMEM;
+	}
+
+	buf->begin = tmp;
+	buf->data = &buf->begin[pos];
+	buf->end = &buf->begin[size];
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

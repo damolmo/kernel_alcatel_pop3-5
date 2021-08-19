@@ -121,6 +121,23 @@ DEFINE_EVENT(timer_class, timer_cancel,
 	TP_ARGS(timer)
 );
 
+<<<<<<< HEAD
+=======
+#define decode_clockid(type)						\
+	__print_symbolic(type,						\
+		{ CLOCK_REALTIME,	"CLOCK_REALTIME"	},	\
+		{ CLOCK_MONOTONIC,	"CLOCK_MONOTONIC"	},	\
+		{ CLOCK_BOOTTIME,	"CLOCK_BOOTTIME"	},	\
+		{ CLOCK_TAI,		"CLOCK_TAI"		})
+
+#define decode_hrtimer_mode(mode)					\
+	__print_symbolic(mode,						\
+		{ HRTIMER_MODE_ABS,		"ABS"		},	\
+		{ HRTIMER_MODE_REL,		"REL"		},	\
+		{ HRTIMER_MODE_ABS_PINNED,	"ABS|PINNED"	},	\
+		{ HRTIMER_MODE_REL_PINNED,	"REL|PINNED"	})
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * hrtimer_init - called when the hrtimer is initialized
  * @hrtimer:	pointer to struct hrtimer
@@ -147,10 +164,15 @@ TRACE_EVENT(hrtimer_init,
 	),
 
 	TP_printk("hrtimer=%p clockid=%s mode=%s", __entry->hrtimer,
+<<<<<<< HEAD
 		  __entry->clockid == CLOCK_REALTIME ?
 			"CLOCK_REALTIME" : "CLOCK_MONOTONIC",
 		  __entry->mode == HRTIMER_MODE_ABS ?
 			"HRTIMER_MODE_ABS" : "HRTIMER_MODE_REL")
+=======
+		  decode_clockid(__entry->clockid),
+		  decode_hrtimer_mode(__entry->mode))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 );
 
 /**

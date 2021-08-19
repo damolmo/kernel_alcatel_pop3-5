@@ -171,6 +171,10 @@ static int vexpress_config_populate(struct device_node *node)
 {
 	struct device_node *bridge;
 	struct device *parent;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	bridge = of_parse_phandle(node, "arm,vexpress,config-bridge", 0);
 	if (!bridge)
@@ -181,7 +185,15 @@ static int vexpress_config_populate(struct device_node *node)
 	if (WARN_ON(!parent))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return of_platform_populate(node, NULL, NULL, parent);
+=======
+	ret = of_platform_populate(node, NULL, NULL, parent);
+
+	put_device(parent);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __init vexpress_config_init(void)

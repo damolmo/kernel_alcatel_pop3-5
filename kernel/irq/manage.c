@@ -183,12 +183,16 @@ int irq_do_set_affinity(struct irq_data *data, const struct cpumask *mask,
 	ret = chip->irq_set_affinity(data, mask, force);
 	switch (ret) {
 	case IRQ_SET_MASK_OK:
+<<<<<<< HEAD
 	case IRQ_SET_MASK_OK_DONE:
 #ifdef CONFIG_MTK_IRQ_NEW_DESIGN
 		update_affinity_settings(desc, mask, true);
 #else
 		cpumask_copy(data->affinity, mask);
 #endif
+=======
+		cpumask_copy(data->affinity, mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case IRQ_SET_MASK_OK_NOCOPY:
 		irq_set_thread_affinity(desc);
 		ret = 0;
@@ -216,7 +220,15 @@ int irq_set_affinity_locked(struct irq_data *data, const struct cpumask *mask,
 
 	if (desc->affinity_notify) {
 		kref_get(&desc->affinity_notify->kref);
+<<<<<<< HEAD
 		schedule_work(&desc->affinity_notify->work);
+=======
+		if (!schedule_work(&desc->affinity_notify->work)) {
+			/* Work was already scheduled, drop our extra ref */
+			kref_put(&desc->affinity_notify->kref,
+				 desc->affinity_notify->release);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	irqd_set(data, IRQD_AFFINITY_SET);
 
@@ -312,8 +324,18 @@ irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify)
 	desc->affinity_notify = notify;
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 
+<<<<<<< HEAD
 	if (old_notify)
 		kref_put(&old_notify->kref, old_notify->release);
+=======
+	if (old_notify) {
+		if (cancel_work_sync(&old_notify->work)) {
+			/* Pending work had a ref, put that one too */
+			kref_put(&old_notify->kref, old_notify->release);
+		}
+		kref_put(&old_notify->kref, old_notify->release);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -353,12 +375,16 @@ setup_affinity(unsigned int irq, struct irq_desc *desc, struct cpumask *mask)
 		if (cpumask_intersects(mask, nodemask))
 			cpumask_and(mask, mask, nodemask);
 	}
+<<<<<<< HEAD
 
 #ifndef CONFIG_MTK_IRQ_NEW_DESIGN
 	irq_do_set_affinity(&desc->irq_data, mask, false);
 #else
 	irq_do_set_affinity(&desc->irq_data, cpu_possible_mask, true);
 #endif
+=======
+	irq_do_set_affinity(&desc->irq_data, mask, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 #else
@@ -610,7 +636,10 @@ int __irq_set_trigger(struct irq_desc *desc, unsigned int irq,
 
 	switch (ret) {
 	case IRQ_SET_MASK_OK:
+<<<<<<< HEAD
 	case IRQ_SET_MASK_OK_DONE:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irqd_clear(&desc->irq_data, IRQD_TRIGGER_MASK);
 		irqd_set(&desc->irq_data, flags);
 
@@ -770,7 +799,11 @@ irq_thread_check_affinity(struct irq_desc *desc, struct irqaction *action)
 	 * This code is triggered unconditionally. Check the affinity
 	 * mask pointer. For CPU_MASK_OFFSTACK=n this is optimized out.
 	 */
+<<<<<<< HEAD
 	if (desc->irq_data.affinity)
+=======
+	if (cpumask_available(desc->irq_data.affinity))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cpumask_copy(mask, desc->irq_data.affinity);
 	else
 		valid = false;
@@ -797,8 +830,20 @@ irq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)
 	irqreturn_t ret;
 
 	local_bh_disable();
+<<<<<<< HEAD
 	ret = action->thread_fn(action->irq, action->dev_id);
 	irq_finalize_oneshot(desc, action);
+=======
+	if (!IS_ENABLED(CONFIG_PREEMPT_RT_BASE))
+		local_irq_disable();
+	ret = action->thread_fn(action->irq, action->dev_id);
+	if (ret == IRQ_HANDLED)
+		atomic_inc(&desc->threads_handled);
+
+	irq_finalize_oneshot(desc, action);
+	if (!IS_ENABLED(CONFIG_PREEMPT_RT_BASE))
+		local_irq_enable();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_bh_enable();
 	return ret;
 }
@@ -814,6 +859,12 @@ static irqreturn_t irq_thread_fn(struct irq_desc *desc,
 	irqreturn_t ret;
 
 	ret = action->thread_fn(action->irq, action->dev_id);
+<<<<<<< HEAD
+=======
+	if (ret == IRQ_HANDLED)
+		atomic_inc(&desc->threads_handled);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_finalize_oneshot(desc, action);
 	return ret;
 }
@@ -879,8 +930,11 @@ static int irq_thread(void *data)
 		irq_thread_check_affinity(desc, action);
 
 		action_ret = handler_fn(desc, action);
+<<<<<<< HEAD
 		if (action_ret == IRQ_HANDLED)
 			atomic_inc(&desc->threads_handled);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		wake_threads_waitq(desc);
 	}
@@ -1167,8 +1221,15 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 			ret = __irq_set_trigger(desc, irq,
 					new->flags & IRQF_TRIGGER_MASK);
 
+<<<<<<< HEAD
 			if (ret)
 				goto out_mask;
+=======
+			if (ret) {
+				irq_release_resources(desc);
+				goto out_mask;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		desc->istate &= ~(IRQS_AUTODETECT | IRQS_SPURIOUS_DISABLED | \
@@ -1197,6 +1258,10 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 
 		/* Set default affinity mask once everything is setup */
 		setup_affinity(irq, desc, mask);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (new->flags & IRQF_TRIGGER_MASK) {
 		unsigned int nmsk = new->flags & IRQF_TRIGGER_MASK;
 		unsigned int omsk = irq_settings_get_trigger_mask(desc);

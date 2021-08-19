@@ -13,6 +13,11 @@
 #include <net/dst.h>
 #include <net/ip.h>
 #include <net/xfrm.h>
+<<<<<<< HEAD
+=======
+#include <net/ip_tunnels.h>
+#include <net/ip6_tunnel.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct kmem_cache *secpath_cachep __read_mostly;
 
@@ -186,6 +191,10 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 	struct xfrm_state *x = NULL;
 	xfrm_address_t *daddr;
 	struct xfrm_mode *inner_mode;
+<<<<<<< HEAD
+=======
+	u32 mark = skb->mark;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int family;
 	int decaps = 0;
 	int async = 0;
@@ -203,6 +212,21 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 				   XFRM_SPI_SKB_CB(skb)->daddroff);
 	family = XFRM_SPI_SKB_CB(skb)->family;
 
+<<<<<<< HEAD
+=======
+	/* if tunnel is present override skb->mark value with tunnel i_key */
+	switch (family) {
+	case AF_INET:
+		if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4)
+			mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip4->parms.i_key);
+		break;
+	case AF_INET6:
+		if (XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6)
+			mark = be32_to_cpu(XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6->parms.i_key);
+		break;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Allocate new secpath or COW existing one. */
 	if (!skb->sp || atomic_read(&skb->sp->refcnt) != 1) {
 		struct sec_path *sp;
@@ -229,7 +253,11 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 			goto drop;
 		}
 
+<<<<<<< HEAD
 		x = xfrm_state_lookup(net, skb->mark, daddr, spi, nexthdr, family);
+=======
+		x = xfrm_state_lookup(net, mark, daddr, spi, nexthdr, family);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (x == NULL) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
 			xfrm_audit_state_notfound(skb, family, spi, seq);
@@ -277,14 +305,25 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
 		XFRM_SKB_CB(skb)->seq.input.hi = seq_hi;
 
 		skb_dst_force(skb);
+<<<<<<< HEAD
+=======
+		dev_hold(skb->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		nexthdr = x->type->input(x, skb);
 
 		if (nexthdr == -EINPROGRESS)
 			return 0;
 resume:
+<<<<<<< HEAD
 		spin_lock(&x->lock);
 		if (nexthdr <= 0) {
+=======
+		dev_put(skb->dev);
+
+		spin_lock(&x->lock);
+		if (nexthdr < 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (nexthdr == -EBADMSG) {
 				xfrm_audit_state_icvfail(x, skb,
 							 x->type->proto);
@@ -297,7 +336,11 @@ resume:
 		/* only the first xfrm gets the encap type */
 		encap_type = 0;
 
+<<<<<<< HEAD
 		if (async && x->repl->recheck(x, skb, seq)) {
+=======
+		if (x->repl->recheck(x, skb, seq)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
 			goto drop_unlock;
 		}

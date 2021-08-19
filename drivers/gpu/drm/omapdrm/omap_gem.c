@@ -158,7 +158,11 @@ static void evict_entry(struct drm_gem_object *obj,
 	size_t size = PAGE_SIZE * n;
 	loff_t off = mmap_offset(obj) +
 			(entry->obj_pgoff << PAGE_SHIFT);
+<<<<<<< HEAD
 	const int m = 1 + ((omap_obj->width << fmt) / PAGE_SIZE);
+=======
+	const int m = DIV_ROUND_UP(omap_obj->width << fmt, PAGE_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (m > 1) {
 		int i;
@@ -415,7 +419,11 @@ static int fault_2d(struct drm_gem_object *obj,
 	 * into account in some of the math, so figure out virtual stride
 	 * in pages
 	 */
+<<<<<<< HEAD
 	const int m = 1 + ((omap_obj->width << fmt) / PAGE_SIZE);
+=======
+	const int m = DIV_ROUND_UP(omap_obj->width << fmt, PAGE_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We don't use vmf->pgoff since that has the fake offset: */
 	pgoff = ((unsigned long)vmf->virtual_address -

@@ -36,6 +36,10 @@
 
 static int target_fd;
 static char target_fname[W_MAX_PATH];
+<<<<<<< HEAD
+=======
+static unsigned long long filesize;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int hv_start_fcopy(struct hv_start_fcopy *smsg)
 {
@@ -48,6 +52,10 @@ static int hv_start_fcopy(struct hv_start_fcopy *smsg)
 	if (strlen((char *)smsg->path_name) < (W_MAX_PATH - 2))
 		strcat((char *)smsg->path_name, "/");
 
+<<<<<<< HEAD
+=======
+	filesize = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	p = (char *)smsg->path_name;
 	snprintf(target_fname, sizeof(target_fname), "%s/%s",
 		(char *)smsg->path_name, smsg->file_name);
@@ -103,14 +111,36 @@ done:
 static int hv_copy_data(struct hv_do_fcopy *cpmsg)
 {
 	ssize_t bytes_written;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	bytes_written = pwrite(target_fd, cpmsg->data, cpmsg->size,
 				cpmsg->offset);
 
+<<<<<<< HEAD
 	if (bytes_written != cpmsg->size)
 		return HV_E_FAIL;
 
 	return 0;
+=======
+	filesize += cpmsg->size;
+	if (bytes_written != cpmsg->size) {
+		switch (errno) {
+		case ENOSPC:
+			ret = HV_ERROR_DISK_FULL;
+			break;
+		default:
+			ret = HV_E_FAIL;
+			break;
+		}
+		syslog(LOG_ERR, "pwrite failed to write %llu bytes: %ld (%s)",
+		       filesize, (long)bytes_written, strerror(errno));
+	}
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int hv_copy_finished(void)

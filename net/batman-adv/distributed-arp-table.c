@@ -15,6 +15,10 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/if_ether.h>
 #include <linux/if_arp.h>
 #include <linux/if_vlan.h>
@@ -342,7 +346,11 @@ static void batadv_dbg_arp(struct batadv_priv *bat_priv, struct sk_buff *skb,
 		   batadv_arp_hw_src(skb, hdr_size), &ip_src,
 		   batadv_arp_hw_dst(skb, hdr_size), &ip_dst);
 
+<<<<<<< HEAD
 	if (hdr_size == 0)
+=======
+	if (hdr_size < sizeof(struct batadv_unicast_packet))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	unicast_4addr_packet = (struct batadv_unicast_4addr_packet *)skb->data;
@@ -422,7 +430,11 @@ static bool batadv_is_orig_node_eligible(struct batadv_dat_candidate *res,
 	int j;
 
 	/* check if orig node candidate is running DAT */
+<<<<<<< HEAD
 	if (!(candidate->capabilities & BATADV_ORIG_CAPA_HAS_DAT))
+=======
+	if (!test_bit(BATADV_ORIG_CAPA_HAS_DAT, &candidate->capabilities))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	/* Check if this node has already been selected... */
@@ -682,9 +694,15 @@ static void batadv_dat_tvlv_ogm_handler_v1(struct batadv_priv *bat_priv,
 					   uint16_t tvlv_value_len)
 {
 	if (flags & BATADV_TVLV_HANDLER_OGM_CIFNOTFND)
+<<<<<<< HEAD
 		orig->capabilities &= ~BATADV_ORIG_CAPA_HAS_DAT;
 	else
 		orig->capabilities |= BATADV_ORIG_CAPA_HAS_DAT;
+=======
+		clear_bit(BATADV_ORIG_CAPA_HAS_DAT, &orig->capabilities);
+	else
+		set_bit(BATADV_ORIG_CAPA_HAS_DAT, &orig->capabilities);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -953,15 +971,30 @@ bool batadv_dat_snoop_outgoing_arp_request(struct batadv_priv *bat_priv,
 		if (!skb_new)
 			goto out;
 
+<<<<<<< HEAD
 		if (vid & BATADV_VLAN_HAS_TAG)
 			skb_new = vlan_insert_tag(skb_new, htons(ETH_P_8021Q),
 						  vid & VLAN_VID_MASK);
+=======
+		if (vid & BATADV_VLAN_HAS_TAG) {
+			skb_new = vlan_insert_tag(skb_new, htons(ETH_P_8021Q),
+						  vid & VLAN_VID_MASK);
+			if (!skb_new)
+				goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		skb_reset_mac_header(skb_new);
 		skb_new->protocol = eth_type_trans(skb_new,
 						   bat_priv->soft_iface);
+<<<<<<< HEAD
 		bat_priv->stats.rx_packets++;
 		bat_priv->stats.rx_bytes += skb->len + ETH_HLEN + hdr_size;
+=======
+		batadv_inc_counter(bat_priv, BATADV_CNT_RX);
+		batadv_add_counter(bat_priv, BATADV_CNT_RX_BYTES,
+				   skb->len + ETH_HLEN + hdr_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		bat_priv->soft_iface->last_rx = jiffies;
 
 		netif_rx(skb_new);
@@ -1033,9 +1066,18 @@ bool batadv_dat_snoop_incoming_arp_request(struct batadv_priv *bat_priv,
 	 */
 	skb_reset_mac_header(skb_new);
 
+<<<<<<< HEAD
 	if (vid & BATADV_VLAN_HAS_TAG)
 		skb_new = vlan_insert_tag(skb_new, htons(ETH_P_8021Q),
 					  vid & VLAN_VID_MASK);
+=======
+	if (vid & BATADV_VLAN_HAS_TAG) {
+		skb_new = vlan_insert_tag(skb_new, htons(ETH_P_8021Q),
+					  vid & VLAN_VID_MASK);
+		if (!skb_new)
+			goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* To preserve backwards compatibility, the node has choose the outgoing
 	 * format based on the incoming request packet type. The assumption is

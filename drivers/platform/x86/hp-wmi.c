@@ -54,8 +54,14 @@ MODULE_ALIAS("wmi:5FB7F034-2C63-45e9-BE91-3D44E2C707E4");
 #define HPWMI_HARDWARE_QUERY 0x4
 #define HPWMI_WIRELESS_QUERY 0x5
 #define HPWMI_BIOS_QUERY 0x9
+<<<<<<< HEAD
 #define HPWMI_HOTKEY_QUERY 0xc
 #define HPWMI_FEATURE_QUERY 0xd
+=======
+#define HPWMI_FEATURE_QUERY 0xb
+#define HPWMI_HOTKEY_QUERY 0xc
+#define HPWMI_FEATURE2_QUERY 0xd
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define HPWMI_WIRELESS2_QUERY 0x1b
 #define HPWMI_POSTCODEERROR_QUERY 0x2a
 
@@ -89,7 +95,11 @@ struct bios_args {
 	u32 command;
 	u32 commandtype;
 	u32 datasize;
+<<<<<<< HEAD
 	u32 data;
+=======
+	u8 data[128];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct bios_return {
@@ -198,7 +208,11 @@ static int hp_wmi_perform_query(int query, int write, void *buffer,
 		.command = write ? 0x2 : 0x1,
 		.commandtype = query,
 		.datasize = insize,
+<<<<<<< HEAD
 		.data = 0,
+=======
+		.data = { 0 },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	};
 	struct acpi_buffer input = { sizeof(struct bios_args), &args };
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -206,7 +220,11 @@ static int hp_wmi_perform_query(int query, int write, void *buffer,
 
 	if (WARN_ON(insize > sizeof(args.data)))
 		return -EINVAL;
+<<<<<<< HEAD
 	memcpy(&args.data, buffer, insize);
+=======
+	memcpy(&args.data[0], buffer, insize);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	wmi_evaluate_method(HPWMI_BIOS_GUID, 0, 0x3, &input, &output);
 
@@ -248,7 +266,11 @@ static int hp_wmi_display_state(void)
 	int ret = hp_wmi_perform_query(HPWMI_DISPLAY_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return state;
 }
 
@@ -258,7 +280,11 @@ static int hp_wmi_hddtemp_state(void)
 	int ret = hp_wmi_perform_query(HPWMI_HDDTEMP_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return state;
 }
 
@@ -268,7 +294,11 @@ static int hp_wmi_als_state(void)
 	int ret = hp_wmi_perform_query(HPWMI_ALS_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return state;
 }
 
@@ -279,7 +309,11 @@ static int hp_wmi_dock_state(void)
 				       sizeof(state), sizeof(state));
 
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return state & 0x1;
 }
@@ -290,16 +324,25 @@ static int hp_wmi_tablet_state(void)
 	int ret = hp_wmi_perform_query(HPWMI_HARDWARE_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
 	if (ret)
+<<<<<<< HEAD
 		return ret;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return (state & 0x4) ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static int __init hp_wmi_bios_2009_later(void)
+=======
+static int __init hp_wmi_bios_2008_later(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int state = 0;
 	int ret = hp_wmi_perform_query(HPWMI_FEATURE_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
@@ -316,6 +359,32 @@ static int hp_wmi_enable_hotkeys(void)
 
 	if (ret)
 		return -EINVAL;
+=======
+	if (!ret)
+		return 1;
+
+	return (ret == HPWMI_RET_UNKNOWN_CMDTYPE) ? 0 : -ENXIO;
+}
+
+static int __init hp_wmi_bios_2009_later(void)
+{
+	u8 state[128];
+	int ret = hp_wmi_perform_query(HPWMI_FEATURE2_QUERY, 0, &state,
+				       sizeof(state), sizeof(state));
+	if (!ret)
+		return 1;
+
+	return (ret == HPWMI_RET_UNKNOWN_CMDTYPE) ? 0 : -ENXIO;
+}
+
+static int __init hp_wmi_enable_hotkeys(void)
+{
+	int value = 0x6e;
+	int ret = hp_wmi_perform_query(HPWMI_BIOS_QUERY, 1, &value,
+				       sizeof(value), 0);
+	if (ret)
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -328,7 +397,11 @@ static int hp_wmi_set_block(void *data, bool blocked)
 	ret = hp_wmi_perform_query(HPWMI_WIRELESS_QUERY, 1,
 				   &query, sizeof(query), 0);
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -420,7 +493,11 @@ static int hp_wmi_post_code_state(void)
 	int ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, 0, &state,
 				       sizeof(state), sizeof(state));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return state;
 }
 
@@ -486,7 +563,11 @@ static ssize_t set_als(struct device *dev, struct device_attribute *attr,
 	int ret = hp_wmi_perform_query(HPWMI_ALS_QUERY, 1, &tmp,
 				       sizeof(tmp), sizeof(tmp));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return count;
 }
@@ -507,7 +588,11 @@ static ssize_t set_postcode(struct device *dev, struct device_attribute *attr,
 	ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, 1, &tmp,
 				       sizeof(tmp), sizeof(tmp));
 	if (ret)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return count;
 }
@@ -564,10 +649,19 @@ static void hp_wmi_notify(u32 value, void *context)
 
 	switch (event_id) {
 	case HPWMI_DOCK_EVENT:
+<<<<<<< HEAD
 		input_report_switch(hp_wmi_input_dev, SW_DOCK,
 				    hp_wmi_dock_state());
 		input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
 				    hp_wmi_tablet_state());
+=======
+		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
+			input_report_switch(hp_wmi_input_dev, SW_DOCK,
+					    hp_wmi_dock_state());
+		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
+			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
+					    hp_wmi_tablet_state());
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		input_sync(hp_wmi_input_dev);
 		break;
 	case HPWMI_PARK_HDD:
@@ -640,6 +734,10 @@ static int __init hp_wmi_input_setup(void)
 {
 	acpi_status status;
 	int err;
+<<<<<<< HEAD
+=======
+	int val;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	hp_wmi_input_dev = input_allocate_device();
 	if (!hp_wmi_input_dev)
@@ -650,20 +748,43 @@ static int __init hp_wmi_input_setup(void)
 	hp_wmi_input_dev->id.bustype = BUS_HOST;
 
 	__set_bit(EV_SW, hp_wmi_input_dev->evbit);
+<<<<<<< HEAD
 	__set_bit(SW_DOCK, hp_wmi_input_dev->swbit);
 	__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
+=======
+
+	/* Dock */
+	val = hp_wmi_dock_state();
+	if (!(val < 0)) {
+		__set_bit(SW_DOCK, hp_wmi_input_dev->swbit);
+		input_report_switch(hp_wmi_input_dev, SW_DOCK, val);
+	}
+
+	/* Tablet mode */
+	val = hp_wmi_tablet_state();
+	if (!(val < 0)) {
+		__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
+		input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE, val);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = sparse_keymap_setup(hp_wmi_input_dev, hp_wmi_keymap, NULL);
 	if (err)
 		goto err_free_dev;
 
 	/* Set initial hardware state */
+<<<<<<< HEAD
 	input_report_switch(hp_wmi_input_dev, SW_DOCK, hp_wmi_dock_state());
 	input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
 			    hp_wmi_tablet_state());
 	input_sync(hp_wmi_input_dev);
 
 	if (hp_wmi_bios_2009_later() == 4)
+=======
+	input_sync(hp_wmi_input_dev);
+
+	if (!hp_wmi_bios_2009_later() && hp_wmi_bios_2008_later())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hp_wmi_enable_hotkeys();
 
 	status = wmi_install_notify_handler(HPWMI_EVENT_GUID, hp_wmi_notify, NULL);
@@ -714,6 +835,14 @@ static int __init hp_wmi_rfkill_setup(struct platform_device *device)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	err = hp_wmi_perform_query(HPWMI_WIRELESS_QUERY, 1, &wireless,
+				   sizeof(wireless), 0);
+	if (err)
+		return err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (wireless & 0x1) {
 		wifi_rfkill = rfkill_alloc("hp-wifi", &device->dev,
 					   RFKILL_TYPE_WLAN,
@@ -901,7 +1030,11 @@ static int __init hp_wmi_bios_setup(struct platform_device *device)
 	gps_rfkill = NULL;
 	rfkill2_count = 0;
 
+<<<<<<< HEAD
 	if (hp_wmi_bios_2009_later() || hp_wmi_rfkill_setup(device))
+=======
+	if (hp_wmi_rfkill_setup(device))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hp_wmi_rfkill2_setup(device);
 
 	err = device_create_file(&device->dev, &dev_attr_display);
@@ -968,10 +1101,19 @@ static int hp_wmi_resume_handler(struct device *device)
 	 * changed.
 	 */
 	if (hp_wmi_input_dev) {
+<<<<<<< HEAD
 		input_report_switch(hp_wmi_input_dev, SW_DOCK,
 				    hp_wmi_dock_state());
 		input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
 				    hp_wmi_tablet_state());
+=======
+		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
+			input_report_switch(hp_wmi_input_dev, SW_DOCK,
+					    hp_wmi_dock_state());
+		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
+			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
+					    hp_wmi_tablet_state());
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		input_sync(hp_wmi_input_dev);
 	}
 

@@ -279,7 +279,11 @@ static const struct clk_init_data isp_xclk_init_data = {
 static int isp_xclk_init(struct isp_device *isp)
 {
 	struct isp_platform_data *pdata = isp->pdata;
+<<<<<<< HEAD
 	struct clk_init_data init;
+=======
+	struct clk_init_data init = { 0 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int i;
 
 	for (i = 0; i < ARRAY_SIZE(isp->xclks); ++i)
@@ -813,14 +817,22 @@ static int isp_pipeline_link_notify(struct media_link *link, u32 flags,
 	int ret;
 
 	if (notification == MEDIA_DEV_NOTIFY_POST_LINK_CH &&
+<<<<<<< HEAD
 	    !(link->flags & MEDIA_LNK_FL_ENABLED)) {
+=======
+	    !(flags & MEDIA_LNK_FL_ENABLED)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Powering off entities is assumed to never fail. */
 		isp_pipeline_pm_power(source, -sink_use);
 		isp_pipeline_pm_power(sink, -source_use);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (notification == MEDIA_DEV_NOTIFY_POST_LINK_CH &&
+=======
+	if (notification == MEDIA_DEV_NOTIFY_PRE_LINK_CH &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		(flags & MEDIA_LNK_FL_ENABLED)) {
 
 		ret = isp_pipeline_pm_power(source, sink_use);
@@ -903,6 +915,13 @@ static int isp_pipeline_enable(struct isp_pipeline *pipe,
 					s_stream, mode);
 			pipe->do_propagation = true;
 		}
+<<<<<<< HEAD
+=======
+
+		/* Stop at the first external sub-device. */
+		if (subdev->dev != isp->dev)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -1017,6 +1036,13 @@ static int isp_pipeline_disable(struct isp_pipeline *pipe)
 				isp->crashed |= 1U << subdev->entity.id;
 			failure = -ETIMEDOUT;
 		}
+<<<<<<< HEAD
+=======
+
+		/* Stop at the first external sub-device. */
+		if (subdev->dev != isp->dev)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return failure;
@@ -2117,6 +2143,10 @@ error_csiphy:
 
 static void isp_detach_iommu(struct isp_device *isp)
 {
+<<<<<<< HEAD
+=======
+	arm_iommu_detach_device(isp->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	arm_iommu_release_mapping(isp->mapping);
 	isp->mapping = NULL;
 	iommu_group_remove_device(isp->dev);
@@ -2150,8 +2180,12 @@ static int isp_attach_iommu(struct isp_device *isp)
 	mapping = arm_iommu_create_mapping(&platform_bus_type, SZ_1G, SZ_2G);
 	if (IS_ERR(mapping)) {
 		dev_err(isp->dev, "failed to create ARM IOMMU mapping\n");
+<<<<<<< HEAD
 		ret = PTR_ERR(mapping);
 		goto error;
+=======
+		return PTR_ERR(mapping);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	isp->mapping = mapping;
@@ -2166,7 +2200,12 @@ static int isp_attach_iommu(struct isp_device *isp)
 	return 0;
 
 error:
+<<<<<<< HEAD
 	isp_detach_iommu(isp);
+=======
+	arm_iommu_release_mapping(isp->mapping);
+	isp->mapping = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

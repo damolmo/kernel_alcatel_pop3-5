@@ -1531,7 +1531,10 @@ static int snd_wss_playback_open(struct snd_pcm_substream *substream)
 	if (err < 0) {
 		if (chip->release_dma)
 			chip->release_dma(chip, chip->dma_private_data, chip->dma1);
+<<<<<<< HEAD
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err;
 	}
 	chip->playback_substream = substream;
@@ -1572,7 +1575,10 @@ static int snd_wss_capture_open(struct snd_pcm_substream *substream)
 	if (err < 0) {
 		if (chip->release_dma)
 			chip->release_dma(chip, chip->dma_private_data, chip->dma2);
+<<<<<<< HEAD
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err;
 	}
 	chip->capture_substream = substream;

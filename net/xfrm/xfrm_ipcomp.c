@@ -283,7 +283,11 @@ static struct crypto_comp * __percpu *ipcomp_alloc_tfms(const char *alg_name)
 		struct crypto_comp *tfm;
 
 		/* This can be any valid CPU ID so we don't need locking. */
+<<<<<<< HEAD
 		tfm = __this_cpu_read(*pos->tfms);
+=======
+		tfm = this_cpu_read(*pos->tfms);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (!strcmp(crypto_comp_name(tfm), alg_name)) {
 			pos->users++;

@@ -383,6 +383,12 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
 
 static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
 {
+<<<<<<< HEAD
+=======
+	if (!domain->mmu)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Disable the context. Flush the TLB as required when modifying the
 	 * context registers.

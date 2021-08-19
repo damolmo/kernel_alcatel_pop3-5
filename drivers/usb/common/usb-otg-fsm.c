@@ -21,6 +21,10 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/mutex.h>
@@ -365,3 +369,7 @@ int otg_statemachine(struct otg_fsm *fsm)
 	return state_changed;
 }
 EXPORT_SYMBOL_GPL(otg_statemachine);
+<<<<<<< HEAD
+=======
+MODULE_LICENSE("GPL");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -156,6 +156,7 @@ void __thaw_task(struct task_struct *p)
 	spin_unlock_irqrestore(&freezer_lock, flags);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_MICROTRUST_TEE_SUPPORT)
 /**
  * set_nofreezable - make current process NON_freezable
@@ -174,6 +175,8 @@ bool set_nofreezable(void)
 EXPORT_SYMBOL(set_nofreezable);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * set_freezable - make %current freezable
  *

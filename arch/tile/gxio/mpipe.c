@@ -19,6 +19,10 @@
 #include <linux/errno.h>
 #include <linux/io.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <gxio/iorpc_globals.h>
 #include <gxio/iorpc_mpipe.h>
@@ -29,6 +33,7 @@
 /* HACK: Avoid pointless "shadow" warnings. */
 #define link link_shadow
 
+<<<<<<< HEAD
 /**
  * strscpy - Copy a C-string into a sized buffer, but only if it fits
  * @dest: Where to copy the string to
@@ -55,6 +60,8 @@ static size_t strscpy(char *dest, const char *src, size_t size)
 	return len;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int gxio_mpipe_init(gxio_mpipe_context_t *context, unsigned int mpipe_index)
 {
 	char file[32];
@@ -537,7 +544,11 @@ int gxio_mpipe_link_instance(const char *link_name)
 	if (!context)
 		return GXIO_ERR_NO_DEVICE;
 
+<<<<<<< HEAD
 	if (strscpy(name.name, link_name, sizeof(name.name)) == 0)
+=======
+	if (strscpy(name.name, link_name, sizeof(name.name)) < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return GXIO_ERR_NO_DEVICE;
 
 	return gxio_mpipe_info_instance_aux(context, name);
@@ -555,7 +566,11 @@ int gxio_mpipe_link_enumerate_mac(int idx, char *link_name, uint8_t *link_mac)
 
 	rv = gxio_mpipe_info_enumerate_aux(context, idx, &name, &mac);
 	if (rv >= 0) {
+<<<<<<< HEAD
 		if (strscpy(link_name, name.name, sizeof(name.name)) == 0)
+=======
+		if (strscpy(link_name, name.name, sizeof(name.name)) < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return GXIO_ERR_INVAL_MEMORY_SIZE;
 		memcpy(link_mac, mac.mac, sizeof(mac.mac));
 	}
@@ -572,7 +587,11 @@ int gxio_mpipe_link_open(gxio_mpipe_link_t *link,
 	_gxio_mpipe_link_name_t name;
 	int rv;
 
+<<<<<<< HEAD
 	if (strscpy(name.name, link_name, sizeof(name.name)) == 0)
+=======
+	if (strscpy(name.name, link_name, sizeof(name.name)) < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return GXIO_ERR_NO_DEVICE;
 
 	rv = gxio_mpipe_link_open_aux(context, name, flags);

@@ -847,7 +847,11 @@ nfulnl_recv_config(struct sock *ctnl, struct sk_buff *skb,
 			goto out_put;
 		default:
 			ret = -ENOTSUPP;
+<<<<<<< HEAD
 			break;
+=======
+			goto out_put;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 

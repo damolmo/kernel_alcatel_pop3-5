@@ -281,5 +281,9 @@
 				 * fsck() must be run to repair
 				 */
 #define	FM_EXTENDFS 0x00000008	/* file system extendfs() in progress */
+<<<<<<< HEAD
+=======
+#define	FM_STATE_MAX 0x0000000f	/* max value of s_state */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif				/* _H_JFS_FILSYS */

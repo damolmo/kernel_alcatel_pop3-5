@@ -85,4 +85,19 @@ static inline void blk_mq_tag_idle(struct blk_mq_hw_ctx *hctx)
 	__blk_mq_tag_idle(hctx);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * This helper should only be used for flush request to share tag
+ * with the request cloned from, and both the two requests can't be
+ * in flight at the same time. The caller has to make sure the tag
+ * can't be freed.
+ */
+static inline void blk_mq_tag_set_rq(struct blk_mq_hw_ctx *hctx,
+		unsigned int tag, struct request *rq)
+{
+	hctx->tags->rqs[tag] = rq;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

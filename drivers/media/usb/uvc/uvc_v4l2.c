@@ -243,11 +243,47 @@ static int uvc_v4l2_try_format(struct uvc_streaming *stream,
 	if (ret < 0)
 		goto done;
 
+<<<<<<< HEAD
+=======
+	/* After the probe, update fmt with the values returned from
+	 * negotiation with the device. Some devices return invalid bFormatIndex
+	 * and bFrameIndex values, in which case we can only assume they have
+	 * accepted the requested format as-is.
+	 */
+	for (i = 0; i < stream->nformats; ++i) {
+		if (probe->bFormatIndex == stream->format[i].index) {
+			format = &stream->format[i];
+			break;
+		}
+	}
+
+	if (i == stream->nformats)
+		uvc_trace(UVC_TRACE_FORMAT,
+			  "Unknown bFormatIndex %u, using default\n",
+			  probe->bFormatIndex);
+
+	for (i = 0; i < format->nframes; ++i) {
+		if (probe->bFrameIndex == format->frame[i].bFrameIndex) {
+			frame = &format->frame[i];
+			break;
+		}
+	}
+
+	if (i == format->nframes)
+		uvc_trace(UVC_TRACE_FORMAT,
+			  "Unknown bFrameIndex %u, using default\n",
+			  probe->bFrameIndex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fmt->fmt.pix.width = frame->wWidth;
 	fmt->fmt.pix.height = frame->wHeight;
 	fmt->fmt.pix.field = V4L2_FIELD_NONE;
 	fmt->fmt.pix.bytesperline = format->bpp * frame->wWidth / 8;
 	fmt->fmt.pix.sizeimage = probe->dwMaxVideoFrameSize;
+<<<<<<< HEAD
+=======
+	fmt->fmt.pix.pixelformat = format->fcc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fmt->fmt.pix.colorspace = format->colorspace;
 	fmt->fmt.pix.priv = 0;
 
@@ -1279,16 +1315,24 @@ static int uvc_v4l2_put_xu_query(const struct uvc_xu_control_query *kp,
 static long uvc_v4l2_compat_ioctl32(struct file *file,
 		     unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
+=======
+	struct uvc_fh *handle = file->private_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	union {
 		struct uvc_xu_control_mapping xmap;
 		struct uvc_xu_control_query xqry;
 	} karg;
 	void __user *up = compat_ptr(arg);
+<<<<<<< HEAD
 	mm_segment_t old_fs;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	long ret;
 
 	switch (cmd) {
 	case UVCIOC_CTRL_MAP32:
+<<<<<<< HEAD
 		cmd = UVCIOC_CTRL_MAP;
 		ret = uvc_v4l2_get_xu_mapping(&karg.xmap, up);
 		break;
@@ -1296,12 +1340,37 @@ static long uvc_v4l2_compat_ioctl32(struct file *file,
 	case UVCIOC_CTRL_QUERY32:
 		cmd = UVCIOC_CTRL_QUERY;
 		ret = uvc_v4l2_get_xu_query(&karg.xqry, up);
+=======
+		ret = uvc_v4l2_get_xu_mapping(&karg.xmap, up);
+		if (ret)
+			return ret;
+		ret = uvc_ioctl_ctrl_map(handle->chain, &karg.xmap);
+		if (ret)
+			return ret;
+		ret = uvc_v4l2_put_xu_mapping(&karg.xmap, up);
+		if (ret)
+			return ret;
+
+		break;
+
+	case UVCIOC_CTRL_QUERY32:
+		ret = uvc_v4l2_get_xu_query(&karg.xqry, up);
+		if (ret)
+			return ret;
+		ret = uvc_xu_ctrl_query(handle->chain, &karg.xqry);
+		if (ret)
+			return ret;
+		ret = uvc_v4l2_put_xu_query(&karg.xqry, up);
+		if (ret)
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	default:
 		return -ENOIOCTLCMD;
 	}
 
+<<<<<<< HEAD
 	old_fs = get_fs();
 	set_fs(KERNEL_DS);
 	ret = uvc_v4l2_ioctl(file, cmd, (unsigned long)&karg);
@@ -1320,6 +1389,8 @@ static long uvc_v4l2_compat_ioctl32(struct file *file,
 		break;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 #endif

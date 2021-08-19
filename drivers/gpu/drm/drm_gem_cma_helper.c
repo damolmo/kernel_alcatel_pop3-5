@@ -29,6 +29,7 @@
 #include <drm/drm_gem_cma_helper.h>
 #include <drm/drm_vma_manager.h>
 
+<<<<<<< HEAD
 /**
  * DOC: cma helpers
  *
@@ -54,6 +55,20 @@
  */
 static struct drm_gem_cma_object *
 __drm_gem_cma_create(struct drm_device *drm, size_t size)
+=======
+/*
+ * __drm_gem_cma_create - Create a GEM CMA object without allocating memory
+ * @drm: The drm device
+ * @size: The GEM object size
+ *
+ * This function creates and initializes a GEM CMA object of the given size, but
+ * doesn't allocate any memory to back the object.
+ *
+ * Return a struct drm_gem_cma_object* on success or ERR_PTR values on failure.
+ */
+static struct drm_gem_cma_object *
+__drm_gem_cma_create(struct drm_device *drm, unsigned int size)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_gem_cma_object *cma_obj;
 	struct drm_gem_object *gem_obj;
@@ -82,6 +97,7 @@ error:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_create - allocate an object with the given size
  * @drm: DRM device
@@ -97,6 +113,16 @@ error:
  */
 struct drm_gem_cma_object *drm_gem_cma_create(struct drm_device *drm,
 					      size_t size)
+=======
+/*
+ * drm_gem_cma_create - allocate an object with the given size
+ *
+ * returns a struct drm_gem_cma_object* on success or ERR_PTR values
+ * on failure.
+ */
+struct drm_gem_cma_object *drm_gem_cma_create(struct drm_device *drm,
+		unsigned int size)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_gem_cma_object *cma_obj;
 	int ret;
@@ -124,6 +150,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_create);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_create_with_handle - allocate an object with the given size and
  *     return a GEM handle to it
@@ -144,6 +171,19 @@ static struct drm_gem_cma_object *
 drm_gem_cma_create_with_handle(struct drm_file *file_priv,
 			       struct drm_device *drm, size_t size,
 			       uint32_t *handle)
+=======
+/*
+ * drm_gem_cma_create_with_handle - allocate an object with the given
+ * size and create a gem handle on it
+ *
+ * returns a struct drm_gem_cma_object* on success or ERR_PTR values
+ * on failure.
+ */
+static struct drm_gem_cma_object *drm_gem_cma_create_with_handle(
+		struct drm_file *file_priv,
+		struct drm_device *drm, unsigned int size,
+		unsigned int *handle)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_gem_cma_object *cma_obj;
 	struct drm_gem_object *gem_obj;
@@ -174,6 +214,7 @@ err_handle_create:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_free_object - free resources associated with a CMA GEM object
  * @gem_obj: GEM object to free
@@ -182,11 +223,21 @@ err_handle_create:
  * GEM object state and frees the memory used to store the object itself.
  * Drivers using the CMA helpers should set this as their DRM driver's
  * ->gem_free_object() callback.
+=======
+/*
+ * drm_gem_cma_free_object - (struct drm_driver)->gem_free_object callback
+ * function
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void drm_gem_cma_free_object(struct drm_gem_object *gem_obj)
 {
 	struct drm_gem_cma_object *cma_obj;
 
+<<<<<<< HEAD
+=======
+	drm_gem_free_mmap_offset(gem_obj);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cma_obj = to_drm_gem_cma_obj(gem_obj);
 
 	if (cma_obj->vaddr) {
@@ -202,6 +253,7 @@ void drm_gem_cma_free_object(struct drm_gem_object *gem_obj)
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_free_object);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_dumb_create_internal - create a dumb buffer object
  * @file_priv: DRM file-private structure to create the dumb buffer for
@@ -222,6 +274,20 @@ int drm_gem_cma_dumb_create_internal(struct drm_file *file_priv,
 {
 	unsigned int min_pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
 	struct drm_gem_cma_object *cma_obj;
+=======
+/*
+ * drm_gem_cma_dumb_create - (struct drm_driver)->dumb_create callback
+ * function
+ *
+ * This aligns the pitch and size arguments to the minimum required. wrap
+ * this into your own function if you need bigger alignment.
+ */
+int drm_gem_cma_dumb_create(struct drm_file *file_priv,
+		struct drm_device *dev, struct drm_mode_create_dumb *args)
+{
+	struct drm_gem_cma_object *cma_obj;
+	int min_pitch = DIV_ROUND_UP(args->width * args->bpp, 8);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (args->pitch < min_pitch)
 		args->pitch = min_pitch;
@@ -229,6 +295,7 @@ int drm_gem_cma_dumb_create_internal(struct drm_file *file_priv,
 	if (args->size < args->pitch * args->height)
 		args->size = args->pitch * args->height;
 
+<<<<<<< HEAD
 	cma_obj = drm_gem_cma_create_with_handle(file_priv, drm, args->size,
 						 &args->handle);
 	return PTR_ERR_OR_ZERO(cma_obj);
@@ -264,10 +331,15 @@ int drm_gem_cma_dumb_create(struct drm_file *file_priv,
 
 	cma_obj = drm_gem_cma_create_with_handle(file_priv, drm, args->size,
 						 &args->handle);
+=======
+	cma_obj = drm_gem_cma_create_with_handle(file_priv, dev,
+			args->size, &args->handle);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return PTR_ERR_OR_ZERO(cma_obj);
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_dumb_create);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_dumb_map_offset - return the fake mmap offset for a CMA GEM
  *     object
@@ -286,6 +358,14 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_dumb_create);
 int drm_gem_cma_dumb_map_offset(struct drm_file *file_priv,
 				struct drm_device *drm, u32 handle,
 				u64 *offset)
+=======
+/*
+ * drm_gem_cma_dumb_map_offset - (struct drm_driver)->dumb_map_offset callback
+ * function
+ */
+int drm_gem_cma_dumb_map_offset(struct drm_file *file_priv,
+		struct drm_device *drm, uint32_t handle, uint64_t *offset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_gem_object *gem_obj;
 
@@ -293,7 +373,11 @@ int drm_gem_cma_dumb_map_offset(struct drm_file *file_priv,
 
 	gem_obj = drm_gem_object_lookup(drm, file_priv, handle);
 	if (!gem_obj) {
+<<<<<<< HEAD
 		dev_err(drm->dev, "failed to lookup GEM object\n");
+=======
+		dev_err(drm->dev, "failed to lookup gem object\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_unlock(&drm->struct_mutex);
 		return -EINVAL;
 	}
@@ -336,6 +420,7 @@ static int drm_gem_cma_mmap_obj(struct drm_gem_cma_object *cma_obj,
 	return ret;
 }
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_mmap - memory-map a CMA GEM object
  * @filp: file object
@@ -350,6 +435,10 @@ static int drm_gem_cma_mmap_obj(struct drm_gem_cma_object *cma_obj,
  *
  * Returns:
  * 0 on success or a negative error code on failure.
+=======
+/*
+ * drm_gem_cma_mmap - (struct file_operation)->mmap callback function
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 int drm_gem_cma_mmap(struct file *filp, struct vm_area_struct *vma)
 {
@@ -369,6 +458,7 @@ int drm_gem_cma_mmap(struct file *filp, struct vm_area_struct *vma)
 EXPORT_SYMBOL_GPL(drm_gem_cma_mmap);
 
 #ifdef CONFIG_DEBUG_FS
+<<<<<<< HEAD
 /**
  * drm_gem_cma_describe - describe a CMA GEM object for debugfs
  * @cma_obj: CMA GEM object
@@ -379,6 +469,9 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_mmap);
  */
 void drm_gem_cma_describe(struct drm_gem_cma_object *cma_obj,
 			  struct seq_file *m)
+=======
+void drm_gem_cma_describe(struct drm_gem_cma_object *cma_obj, struct seq_file *m)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_gem_object *obj = &cma_obj->base;
 	struct drm_device *dev = obj->dev;
@@ -397,6 +490,7 @@ void drm_gem_cma_describe(struct drm_gem_cma_object *cma_obj,
 EXPORT_SYMBOL_GPL(drm_gem_cma_describe);
 #endif
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_prime_get_sg_table - provide a scatter/gather table of pinned
  *     pages for a CMA GEM object
@@ -409,6 +503,9 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_describe);
  * Returns:
  * A pointer to the scatter/gather table of pinned pages or NULL on failure.
  */
+=======
+/* low-level interface prime helpers */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct sg_table *drm_gem_cma_prime_get_sg_table(struct drm_gem_object *obj)
 {
 	struct drm_gem_cma_object *cma_obj = to_drm_gem_cma_obj(obj);
@@ -432,6 +529,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_prime_get_sg_table);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_prime_import_sg_table - produce a CMA GEM object from another
  *     driver's scatter/gather table of pinned pages
@@ -449,6 +547,8 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_prime_get_sg_table);
  * A pointer to a newly created GEM object or an ERR_PTR-encoded negative
  * error code on failure.
  */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct drm_gem_object *
 drm_gem_cma_prime_import_sg_table(struct drm_device *dev,
 				  struct dma_buf_attachment *attach,
@@ -473,6 +573,7 @@ drm_gem_cma_prime_import_sg_table(struct drm_device *dev,
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_prime_import_sg_table);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_prime_mmap - memory-map an exported CMA GEM object
  * @obj: GEM object
@@ -485,6 +586,8 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_prime_import_sg_table);
  * Returns:
  * 0 on success or a negative error code on failure.
  */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int drm_gem_cma_prime_mmap(struct drm_gem_object *obj,
 			   struct vm_area_struct *vma)
 {
@@ -503,6 +606,7 @@ int drm_gem_cma_prime_mmap(struct drm_gem_object *obj,
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_prime_mmap);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_prime_vmap - map a CMA GEM object into the kernel's virtual
  *     address space
@@ -517,6 +621,8 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_prime_mmap);
  * Returns:
  * The kernel virtual address of the CMA GEM object's backing store.
  */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void *drm_gem_cma_prime_vmap(struct drm_gem_object *obj)
 {
 	struct drm_gem_cma_object *cma_obj = to_drm_gem_cma_obj(obj);
@@ -525,6 +631,7 @@ void *drm_gem_cma_prime_vmap(struct drm_gem_object *obj)
 }
 EXPORT_SYMBOL_GPL(drm_gem_cma_prime_vmap);
 
+<<<<<<< HEAD
 /**
  * drm_gem_cma_prime_vunmap - unmap a CMA GEM object from the kernel's virtual
  *     address space
@@ -536,6 +643,8 @@ EXPORT_SYMBOL_GPL(drm_gem_cma_prime_vmap);
  * unmapped from kernel space. Drivers using the CMA helpers should set this
  * as their DRM driver's ->gem_prime_vunmap() callback.
  */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void drm_gem_cma_prime_vunmap(struct drm_gem_object *obj, void *vaddr)
 {
 	/* Nothing to do */

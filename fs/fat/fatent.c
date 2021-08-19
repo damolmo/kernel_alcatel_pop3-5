@@ -26,7 +26,11 @@ static void fat12_ent_blocknr(struct super_block *sb, int entry,
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int bytes = entry + (entry >> 1);
+<<<<<<< HEAD
 	WARN_ON(entry < FAT_START_ENT || sbi->max_cluster <= entry);
+=======
+	WARN_ON(!fat_valid_entry(sbi, entry));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*offset = bytes & (sb->s_blocksize - 1);
 	*blocknr = sbi->fat_start + (bytes >> sb->s_blocksize_bits);
 }
@@ -36,7 +40,11 @@ static void fat_ent_blocknr(struct super_block *sb, int entry,
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int bytes = (entry << sbi->fatent_shift);
+<<<<<<< HEAD
 	WARN_ON(entry < FAT_START_ENT || sbi->max_cluster <= entry);
+=======
+	WARN_ON(!fat_valid_entry(sbi, entry));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*offset = bytes & (sb->s_blocksize - 1);
 	*blocknr = sbi->fat_start + (bytes >> sb->s_blocksize_bits);
 }
@@ -356,7 +364,11 @@ int fat_ent_read(struct inode *inode, struct fat_entry *fatent, int entry)
 	int err, offset;
 	sector_t blocknr;
 
+<<<<<<< HEAD
 	if (entry < FAT_START_ENT || sbi->max_cluster <= entry) {
+=======
+	if (!fat_valid_entry(sbi, entry)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fatent_brelse(fatent);
 		fat_fs_error(sb, "invalid access to FAT (entry 0x%08x)", entry);
 		return -EIO;
@@ -392,8 +404,16 @@ static int fat_mirror_bhs(struct super_block *sb, struct buffer_head **bhs,
 				err = -ENOMEM;
 				goto error;
 			}
+<<<<<<< HEAD
 			memcpy(c_bh->b_data, bhs[n]->b_data, sb->s_blocksize);
 			set_buffer_uptodate(c_bh);
+=======
+			/* Avoid race with userspace read via bdev */
+			lock_buffer(c_bh);
+			memcpy(c_bh->b_data, bhs[n]->b_data, sb->s_blocksize);
+			set_buffer_uptodate(c_bh);
+			unlock_buffer(c_bh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mark_buffer_dirty_inode(c_bh, sbi->fat_inode);
 			if (sb->s_flags & MS_SYNCHRONOUS)
 				err = sync_dirty_buffer(c_bh);
@@ -684,6 +704,10 @@ int fat_count_free_clusters(struct super_block *sb)
 			if (ops->ent_get(&fatent) == FAT_ENT_FREE)
 				free++;
 		} while (fat_ent_next(sbi, &fatent));
+<<<<<<< HEAD
+=======
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	sbi->free_clusters = free;
 	sbi->free_clus_valid = 1;

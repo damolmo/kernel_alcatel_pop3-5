@@ -62,12 +62,19 @@ static phys_addr_t keystone_virt_to_idmap(unsigned long x)
 	return (phys_addr_t)(x) - CONFIG_PAGE_OFFSET + KEYSTONE_LOW_PHYS_START;
 }
 
+<<<<<<< HEAD
 static void __init keystone_init_meminfo(void)
 {
 	bool lpae = IS_ENABLED(CONFIG_ARM_LPAE);
 	bool pvpatch = IS_ENABLED(CONFIG_ARM_PATCH_PHYS_VIRT);
 	phys_addr_t offset = PHYS_OFFSET - KEYSTONE_LOW_PHYS_START;
 	phys_addr_t mem_start, mem_end;
+=======
+static long long __init keystone_init_meminfo(void)
+{
+	long long offset;
+	u64 mem_start, mem_end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mem_start = memblock_start_of_DRAM();
 	mem_end = memblock_end_of_DRAM();
@@ -75,6 +82,7 @@ static void __init keystone_init_meminfo(void)
 	/* nothing to do if we are running out of the <32-bit space */
 	if (mem_start >= KEYSTONE_LOW_PHYS_START &&
 	    mem_end   <= KEYSTONE_LOW_PHYS_END)
+<<<<<<< HEAD
 		return;
 
 	if (!lpae || !pvpatch) {
@@ -83,16 +91,27 @@ static void __init keystone_init_meminfo(void)
 		      (!lpae && !pvpatch) ? " and " : "",
 		      !pvpatch ? __stringify(CONFIG_ARM_PATCH_PHYS_VIRT) : "");
 	}
+=======
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (mem_start < KEYSTONE_HIGH_PHYS_START ||
 	    mem_end   > KEYSTONE_HIGH_PHYS_END) {
 		pr_crit("Invalid address space for memory (%08llx-%08llx)\n",
+<<<<<<< HEAD
 		      (u64)mem_start, (u64)mem_end);
 	}
 
 	offset += KEYSTONE_HIGH_PHYS_START;
 	__pv_phys_pfn_offset = PFN_DOWN(offset);
 	__pv_offset = (offset - PAGE_OFFSET);
+=======
+		        mem_start, mem_end);
+		return 0;
+	}
+
+	offset = KEYSTONE_HIGH_PHYS_START - KEYSTONE_LOW_PHYS_START;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Populate the arch idmap hook */
 	arch_virt_to_idmap = keystone_virt_to_idmap;
@@ -100,7 +119,14 @@ static void __init keystone_init_meminfo(void)
 	keystone_dma_pfn_offset = PFN_DOWN(KEYSTONE_HIGH_PHYS_START -
 						KEYSTONE_LOW_PHYS_START);
 
+<<<<<<< HEAD
 	pr_info("Switching to high address space at 0x%llx\n", (u64)offset);
+=======
+	pr_info("Switching to high address space at 0x%llx\n",
+	        (u64)PHYS_OFFSET + (u64)offset);
+
+	return offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const char *keystone_match[] __initconst = {

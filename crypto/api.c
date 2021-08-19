@@ -24,6 +24,10 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/completion.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "internal.h"
 
 LIST_HEAD(crypto_alg_list);
@@ -172,7 +176,11 @@ static struct crypto_alg *crypto_larval_wait(struct crypto_alg *alg)
 	struct crypto_larval *larval = (void *)alg;
 	long timeout;
 
+<<<<<<< HEAD
 	timeout = wait_for_completion_interruptible_timeout(
+=======
+	timeout = wait_for_completion_killable_timeout(
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		&larval->completion, 60 * HZ);
 
 	alg = larval->adult;
@@ -345,13 +353,20 @@ static unsigned int crypto_ctxsize(struct crypto_alg *alg, u32 type, u32 mask)
 	return len;
 }
 
+<<<<<<< HEAD
 void crypto_shoot_alg(struct crypto_alg *alg)
+=======
+static void crypto_shoot_alg(struct crypto_alg *alg)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	down_write(&crypto_alg_sem);
 	alg->cra_flags |= CRYPTO_ALG_DYING;
 	up_write(&crypto_alg_sem);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(crypto_shoot_alg);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct crypto_tfm *__crypto_alloc_tfm(struct crypto_alg *alg, u32 type,
 				      u32 mask)
@@ -435,7 +450,11 @@ struct crypto_tfm *crypto_alloc_base(const char *alg_name, u32 type, u32 mask)
 err:
 		if (err != -EAGAIN)
 			break;
+<<<<<<< HEAD
 		if (signal_pending(current)) {
+=======
+		if (fatal_signal_pending(current)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = -EINTR;
 			break;
 		}
@@ -552,7 +571,11 @@ void *crypto_alloc_tfm(const char *alg_name,
 err:
 		if (err != -EAGAIN)
 			break;
+<<<<<<< HEAD
 		if (signal_pending(current)) {
+=======
+		if (fatal_signal_pending(current)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = -EINTR;
 			break;
 		}
@@ -601,5 +624,20 @@ int crypto_has_alg(const char *name, u32 type, u32 mask)
 }
 EXPORT_SYMBOL_GPL(crypto_has_alg);
 
+<<<<<<< HEAD
+=======
+void crypto_req_done(struct crypto_async_request *req, int err)
+{
+	struct crypto_wait *wait = req->data;
+
+	if (err == -EINPROGRESS)
+		return;
+
+	wait->err = err;
+	complete(&wait->completion);
+}
+EXPORT_SYMBOL_GPL(crypto_req_done);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_DESCRIPTION("Cryptographic core API");
 MODULE_LICENSE("GPL");

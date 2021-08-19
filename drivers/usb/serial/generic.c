@@ -350,23 +350,40 @@ void usb_serial_generic_read_bulk_callback(struct urb *urb)
 	struct usb_serial_port *port = urb->context;
 	unsigned char *data = urb->transfer_buffer;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	bool stopped = false;
+	int status = urb->status;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(port->read_urbs); ++i) {
 		if (urb == port->read_urbs[i])
 			break;
 	}
+<<<<<<< HEAD
 	set_bit(i, &port->read_urbs_free);
 
 	dev_dbg(&port->dev, "%s - urb %d, len %d\n", __func__, i,
 							urb->actual_length);
 	switch (urb->status) {
 	case 0:
+=======
+
+	dev_dbg(&port->dev, "%s - urb %d, len %d\n", __func__, i,
+							urb->actual_length);
+	switch (status) {
+	case 0:
+		usb_serial_debug_data(&port->dev, __func__, urb->actual_length,
+							data);
+		port->serial->type->process_read_urb(urb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case -ENOENT:
 	case -ECONNRESET:
 	case -ESHUTDOWN:
 		dev_dbg(&port->dev, "%s - urb stopped: %d\n",
+<<<<<<< HEAD
 							__func__, urb->status);
 		return;
 	case -EPIPE:
@@ -383,6 +400,40 @@ void usb_serial_generic_read_bulk_callback(struct urb *urb)
 	port->serial->type->process_read_urb(urb);
 
 resubmit:
+=======
+							__func__, status);
+		stopped = true;
+		break;
+	case -EPIPE:
+		dev_err(&port->dev, "%s - urb stopped: %d\n",
+							__func__, status);
+		stopped = true;
+		break;
+	default:
+		dev_dbg(&port->dev, "%s - nonzero urb status: %d\n",
+							__func__, status);
+		break;
+	}
+
+	/*
+	 * Make sure URB processing is done before marking as free to avoid
+	 * racing with unthrottle() on another CPU. Matches the barriers
+	 * implied by the test_and_clear_bit() in
+	 * usb_serial_generic_submit_read_urb().
+	 */
+	smp_mb__before_atomic();
+	set_bit(i, &port->read_urbs_free);
+	/*
+	 * Make sure URB is marked as free before checking the throttled flag
+	 * to avoid racing with unthrottle() on another CPU. Matches the
+	 * smp_mb() in unthrottle().
+	 */
+	smp_mb__after_atomic();
+
+	if (stopped)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Throttle the device if requested by tty */
 	spin_lock_irqsave(&port->lock, flags);
 	port->throttled = port->throttle_req;
@@ -399,6 +450,10 @@ void usb_serial_generic_write_bulk_callback(struct urb *urb)
 {
 	unsigned long flags;
 	struct usb_serial_port *port = urb->context;
+<<<<<<< HEAD
+=======
+	int status = urb->status;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(port->write_urbs); ++i) {
@@ -410,13 +465,18 @@ void usb_serial_generic_write_bulk_callback(struct urb *urb)
 	set_bit(i, &port->write_urbs_free);
 	spin_unlock_irqrestore(&port->lock, flags);
 
+<<<<<<< HEAD
 	switch (urb->status) {
+=======
+	switch (status) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 0:
 		break;
 	case -ENOENT:
 	case -ECONNRESET:
 	case -ESHUTDOWN:
 		dev_dbg(&port->dev, "%s - urb stopped: %d\n",
+<<<<<<< HEAD
 							__func__, urb->status);
 		return;
 	case -EPIPE:
@@ -426,6 +486,17 @@ void usb_serial_generic_write_bulk_callback(struct urb *urb)
 	default:
 		dev_err_console(port, "%s - nonzero urb status: %d\n",
 							__func__, urb->status);
+=======
+							__func__, status);
+		return;
+	case -EPIPE:
+		dev_err_console(port, "%s - urb stopped: %d\n",
+							__func__, status);
+		return;
+	default:
+		dev_err_console(port, "%s - nonzero urb status: %d\n",
+							__func__, status);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto resubmit;
 	}
 
@@ -456,6 +527,15 @@ void usb_serial_generic_unthrottle(struct tty_struct *tty)
 	port->throttled = port->throttle_req = 0;
 	spin_unlock_irq(&port->lock);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Matches the smp_mb__after_atomic() in
+	 * usb_serial_generic_read_bulk_callback().
+	 */
+	smp_mb();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (was_throttled)
 		usb_serial_generic_submit_read_urbs(port, GFP_KERNEL);
 }

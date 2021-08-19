@@ -116,7 +116,11 @@ generic_file_llseek_size(struct file *file, loff_t offset, int whence,
 		 * In the generic case the entire file is data, so as long as
 		 * offset isn't at the end of the file then the offset is data.
 		 */
+<<<<<<< HEAD
 		if (offset >= eof)
+=======
+		if ((unsigned long long)offset >= eof)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -ENXIO;
 		break;
 	case SEEK_HOLE:
@@ -124,7 +128,11 @@ generic_file_llseek_size(struct file *file, loff_t offset, int whence,
 		 * There is a virtual hole at the end of the file, so as long as
 		 * offset isn't i_size or larger, return i_size.
 		 */
+<<<<<<< HEAD
 		if (offset >= eof)
+=======
+		if ((unsigned long long)offset >= eof)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -ENXIO;
 		offset = eof;
 		break;
@@ -551,12 +559,21 @@ EXPORT_SYMBOL(vfs_write);
 
 static inline loff_t file_pos_read(struct file *file)
 {
+<<<<<<< HEAD
 	return file->f_pos;
+=======
+	return file->f_mode & FMODE_STREAM ? 0 : file->f_pos;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void file_pos_write(struct file *file, loff_t pos)
 {
+<<<<<<< HEAD
 	file->f_pos = pos;
+=======
+	if ((file->f_mode & FMODE_STREAM) == 0)
+		file->f_pos = pos;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)

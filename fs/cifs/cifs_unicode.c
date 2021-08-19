@@ -118,6 +118,12 @@ convert_sfm_char(const __u16 src_char, char *target)
 	case SFM_COLON:
 		*target = ':';
 		break;
+<<<<<<< HEAD
+=======
+	case SFM_DOUBLEQUOTE:
+		*target = '"';
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case SFM_ASTERISK:
 		*target = '*';
 		break;
@@ -133,8 +139,16 @@ convert_sfm_char(const __u16 src_char, char *target)
 	case SFM_LESSTHAN:
 		*target = '<';
 		break;
+<<<<<<< HEAD
 	case SFM_SLASH:
 		*target = '\\';
+=======
+	case SFM_SPACE:
+		*target = ' ';
+		break;
+	case SFM_PERIOD:
+		*target = '.';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		return false;
@@ -364,7 +378,11 @@ static __le16 convert_to_sfu_char(char src_char)
 	return dest_char;
 }
 
+<<<<<<< HEAD
 static __le16 convert_to_sfm_char(char src_char)
+=======
+static __le16 convert_to_sfm_char(char src_char, bool end_of_string)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	__le16 dest_char;
 
@@ -372,6 +390,12 @@ static __le16 convert_to_sfm_char(char src_char)
 	case ':':
 		dest_char = cpu_to_le16(SFM_COLON);
 		break;
+<<<<<<< HEAD
+=======
+	case '"':
+		dest_char = cpu_to_le16(SFM_DOUBLEQUOTE);
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case '*':
 		dest_char = cpu_to_le16(SFM_ASTERISK);
 		break;
@@ -387,6 +411,21 @@ static __le16 convert_to_sfm_char(char src_char)
 	case '|':
 		dest_char = cpu_to_le16(SFM_PIPE);
 		break;
+<<<<<<< HEAD
+=======
+	case '.':
+		if (end_of_string)
+			dest_char = cpu_to_le16(SFM_PERIOD);
+		else
+			dest_char = 0;
+		break;
+	case ' ':
+		if (end_of_string)
+			dest_char = cpu_to_le16(SFM_SPACE);
+		else
+			dest_char = 0;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		dest_char = 0;
 	}
@@ -424,9 +463,28 @@ cifsConvertToUTF16(__le16 *target, const char *source, int srclen,
 		/* see if we must remap this char */
 		if (map_chars == SFU_MAP_UNI_RSVD)
 			dst_char = convert_to_sfu_char(src_char);
+<<<<<<< HEAD
 		else if (map_chars == SFM_MAP_UNI_RSVD)
 			dst_char = convert_to_sfm_char(src_char);
 		else
+=======
+		else if (map_chars == SFM_MAP_UNI_RSVD) {
+			bool end_of_string;
+
+			/**
+			 * Remap spaces and periods found at the end of every
+			 * component of the path. The special cases of '.' and
+			 * '..' do not need to be dealt with explicitly because
+			 * they are addressed in namei.c:link_path_walk().
+			 **/
+			if ((i == srclen - 1) || (source[i+1] == '\\'))
+				end_of_string = true;
+			else
+				end_of_string = false;
+
+			dst_char = convert_to_sfm_char(src_char, end_of_string);
+		} else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dst_char = 0;
 		/*
 		 * FIXME: We can not handle remapping backslash (UNI_SLASH)

@@ -206,6 +206,14 @@ static int ssm4567_set_power(struct ssm4567 *ssm4567, bool enable)
 	regcache_cache_only(ssm4567->regmap, !enable);
 
 	if (enable) {
+<<<<<<< HEAD
+=======
+		ret = regmap_write(ssm4567->regmap, SSM4567_REG_SOFT_RESET,
+			0x00);
+		if (ret)
+			return ret;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = regmap_update_bits(ssm4567->regmap,
 			SSM4567_REG_POWER_CTRL,
 			SSM4567_POWER_SPWDN, 0x00);

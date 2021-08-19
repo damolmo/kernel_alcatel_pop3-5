@@ -227,7 +227,11 @@ static inline char *translate_scan(struct _adapter *padapter,
 	iwe.cmd = SIOCGIWMODE;
 	memcpy((u8 *)&cap, r8712_get_capability_from_ie(pnetwork->network.IEs),
 		2);
+<<<<<<< HEAD
 	cap = le16_to_cpu(cap);
+=======
+	le16_to_cpus(&cap);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (cap & (WLAN_CAPABILITY_IBSS|WLAN_CAPABILITY_BSS)) {
 		if (cap & WLAN_CAPABILITY_BSS)
 			iwe.u.mode = (u32)IW_MODE_MASTER;
@@ -961,7 +965,11 @@ static int r871x_wx_set_priv(struct net_device *dev,
 	struct iw_point *dwrq = (struct iw_point *)awrq;
 
 	len = dwrq->length;
+<<<<<<< HEAD
 	ext = memdup_user(dwrq->pointer, len);
+=======
+	ext = strndup_user(dwrq->pointer, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(ext))
 		return PTR_ERR(ext);
 

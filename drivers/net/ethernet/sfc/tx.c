@@ -431,8 +431,25 @@ finish_packet:
 	efx_tx_maybe_stop_queue(tx_queue);
 
 	/* Pass off to hardware */
+<<<<<<< HEAD
 	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq))
 		efx_nic_push_buffers(tx_queue);
+=======
+	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq)) {
+		struct efx_tx_queue *txq2 = efx_tx_queue_partner(tx_queue);
+
+		/* There could be packets left on the partner queue if those
+		 * SKBs had skb->xmit_more set. If we do not push those they
+		 * could be left for a long time and cause a netdev watchdog.
+		 */
+		if (txq2->xmit_more_available)
+			efx_nic_push_buffers(txq2);
+
+		efx_nic_push_buffers(tx_queue);
+	} else {
+		tx_queue->xmit_more_available = skb->xmit_more;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tx_queue->tx_packets++;
 
@@ -721,6 +738,10 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
 	tx_queue->read_count = 0;
 	tx_queue->old_read_count = 0;
 	tx_queue->empty_read_count = 0 | EFX_EMPTY_COUNT_VALID;
+<<<<<<< HEAD
+=======
+	tx_queue->xmit_more_available = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Set up TX descriptor ring */
 	efx_nic_init_tx(tx_queue);
@@ -746,6 +767,10 @@ void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
 
 		++tx_queue->read_count;
 	}
+<<<<<<< HEAD
+=======
+	tx_queue->xmit_more_available = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netdev_tx_reset_queue(tx_queue->core_txq);
 }
 
@@ -1301,8 +1326,25 @@ static int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
 	efx_tx_maybe_stop_queue(tx_queue);
 
 	/* Pass off to hardware */
+<<<<<<< HEAD
 	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq))
 		efx_nic_push_buffers(tx_queue);
+=======
+	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq)) {
+		struct efx_tx_queue *txq2 = efx_tx_queue_partner(tx_queue);
+
+		/* There could be packets left on the partner queue if those
+		 * SKBs had skb->xmit_more set. If we do not push those they
+		 * could be left for a long time and cause a netdev watchdog.
+		 */
+		if (txq2->xmit_more_available)
+			efx_nic_push_buffers(txq2);
+
+		efx_nic_push_buffers(tx_queue);
+	} else {
+		tx_queue->xmit_more_available = skb->xmit_more;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tx_queue->tso_bursts++;
 	return NETDEV_TX_OK;

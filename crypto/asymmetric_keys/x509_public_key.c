@@ -307,10 +307,13 @@ static int x509_key_preparse(struct key_preparsed_payload *prep)
 		srlen = cert->raw_serial_size;
 		q = cert->raw_serial;
 	}
+<<<<<<< HEAD
 	if (srlen > 1 && *q == 0) {
 		srlen--;
 		q++;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = -ENOMEM;
 	desc = kmalloc(sulen + 2 + srlen * 2 + 1, GFP_KERNEL);

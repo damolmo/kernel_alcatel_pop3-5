@@ -1506,6 +1506,7 @@ static int ptlrpc_server_hpreq_init(struct ptlrpc_service_part *svcpt,
 		 * it may hit swab race at LU-1044. */
 		if (req->rq_ops->hpreq_check) {
 			rc = req->rq_ops->hpreq_check(req);
+<<<<<<< HEAD
 			/**
 			 * XXX: Out of all current
 			 * ptlrpc_hpreq_ops::hpreq_check(), only
@@ -1520,6 +1521,17 @@ static int ptlrpc_server_hpreq_init(struct ptlrpc_service_part *svcpt,
 			if (rc < 0)
 				return rc;
 			LASSERT(rc == 0 || rc == 1);
+=======
+			if (rc == -ESTALE) {
+				req->rq_status = rc;
+				ptlrpc_error(req);
+			}
+			/** can only return error,
+			 * 0 for normal request,
+			 *  or 1 for high priority request
+			 */
+			LASSERT(rc <= 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		spin_lock_bh(&req->rq_export->exp_rpc_lock);

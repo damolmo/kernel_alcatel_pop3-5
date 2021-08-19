@@ -300,6 +300,10 @@ static int mcp4725_probe(struct i2c_client *client,
 	data->client = client;
 
 	indio_dev->dev.parent = &client->dev;
+<<<<<<< HEAD
+=======
+	indio_dev->name = id->name;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	indio_dev->info = &mcp4725_info;
 	indio_dev->channels = &mcp4725_channel;
 	indio_dev->num_channels = 1;

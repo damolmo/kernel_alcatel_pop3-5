@@ -370,6 +370,13 @@ static int lvs_rh_probe(struct usb_interface *intf,
 
 	hdev = interface_to_usbdev(intf);
 	desc = intf->cur_altsetting;
+<<<<<<< HEAD
+=======
+
+	if (desc->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	endpoint = &desc->endpoint[0].desc;
 
 	/* valid only for SS root hub */
@@ -392,7 +399,11 @@ static int lvs_rh_probe(struct usb_interface *intf,
 			USB_DT_SS_HUB_SIZE, USB_CTRL_GET_TIMEOUT);
 	if (ret < (USB_DT_HUB_NONVAR_SIZE + 2)) {
 		dev_err(&hdev->dev, "wrong root hub descriptor read %d\n", ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		return ret < 0 ? ret : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* submit urb to poll interrupt endpoint */

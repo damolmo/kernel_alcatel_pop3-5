@@ -7,13 +7,20 @@
 */
 
 #include "fuse_i.h"
+<<<<<<< HEAD
 #include "mt_fuse.h"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/poll.h>
 #include <linux/uio.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/namei.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/pagemap.h>
 #include <linux/file.h>
 #include <linux/slab.h>
@@ -378,12 +385,28 @@ __releases(fc->lock)
 	if (req->background) {
 		req->background = 0;
 
+<<<<<<< HEAD
 		if (fc->num_background == fc->max_background)
 			fc->blocked = 0;
 
 		/* Wake up next waiter, if any */
 		if (!fc->blocked && waitqueue_active(&fc->blocked_waitq))
 			wake_up(&fc->blocked_waitq);
+=======
+		if (fc->num_background == fc->max_background) {
+			fc->blocked = 0;
+			wake_up(&fc->blocked_waitq);
+		} else if (!fc->blocked) {
+			/*
+			 * Wake up next waiter, if any.  It's okay to use
+			 * waitqueue_active(), as we've already synced up
+			 * fc->blocked with waiters with the wake_up() call
+			 * above.
+			 */
+			if (waitqueue_active(&fc->blocked_waitq))
+				wake_up(&fc->blocked_waitq);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (fc->num_background == fc->congestion_threshold &&
 		    fc->connected && fc->bdi_initialized) {
@@ -509,6 +532,7 @@ static void __fuse_request_send(struct fuse_conn *fc, struct fuse_req *req)
 	spin_unlock(&fc->lock);
 }
 
+<<<<<<< HEAD
 void fuse_request_send_ex(struct fuse_conn *fc, struct fuse_req *req,
 	__u32 size)
 {
@@ -524,6 +548,12 @@ EXPORT_SYMBOL_GPL(fuse_request_send_ex);
 void fuse_request_send(struct fuse_conn *fc, struct fuse_req *req)
 {
 	fuse_request_send_ex(fc, req, 0);
+=======
+void fuse_request_send(struct fuse_conn *fc, struct fuse_req *req)
+{
+	req->isreply = 1;
+	__fuse_request_send(fc, req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(fuse_request_send);
 
@@ -555,6 +585,7 @@ static void fuse_request_send_nowait(struct fuse_conn *fc, struct fuse_req *req)
 	}
 }
 
+<<<<<<< HEAD
 void fuse_request_send_background_ex(struct fuse_conn *fc, struct fuse_req *req,
 	__u32 size)
 {
@@ -570,6 +601,12 @@ EXPORT_SYMBOL_GPL(fuse_request_send_background_ex);
 void fuse_request_send_background(struct fuse_conn *fc, struct fuse_req *req)
 {
 	fuse_request_send_background_ex(fc, req, 0);
+=======
+void fuse_request_send_background(struct fuse_conn *fc, struct fuse_req *req)
+{
+	req->isreply = 1;
+	fuse_request_send_nowait(fc, req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(fuse_request_send_background);
 
@@ -798,7 +835,10 @@ static int fuse_check_page(struct page *page)
 {
 	if (page_mapcount(page) ||
 	    page->mapping != NULL ||
+<<<<<<< HEAD
 	    page_count(page) != 1 ||
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (page->flags & PAGE_FLAGS_CHECK_AT_PREP &
 	     ~(1 << PG_locked |
 	       1 << PG_referenced |
@@ -1655,7 +1695,11 @@ static int fuse_retrieve(struct fuse_conn *fc, struct inode *inode,
 	offset = outarg->offset & ~PAGE_CACHE_MASK;
 	file_size = i_size_read(inode);
 
+<<<<<<< HEAD
 	num = outarg->size;
+=======
+	num = min(outarg->size, fc->max_write);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (outarg->offset > file_size)
 		num = 0;
 	else if (outarg->offset + num > file_size)
@@ -1672,7 +1716,10 @@ static int fuse_retrieve(struct fuse_conn *fc, struct inode *inode,
 	req->in.h.nodeid = outarg->nodeid;
 	req->in.numargs = 2;
 	req->in.argpages = 1;
+<<<<<<< HEAD
 	req->page_descs[0].offset = offset;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	req->end = fuse_retrieve_end;
 
 	index = outarg->offset >> PAGE_CACHE_SHIFT;
@@ -1687,6 +1734,10 @@ static int fuse_retrieve(struct fuse_conn *fc, struct inode *inode,
 
 		this_num = min_t(unsigned, num, PAGE_CACHE_SIZE - offset);
 		req->pages[req->num_pages] = page;
+<<<<<<< HEAD
+=======
+		req->page_descs[req->num_pages].offset = offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		req->page_descs[req->num_pages].length = this_num;
 		req->num_pages++;
 
@@ -1702,8 +1753,15 @@ static int fuse_retrieve(struct fuse_conn *fc, struct inode *inode,
 	req->in.args[1].size = total_len;
 
 	err = fuse_request_send_notify_reply(fc, req, outarg->notify_unique);
+<<<<<<< HEAD
 	if (err)
 		fuse_retrieve_end(fc, req);
+=======
+	if (err) {
+		fuse_retrieve_end(fc, req);
+		fuse_put_request(fc, req);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return err;
 }
@@ -1867,14 +1925,27 @@ static ssize_t fuse_dev_do_write(struct fuse_conn *fc,
 	}
 	/* Is it an interrupt reply? */
 	if (req->intr_unique == oh.unique) {
+<<<<<<< HEAD
 		err = -EINVAL;
 		if (nbytes != sizeof(struct fuse_out_header))
 			goto err_unlock;
+=======
+		__fuse_get_request(req);
+		err = -EINVAL;
+		if (nbytes != sizeof(struct fuse_out_header)) {
+			fuse_put_request(fc, req);
+			goto err_unlock;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (oh.error == -ENOSYS)
 			fc->no_interrupt = 1;
 		else if (oh.error == -EAGAIN)
 			queue_interrupt(fc, req);
+<<<<<<< HEAD
+=======
+		fuse_put_request(fc, req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		spin_unlock(&fc->lock);
 		fuse_copy_finish(cs);
@@ -1891,6 +1962,15 @@ static ssize_t fuse_dev_do_write(struct fuse_conn *fc,
 	spin_unlock(&fc->lock);
 
 	err = copy_out_args(cs, &req->out, nbytes);
+<<<<<<< HEAD
+=======
+	if (req->in.h.opcode == FUSE_CANONICAL_PATH) {
+		char *path = (char *)req->out.args[0].value;
+
+		path[req->out.args[0].size - 1] = 0;
+		req->out.h.error = kern_path(path, 0, req->canonical_path);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fuse_copy_finish(cs);
 
 	spin_lock(&fc->lock);
@@ -1940,21 +2020,37 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
 	if (!fc)
 		return -EPERM;
 
+<<<<<<< HEAD
 	bufs = kmalloc(pipe->buffers * sizeof(struct pipe_buffer), GFP_KERNEL);
 	if (!bufs)
 		return -ENOMEM;
 
 	pipe_lock(pipe);
+=======
+	pipe_lock(pipe);
+
+	bufs = kmalloc(pipe->buffers * sizeof(struct pipe_buffer), GFP_KERNEL);
+	if (!bufs) {
+		pipe_unlock(pipe);
+		return -ENOMEM;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nbuf = 0;
 	rem = 0;
 	for (idx = 0; idx < pipe->nrbufs && rem < len; idx++)
 		rem += pipe->bufs[(pipe->curbuf + idx) & (pipe->buffers - 1)].len;
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	if (rem < len) {
 		pipe_unlock(pipe);
 		goto out;
 	}
+=======
+	if (rem < len)
+		goto out_free;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rem = len;
 	while (rem) {
@@ -1972,7 +2068,13 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
 			pipe->curbuf = (pipe->curbuf + 1) & (pipe->buffers - 1);
 			pipe->nrbufs--;
 		} else {
+<<<<<<< HEAD
 			ibuf->ops->get(pipe, ibuf);
+=======
+			if (!pipe_buf_get(pipe, ibuf))
+				goto out_free;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*obuf = *ibuf;
 			obuf->flags &= ~PIPE_BUF_FLAG_GIFT;
 			obuf->len = rem;
@@ -1993,11 +2095,21 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
 
 	ret = fuse_dev_do_write(fc, &cs, len);
 
+<<<<<<< HEAD
+=======
+	pipe_lock(pipe);
+out_free:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (idx = 0; idx < nbuf; idx++) {
 		struct pipe_buffer *buf = &bufs[idx];
 		buf->ops->release(pipe, buf);
 	}
+<<<<<<< HEAD
 out:
+=======
+	pipe_unlock(pipe);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(bufs);
 	return ret;
 }

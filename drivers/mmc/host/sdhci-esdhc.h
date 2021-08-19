@@ -45,6 +45,10 @@
 #define ESDHC_DMA_SYSCTL	0x40c
 #define ESDHC_DMA_SNOOP		0x00000040
 
+<<<<<<< HEAD
 #define ESDHC_HOST_CONTROL_RES	0x05
+=======
+#define ESDHC_HOST_CONTROL_RES	0x01
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* _DRIVERS_MMC_SDHCI_ESDHC_H */

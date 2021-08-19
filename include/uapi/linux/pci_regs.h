@@ -319,6 +319,10 @@
 #define PCI_MSIX_PBA		8	/* Pending Bit Array offset */
 #define  PCI_MSIX_PBA_BIR	0x00000007 /* BAR index */
 #define  PCI_MSIX_PBA_OFFSET	0xfffffff8 /* Offset into specified BAR */
+<<<<<<< HEAD
+=======
+#define PCI_MSIX_FLAGS_BIRMASK	PCI_MSIX_PBA_BIR /* deprecated */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define PCI_CAP_MSIX_SIZEOF	12	/* size of MSIX registers */
 
 /* MSI-X Table entry format */

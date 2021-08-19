@@ -258,7 +258,11 @@ enum nfsstat4 {
 
 static inline bool seqid_mutating_err(u32 err)
 {
+<<<<<<< HEAD
 	/* rfc 3530 section 8.1.5: */
+=======
+	/* See RFC 7530, section 9.1.7 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (err) {
 	case NFS4ERR_STALE_CLIENTID:
 	case NFS4ERR_STALE_STATEID:
@@ -267,6 +271,10 @@ static inline bool seqid_mutating_err(u32 err)
 	case NFS4ERR_BADXDR:
 	case NFS4ERR_RESOURCE:
 	case NFS4ERR_NOFILEHANDLE:
+<<<<<<< HEAD
+=======
+	case NFS4ERR_MOVED:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return false;
 	};
 	return true;

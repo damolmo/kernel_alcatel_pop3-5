@@ -209,7 +209,11 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
 	struct sk_buff *trailer;
 	unsigned int len;
 	u16 check;
+<<<<<<< HEAD
 	int nsg;
+=======
+	int nsg, err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sp = rxrpc_skb(skb);
 
@@ -240,7 +244,13 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
 	len &= ~(call->conn->size_align - 1);
 
 	sg_init_table(sg, nsg);
+<<<<<<< HEAD
 	skb_to_sgvec(skb, sg, 0, len);
+=======
+	err = skb_to_sgvec(skb, sg, 0, len);
+	if (unlikely(err < 0))
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	crypto_blkcipher_encrypt_iv(&desc, sg, sg, len);
 
 	_leave(" = 0");
@@ -336,7 +346,11 @@ static int rxkad_verify_packet_auth(const struct rxrpc_call *call,
 	struct sk_buff *trailer;
 	u32 data_size, buf;
 	u16 check;
+<<<<<<< HEAD
 	int nsg;
+=======
+	int nsg, ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	_enter("");
 
@@ -348,7 +362,13 @@ static int rxkad_verify_packet_auth(const struct rxrpc_call *call,
 		goto nomem;
 
 	sg_init_table(sg, nsg);
+<<<<<<< HEAD
 	skb_to_sgvec(skb, sg, 0, 8);
+=======
+	ret = skb_to_sgvec(skb, sg, 0, 8);
+	if (unlikely(ret < 0))
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* start the decryption afresh */
 	memset(&iv, 0, sizeof(iv));
@@ -411,7 +431,11 @@ static int rxkad_verify_packet_encrypt(const struct rxrpc_call *call,
 	struct sk_buff *trailer;
 	u32 data_size, buf;
 	u16 check;
+<<<<<<< HEAD
 	int nsg;
+=======
+	int nsg, ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	_enter(",{%d}", skb->len);
 
@@ -430,7 +454,16 @@ static int rxkad_verify_packet_encrypt(const struct rxrpc_call *call,
 	}
 
 	sg_init_table(sg, nsg);
+<<<<<<< HEAD
 	skb_to_sgvec(skb, sg, 0, skb->len);
+=======
+	ret = skb_to_sgvec(skb, sg, 0, skb->len);
+	if (unlikely(ret < 0)) {
+		if (sg != _sg)
+			kfree(sg);
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* decrypt from the session key */
 	token = call->conn->key->payload.data;

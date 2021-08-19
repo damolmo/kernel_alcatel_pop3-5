@@ -105,16 +105,32 @@ int __fsnotify_parent(struct path *path, struct dentry *dentry, __u32 mask)
 	if (unlikely(!fsnotify_inode_watches_children(p_inode)))
 		__fsnotify_update_child_dentry_flags(p_inode);
 	else if (p_inode->i_fsnotify_mask & mask) {
+<<<<<<< HEAD
+=======
+		struct name_snapshot name;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* we are notifying a parent so come up with the new mask which
 		 * specifies these are events which came from a child. */
 		mask |= FS_EVENT_ON_CHILD;
 
+<<<<<<< HEAD
 		if (path)
 			ret = fsnotify(p_inode, mask, path, FSNOTIFY_EVENT_PATH,
 				       dentry->d_name.name, 0);
 		else
 			ret = fsnotify(p_inode, mask, dentry->d_inode, FSNOTIFY_EVENT_INODE,
 				       dentry->d_name.name, 0);
+=======
+		take_dentry_name_snapshot(&name, dentry);
+		if (path)
+			ret = fsnotify(p_inode, mask, path, FSNOTIFY_EVENT_PATH,
+				       name.name, 0);
+		else
+			ret = fsnotify(p_inode, mask, dentry->d_inode, FSNOTIFY_EVENT_INODE,
+				       name.name, 0);
+		release_dentry_name_snapshot(&name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	dput(parent);
@@ -131,8 +147,14 @@ static int send_to_group(struct inode *to_tell,
 			 const unsigned char *file_name)
 {
 	struct fsnotify_group *group = NULL;
+<<<<<<< HEAD
 	__u32 inode_test_mask = 0;
 	__u32 vfsmount_test_mask = 0;
+=======
+	__u32 test_mask = (mask & ~FS_EVENT_ON_CHILD);
+	__u32 marks_mask = 0;
+	__u32 marks_ignored_mask = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(!inode_mark && !vfsmount_mark)) {
 		BUG();
@@ -152,13 +174,19 @@ static int send_to_group(struct inode *to_tell,
 	/* does the inode mark tell us to do something? */
 	if (inode_mark) {
 		group = inode_mark->group;
+<<<<<<< HEAD
 		inode_test_mask = (mask & ~FS_EVENT_ON_CHILD);
 		inode_test_mask &= inode_mark->mask;
 		inode_test_mask &= ~inode_mark->ignored_mask;
+=======
+		marks_mask |= inode_mark->mask;
+		marks_ignored_mask |= inode_mark->ignored_mask;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* does the vfsmount_mark tell us to do something? */
 	if (vfsmount_mark) {
+<<<<<<< HEAD
 		vfsmount_test_mask = (mask & ~FS_EVENT_ON_CHILD);
 		group = vfsmount_mark->group;
 		vfsmount_test_mask &= vfsmount_mark->mask;
@@ -175,6 +203,21 @@ static int send_to_group(struct inode *to_tell,
 		 data_is, cookie);
 
 	if (!inode_test_mask && !vfsmount_test_mask)
+=======
+		group = vfsmount_mark->group;
+		marks_mask |= vfsmount_mark->mask;
+		marks_ignored_mask |= vfsmount_mark->ignored_mask;
+	}
+
+	pr_debug("%s: group=%p to_tell=%p mask=%x inode_mark=%p"
+		 " vfsmount_mark=%p marks_mask=%x marks_ignored_mask=%x"
+		 " data=%p data_is=%d cookie=%d\n",
+		 __func__, group, to_tell, mask, inode_mark, vfsmount_mark,
+		 marks_mask, marks_ignored_mask, data,
+		 data_is, cookie);
+
+	if (!(test_mask & marks_mask & ~marks_ignored_mask))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	return group->ops->handle_event(group, to_tell, inode_mark,

@@ -379,11 +379,14 @@ static struct inet_frag_queue *inet_frag_alloc(struct netns_frags *nf,
 {
 	struct inet_frag_queue *q;
 
+<<<<<<< HEAD
 	if (frag_mem_limit(nf) > nf->high_thresh) {
 		inet_frag_schedule_worker(f);
 		return NULL;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	q = kmem_cache_zalloc(f->frags_cachep, GFP_ATOMIC);
 	if (q == NULL)
 		return NULL;
@@ -420,6 +423,14 @@ struct inet_frag_queue *inet_frag_find(struct netns_frags *nf,
 	struct inet_frag_queue *q;
 	int depth = 0;
 
+<<<<<<< HEAD
+=======
+	if (!nf->high_thresh || frag_mem_limit(nf) > nf->high_thresh) {
+		inet_frag_schedule_worker(f);
+		return NULL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (frag_mem_limit(nf) > nf->low_thresh)
 		inet_frag_schedule_worker(f);
 

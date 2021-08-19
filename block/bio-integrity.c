@@ -165,6 +165,12 @@ bool bio_integrity_enabled(struct bio *bio)
 	if (!bio_is_rw(bio))
 		return false;
 
+<<<<<<< HEAD
+=======
+	if (!bio_sectors(bio))
+		return false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Already protected? */
 	if (bio_integrity(bio))
 		return false;

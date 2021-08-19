@@ -1229,6 +1229,7 @@ static int __init mtd_bdi_init(struct backing_dev_info *bdi, const char *name)
 
 static struct proc_dir_entry *proc_mtd;
 
+<<<<<<< HEAD
 /* tonykuo 2013-11-05 */
 static const struct file_operations mtd_write_proc_fops = {
 	.owner = THIS_MODULE,
@@ -1240,6 +1241,8 @@ static const struct file_operations mtd_change_proc_fops = {
 	.write = mtd_change_proc_write,
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init init_mtd(void)
 {
 	int ret;
@@ -1262,6 +1265,7 @@ static int __init init_mtd(void)
 
 	proc_mtd = proc_create("mtd", 0, NULL, &mtd_proc_ops);
 
+<<<<<<< HEAD
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE	/* tonykuo 2013-11-05 */
 	entry = proc_create("driver/mtd_writeable", 0600, NULL, &mtd_write_proc_fops);
 	if (entry != NULL)
@@ -1272,6 +1276,8 @@ static int __init init_mtd(void)
 		pr_debug("mtd_change success\n");
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = init_mtdchar();
 	if (ret)
 		goto out_procfs;
@@ -1297,6 +1303,7 @@ static void __exit cleanup_mtd(void)
 	cleanup_mtdchar();
 	if (proc_mtd)
 		remove_proc_entry("mtd", NULL);
+<<<<<<< HEAD
 
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE	/* tonykuo 2013-11-05 */
 	if (entry) {
@@ -1304,6 +1311,8 @@ static void __exit cleanup_mtd(void)
 		remove_proc_entry("driver/mtd_change", NULL);
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	class_unregister(&mtd_class);
 	bdi_destroy(&mtd_bdi_unmappable);
 	bdi_destroy(&mtd_bdi_ro_mappable);

@@ -43,7 +43,12 @@ static struct genl_family l2tp_nl_family = {
 /* Accessed under genl lock */
 static const struct l2tp_nl_cmd_ops *l2tp_nl_cmd_ops[__L2TP_PWTYPE_MAX];
 
+<<<<<<< HEAD
 static struct l2tp_session *l2tp_nl_session_find(struct genl_info *info)
+=======
+static struct l2tp_session *l2tp_nl_session_get(struct genl_info *info,
+						bool do_ref)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u32 tunnel_id;
 	u32 session_id;
@@ -54,14 +59,27 @@ static struct l2tp_session *l2tp_nl_session_find(struct genl_info *info)
 
 	if (info->attrs[L2TP_ATTR_IFNAME]) {
 		ifname = nla_data(info->attrs[L2TP_ATTR_IFNAME]);
+<<<<<<< HEAD
 		session = l2tp_session_find_by_ifname(net, ifname);
+=======
+		session = l2tp_session_get_by_ifname(net, ifname, do_ref);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if ((info->attrs[L2TP_ATTR_SESSION_ID]) &&
 		   (info->attrs[L2TP_ATTR_CONN_ID])) {
 		tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
 		session_id = nla_get_u32(info->attrs[L2TP_ATTR_SESSION_ID]);
+<<<<<<< HEAD
 		tunnel = l2tp_tunnel_find(net, tunnel_id);
 		if (tunnel)
 			session = l2tp_session_find(net, tunnel, session_id);
+=======
+		tunnel = l2tp_tunnel_get(net, tunnel_id);
+		if (tunnel) {
+			session = l2tp_session_get(net, tunnel, session_id,
+						   do_ref);
+			l2tp_tunnel_dec_refcount(tunnel);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return session;
@@ -205,13 +223,24 @@ static int l2tp_nl_cmd_tunnel_delete(struct sk_buff *skb, struct genl_info *info
 	}
 	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
 
+<<<<<<< HEAD
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
 	if (tunnel == NULL) {
+=======
+	tunnel = l2tp_tunnel_get(net, tunnel_id);
+	if (!tunnel) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENODEV;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	(void) l2tp_tunnel_delete(tunnel);
+=======
+	l2tp_tunnel_delete(tunnel);
+
+	l2tp_tunnel_dec_refcount(tunnel);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	return ret;
@@ -230,8 +259,13 @@ static int l2tp_nl_cmd_tunnel_modify(struct sk_buff *skb, struct genl_info *info
 	}
 	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
 
+<<<<<<< HEAD
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
 	if (tunnel == NULL) {
+=======
+	tunnel = l2tp_tunnel_get(net, tunnel_id);
+	if (!tunnel) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENODEV;
 		goto out;
 	}
@@ -239,6 +273,11 @@ static int l2tp_nl_cmd_tunnel_modify(struct sk_buff *skb, struct genl_info *info
 	if (info->attrs[L2TP_ATTR_DEBUG])
 		tunnel->debug = nla_get_u32(info->attrs[L2TP_ATTR_DEBUG]);
 
+<<<<<<< HEAD
+=======
+	l2tp_tunnel_dec_refcount(tunnel);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }
@@ -341,11 +380,16 @@ static int l2tp_nl_cmd_tunnel_get(struct sk_buff *skb, struct genl_info *info)
 
 	if (!info->attrs[L2TP_ATTR_CONN_ID]) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
 
+<<<<<<< HEAD
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
 	if (tunnel == NULL) {
 		ret = -ENODEV;
@@ -356,11 +400,24 @@ static int l2tp_nl_cmd_tunnel_get(struct sk_buff *skb, struct genl_info *info)
 	if (!msg) {
 		ret = -ENOMEM;
 		goto out;
+=======
+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+	if (!msg) {
+		ret = -ENOMEM;
+		goto err;
+	}
+
+	tunnel = l2tp_tunnel_get(net, tunnel_id);
+	if (!tunnel) {
+		ret = -ENODEV;
+		goto err_nlmsg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = l2tp_nl_tunnel_send(msg, info->snd_portid, info->snd_seq,
 				  NLM_F_ACK, tunnel);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto err_out;
 
 	return genlmsg_unicast(net, msg, info->snd_portid);
@@ -369,6 +426,19 @@ err_out:
 	nlmsg_free(msg);
 
 out:
+=======
+		goto err_nlmsg_tunnel;
+
+	l2tp_tunnel_dec_refcount(tunnel);
+
+	return genlmsg_unicast(net, msg, info->snd_portid);
+
+err_nlmsg_tunnel:
+	l2tp_tunnel_dec_refcount(tunnel);
+err_nlmsg:
+	nlmsg_free(msg);
+err:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -404,7 +474,10 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 	u32 peer_session_id;
 	int ret = 0;
 	struct l2tp_tunnel *tunnel;
+<<<<<<< HEAD
 	struct l2tp_session *session;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct l2tp_session_cfg cfg = { 0, };
 	struct net *net = genl_info_net(info);
 
@@ -412,8 +485,14 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 		ret = -EINVAL;
 		goto out;
 	}
+<<<<<<< HEAD
 	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
+=======
+
+	tunnel_id = nla_get_u32(info->attrs[L2TP_ATTR_CONN_ID]);
+	tunnel = l2tp_tunnel_get(net, tunnel_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!tunnel) {
 		ret = -ENODEV;
 		goto out;
@@ -421,6 +500,7 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 
 	if (!info->attrs[L2TP_ATTR_SESSION_ID]) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
 	}
 	session_id = nla_get_u32(info->attrs[L2TP_ATTR_SESSION_ID]);
@@ -433,17 +513,34 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 	if (!info->attrs[L2TP_ATTR_PEER_SESSION_ID]) {
 		ret = -EINVAL;
 		goto out;
+=======
+		goto out_tunnel;
+	}
+	session_id = nla_get_u32(info->attrs[L2TP_ATTR_SESSION_ID]);
+
+	if (!info->attrs[L2TP_ATTR_PEER_SESSION_ID]) {
+		ret = -EINVAL;
+		goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	peer_session_id = nla_get_u32(info->attrs[L2TP_ATTR_PEER_SESSION_ID]);
 
 	if (!info->attrs[L2TP_ATTR_PW_TYPE]) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	cfg.pw_type = nla_get_u16(info->attrs[L2TP_ATTR_PW_TYPE]);
 	if (cfg.pw_type >= __L2TP_PWTYPE_MAX) {
 		ret = -EINVAL;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (tunnel->version > 2) {
@@ -465,7 +562,11 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 			u16 len = nla_len(info->attrs[L2TP_ATTR_COOKIE]);
 			if (len > 8) {
 				ret = -EINVAL;
+<<<<<<< HEAD
 				goto out;
+=======
+				goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			cfg.cookie_len = len;
 			memcpy(&cfg.cookie[0], nla_data(info->attrs[L2TP_ATTR_COOKIE]), len);
@@ -474,7 +575,11 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 			u16 len = nla_len(info->attrs[L2TP_ATTR_PEER_COOKIE]);
 			if (len > 8) {
 				ret = -EINVAL;
+<<<<<<< HEAD
 				goto out;
+=======
+				goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			cfg.peer_cookie_len = len;
 			memcpy(&cfg.peer_cookie[0], nla_data(info->attrs[L2TP_ATTR_PEER_COOKIE]), len);
@@ -510,7 +615,11 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 	if ((l2tp_nl_cmd_ops[cfg.pw_type] == NULL) ||
 	    (l2tp_nl_cmd_ops[cfg.pw_type]->session_create == NULL)) {
 		ret = -EPROTONOSUPPORT;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Check that pseudowire-specific params are present */
@@ -520,7 +629,11 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 	case L2TP_PWTYPE_ETH_VLAN:
 		if (!info->attrs[L2TP_ATTR_VLAN_ID]) {
 			ret = -EINVAL;
+<<<<<<< HEAD
 			goto out;
+=======
+			goto out_tunnel;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		break;
 	case L2TP_PWTYPE_ETH:
@@ -534,11 +647,21 @@ static int l2tp_nl_cmd_session_create(struct sk_buff *skb, struct genl_info *inf
 		break;
 	}
 
+<<<<<<< HEAD
 	ret = -EPROTONOSUPPORT;
 	if (l2tp_nl_cmd_ops[cfg.pw_type]->session_create)
 		ret = (*l2tp_nl_cmd_ops[cfg.pw_type]->session_create)(net, tunnel_id,
 			session_id, peer_session_id, &cfg);
 
+=======
+	ret = l2tp_nl_cmd_ops[cfg.pw_type]->session_create(net, tunnel,
+							   session_id,
+							   peer_session_id,
+							   &cfg);
+
+out_tunnel:
+	l2tp_tunnel_dec_refcount(tunnel);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }
@@ -549,7 +672,11 @@ static int l2tp_nl_cmd_session_delete(struct sk_buff *skb, struct genl_info *inf
 	struct l2tp_session *session;
 	u16 pw_type;
 
+<<<<<<< HEAD
 	session = l2tp_nl_session_find(info);
+=======
+	session = l2tp_nl_session_get(info, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (session == NULL) {
 		ret = -ENODEV;
 		goto out;
@@ -560,6 +687,13 @@ static int l2tp_nl_cmd_session_delete(struct sk_buff *skb, struct genl_info *inf
 		if (l2tp_nl_cmd_ops[pw_type] && l2tp_nl_cmd_ops[pw_type]->session_delete)
 			ret = (*l2tp_nl_cmd_ops[pw_type]->session_delete)(session);
 
+<<<<<<< HEAD
+=======
+	if (session->deref)
+		session->deref(session);
+	l2tp_session_dec_refcount(session);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }
@@ -569,7 +703,11 @@ static int l2tp_nl_cmd_session_modify(struct sk_buff *skb, struct genl_info *inf
 	int ret = 0;
 	struct l2tp_session *session;
 
+<<<<<<< HEAD
 	session = l2tp_nl_session_find(info);
+=======
+	session = l2tp_nl_session_get(info, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (session == NULL) {
 		ret = -ENODEV;
 		goto out;
@@ -601,6 +739,11 @@ static int l2tp_nl_cmd_session_modify(struct sk_buff *skb, struct genl_info *inf
 	if (info->attrs[L2TP_ATTR_MRU])
 		session->mru = nla_get_u16(info->attrs[L2TP_ATTR_MRU]);
 
+<<<<<<< HEAD
+=======
+	l2tp_session_dec_refcount(session);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }
@@ -686,20 +829,32 @@ static int l2tp_nl_cmd_session_get(struct sk_buff *skb, struct genl_info *info)
 	struct sk_buff *msg;
 	int ret;
 
+<<<<<<< HEAD
 	session = l2tp_nl_session_find(info);
 	if (session == NULL) {
 		ret = -ENODEV;
 		goto out;
+=======
+	session = l2tp_nl_session_get(info, false);
+	if (session == NULL) {
+		ret = -ENODEV;
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!msg) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out;
+=======
+		goto err_ref;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = l2tp_nl_session_send(msg, info->snd_portid, info->snd_seq,
 				   0, session);
+<<<<<<< HEAD
 	if (ret < 0)
 		goto err_out;
 
@@ -709,6 +864,23 @@ err_out:
 	nlmsg_free(msg);
 
 out:
+=======
+
+	if (ret < 0)
+		goto err_ref_msg;
+
+	ret = genlmsg_unicast(genl_info_net(info), msg, info->snd_portid);
+
+	l2tp_session_dec_refcount(session);
+
+	return ret;
+
+err_ref_msg:
+	nlmsg_free(msg);
+err_ref:
+	l2tp_session_dec_refcount(session);
+err:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -727,7 +899,11 @@ static int l2tp_nl_cmd_session_dump(struct sk_buff *skb, struct netlink_callback
 				goto out;
 		}
 
+<<<<<<< HEAD
 		session = l2tp_session_find_nth(tunnel, si);
+=======
+		session = l2tp_session_get_nth(tunnel, si, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (session == NULL) {
 			ti++;
 			tunnel = NULL;
@@ -737,8 +913,16 @@ static int l2tp_nl_cmd_session_dump(struct sk_buff *skb, struct netlink_callback
 
 		if (l2tp_nl_session_send(skb, NETLINK_CB(cb->skb).portid,
 					 cb->nlh->nlmsg_seq, NLM_F_MULTI,
+<<<<<<< HEAD
 					 session) <= 0)
 			break;
+=======
+					 session) <= 0) {
+			l2tp_session_dec_refcount(session);
+			break;
+		}
+		l2tp_session_dec_refcount(session);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		si++;
 	}

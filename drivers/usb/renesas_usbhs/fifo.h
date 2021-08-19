@@ -98,5 +98,9 @@ void usbhs_pkt_push(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt,
 		    void *buf, int len, int zero, int sequence);
 struct usbhs_pkt *usbhs_pkt_pop(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt);
 void usbhs_pkt_start(struct usbhs_pipe *pipe);
+<<<<<<< HEAD
+=======
+struct usbhs_pkt *__usbhsf_pkt_get(struct usbhs_pipe *pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* RENESAS_USB_FIFO_H */

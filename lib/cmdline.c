@@ -22,14 +22,22 @@
  *	the values[M, M+1, ..., N] into the ints array in get_options.
  */
 
+<<<<<<< HEAD
 static int get_range(char **str, int *pint)
+=======
+static int get_range(char **str, int *pint, int n)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int x, inc_counter, upper_range;
 
 	(*str)++;
 	upper_range = simple_strtol((*str), NULL, 0);
 	inc_counter = upper_range - *pint;
+<<<<<<< HEAD
 	for (x = *pint; x < upper_range; x++)
+=======
+	for (x = *pint; n && x < upper_range; x++, n--)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*pint++ = x;
 	return inc_counter;
 }
@@ -96,7 +104,11 @@ char *get_options(const char *str, int nints, int *ints)
 			break;
 		if (res == 3) {
 			int range_nums;
+<<<<<<< HEAD
 			range_nums = get_range((char **)&str, ints + i);
+=======
+			range_nums = get_range((char **)&str, ints + i, nints - i);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (range_nums < 0)
 				break;
 			/*

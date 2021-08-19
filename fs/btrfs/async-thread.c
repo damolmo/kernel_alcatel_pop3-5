@@ -316,8 +316,13 @@ static inline void __btrfs_queue_work(struct __btrfs_workqueue *wq,
 		list_add_tail(&work->ordered_list, &wq->ordered_list);
 		spin_unlock_irqrestore(&wq->list_lock, flags);
 	}
+<<<<<<< HEAD
 	queue_work(wq->normal_wq, &work->normal_work);
 	trace_btrfs_work_queued(work);
+=======
+	trace_btrfs_work_queued(work);
+	queue_work(wq->normal_wq, &work->normal_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void btrfs_queue_work(struct btrfs_workqueue *wq,
@@ -363,3 +368,14 @@ void btrfs_set_work_high_priority(struct btrfs_work *work)
 {
 	set_bit(WORK_HIGH_PRIO_BIT, &work->flags);
 }
+<<<<<<< HEAD
+=======
+
+void btrfs_flush_workqueue(struct btrfs_workqueue *wq)
+{
+	if (wq->high)
+		flush_workqueue(wq->high->normal_wq);
+
+	flush_workqueue(wq->normal->normal_wq);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

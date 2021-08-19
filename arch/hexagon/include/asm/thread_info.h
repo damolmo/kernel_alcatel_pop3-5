@@ -56,7 +56,10 @@ struct thread_info {
 	 * used for syscalls somehow;
 	 * seems to have a function pointer and four arguments
 	 */
+<<<<<<< HEAD
 	struct restart_block    restart_block;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Points to the current pt_regs frame  */
 	struct pt_regs		*regs;
 	/*
@@ -83,9 +86,12 @@ struct thread_info {
 	.cpu            = 0,                    \
 	.preempt_count  = 1,                    \
 	.addr_limit     = KERNEL_DS,            \
+<<<<<<< HEAD
 	.restart_block = {                      \
 		.fn = do_no_restart_syscall,    \
 	},                                      \
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.sp = 0,				\
 	.regs = NULL,			\
 }

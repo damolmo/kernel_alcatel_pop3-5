@@ -592,10 +592,16 @@ static int __die_walk_funclines_cb(Dwarf_Die *in_die, void *data)
 			if (lw->retval != 0)
 				return DIE_FIND_CB_END;
 		}
+<<<<<<< HEAD
 	}
 	if (!lw->recursive)
 		/* Don't need to search recursively */
 		return DIE_FIND_CB_SIBLING;
+=======
+		if (!lw->recursive)
+			return DIE_FIND_CB_SIBLING;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (addr) {
 		fname = dwarf_decl_file(in_die);
@@ -642,6 +648,13 @@ static int __die_walk_culines_cb(Dwarf_Die *sp_die, void *data)
 {
 	struct __line_walk_param *lw = data;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Since inlined function can include another inlined function in
+	 * the same file, we need to walk in it recursively.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lw->retval = __die_walk_funclines(sp_die, true, lw->callback, lw->data);
 	if (lw->retval != 0)
 		return DWARF_CB_ABORT;
@@ -722,8 +735,14 @@ int die_walk_lines(Dwarf_Die *rt_die, line_walk_callback_t callback, void *data)
 	 */
 	if (rt_die != cu_die)
 		/*
+<<<<<<< HEAD
 		 * Don't need walk functions recursively, because nested
 		 * inlined functions don't have lines of the specified DIE.
+=======
+		 * Don't need walk inlined functions recursively, because
+		 * inner inlined functions don't have the lines of the
+		 * specified function.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		ret = __die_walk_funclines(rt_die, false, callback, data);
 	else {

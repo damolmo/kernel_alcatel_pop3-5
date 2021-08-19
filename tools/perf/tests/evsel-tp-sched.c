@@ -15,7 +15,11 @@ static int perf_evsel__test_field(struct perf_evsel *evsel, const char *name,
 		return -1;
 	}
 
+<<<<<<< HEAD
 	is_signed = !!(field->flags | FIELD_IS_SIGNED);
+=======
+	is_signed = !!(field->flags & FIELD_IS_SIGNED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (should_be_signed && !is_signed) {
 		pr_debug("%s: \"%s\" signedness(%d) is wrong, should be %d\n",
 			 evsel->name, name, is_signed, should_be_signed);
@@ -78,5 +82,9 @@ int test__perf_evsel__tp_sched_test(void)
 	if (perf_evsel__test_field(evsel, "target_cpu", 4, true))
 		ret = -1;
 
+<<<<<<< HEAD
+=======
+	perf_evsel__delete(evsel);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }

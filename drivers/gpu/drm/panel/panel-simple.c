@@ -312,6 +312,10 @@ static int panel_simple_remove(struct device *dev)
 	drm_panel_remove(&panel->base);
 
 	panel_simple_disable(&panel->base);
+<<<<<<< HEAD
+=======
+	panel_simple_unprepare(&panel->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (panel->ddc)
 		put_device(&panel->ddc->dev);
@@ -327,6 +331,10 @@ static void panel_simple_shutdown(struct device *dev)
 	struct panel_simple *panel = dev_get_drvdata(dev);
 
 	panel_simple_disable(&panel->base);
+<<<<<<< HEAD
+=======
+	panel_simple_unprepare(&panel->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct drm_display_mode auo_b101aw03_mode = {
@@ -842,7 +850,18 @@ static int panel_simple_dsi_probe(struct mipi_dsi_device *dsi)
 	dsi->format = desc->format;
 	dsi->lanes = desc->lanes;
 
+<<<<<<< HEAD
 	return mipi_dsi_attach(dsi);
+=======
+	err = mipi_dsi_attach(dsi);
+	if (err) {
+		struct panel_simple *panel = dev_get_drvdata(&dsi->dev);
+
+		drm_panel_remove(&panel->base);
+	}
+
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int panel_simple_dsi_remove(struct mipi_dsi_device *dsi)

@@ -19,7 +19,11 @@
  * Temp usage notes:
  *	$1,$2,		- scratch
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.set noreorder
 	.set noat
 
@@ -242,6 +246,10 @@ $nomoredata:
 	nop				# E :
 
 	.end memcpy
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(memcpy)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* For backwards module compatibility.  */
 __memcpy = memcpy

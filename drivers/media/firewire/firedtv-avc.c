@@ -968,7 +968,12 @@ static int get_ca_object_length(struct avc_response_frame *r)
 	return r->operand[7];
 }
 
+<<<<<<< HEAD
 int avc_ca_app_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
+=======
+int avc_ca_app_info(struct firedtv *fdtv, unsigned char *app_info,
+		    unsigned int *len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct avc_command_frame *c = (void *)fdtv->avc_data;
 	struct avc_response_frame *r = (void *)fdtv->avc_data;
@@ -1009,7 +1014,12 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int avc_ca_info(struct firedtv *fdtv, char *app_info, unsigned int *len)
+=======
+int avc_ca_info(struct firedtv *fdtv, unsigned char *app_info,
+		unsigned int *len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct avc_command_frame *c = (void *)fdtv->avc_data;
 	struct avc_response_frame *r = (void *)fdtv->avc_data;

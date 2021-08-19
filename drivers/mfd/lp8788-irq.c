@@ -112,7 +112,11 @@ static irqreturn_t lp8788_irq_handler(int irq, void *ptr)
 	struct lp8788_irq_data *irqd = ptr;
 	struct lp8788 *lp = irqd->lp;
 	u8 status[NUM_REGS], addr, mask;
+<<<<<<< HEAD
 	bool handled;
+=======
+	bool handled = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	if (lp8788_read_multi_bytes(lp, LP8788_INT_1, status, NUM_REGS))

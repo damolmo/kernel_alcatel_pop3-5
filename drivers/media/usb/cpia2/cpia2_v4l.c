@@ -812,7 +812,11 @@ static int cpia2_querybuf(struct file *file, void *fh, struct v4l2_buffer *buf)
 	struct camera_data *cam = video_drvdata(file);
 
 	if(buf->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+<<<<<<< HEAD
 	   buf->index > cam->num_frames)
+=======
+	   buf->index >= cam->num_frames)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	buf->m.offset = cam->buffers[buf->index].data - cam->frame_buffer;
@@ -863,7 +867,11 @@ static int cpia2_qbuf(struct file *file, void *fh, struct v4l2_buffer *buf)
 
 	if(buf->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
 	   buf->memory != V4L2_MEMORY_MMAP ||
+<<<<<<< HEAD
 	   buf->index > cam->num_frames)
+=======
+	   buf->index >= cam->num_frames)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	DBG("QBUF #%d\n", buf->index);
@@ -1248,8 +1256,12 @@ static int __init cpia2_init(void)
 	LOG("%s v%s\n",
 	    ABOUT, CPIA_VERSION);
 	check_parameters();
+<<<<<<< HEAD
 	cpia2_usb_init();
 	return 0;
+=======
+	return cpia2_usb_init();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

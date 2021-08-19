@@ -509,7 +509,11 @@ static void panic_halt_ipmi_heartbeat(void)
 	msg.cmd = IPMI_WDOG_RESET_TIMER;
 	msg.data = NULL;
 	msg.data_len = 0;
+<<<<<<< HEAD
 	atomic_add(2, &panic_done_count);
+=======
+	atomic_add(1, &panic_done_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rv = ipmi_request_supply_msgs(watchdog_user,
 				      (struct ipmi_addr *) &addr,
 				      0,
@@ -519,7 +523,11 @@ static void panic_halt_ipmi_heartbeat(void)
 				      &panic_halt_heartbeat_recv_msg,
 				      1);
 	if (rv)
+<<<<<<< HEAD
 		atomic_sub(2, &panic_done_count);
+=======
+		atomic_sub(1, &panic_done_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct ipmi_smi_msg panic_halt_smi_msg = {
@@ -543,12 +551,20 @@ static void panic_halt_ipmi_set_timeout(void)
 	/* Wait for the messages to be free. */
 	while (atomic_read(&panic_done_count) != 0)
 		ipmi_poll_interface(watchdog_user);
+<<<<<<< HEAD
 	atomic_add(2, &panic_done_count);
+=======
+	atomic_add(1, &panic_done_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rv = i_ipmi_set_timeout(&panic_halt_smi_msg,
 				&panic_halt_recv_msg,
 				&send_heartbeat_now);
 	if (rv) {
+<<<<<<< HEAD
 		atomic_sub(2, &panic_done_count);
+=======
+		atomic_sub(1, &panic_done_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		printk(KERN_WARNING PFX
 		       "Unable to extend the watchdog timeout.");
 	} else {
@@ -1156,10 +1172,18 @@ static int wdog_reboot_handler(struct notifier_block *this,
 			ipmi_watchdog_state = WDOG_TIMEOUT_NONE;
 			ipmi_set_timeout(IPMI_SET_TIMEOUT_NO_HB);
 		} else if (ipmi_watchdog_state != WDOG_TIMEOUT_NONE) {
+<<<<<<< HEAD
 			/* Set a long timer to let the reboot happens, but
 			   reboot if it hangs, but only if the watchdog
 			   timer was already running. */
 			timeout = 120;
+=======
+			/* Set a long timer to let the reboot happen or
+			   reset if it hangs, but only if the watchdog
+			   timer was already running. */
+			if (timeout < 120)
+				timeout = 120;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pretimeout = 0;
 			ipmi_watchdog_state = WDOG_TIMEOUT_RESET;
 			ipmi_set_timeout(IPMI_SET_TIMEOUT_NO_HB);

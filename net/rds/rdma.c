@@ -184,7 +184,11 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
 	long i;
 	int ret;
 
+<<<<<<< HEAD
 	if (rs->rs_bound_addr == 0) {
+=======
+	if (rs->rs_bound_addr == 0 || !rs->rs_transport) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENOTCONN; /* XXX not a great errno */
 		goto out;
 	}
@@ -516,6 +520,12 @@ int rds_rdma_extra_size(struct rds_rdma_args *args)
 
 	local_vec = (struct rds_iovec __user *)(unsigned long) args->local_vec_addr;
 
+<<<<<<< HEAD
+=======
+	if (args->nr_local == 0)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* figure out the number of pages in the vector */
 	for (i = 0; i < args->nr_local; i++) {
 		if (copy_from_user(&vec, &local_vec[i],
@@ -625,6 +635,19 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
 		}
 		op->op_notifier->n_user_token = args->user_token;
 		op->op_notifier->n_status = RDS_RDMA_SUCCESS;
+<<<<<<< HEAD
+=======
+
+		/* Enable rmda notification on data operation for composite
+		 * rds messages and make sure notification is enabled only
+		 * for the data operation which follows it so that application
+		 * gets notified only after full message gets delivered.
+		 */
+		if (rm->data.op_sg) {
+			rm->rdma.op_notify = 0;
+			rm->data.op_notify = !!(args->flags & RDS_RDMA_NOTIFY_ME);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* The cookie contains the R_Key of the remote memory region, and
@@ -853,6 +876,10 @@ int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
 err:
 	if (page)
 		put_page(page);
+<<<<<<< HEAD
+=======
+	rm->atomic.op_active = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(rm->atomic.op_notifier);
 
 	return ret;

@@ -225,6 +225,12 @@ static ssize_t brport_show(struct kobject *kobj,
 	struct brport_attribute *brport_attr = to_brport_attr(attr);
 	struct net_bridge_port *p = to_brport(kobj);
 
+<<<<<<< HEAD
+=======
+	if (!brport_attr->show)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return brport_attr->show(p, buf);
 }
 

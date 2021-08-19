@@ -176,12 +176,22 @@ map_again:
 	ret = ppc_md.hpte_insert(hpteg, vpn, hpaddr, rflags, vflags,
 				 hpsize, hpsize, MMU_SEGSIZE_256M);
 
+<<<<<<< HEAD
 	if (ret < 0) {
+=======
+	if (ret == -1) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* If we couldn't map a primary PTE, try a secondary */
 		hash = ~hash;
 		vflags ^= HPTE_V_SECONDARY;
 		attempt++;
 		goto map_again;
+<<<<<<< HEAD
+=======
+	} else if (ret < 0) {
+		r = -EIO;
+		goto out_unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		trace_kvm_book3s_64_mmu_map(rflags, hpteg,
 					    vpn, hpaddr, orig_pte);

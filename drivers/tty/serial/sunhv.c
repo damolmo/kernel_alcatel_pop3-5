@@ -391,7 +391,11 @@ static struct uart_ops sunhv_pops = {
 static struct uart_driver sunhv_reg = {
 	.owner			= THIS_MODULE,
 	.driver_name		= "sunhv",
+<<<<<<< HEAD
 	.dev_name		= "ttyS",
+=======
+	.dev_name		= "ttyHV",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.major			= TTY_MAJOR,
 };
 
@@ -489,12 +493,15 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
 		locked = spin_trylock_irqsave(&port->lock, flags);
 	else
 		spin_lock_irqsave(&port->lock, flags);
+<<<<<<< HEAD
 	if (port->sysrq) {
 		locked = 0;
 	} else if (oops_in_progress) {
 		locked = spin_trylock(&port->lock);
 	} else
 		spin_lock(&port->lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < n; i++) {
 		if (*s == '\n')

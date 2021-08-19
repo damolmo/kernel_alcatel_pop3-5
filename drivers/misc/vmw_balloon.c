@@ -42,6 +42,10 @@
 #include <linux/workqueue.h>
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/hypervisor.h>
 
 MODULE_AUTHOR("VMware, Inc.");
@@ -820,7 +824,18 @@ static int __init vmballoon_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(vmballoon_init);
+=======
+
+/*
+ * Using late_initcall() instead of module_init() allows the balloon to use the
+ * VMCI doorbell even when the balloon is built into the kernel. Otherwise the
+ * VMCI is probed only after the balloon is initialized. If the balloon is used
+ * as a module, late_initcall() is equivalent to module_init().
+ */
+late_initcall(vmballoon_init);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void __exit vmballoon_exit(void)
 {

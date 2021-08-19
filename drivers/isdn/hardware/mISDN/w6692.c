@@ -1176,10 +1176,17 @@ w6692_l1callback(struct dchannel *dch, u32 cmd)
 }
 
 static int
+<<<<<<< HEAD
 open_dchannel(struct w6692_hw *card, struct channel_req *rq)
 {
 	pr_debug("%s: %s dev(%d) open from %p\n", card->name, __func__,
 		 card->dch.dev.id, __builtin_return_address(1));
+=======
+open_dchannel(struct w6692_hw *card, struct channel_req *rq, void *caller)
+{
+	pr_debug("%s: %s dev(%d) open from %p\n", card->name, __func__,
+		 card->dch.dev.id, caller);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
@@ -1207,7 +1214,11 @@ w6692_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	case OPEN_CHANNEL:
 		rq = arg;
 		if (rq->protocol == ISDN_P_TE_S0)
+<<<<<<< HEAD
 			err = open_dchannel(card, rq);
+=======
+			err = open_dchannel(card, rq, __builtin_return_address(0));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else
 			err = open_bchannel(card, rq);
 		if (err)

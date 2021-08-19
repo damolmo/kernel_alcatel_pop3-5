@@ -98,13 +98,21 @@ cifs_mark_open_files_invalid(struct cifs_tcon *tcon)
 	struct list_head *tmp1;
 
 	/* list all files open on tree connection and mark them invalid */
+<<<<<<< HEAD
 	spin_lock(&cifs_file_list_lock);
+=======
+	spin_lock(&tcon->open_file_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_safe(tmp, tmp1, &tcon->openFileList) {
 		open_file = list_entry(tmp, struct cifsFileInfo, tlist);
 		open_file->invalidHandle = true;
 		open_file->oplock_break_cancelled = true;
 	}
+<<<<<<< HEAD
 	spin_unlock(&cifs_file_list_lock);
+=======
+	spin_unlock(&tcon->open_file_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * BB Add call to invalidate_inodes(sb) for all superblocks mounted
 	 * to this tcon.
@@ -150,8 +158,19 @@ cifs_reconnect_tcon(struct cifs_tcon *tcon, int smb_command)
 	 * greater than cifs socket timeout which is 7 seconds
 	 */
 	while (server->tcpStatus == CifsNeedReconnect) {
+<<<<<<< HEAD
 		wait_event_interruptible_timeout(server->response_q,
 			(server->tcpStatus != CifsNeedReconnect), 10 * HZ);
+=======
+		rc = wait_event_interruptible_timeout(server->response_q,
+						      (server->tcpStatus != CifsNeedReconnect),
+						      10 * HZ);
+		if (rc < 0) {
+			cifs_dbg(FYI, "%s: aborting reconnect due to a received"
+				 " signal by the process\n", __func__);
+			return -ERESTARTSYS;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* are we still trying to reconnect? */
 		if (server->tcpStatus != CifsNeedReconnect)
@@ -178,6 +197,21 @@ cifs_reconnect_tcon(struct cifs_tcon *tcon, int smb_command)
 	 * reconnect the same SMB session
 	 */
 	mutex_lock(&ses->session_mutex);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Recheck after acquire mutex. If another thread is negotiating
+	 * and the server never sends an answer the socket will be closed
+	 * and tcpStatus set to reconnect.
+	 */
+	if (server->tcpStatus == CifsNeedReconnect) {
+		rc = -EHOSTDOWN;
+		mutex_unlock(&ses->session_mutex);
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rc = cifs_negotiate_protocol(0, ses);
 	if (rc == 0 && ses->need_reconnect)
 		rc = cifs_setup_session(0, ses, nls_codepage);
@@ -571,10 +605,22 @@ CIFSSMBNegotiate(const unsigned int xid, struct cifs_ses *ses)
 	}
 
 	count = 0;
+<<<<<<< HEAD
 	for (i = 0; i < CIFS_NUM_PROT; i++) {
 		strncpy(pSMB->DialectsArray+count, protocols[i].name, 16);
 		count += strlen(protocols[i].name) + 1;
 		/* null at end of source and target buffers anyway */
+=======
+	/*
+	 * We know that all the name entries in the protocols array
+	 * are short (< 16 bytes anyway) and are NUL terminated.
+	 */
+	for (i = 0; i < CIFS_NUM_PROT; i++) {
+		size_t len = strlen(protocols[i].name) + 1;
+
+		memcpy(pSMB->DialectsArray+count, protocols[i].name, len);
+		count += len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	inc_rfc1001_len(pSMB, count);
 	pSMB->ByteCount = cpu_to_le16(count);
@@ -625,9 +671,14 @@ CIFSSMBNegotiate(const unsigned int xid, struct cifs_ses *ses)
 		server->negflavor = CIFS_NEGFLAVOR_UNENCAP;
 		memcpy(ses->server->cryptkey, pSMBr->u.EncryptionKey,
 		       CIFS_CRYPTO_KEY_SIZE);
+<<<<<<< HEAD
 	} else if ((pSMBr->hdr.Flags2 & SMBFLG2_EXT_SEC ||
 			server->capabilities & CAP_EXTENDED_SECURITY) &&
 				(pSMBr->EncryptionKeyLength == 0)) {
+=======
+	} else if (pSMBr->hdr.Flags2 & SMBFLG2_EXT_SEC ||
+			server->capabilities & CAP_EXTENDED_SECURITY) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		server->negflavor = CIFS_NEGFLAVOR_EXTENDED;
 		rc = decode_ext_sec_blob(ses, pSMBr);
 	} else if (server->sec_mode & SECMODE_PW_ENCRYPT) {
@@ -716,6 +767,12 @@ CIFSSMBEcho(struct TCP_Server_Info *server)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
+=======
+	if (server->capabilities & CAP_UNICODE)
+		smb->hdr.Flags2 |= SMBFLG2_UNICODE;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* set up echo request */
 	smb->hdr.Tid = 0xffff;
 	smb->hdr.WordCount = 1;
@@ -1395,11 +1452,18 @@ openRetry:
  * current bigbuf.
  */
 static int
+<<<<<<< HEAD
 cifs_readv_discard(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 {
 	unsigned int rfclen = get_rfc1002_length(server->smallbuf);
 	int remaining = rfclen + 4 - server->total_read;
 	struct cifs_readdata *rdata = mid->callback_data;
+=======
+discard_remaining_data(struct TCP_Server_Info *server)
+{
+	unsigned int rfclen = get_rfc1002_length(server->smallbuf);
+	int remaining = rfclen + 4 - server->total_read;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (remaining > 0) {
 		int length;
@@ -1413,10 +1477,29 @@ cifs_readv_discard(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		remaining -= length;
 	}
 
+<<<<<<< HEAD
 	dequeue_mid(mid, rdata->result);
 	return 0;
 }
 
+=======
+	return 0;
+}
+
+static int
+cifs_readv_discard(struct TCP_Server_Info *server, struct mid_q_entry *mid)
+{
+	int length;
+	struct cifs_readdata *rdata = mid->callback_data;
+
+	length = discard_remaining_data(server);
+	dequeue_mid(mid, rdata->result);
+	mid->resp_buf = server->smallbuf;
+	server->smallbuf = NULL;
+	return length;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int
 cifs_readv_receive(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 {
@@ -1445,6 +1528,22 @@ cifs_readv_receive(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		return length;
 	server->total_read += length;
 
+<<<<<<< HEAD
+=======
+	if (server->ops->is_session_expired &&
+	    server->ops->is_session_expired(buf)) {
+		cifs_reconnect(server);
+		wake_up(&server->response_q);
+		return -1;
+	}
+
+	if (server->ops->is_status_pending &&
+	    server->ops->is_status_pending(buf, server, 0)) {
+		discard_remaining_data(server);
+		return -1;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Was the SMB read successful? */
 	rdata->result = server->ops->map_error(buf, false);
 	if (rdata->result != 0) {
@@ -1522,6 +1621,11 @@ cifs_readv_receive(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		return cifs_readv_discard(server, mid);
 
 	dequeue_mid(mid, false);
+<<<<<<< HEAD
+=======
+	mid->resp_buf = server->smallbuf;
+	server->smallbuf = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return length;
 }
 
@@ -6385,9 +6489,13 @@ SetEARetry:
 	pSMB->InformationLevel =
 		cpu_to_le16(SMB_SET_FILE_EA);
 
+<<<<<<< HEAD
 	parm_data =
 		(struct fealist *) (((char *) &pSMB->hdr.Protocol) +
 				       offset);
+=======
+	parm_data = (void *)pSMB + offsetof(struct smb_hdr, Protocol) + offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pSMB->ParameterOffset = cpu_to_le16(param_offset);
 	pSMB->DataOffset = cpu_to_le16(offset);
 	pSMB->SetupCount = 1;

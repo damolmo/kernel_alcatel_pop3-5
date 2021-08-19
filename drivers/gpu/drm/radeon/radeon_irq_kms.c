@@ -79,6 +79,14 @@ static void radeon_hotplug_work_func(struct work_struct *work)
 	struct drm_mode_config *mode_config = &dev->mode_config;
 	struct drm_connector *connector;
 
+<<<<<<< HEAD
+=======
+	/* we can race here at startup, some boards seem to trigger
+	 * hotplug irqs when they shouldn't. */
+	if (!rdev->mode_info.mode_config_initialized)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&mode_config->mutex);
 	if (mode_config->num_connector) {
 		list_for_each_entry(connector, &mode_config->connector_list, head)

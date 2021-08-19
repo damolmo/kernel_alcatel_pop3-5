@@ -1889,6 +1889,11 @@ static inline u32 jedec_read_mfr(struct map_info *map, uint32_t base,
 	do {
 		uint32_t ofs = cfi_build_cmd_addr(0 + (bank << 8), map, cfi);
 		mask = (1 << (cfi->device_type * 8)) - 1;
+<<<<<<< HEAD
+=======
+		if (ofs >= map->size)
+			return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		result = map_read(map, base + ofs);
 		bank++;
 	} while ((result.x[0] & mask) == CFI_MFR_CONTINUATION);

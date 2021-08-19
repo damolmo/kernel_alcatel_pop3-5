@@ -1062,6 +1062,11 @@ int shpc_init(struct controller *ctrl, struct pci_dev *pdev)
 		if (rc) {
 			ctrl_info(ctrl, "Can't get msi for the hotplug controller\n");
 			ctrl_info(ctrl, "Use INTx for the hotplug controller\n");
+<<<<<<< HEAD
+=======
+		} else {
+			pci_set_master(pdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		rc = request_irq(ctrl->pci_dev->irq, shpc_isr, IRQF_SHARED,

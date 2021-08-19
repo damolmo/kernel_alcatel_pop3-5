@@ -60,9 +60,12 @@
 #include <linux/slab.h>
 #include <asm/div64.h>
 #include "ubi.h"
+<<<<<<< HEAD
 #ifdef CONFIG_PWR_LOSS_MTK_SPOH
 #include <mach/power_loss_test.h>
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void self_vtbl_check(const struct ubi_device *ubi);
 
@@ -102,12 +105,15 @@ int ubi_change_vtbl_record(struct ubi_device *ubi, int idx,
 		err = ubi_eba_unmap_leb(ubi, layout_vol, i);
 		if (err)
 			return err;
+<<<<<<< HEAD
 #ifdef CONFIG_PWR_LOSS_MTK_SPOH
 		if (i == 0)
 			PL_RESET_ON_CASE("NAND", "CreateVol_1");
 		else if (i == 1)
 			PL_RESET_ON_CASE("NAND", "CreateVol_2");
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		err = ubi_eba_write_leb(ubi, layout_vol, i, ubi->vtbl, 0,
 					ubi->vtbl_size);
@@ -160,12 +166,15 @@ int ubi_vtbl_rename_volumes(struct ubi_device *ubi,
 		err = ubi_eba_unmap_leb(ubi, layout_vol, i);
 		if (err)
 			return err;
+<<<<<<< HEAD
 #ifdef CONFIG_PWR_LOSS_MTK_SPOH
 		if (i == 0)
 			PL_RESET_ON_CASE("NAND", "ModifyVol_1");
 		else if (i == 1)
 			PL_RESET_ON_CASE("NAND", "ModifyVol_2");
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		err = ubi_eba_write_leb(ubi, layout_vol, i, ubi->vtbl, 0,
 					ubi->vtbl_size);
@@ -471,6 +480,7 @@ static struct ubi_vtbl_record *process_lvol(struct ubi_device *ubi,
 		/* Both LEB 1 and LEB 2 are OK and consistent */
 		vfree(leb[1]);
 		return leb[0];
+<<<<<<< HEAD
 	}
 
 	/* LEB 0 is corrupted or does not exist */
@@ -493,6 +503,30 @@ static struct ubi_vtbl_record *process_lvol(struct ubi_device *ubi,
 
 	vfree(leb[0]);
 	return leb[1];
+=======
+	} else {
+		/* LEB 0 is corrupted or does not exist */
+		if (leb[1]) {
+			leb_corrupted[1] = vtbl_check(ubi, leb[1]);
+			if (leb_corrupted[1] < 0)
+				goto out_free;
+		}
+		if (leb_corrupted[1]) {
+			/* Both LEB 0 and LEB 1 are corrupted */
+			ubi_err("both volume tables are corrupted");
+			goto out_free;
+		}
+
+		ubi_warn("volume table copy #1 is corrupted");
+		err = create_vtbl(ubi, ai, 0, leb[1]);
+		if (err)
+			goto out_free;
+		ubi_msg("volume table was restored");
+
+		vfree(leb[0]);
+		return leb[1];
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out_free:
 	vfree(leb[0]);
@@ -660,6 +694,7 @@ static int init_volumes(struct ubi_device *ubi,
 	ubi->vol_count += 1;
 	vol->ubi = ubi;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 	/* And add the backup volume */
 	vol = kzalloc(sizeof(struct ubi_volume), GFP_KERNEL);
@@ -712,12 +747,18 @@ static int init_volumes(struct ubi_device *ubi,
 	vol->ubi = ubi;
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (reserved_pebs > ubi->avail_pebs) {
 		ubi_err("not enough PEBs, required %d, available %d",
 			reserved_pebs, ubi->avail_pebs);
 		if (ubi->corr_peb_count)
 			ubi_err("%d PEBs are corrupted and not used",
 				ubi->corr_peb_count);
+<<<<<<< HEAD
+=======
+		return -ENOSPC;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	ubi->rsvd_pebs += reserved_pebs;
 	ubi->avail_pebs -= reserved_pebs;
@@ -916,10 +957,13 @@ out_free:
 		kfree(ubi->volumes[i]);
 		ubi->volumes[i] = NULL;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	vfree(ubi->mtbl);
 	vfree(ubi->empty_mtbl_record);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -937,6 +981,7 @@ static void self_vtbl_check(const struct ubi_device *ubi)
 		BUG();
 	}
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 int ubi_change_empty_ec(struct ubi_device *ubi, int pnum, int ec, int vol_id, int map)
@@ -1070,3 +1115,5 @@ out_free:
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

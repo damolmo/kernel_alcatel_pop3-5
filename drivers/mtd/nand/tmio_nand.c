@@ -444,7 +444,11 @@ static int tmio_probe(struct platform_device *dev)
 	if (!retval)
 		return retval;
 
+<<<<<<< HEAD
 	nand_release(mtd);
+=======
+	nand_cleanup(nand_chip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 err_irq:
 	tmio_hw_stop(dev, tmio);

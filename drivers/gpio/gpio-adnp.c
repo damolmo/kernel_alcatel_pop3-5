@@ -137,8 +137,15 @@ static int adnp_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 	if (err < 0)
 		goto out;
 
+<<<<<<< HEAD
 	if (err & BIT(pos))
 		err = -EACCES;
+=======
+	if (value & BIT(pos)) {
+		err = -EPERM;
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = 0;
 

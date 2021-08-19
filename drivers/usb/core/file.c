@@ -26,6 +26,10 @@
 #define MAX_USB_MINORS	256
 static const struct file_operations *usb_minors[MAX_USB_MINORS];
 static DECLARE_RWSEM(minor_rwsem);
+<<<<<<< HEAD
+=======
+static DEFINE_MUTEX(init_usb_class_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int usb_open(struct inode *inode, struct file *file)
 {
@@ -108,8 +112,14 @@ static void release_usb_class(struct kref *kref)
 
 static void destroy_usb_class(void)
 {
+<<<<<<< HEAD
 	if (usb_class)
 		kref_put(&usb_class->kref, release_usb_class);
+=======
+	mutex_lock(&init_usb_class_mutex);
+	kref_put(&usb_class->kref, release_usb_class);
+	mutex_unlock(&init_usb_class_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int usb_major_init(void)
@@ -171,7 +181,14 @@ int usb_register_dev(struct usb_interface *intf,
 	if (intf->minor >= 0)
 		return -EADDRINUSE;
 
+<<<<<<< HEAD
 	retval = init_usb_class();
+=======
+	mutex_lock(&init_usb_class_mutex);
+	retval = init_usb_class();
+	mutex_unlock(&init_usb_class_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (retval)
 		return retval;
 
@@ -186,9 +203,16 @@ int usb_register_dev(struct usb_interface *intf,
 		intf->minor = minor;
 		break;
 	}
+<<<<<<< HEAD
 	up_write(&minor_rwsem);
 	if (intf->minor < 0)
 		return -EXFULL;
+=======
+	if (intf->minor < 0) {
+		up_write(&minor_rwsem);
+		return -EXFULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* create a usb class device for this usb interface */
 	snprintf(name, sizeof(name), class_driver->name, minor - minor_base);
@@ -201,12 +225,20 @@ int usb_register_dev(struct usb_interface *intf,
 				      MKDEV(USB_MAJOR, minor), class_driver,
 				      "%s", temp);
 	if (IS_ERR(intf->usb_dev)) {
+<<<<<<< HEAD
 		down_write(&minor_rwsem);
 		usb_minors[minor] = NULL;
 		intf->minor = -1;
 		up_write(&minor_rwsem);
 		retval = PTR_ERR(intf->usb_dev);
 	}
+=======
+		usb_minors[minor] = NULL;
+		intf->minor = -1;
+		retval = PTR_ERR(intf->usb_dev);
+	}
+	up_write(&minor_rwsem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return retval;
 }
 EXPORT_SYMBOL_GPL(usb_register_dev);
@@ -232,12 +264,19 @@ void usb_deregister_dev(struct usb_interface *intf,
 		return;
 
 	dev_dbg(&intf->dev, "removing %d minor\n", intf->minor);
+<<<<<<< HEAD
+=======
+	device_destroy(usb_class->class, MKDEV(USB_MAJOR, intf->minor));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	down_write(&minor_rwsem);
 	usb_minors[intf->minor] = NULL;
 	up_write(&minor_rwsem);
 
+<<<<<<< HEAD
 	device_destroy(usb_class->class, MKDEV(USB_MAJOR, intf->minor));
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	intf->usb_dev = NULL;
 	intf->minor = -1;
 	destroy_usb_class();

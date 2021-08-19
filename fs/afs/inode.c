@@ -69,9 +69,15 @@ static int afs_inode_map_status(struct afs_vnode *vnode, struct key *key)
 
 	set_nlink(inode, vnode->status.nlink);
 	inode->i_uid		= vnode->status.owner;
+<<<<<<< HEAD
 	inode->i_gid		= GLOBAL_ROOT_GID;
 	inode->i_size		= vnode->status.size;
 	inode->i_ctime.tv_sec	= vnode->status.mtime_server;
+=======
+	inode->i_gid            = vnode->status.group;
+	inode->i_size		= vnode->status.size;
+	inode->i_ctime.tv_sec	= vnode->status.mtime_client;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	inode->i_ctime.tv_nsec	= 0;
 	inode->i_atime		= inode->i_mtime = inode->i_ctime;
 	inode->i_blocks		= 0;
@@ -244,12 +250,21 @@ struct inode *afs_iget(struct super_block *sb, struct key *key,
 			vnode->cb_version = 0;
 			vnode->cb_expiry = 0;
 			vnode->cb_type = 0;
+<<<<<<< HEAD
 			vnode->cb_expires = get_seconds();
+=======
+			vnode->cb_expires = ktime_get_real_seconds();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			vnode->cb_version = cb->version;
 			vnode->cb_expiry = cb->expiry;
 			vnode->cb_type = cb->type;
+<<<<<<< HEAD
 			vnode->cb_expires = vnode->cb_expiry + get_seconds();
+=======
+			vnode->cb_expires = vnode->cb_expiry +
+				ktime_get_real_seconds();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -322,7 +337,11 @@ int afs_validate(struct afs_vnode *vnode, struct key *key)
 	    !test_bit(AFS_VNODE_CB_BROKEN, &vnode->flags) &&
 	    !test_bit(AFS_VNODE_MODIFIED, &vnode->flags) &&
 	    !test_bit(AFS_VNODE_ZAP_DATA, &vnode->flags)) {
+<<<<<<< HEAD
 		if (vnode->cb_expires < get_seconds() + 10) {
+=======
+		if (vnode->cb_expires < ktime_get_real_seconds() + 10) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			_debug("callback expired");
 			set_bit(AFS_VNODE_CB_BROKEN, &vnode->flags);
 		} else {

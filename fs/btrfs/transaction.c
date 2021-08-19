@@ -472,7 +472,10 @@ again:
 
 	h->transid = cur_trans->transid;
 	h->transaction = cur_trans;
+<<<<<<< HEAD
 	h->blocks_used = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	h->bytes_reserved = 0;
 	h->root = root;
 	h->delayed_ref_updates = 0;
@@ -723,7 +726,11 @@ static int __btrfs_end_transaction(struct btrfs_trans_handle *trans,
 
 	if (!list_empty(&trans->ordered)) {
 		spin_lock(&info->trans_lock);
+<<<<<<< HEAD
 		list_splice(&trans->ordered, &cur_trans->pending_ordered);
+=======
+		list_splice_init(&trans->ordered, &cur_trans->pending_ordered);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock(&info->trans_lock);
 	}
 
@@ -1690,6 +1697,17 @@ int btrfs_commit_transaction(struct btrfs_trans_handle *trans,
 	struct btrfs_inode *btree_ino = BTRFS_I(root->fs_info->btree_inode);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Some places just start a transaction to commit it.  We need to make
+	 * sure that if this commit fails that the abort code actually marks the
+	 * transaction as failed, so set trans->dirty to make the abort code do
+	 * the right thing.
+	 */
+	trans->dirty = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Stop the commit early if ->aborted is set */
 	if (unlikely(ACCESS_ONCE(cur_trans->aborted))) {
 		ret = cur_trans->aborted;
@@ -1697,6 +1715,12 @@ int btrfs_commit_transaction(struct btrfs_trans_handle *trans,
 		return ret;
 	}
 
+<<<<<<< HEAD
+=======
+	btrfs_trans_release_metadata(trans, root);
+	trans->block_rsv = NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* make a pass through all the delayed refs we have so far
 	 * any runnings procs may add more while we are here
 	 */
@@ -1706,8 +1730,11 @@ int btrfs_commit_transaction(struct btrfs_trans_handle *trans,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	btrfs_trans_release_metadata(trans, root);
 	trans->block_rsv = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (trans->qgroup_reserved) {
 		btrfs_qgroup_free(root, trans->qgroup_reserved);
 		trans->qgroup_reserved = 0;
@@ -1732,7 +1759,11 @@ int btrfs_commit_transaction(struct btrfs_trans_handle *trans,
 	}
 
 	spin_lock(&root->fs_info->trans_lock);
+<<<<<<< HEAD
 	list_splice(&trans->ordered, &cur_trans->pending_ordered);
+=======
+	list_splice_init(&trans->ordered, &cur_trans->pending_ordered);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (cur_trans->state >= TRANS_STATE_COMMIT_START) {
 		spin_unlock(&root->fs_info->trans_lock);
 		atomic_inc(&cur_trans->use_count);
@@ -1756,8 +1787,16 @@ int btrfs_commit_transaction(struct btrfs_trans_handle *trans,
 			spin_unlock(&root->fs_info->trans_lock);
 
 			wait_for_commit(root, prev_trans);
+<<<<<<< HEAD
 
 			btrfs_put_transaction(prev_trans);
+=======
+			ret = prev_trans->aborted;
+
+			btrfs_put_transaction(prev_trans);
+			if (ret)
+				goto cleanup_transaction;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			spin_unlock(&root->fs_info->trans_lock);
 		}

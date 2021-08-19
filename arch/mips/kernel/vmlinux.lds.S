@@ -141,7 +141,11 @@ SECTIONS
 	 * Force .bss to 64K alignment so that .bss..swapper_pg_dir
 	 * gets that alignment.	 .sbss should be empty, so there will be
 	 * no holes after __init_end. */
+<<<<<<< HEAD
 	BSS_SECTION(0, 0x10000, 0)
+=======
+	BSS_SECTION(0, 0x10000, 8)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	_end = . ;
 

@@ -102,7 +102,31 @@ static struct menu *current_menu, *current_entry;
 %%
 input: nl start | start;
 
+<<<<<<< HEAD
 start: mainmenu_stmt stmt_list | stmt_list;
+=======
+start: mainmenu_stmt stmt_list | no_mainmenu_stmt stmt_list;
+
+/* mainmenu entry */
+
+mainmenu_stmt: T_MAINMENU prompt nl
+{
+	menu_add_prompt(P_MENU, $2, NULL);
+};
+
+/* Default main menu, if there's no mainmenu entry */
+
+no_mainmenu_stmt: /* empty */
+{
+	/*
+	 * Hack: Keep the main menu title on the heap so we can safely free it
+	 * later regardless of whether it comes from the 'prompt' in
+	 * mainmenu_stmt or here
+	 */
+	menu_add_prompt(P_MENU, strdup("Linux Kernel Configuration"), NULL);
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 stmt_list:
 	  /* empty */
@@ -339,6 +363,7 @@ if_block:
 	| if_block choice_stmt
 ;
 
+<<<<<<< HEAD
 /* mainmenu entry */
 
 mainmenu_stmt: T_MAINMENU prompt nl
@@ -346,6 +371,8 @@ mainmenu_stmt: T_MAINMENU prompt nl
 	menu_add_prompt(P_MENU, $2, NULL);
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* menu entry */
 
 menu: T_MENU prompt T_EOL
@@ -486,6 +513,10 @@ word_opt: /* empty */			{ $$ = NULL; }
 
 void conf_parse(const char *name)
 {
+<<<<<<< HEAD
+=======
+	const char *tmp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct symbol *sym;
 	int i;
 
@@ -493,7 +524,10 @@ void conf_parse(const char *name)
 
 	sym_init();
 	_menu_init();
+<<<<<<< HEAD
 	rootmenu.prompt = menu_add_prompt(P_MENU, "Linux Kernel Configuration", NULL);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (getenv("ZCONF_DEBUG"))
 		zconfdebug = 1;
@@ -503,8 +537,15 @@ void conf_parse(const char *name)
 	if (!modules_sym)
 		modules_sym = sym_find( "n" );
 
+<<<<<<< HEAD
 	rootmenu.prompt->text = _(rootmenu.prompt->text);
 	rootmenu.prompt->text = sym_expand_string_value(rootmenu.prompt->text);
+=======
+	tmp = rootmenu.prompt->text;
+	rootmenu.prompt->text = _(rootmenu.prompt->text);
+	rootmenu.prompt->text = sym_expand_string_value(rootmenu.prompt->text);
+	free((char*)tmp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	menu_finalize(&rootmenu);
 	for_all_symbols(i, sym) {

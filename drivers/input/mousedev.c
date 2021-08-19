@@ -15,6 +15,10 @@
 #define MOUSEDEV_MINORS		31
 #define MOUSEDEV_MIX		63
 
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/poll.h>
@@ -103,7 +107,11 @@ struct mousedev_client {
 	spinlock_t packet_lock;
 	int pos_x, pos_y;
 
+<<<<<<< HEAD
 	signed char ps2[6];
+=======
+	u8 ps2[6];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned char ready, buffer, bufsiz;
 	unsigned char imexseq, impsseq;
 	enum mousedev_emul mode;
@@ -291,11 +299,18 @@ static void mousedev_notify_readers(struct mousedev *mousedev,
 		}
 
 		client->pos_x += packet->dx;
+<<<<<<< HEAD
 		client->pos_x = client->pos_x < 0 ?
 			0 : (client->pos_x >= xres ? xres : client->pos_x);
 		client->pos_y += packet->dy;
 		client->pos_y = client->pos_y < 0 ?
 			0 : (client->pos_y >= yres ? yres : client->pos_y);
+=======
+		client->pos_x = clamp_val(client->pos_x, 0, xres);
+
+		client->pos_y += packet->dy;
+		client->pos_y = clamp_val(client->pos_y, 0, yres);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		p->dx += packet->dx;
 		p->dy += packet->dy;
@@ -571,6 +586,7 @@ static int mousedev_open(struct inode *inode, struct file *file)
 	return error;
 }
 
+<<<<<<< HEAD
 static inline int mousedev_limit_delta(int delta, int limit)
 {
 	return delta > limit ? limit : (delta < -limit ? -limit : delta);
@@ -593,22 +609,65 @@ static void mousedev_packet(struct mousedev_client *client,
 		ps2_data[3] = mousedev_limit_delta(p->dz, 7);
 		p->dz -= ps2_data[3];
 		ps2_data[3] = (ps2_data[3] & 0x0f) | ((p->buttons & 0x18) << 1);
+=======
+static void mousedev_packet(struct mousedev_client *client, u8 *ps2_data)
+{
+	struct mousedev_motion *p = &client->packets[client->tail];
+	s8 dx, dy, dz;
+
+	dx = clamp_val(p->dx, -127, 127);
+	p->dx -= dx;
+
+	dy = clamp_val(p->dy, -127, 127);
+	p->dy -= dy;
+
+	ps2_data[0] = BIT(3);
+	ps2_data[0] |= ((dx & BIT(7)) >> 3) | ((dy & BIT(7)) >> 2);
+	ps2_data[0] |= p->buttons & 0x07;
+	ps2_data[1] = dx;
+	ps2_data[2] = dy;
+
+	switch (client->mode) {
+	case MOUSEDEV_EMUL_EXPS:
+		dz = clamp_val(p->dz, -7, 7);
+		p->dz -= dz;
+
+		ps2_data[3] = (dz & 0x0f) | ((p->buttons & 0x18) << 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		client->bufsiz = 4;
 		break;
 
 	case MOUSEDEV_EMUL_IMPS:
+<<<<<<< HEAD
 		ps2_data[0] |=
 			((p->buttons & 0x10) >> 3) | ((p->buttons & 0x08) >> 1);
 		ps2_data[3] = mousedev_limit_delta(p->dz, 127);
 		p->dz -= ps2_data[3];
+=======
+		dz = clamp_val(p->dz, -127, 127);
+		p->dz -= dz;
+
+		ps2_data[0] |= ((p->buttons & 0x10) >> 3) |
+			       ((p->buttons & 0x08) >> 1);
+		ps2_data[3] = dz;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		client->bufsiz = 4;
 		break;
 
 	case MOUSEDEV_EMUL_PS2:
 	default:
+<<<<<<< HEAD
 		ps2_data[0] |=
 			((p->buttons & 0x10) >> 3) | ((p->buttons & 0x08) >> 1);
 		p->dz = 0;
+=======
+		p->dz = 0;
+
+		ps2_data[0] |= ((p->buttons & 0x10) >> 3) |
+			       ((p->buttons & 0x08) >> 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		client->bufsiz = 3;
 		break;
 	}
@@ -714,7 +773,11 @@ static ssize_t mousedev_read(struct file *file, char __user *buffer,
 {
 	struct mousedev_client *client = file->private_data;
 	struct mousedev *mousedev = client->mousedev;
+<<<<<<< HEAD
 	signed char data[sizeof(client->ps2)];
+=======
+	u8 data[sizeof(client->ps2)];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int retval = 0;
 
 	if (!client->ready && !client->buffer && mousedev->exist &&

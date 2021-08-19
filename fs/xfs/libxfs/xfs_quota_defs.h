@@ -153,7 +153,11 @@ typedef __uint16_t	xfs_qwarncnt_t;
 #define XFS_QMOPT_RESBLK_MASK	(XFS_QMOPT_RES_REGBLKS | XFS_QMOPT_RES_RTBLKS)
 
 extern int xfs_dqcheck(struct xfs_mount *mp, xfs_disk_dquot_t *ddq,
+<<<<<<< HEAD
 		       xfs_dqid_t id, uint type, uint flags, char *str);
+=======
+		       xfs_dqid_t id, uint type, uint flags, const char *str);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int xfs_calc_dquots_per_chunk(unsigned int nbblks);
 
 #endif	/* __XFS_QUOTA_H__ */

@@ -338,6 +338,11 @@ static int __hw_perf_event_init(struct perf_event *event)
 		break;
 
 	case PERF_TYPE_HARDWARE:
+<<<<<<< HEAD
+=======
+		if (is_sampling_event(event))	/* No sampling support */
+			return -ENOENT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ev = attr->config;
 		/* Count user space (problem-state) only */
 		if (!attr->exclude_user && attr->exclude_kernel) {

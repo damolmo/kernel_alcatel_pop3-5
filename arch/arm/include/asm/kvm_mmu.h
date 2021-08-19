@@ -183,6 +183,7 @@ static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 	 * and iterate over the range.
 	 */
 
+<<<<<<< HEAD
 	bool need_flush = !vcpu_has_cache_enabled(vcpu) || ipa_uncached;
 
 	VM_BUG_ON(size & ~PAGE_MASK);
@@ -195,6 +196,14 @@ static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 
 		if (need_flush)
 			kvm_flush_dcache_to_poc(va, PAGE_SIZE);
+=======
+	VM_BUG_ON(size & ~PAGE_MASK);
+
+	while (size) {
+		void *va = kmap_atomic_pfn(pfn);
+
+		kvm_flush_dcache_to_poc(va, PAGE_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (icache_is_pipt())
 			__cpuc_coherent_user_range((unsigned long)va,
@@ -206,7 +215,10 @@ static inline void __coherent_cache_guest_page(struct kvm_vcpu *vcpu, pfn_t pfn,
 		kunmap_atomic(va);
 	}
 
+<<<<<<< HEAD
 vipt_cache:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!icache_is_pipt() && !icache_is_vivt_asid_tagged()) {
 		/* any kind of VIPT cache */
 		__flush_icache_all();
@@ -245,7 +257,12 @@ static inline void __kvm_flush_dcache_pud(pud_t pud)
 
 #define kvm_virt_to_phys(x)		virt_to_idmap((unsigned long)(x))
 
+<<<<<<< HEAD
 void stage2_flush_vm(struct kvm *kvm);
+=======
+void kvm_set_way_flush(struct kvm_vcpu *vcpu);
+void kvm_toggle_cache(struct kvm_vcpu *vcpu, bool was_enabled);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif	/* !__ASSEMBLY__ */
 

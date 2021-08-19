@@ -31,7 +31,11 @@ struct flowi_common {
 #define FLOWI_FLAG_ANYSRC		0x01
 #define FLOWI_FLAG_KNOWN_NH		0x02
 	__u32	flowic_secid;
+<<<<<<< HEAD
 	kuid_t	flowic_uid;
+=======
+	kuid_t  flowic_uid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 union flowi_uli {

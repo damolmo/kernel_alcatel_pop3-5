@@ -106,5 +106,9 @@ ENDPROC(copy_page)
 	.previous
 	.section .altinstructions,"a"
 	altinstruction_entry copy_page, 1b, X86_FEATURE_REP_GOOD,	\
+<<<<<<< HEAD
 		.Lcopy_page_end-copy_page, 2b-1b
+=======
+		.Lcopy_page_end-copy_page, 2b-1b, 0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.previous

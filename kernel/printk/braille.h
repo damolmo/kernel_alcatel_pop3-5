@@ -9,7 +9,18 @@ braille_set_options(struct console_cmdline *c, char *brl_options)
 	c->brl_options = brl_options;
 }
 
+<<<<<<< HEAD
 char *
+=======
+/*
+ * Setup console according to braille options.
+ * Return -EINVAL on syntax error, 0 on success (or no braille option was
+ * actually given).
+ * Modifies str to point to the serial options
+ * Sets brl_options to the parsed braille options.
+ */
+int
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 _braille_console_setup(char **str, char **brl_options);
 
 int
@@ -25,10 +36,17 @@ braille_set_options(struct console_cmdline *c, char *brl_options)
 {
 }
 
+<<<<<<< HEAD
 static inline char *
 _braille_console_setup(char **str, char **brl_options)
 {
 	return NULL;
+=======
+static inline int
+_braille_console_setup(char **str, char **brl_options)
+{
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int

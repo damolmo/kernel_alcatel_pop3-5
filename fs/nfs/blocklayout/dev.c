@@ -157,7 +157,11 @@ static bool bl_map_stripe(struct pnfs_block_dev *dev, u64 offset,
 	chunk = div_u64(offset, dev->chunk_size);
 	div_u64_rem(chunk, dev->nr_children, &chunk_idx);
 
+<<<<<<< HEAD
 	if (chunk_idx > dev->nr_children) {
+=======
+	if (chunk_idx >= dev->nr_children) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dprintk("%s: invalid chunk idx %d (%lld/%lld)\n",
 			__func__, chunk_idx, offset, dev->chunk_size);
 		/* error, should not happen */

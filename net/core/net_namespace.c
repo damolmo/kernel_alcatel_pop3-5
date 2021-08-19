@@ -156,6 +156,10 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 
 	atomic_set(&net->count, 1);
 	atomic_set(&net->passive, 1);
+<<<<<<< HEAD
+=======
+	get_random_bytes(&net->hash_mix, sizeof(u32));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	net->dev_base_seq = 1;
 	net->user_ns = user_ns;
 
@@ -188,6 +192,28 @@ out_undo:
 	goto out;
 }
 
+<<<<<<< HEAD
+=======
+static int __net_init net_defaults_init_net(struct net *net)
+{
+	net->core.sysctl_somaxconn = SOMAXCONN;
+	return 0;
+}
+
+static struct pernet_operations net_defaults_ops = {
+	.init = net_defaults_init_net,
+};
+
+static __init int net_defaults_init(void)
+{
+	if (register_pernet_subsys(&net_defaults_ops))
+		panic("Cannot initialize net default settings");
+
+	return 0;
+}
+
+core_initcall(net_defaults_init);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_NET_NS
 static struct kmem_cache *net_cachep;
@@ -430,7 +456,12 @@ static int __init net_ns_init(void)
 
 	mutex_unlock(&net_mutex);
 
+<<<<<<< HEAD
 	register_pernet_subsys(&net_ns_ops);
+=======
+	if (register_pernet_subsys(&net_ns_ops))
+		panic("Could not register network namespace subsystems");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

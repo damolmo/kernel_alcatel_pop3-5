@@ -339,7 +339,11 @@ int ttm_tt_swapout(struct ttm_tt *ttm, struct file *persistent_swap_storage)
 	if (!persistent_swap_storage) {
 		swap_storage = shmem_file_setup("ttm swap",
 						ttm->num_pages << PAGE_SHIFT,
+<<<<<<< HEAD
 						0, 0);
+=======
+						0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (unlikely(IS_ERR(swap_storage))) {
 			pr_err("Failed allocating swap storage\n");
 			return PTR_ERR(swap_storage);

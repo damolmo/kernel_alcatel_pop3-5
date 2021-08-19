@@ -130,7 +130,10 @@ static struct rtable *do_output_route4(struct net *net, __be32 daddr,
 
 	memset(&fl4, 0, sizeof(fl4));
 	fl4.daddr = daddr;
+<<<<<<< HEAD
 	fl4.saddr = (rt_mode & IP_VS_RT_MODE_CONNECT) ? *saddr : 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fl4.flowi4_flags = (rt_mode & IP_VS_RT_MODE_KNOWN_NH) ?
 			   FLOWI_FLAG_KNOWN_NH : 0;
 
@@ -436,7 +439,11 @@ __ip_vs_get_out_rt_v6(int skb_af, struct sk_buff *skb, struct ip_vs_dest *dest,
 				goto err_unreach;
 			}
 			rt = (struct rt6_info *) dst;
+<<<<<<< HEAD
 			cookie = rt->rt6i_node ? rt->rt6i_node->fn_sernum : 0;
+=======
+			cookie = rt6_get_cookie(rt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			__ip_vs_dst_set(dest, dest_dst, &rt->dst, cookie);
 			spin_unlock_bh(&dest->dst_lock);
 			IP_VS_DBG(10, "new dst %pI6, src %pI6, refcnt=%d\n",
@@ -524,6 +531,24 @@ static inline int ip_vs_tunnel_xmit_prepare(struct sk_buff *skb,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/* In the event of a remote destination, it's possible that we would have
+ * matches against an old socket (particularly a TIME-WAIT socket). This
+ * causes havoc down the line (ip_local_out et. al. expect regular sockets
+ * and invalid memory accesses will happen) so simply drop the association
+ * in this case.
+*/
+static inline void ip_vs_drop_early_demux_sk(struct sk_buff *skb)
+{
+	/* If dev is set, the packet came from the LOCAL_IN callback and
+	 * not from a local TCP socket.
+	 */
+	if (skb->dev)
+		skb_orphan(skb);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* return NF_STOLEN (sent) or NF_ACCEPT if local=1 (not sent) */
 static inline int ip_vs_nat_send_or_cont(int pf, struct sk_buff *skb,
 					 struct ip_vs_conn *cp, int local)
@@ -535,12 +560,27 @@ static inline int ip_vs_nat_send_or_cont(int pf, struct sk_buff *skb,
 		ip_vs_notrack(skb);
 	else
 		ip_vs_update_conntrack(skb, cp, 1);
+<<<<<<< HEAD
+=======
+
+	/* Remove the early_demux association unless it's bound for the
+	 * exact same port and address on this host after translation.
+	 */
+	if (!local || cp->vport != cp->dport ||
+	    !ip_vs_addr_equal(cp->af, &cp->vaddr, &cp->daddr))
+		ip_vs_drop_early_demux_sk(skb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!local) {
 		skb_forward_csum(skb);
 		NF_HOOK(pf, NF_INET_LOCAL_OUT, skb, NULL, skb_dst(skb)->dev,
 			dst_output);
 	} else
 		ret = NF_ACCEPT;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -554,6 +594,10 @@ static inline int ip_vs_send_or_cont(int pf, struct sk_buff *skb,
 	if (likely(!(cp->flags & IP_VS_CONN_F_NFCT)))
 		ip_vs_notrack(skb);
 	if (!local) {
+<<<<<<< HEAD
+=======
+		ip_vs_drop_early_demux_sk(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		skb_forward_csum(skb);
 		NF_HOOK(pf, NF_INET_LOCAL_OUT, skb, NULL, skb_dst(skb)->dev,
 			dst_output);
@@ -782,7 +826,11 @@ ip_vs_nat_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
 
 	/* From world but DNAT to loopback address? */
 	if (local && skb->dev && !(skb->dev->flags & IFF_LOOPBACK) &&
+<<<<<<< HEAD
 	    ipv6_addr_type(&rt->rt6i_dst.addr) & IPV6_ADDR_LOOPBACK) {
+=======
+	    ipv6_addr_type(&cp->daddr.in6) & IPV6_ADDR_LOOPBACK) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		IP_VS_DBG_RL_PKT(1, AF_INET6, pp, skb, 0,
 				 "ip_vs_nat_xmit_v6(): "
 				 "stopping DNAT to loopback address");
@@ -842,6 +890,11 @@ ip_vs_prepare_tunneled_skb(struct sk_buff *skb, int skb_af,
 	struct ipv6hdr *old_ipv6h = NULL;
 #endif
 
+<<<<<<< HEAD
+=======
+	ip_vs_drop_early_demux_sk(skb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (skb_headroom(skb) < max_headroom || skb_cloned(skb)) {
 		new_skb = skb_realloc_headroom(skb, max_headroom);
 		if (!new_skb)
@@ -925,7 +978,12 @@ int
 ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
 		  struct ip_vs_protocol *pp, struct ip_vs_iphdr *ipvsh)
 {
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(skb_net(skb));
+=======
+	struct net *net = skb_net(skb);
+	struct netns_ipvs *ipvs = net_ipvs(net);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct rtable *rt;			/* Route to the other host */
 	__be32 saddr;				/* Source for tunnel */
 	struct net_device *tdev;		/* Device to other host */
@@ -992,7 +1050,11 @@ ip_vs_tunnel_xmit(struct sk_buff *skb, struct ip_vs_conn *cp,
 	iph->daddr		=	cp->daddr.ip;
 	iph->saddr		=	saddr;
 	iph->ttl		=	ttl;
+<<<<<<< HEAD
 	ip_select_ident(skb, NULL);
+=======
+	ip_select_ident(net, skb, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Another hack: avoid icmp_send in ip_fragment */
 	skb->ignore_df = 1;
@@ -1346,7 +1408,11 @@ ip_vs_icmp_xmit_v6(struct sk_buff *skb, struct ip_vs_conn *cp,
 
 	/* From world but DNAT to loopback address? */
 	if (local && skb->dev && !(skb->dev->flags & IFF_LOOPBACK) &&
+<<<<<<< HEAD
 	    ipv6_addr_type(&rt->rt6i_dst.addr) & IPV6_ADDR_LOOPBACK) {
+=======
+	    ipv6_addr_type(&cp->daddr.in6) & IPV6_ADDR_LOOPBACK) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		IP_VS_DBG(1, "%s(): "
 			  "stopping DNAT to loopback %pI6\n",
 			  __func__, &cp->daddr.in6);

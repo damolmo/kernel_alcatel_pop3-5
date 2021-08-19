@@ -27,6 +27,10 @@
 #include <linux/of_address.h>
 #include <linux/phy.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_vlan.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <uapi/linux/ppp_defs.h>
 #include <net/ip.h>
 #include <net/ipv6.h>
@@ -3276,7 +3280,11 @@ static void mvpp2_cls_init(struct mvpp2 *priv)
 	mvpp2_write(priv, MVPP2_CLS_MODE_REG, MVPP2_CLS_MODE_ACTIVE_MASK);
 
 	/* Clear classifier flow table */
+<<<<<<< HEAD
 	memset(&fe.data, 0, MVPP2_CLS_FLOWS_TBL_DATA_WORDS);
+=======
+	memset(&fe.data, 0, sizeof(fe.data));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (index = 0; index < MVPP2_CLS_FLOWS_TBL_SIZE; index++) {
 		fe.index = index;
 		mvpp2_cls_flow_write(priv, &fe);
@@ -3917,7 +3925,11 @@ static inline void mvpp2_gmac_max_rx_size_set(struct mvpp2_port *port)
 /* Set defaults to the MVPP2 port */
 static void mvpp2_defaults_set(struct mvpp2_port *port)
 {
+<<<<<<< HEAD
 	int tx_port_num, val, queue, ptxq, lrxq;
+=======
+	int tx_port_num, val, queue, lrxq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Configure port to loopback if needed */
 	if (port->flags & MVPP2_F_LOOPBACK)
@@ -3937,11 +3949,17 @@ static void mvpp2_defaults_set(struct mvpp2_port *port)
 	mvpp2_write(port->priv, MVPP2_TXP_SCHED_CMD_1_REG, 0);
 
 	/* Close bandwidth for all queues */
+<<<<<<< HEAD
 	for (queue = 0; queue < MVPP2_MAX_TXQ; queue++) {
 		ptxq = mvpp2_txq_phys(port->id, queue);
 		mvpp2_write(port->priv,
 			    MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(ptxq), 0);
 	}
+=======
+	for (queue = 0; queue < MVPP2_MAX_TXQ; queue++)
+		mvpp2_write(port->priv,
+			    MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(queue), 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Set refill period to 1 usec, refill tokens
 	 * and bucket size to maximum
@@ -4246,7 +4264,11 @@ static void mvpp2_txq_desc_put(struct mvpp2_tx_queue *txq)
 }
 
 /* Set Tx descriptors fields relevant for CSUM calculation */
+<<<<<<< HEAD
 static u32 mvpp2_txq_desc_csum(int l3_offs, int l3_proto,
+=======
+static u32 mvpp2_txq_desc_csum(int l3_offs, __be16 l3_proto,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       int ip_hdr_len, int l4_proto)
 {
 	u32 command;
@@ -4411,6 +4433,7 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
 							txq_pcpu->txq_get_index;
 		struct sk_buff *skb = txq_pcpu->tx_skb[txq_pcpu->txq_get_index];
 
+<<<<<<< HEAD
 		mvpp2_txq_inc_get(txq_pcpu);
 
 		if (!skb)
@@ -4419,6 +4442,15 @@ static void mvpp2_txq_bufs_free(struct mvpp2_port *port,
 		dma_unmap_single(port->dev->dev.parent, tx_desc->buf_phys_addr,
 				 tx_desc->data_size, DMA_TO_DEVICE);
 		dev_kfree_skb_any(skb);
+=======
+
+		dma_unmap_single(port->dev->dev.parent, tx_desc->buf_phys_addr,
+				 tx_desc->data_size, DMA_TO_DEVICE);
+		if (skb)
+			dev_kfree_skb_any(skb);
+
+		mvpp2_txq_inc_get(txq_pcpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -4688,7 +4720,11 @@ static void mvpp2_txq_deinit(struct mvpp2_port *port,
 	txq->descs_phys        = 0;
 
 	/* Set minimum bandwidth for disabled TXQs */
+<<<<<<< HEAD
 	mvpp2_write(port->priv, MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(txq->id), 0);
+=======
+	mvpp2_write(port->priv, MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(txq->log_id), 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Set Tx descriptors queue starting address and size */
 	mvpp2_write(port->priv, MVPP2_TXQ_NUM_REG, txq->id);
@@ -4957,14 +4993,24 @@ static u32 mvpp2_skb_tx_csum(struct mvpp2_port *port, struct sk_buff *skb)
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		int ip_hdr_len = 0;
 		u8 l4_proto;
+<<<<<<< HEAD
 
 		if (skb->protocol == htons(ETH_P_IP)) {
+=======
+		__be16 l3_proto = vlan_get_protocol(skb);
+
+		if (l3_proto == htons(ETH_P_IP)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			struct iphdr *ip4h = ip_hdr(skb);
 
 			/* Calculate IPv4 checksum and L4 checksum */
 			ip_hdr_len = ip4h->ihl;
 			l4_proto = ip4h->protocol;
+<<<<<<< HEAD
 		} else if (skb->protocol == htons(ETH_P_IPV6)) {
+=======
+		} else if (l3_proto == htons(ETH_P_IPV6)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			struct ipv6hdr *ip6h = ipv6_hdr(skb);
 
 			/* Read l4_protocol from one of IPv6 extra headers */
@@ -4976,7 +5022,11 @@ static u32 mvpp2_skb_tx_csum(struct mvpp2_port *port, struct sk_buff *skb)
 		}
 
 		return mvpp2_txq_desc_csum(skb_network_offset(skb),
+<<<<<<< HEAD
 				skb->protocol, ip_hdr_len, l4_proto);
+=======
+					   l3_proto, ip_hdr_len, l4_proto);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return MVPP2_TXD_L4_CSUM_NOT | MVPP2_TXD_IP_CSUM_DISABLE;
@@ -5583,6 +5633,10 @@ static void mvpp2_set_rx_mode(struct net_device *dev)
 	int id = port->id;
 	bool allmulti = dev->flags & IFF_ALLMULTI;
 
+<<<<<<< HEAD
+=======
+retry:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mvpp2_prs_mac_promisc_set(priv, id, dev->flags & IFF_PROMISC);
 	mvpp2_prs_mac_multi_set(priv, id, MVPP2_PE_MAC_MC_ALL, allmulti);
 	mvpp2_prs_mac_multi_set(priv, id, MVPP2_PE_MAC_MC_IP6, allmulti);
@@ -5590,9 +5644,19 @@ static void mvpp2_set_rx_mode(struct net_device *dev)
 	/* Remove all port->id's mcast enries */
 	mvpp2_prs_mcast_del_all(priv, id);
 
+<<<<<<< HEAD
 	if (allmulti && !netdev_mc_empty(dev)) {
 		netdev_for_each_mc_addr(ha, dev)
 			mvpp2_prs_mac_da_accept(priv, id, ha->addr, true);
+=======
+	if (!allmulti) {
+		netdev_for_each_mc_addr(ha, dev) {
+			if (mvpp2_prs_mac_da_accept(priv, id, ha->addr, true)) {
+				allmulti = true;
+				goto retry;
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

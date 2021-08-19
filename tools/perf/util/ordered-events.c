@@ -80,7 +80,11 @@ static union perf_event *dup_event(struct ordered_events *oe,
 
 static void free_dup_event(struct ordered_events *oe, union perf_event *event)
 {
+<<<<<<< HEAD
 	if (oe->copy_on_queue) {
+=======
+	if (event && oe->copy_on_queue) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		oe->cur_alloc_size -= event->header.size;
 		free(event);
 	}
@@ -151,6 +155,10 @@ void ordered_events__delete(struct ordered_events *oe, struct ordered_event *eve
 	list_move(&event->list, &oe->cache);
 	oe->nr_events--;
 	free_dup_event(oe, event->event);
+<<<<<<< HEAD
+=======
+	event->event = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __ordered_events__flush(struct perf_session *s,

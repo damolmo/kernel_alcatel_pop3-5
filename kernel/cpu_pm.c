@@ -97,7 +97,11 @@ EXPORT_SYMBOL_GPL(cpu_pm_unregister_notifier);
  */
 int cpu_pm_enter(void)
 {
+<<<<<<< HEAD
 	int nr_calls;
+=======
+	int nr_calls = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);
@@ -156,7 +160,11 @@ EXPORT_SYMBOL_GPL(cpu_pm_exit);
  */
 int cpu_cluster_pm_enter(void)
 {
+<<<<<<< HEAD
 	int nr_calls;
+=======
+	int nr_calls = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	read_lock(&cpu_pm_notifier_lock);

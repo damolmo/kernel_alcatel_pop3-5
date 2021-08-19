@@ -240,7 +240,11 @@ static void nhmex_uncore_msr_enable_event(struct intel_uncore_box *box, struct p
 {
 	struct hw_perf_event *hwc = &event->hw;
 
+<<<<<<< HEAD
 	if (hwc->idx >= UNCORE_PMC_IDX_FIXED)
+=======
+	if (hwc->idx == UNCORE_PMC_IDX_FIXED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		wrmsrl(hwc->config_base, NHMEX_PMON_CTL_EN_BIT0);
 	else if (box->pmu->type->event_mask & NHMEX_PMON_CTL_EN_BIT0)
 		wrmsrl(hwc->config_base, hwc->config | NHMEX_PMON_CTL_EN_BIT22);

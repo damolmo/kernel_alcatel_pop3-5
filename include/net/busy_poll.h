@@ -93,7 +93,11 @@ static inline bool sk_busy_loop(struct sock *sk, int nonblock)
 		goto out;
 
 	ops = napi->dev->netdev_ops;
+<<<<<<< HEAD
 	if (!ops->ndo_busy_poll)
+=======
+	if (!ops || !ops->ndo_busy_poll)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	do {

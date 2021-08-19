@@ -1316,6 +1316,10 @@ static int esp_data_bytes_sent(struct esp *esp, struct esp_cmd_entry *ent,
 
 	bytes_sent = esp->data_dma_len;
 	bytes_sent -= ecount;
+<<<<<<< HEAD
+=======
+	bytes_sent -= esp->send_cmd_residual;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!(ent->flags & ESP_CMD_FLAG_WRITE))
 		bytes_sent -= fifo_cnt;

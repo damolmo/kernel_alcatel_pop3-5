@@ -244,7 +244,11 @@ static void caam_jr_dequeue(unsigned long devarg)
 struct device *caam_jr_alloc(void)
 {
 	struct caam_drv_private_jr *jrpriv, *min_jrpriv = NULL;
+<<<<<<< HEAD
 	struct device *dev = NULL;
+=======
+	struct device *dev = ERR_PTR(-ENODEV);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int min_tfm_cnt	= INT_MAX;
 	int tfm_cnt;
 

@@ -14,8 +14,15 @@
 #include <linux/slab.h>
 #include <linux/sysctl.h>
 
+<<<<<<< HEAD
 #include <asm/insn.h>
 #include <asm/opcodes.h>
+=======
+#include <asm/cpufeature.h>
+#include <asm/insn.h>
+#include <asm/opcodes.h>
+#include <asm/sysreg.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/system_misc.h>
 #include <asm/traps.h>
 #include <asm/uaccess.h>
@@ -59,7 +66,11 @@ struct insn_emulation {
 };
 
 static LIST_HEAD(insn_emulation);
+<<<<<<< HEAD
 static int nr_insn_emulated;
+=======
+static int nr_insn_emulated __initdata;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
 
 static void register_emulation_hooks(struct insn_emulation_ops *ops)
@@ -170,7 +181,11 @@ static int update_insn_emulation_mode(struct insn_emulation *insn,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void register_insn_emulation(struct insn_emulation_ops *ops)
+=======
+static void __init register_insn_emulation(struct insn_emulation_ops *ops)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long flags;
 	struct insn_emulation *insn;
@@ -234,7 +249,11 @@ static struct ctl_table ctl_abi[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void register_insn_emulation_sysctl(struct ctl_table *table)
+=======
+static void __init register_insn_emulation_sysctl(struct ctl_table *table)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long flags;
 	int i = 0;
@@ -278,6 +297,11 @@ static void register_insn_emulation_sysctl(struct ctl_table *table)
  * Error-checking SWP macros implemented using ldxr{b}/stxr{b}
  */
 #define __user_swpX_asm(data, addr, res, temp, B)		\
+<<<<<<< HEAD
+=======
+do {								\
+	uaccess_enable();					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__asm__ __volatile__(					\
 	"	mov		%w2, %w1\n"			\
 	"0:	ldxr"B"		%w1, [%3]\n"			\
@@ -294,10 +318,20 @@ static void register_insn_emulation_sysctl(struct ctl_table *table)
 	"	.align		3\n"				\
 	"	.quad		0b, 3b\n"			\
 	"	.quad		1b, 3b\n"			\
+<<<<<<< HEAD
 	"	.popsection"					\
 	: "=&r" (res), "+r" (data), "=&r" (temp)		\
 	: "r" (addr), "i" (-EAGAIN), "i" (-EFAULT)		\
 	: "memory")
+=======
+	"	.popsection\n"					\
+	: "=&r" (res), "+r" (data), "=&r" (temp)		\
+	: "r" ((unsigned long)addr), "i" (-EAGAIN),		\
+	  "i" (-EFAULT)						\
+	: "memory");						\
+	uaccess_disable();					\
+} while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define __user_swp_asm(data, addr, res, temp) \
 	__user_swpX_asm(data, addr, res, temp, "")
@@ -504,6 +538,7 @@ ret:
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void config_sctlr_el1(u32 clear, u32 set)
 {
 	u32 val;
@@ -514,6 +549,8 @@ static inline void config_sctlr_el1(u32 clear, u32 set)
 	asm volatile("msr sctlr_el1, %0" : : "r" (val));
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int cp15_barrier_set_hw_mode(bool enable)
 {
 	if (enable)
@@ -605,7 +642,11 @@ static struct undef_hook setend_hooks[] = {
 	},
 	{
 		/* Thumb mode */
+<<<<<<< HEAD
 		.instr_mask	= 0x0000fff7,
+=======
+		.instr_mask	= 0xfffffff7,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.instr_val	= 0x0000b650,
 		.pstate_mask	= (COMPAT_PSR_T_BIT | COMPAT_PSR_MODE_MASK),
 		.pstate_val	= (COMPAT_PSR_T_BIT | COMPAT_PSR_MODE_USR),

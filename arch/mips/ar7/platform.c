@@ -581,6 +581,10 @@ static int __init ar7_register_uarts(void)
 	uart_port.type		= PORT_AR7;
 	uart_port.uartclk	= clk_get_rate(bus_clk) / 2;
 	uart_port.iotype	= UPIO_MEM32;
+<<<<<<< HEAD
+=======
+	uart_port.flags		= UPF_FIXED_TYPE | UPF_BOOT_AUTOCONF;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	uart_port.regshift	= 2;
 
 	uart_port.line		= 0;

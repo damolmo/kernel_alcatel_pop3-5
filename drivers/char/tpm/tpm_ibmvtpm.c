@@ -542,6 +542,10 @@ static irqreturn_t ibmvtpm_interrupt(int irq, void *vtpm_instance)
 	 */
 	while ((crq = ibmvtpm_crq_get_next(ibmvtpm)) != NULL) {
 		ibmvtpm_crq_process(crq, ibmvtpm);
+<<<<<<< HEAD
+=======
+		wake_up_interruptible(&ibmvtpm->crq_queue.wq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		crq->valid = 0;
 		smp_wmb();
 	}
@@ -590,6 +594,10 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 	}
 
 	crq_q->num_entry = CRQ_RES_BUF_SIZE / sizeof(*crq_q->crq_addr);
+<<<<<<< HEAD
+=======
+	init_waitqueue_head(&crq_q->wq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ibmvtpm->crq_dma_handle = dma_map_single(dev, crq_q->crq_addr,
 						 CRQ_RES_BUF_SIZE,
 						 DMA_BIDIRECTIONAL);
@@ -642,6 +650,16 @@ static int tpm_ibmvtpm_probe(struct vio_dev *vio_dev,
 	if (rc)
 		goto init_irq_cleanup;
 
+<<<<<<< HEAD
+=======
+	if (!wait_event_timeout(ibmvtpm->crq_queue.wq,
+				ibmvtpm->rtce_buf != NULL,
+				HZ)) {
+		dev_err(dev, "CRQ response timed out\n");
+		goto init_irq_cleanup;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 init_irq_cleanup:
 	do {

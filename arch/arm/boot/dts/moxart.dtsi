@@ -6,6 +6,10 @@
  */
 
 /include/ "skeleton.dtsi"
+<<<<<<< HEAD
+=======
+#include <dt-bindings/interrupt-controller/irq.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 / {
 	compatible = "moxa,moxart";
@@ -36,8 +40,13 @@
 		ranges;
 
 		intc: interrupt-controller@98800000 {
+<<<<<<< HEAD
 			compatible = "moxa,moxart-ic";
 			reg = <0x98800000 0x38>;
+=======
+			compatible = "moxa,moxart-ic", "faraday,ftintc010";
+			reg = <0x98800000 0x100>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			interrupt-mask = <0x00080000>;
@@ -59,7 +68,11 @@
 		timer: timer@98400000 {
 			compatible = "moxa,moxart-timer";
 			reg = <0x98400000 0x42>;
+<<<<<<< HEAD
 			interrupts = <19 1>;
+=======
+			interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			clocks = <&clk_apb>;
 		};
 
@@ -80,7 +93,11 @@
 		dma: dma@90500000 {
 			compatible = "moxa,moxart-dma";
 			reg = <0x90500080 0x40>;
+<<<<<<< HEAD
 			interrupts = <24 0>;
+=======
+			interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			#dma-cells = <1>;
 		};
 
@@ -93,7 +110,11 @@
 		sdhci: sdhci@98e00000 {
 			compatible = "moxa,moxart-sdhci";
 			reg = <0x98e00000 0x5C>;
+<<<<<<< HEAD
 			interrupts = <5 0>;
+=======
+			interrupts = <5 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			clocks = <&clk_apb>;
 			dmas =  <&dma 5>,
 				<&dma 5>;
@@ -120,7 +141,11 @@
 		mac0: mac@90900000 {
 			compatible = "moxa,moxart-mac";
 			reg = <0x90900000 0x90>;
+<<<<<<< HEAD
 			interrupts = <25 0>;
+=======
+			interrupts = <25 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			phy-handle = <&ethphy0>;
 			phy-mode = "mii";
 			status = "disabled";
@@ -129,7 +154,11 @@
 		mac1: mac@92000000 {
 			compatible = "moxa,moxart-mac";
 			reg = <0x92000000 0x90>;
+<<<<<<< HEAD
 			interrupts = <27 0>;
+=======
+			interrupts = <27 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			phy-handle = <&ethphy1>;
 			phy-mode = "mii";
 			status = "disabled";
@@ -138,7 +167,11 @@
 		uart0: uart@98200000 {
 			compatible = "ns16550a";
 			reg = <0x98200000 0x20>;
+<<<<<<< HEAD
 			interrupts = <31 8>;
+=======
+			interrupts = <31 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			clock-frequency = <14745600>;

@@ -635,7 +635,11 @@ static int brcmf_fws_hanger_pushpkt(struct brcmf_fws_hanger *h,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int brcmf_fws_hanger_poppkt(struct brcmf_fws_hanger *h,
+=======
+static inline int brcmf_fws_hanger_poppkt(struct brcmf_fws_hanger *h,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					  u32 slot_id, struct sk_buff **pktout,
 					  bool remove_item)
 {
@@ -2261,10 +2265,31 @@ void brcmf_fws_bustxfail(struct brcmf_fws_info *fws, struct sk_buff *skb)
 void brcmf_fws_bus_blocked(struct brcmf_pub *drvr, bool flow_blocked)
 {
 	struct brcmf_fws_info *fws = drvr->fws;
+<<<<<<< HEAD
 
 	fws->bus_flow_blocked = flow_blocked;
 	if (!flow_blocked)
 		brcmf_fws_schedule_deq(fws);
 	else
 		fws->stats.bus_flow_block++;
+=======
+	struct brcmf_if *ifp;
+	int i;
+
+	if (fws->avoid_queueing) {
+		for (i = 0; i < BRCMF_MAX_IFS; i++) {
+			ifp = drvr->iflist[i];
+			if (!ifp || !ifp->ndev)
+				continue;
+			brcmf_txflowblock_if(ifp, BRCMF_NETIF_STOP_REASON_FLOW,
+					     flow_blocked);
+		}
+	} else {
+		fws->bus_flow_blocked = flow_blocked;
+		if (!flow_blocked)
+			brcmf_fws_schedule_deq(fws);
+		else
+			fws->stats.bus_flow_block++;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

@@ -183,7 +183,11 @@ static int hdq_write_byte(struct hdq_data *hdq_data, u8 val, u8 *status)
 	/* check irqstatus */
 	if (!(*status & OMAP_HDQ_INT_STATUS_TXCOMPLETE)) {
 		dev_dbg(hdq_data->dev, "timeout waiting for"
+<<<<<<< HEAD
 			" TXCOMPLETE/RXCOMPLETE, %x", *status);
+=======
+			" TXCOMPLETE/RXCOMPLETE, %x\n", *status);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ETIMEDOUT;
 		goto out;
 	}
@@ -194,7 +198,11 @@ static int hdq_write_byte(struct hdq_data *hdq_data, u8 val, u8 *status)
 			OMAP_HDQ_FLAG_CLEAR, &tmp_status);
 	if (ret) {
 		dev_dbg(hdq_data->dev, "timeout waiting GO bit"
+<<<<<<< HEAD
 			" return to zero, %x", tmp_status);
+=======
+			" return to zero, %x\n", tmp_status);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 out:
@@ -210,7 +218,11 @@ static irqreturn_t hdq_isr(int irq, void *_hdq)
 	spin_lock_irqsave(&hdq_data->hdq_spinlock, irqflags);
 	hdq_data->hdq_irqstatus = hdq_reg_in(hdq_data, OMAP_HDQ_INT_STATUS);
 	spin_unlock_irqrestore(&hdq_data->hdq_spinlock, irqflags);
+<<<<<<< HEAD
 	dev_dbg(hdq_data->dev, "hdq_isr: %x", hdq_data->hdq_irqstatus);
+=======
+	dev_dbg(hdq_data->dev, "hdq_isr: %x\n", hdq_data->hdq_irqstatus);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (hdq_data->hdq_irqstatus &
 		(OMAP_HDQ_INT_STATUS_TXCOMPLETE | OMAP_HDQ_INT_STATUS_RXCOMPLETE
@@ -322,7 +334,11 @@ static int omap_hdq_break(struct hdq_data *hdq_data)
 	tmp_status = hdq_data->hdq_irqstatus;
 	/* check irqstatus */
 	if (!(tmp_status & OMAP_HDQ_INT_STATUS_TIMEOUT)) {
+<<<<<<< HEAD
 		dev_dbg(hdq_data->dev, "timeout waiting for TIMEOUT, %x",
+=======
+		dev_dbg(hdq_data->dev, "timeout waiting for TIMEOUT, %x\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				tmp_status);
 		ret = -ETIMEDOUT;
 		goto out;
@@ -337,7 +353,11 @@ static int omap_hdq_break(struct hdq_data *hdq_data)
 			&tmp_status);
 	if (ret)
 		dev_dbg(hdq_data->dev, "timeout waiting INIT&GO bits"
+<<<<<<< HEAD
 			" return to zero, %x", tmp_status);
+=======
+			" return to zero, %x\n", tmp_status);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	mutex_unlock(&hdq_data->hdq_mutex);
@@ -622,6 +642,11 @@ static int omap_hdq_remove(struct platform_device *pdev)
 	/* remove module dependency */
 	pm_runtime_disable(&pdev->dev);
 
+<<<<<<< HEAD
+=======
+	w1_remove_master_device(&omap_w1_master);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

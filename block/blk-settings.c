@@ -241,8 +241,13 @@ EXPORT_SYMBOL(blk_queue_bounce_limit);
  * Description:
  *    Enables a low level driver to set a hard upper limit,
  *    max_hw_sectors, on the size of requests.  max_hw_sectors is set by
+<<<<<<< HEAD
  *    the device driver based upon the combined capabilities of I/O
  *    controller and storage device.
+=======
+ *    the device driver based upon the capabilities of the I/O
+ *    controller.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  *    max_sectors is a soft limit imposed by the block layer for
  *    filesystem type requests.  This value can be overridden on a
@@ -274,6 +279,11 @@ EXPORT_SYMBOL(blk_limits_max_hw_sectors);
 void blk_queue_max_hw_sectors(struct request_queue *q, unsigned int max_hw_sectors)
 {
 	blk_limits_max_hw_sectors(&q->limits, max_hw_sectors);
+<<<<<<< HEAD
+=======
+	q->backing_dev_info.io_pages =
+			q->limits.max_sectors >> (PAGE_SHIFT - 9);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(blk_queue_max_hw_sectors);
 
@@ -373,7 +383,11 @@ EXPORT_SYMBOL(blk_queue_max_segment_size);
  *   storage device can address.  The default of 512 covers most
  *   hardware.
  **/
+<<<<<<< HEAD
 void blk_queue_logical_block_size(struct request_queue *q, unsigned short size)
+=======
+void blk_queue_logical_block_size(struct request_queue *q, unsigned int size)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	q->limits.logical_block_size = size;
 

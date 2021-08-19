@@ -101,6 +101,10 @@ struct s3c_hsotg_req;
  * @lock: State lock to protect contents of endpoint.
  * @dir_in: Set to true if this endpoint is of the IN direction, which
  *          means that it is sending data to the Host.
+<<<<<<< HEAD
+=======
+ * @map_dir: Set to the value of dir_in when the DMA buffer is mapped.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @index: The index for the endpoint registers.
  * @mc: Multi Count - number of transactions per microframe
  * @interval - Interval for periodic endpoints
@@ -142,9 +146,16 @@ struct s3c_hsotg_ep {
 	unsigned short		fifo_index;
 
 	unsigned char           dir_in;
+<<<<<<< HEAD
 	unsigned char           index;
 	unsigned char           mc;
 	unsigned char           interval;
+=======
+	unsigned char           map_dir;
+	unsigned char           index;
+	unsigned char           mc;
+	u16                     interval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned int            halted:1;
 	unsigned int            periodic:1;

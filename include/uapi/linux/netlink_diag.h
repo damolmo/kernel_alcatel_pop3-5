@@ -48,6 +48,12 @@ enum {
 
 #define NDIAG_SHOW_MEMINFO	0x00000001 /* show memory info of a socket */
 #define NDIAG_SHOW_GROUPS	0x00000002 /* show groups of a netlink socket */
+<<<<<<< HEAD
 #define NDIAG_SHOW_RING_CFG	0x00000004 /* show ring configuration */
+=======
+#ifndef __KERNEL__
+#define NDIAG_SHOW_RING_CFG	0x00000004 /* show ring configuration */
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

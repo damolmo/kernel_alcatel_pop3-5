@@ -42,7 +42,11 @@
 #define AMD_BOOTLOC_BUG
 #define FORCE_WORD_WRITE 0
 
+<<<<<<< HEAD
 #define MAX_WORD_RETRIES 3
+=======
+#define MAX_RETRIES 3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define SST49LF004B	        0x0060
 #define SST49LF040B	        0x0050
@@ -724,7 +728,10 @@ static struct mtd_info *cfi_amdstd_setup(struct mtd_info *mtd)
 	kfree(mtd->eraseregions);
 	kfree(mtd);
 	kfree(cfi->cmdset_priv);
+<<<<<<< HEAD
 	kfree(cfi->cfiq);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NULL;
 }
 
@@ -814,9 +821,16 @@ static int get_chip(struct map_info *map, struct flchip *chip, unsigned long adr
 		    (mode == FL_WRITING && (cfip->EraseSuspend & 0x2))))
 			goto sleep;
 
+<<<<<<< HEAD
 		/* We could check to see if we're trying to access the sector
 		 * that is currently being erased. However, no user will try
 		 * anything like that so we just wait for the timeout. */
+=======
+		/* Do not allow suspend iff read/write to EB address */
+		if ((adr & chip->in_progress_block_mask) ==
+		    chip->in_progress_block_addr)
+			goto sleep;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Erase suspend */
 		/* It's harmless to issue the Erase-Suspend and Erase-Resume
@@ -1625,6 +1639,7 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip,
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (time_after(jiffies, timeo) && !chip_ready(map, adr)){
 			xip_enable(map, chip, adr);
 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
@@ -1633,21 +1648,49 @@ static int __xipram do_write_oneword(struct map_info *map, struct flchip *chip,
 		}
 
 		if (chip_ready(map, adr))
+=======
+		/*
+		 * We check "time_after" and "!chip_good" before checking
+		 * "chip_good" to avoid the failure due to scheduling.
+		 */
+		if (time_after(jiffies, timeo) && !chip_good(map, adr, datum)) {
+			xip_enable(map, chip, adr);
+			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
+			xip_disable(map, chip, adr);
+			ret = -EIO;
+			break;
+		}
+
+		if (chip_good(map, adr, datum))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 		/* Latency issues. Drop the lock, wait a while and retry */
 		UDELAY(map, chip, adr, 1);
 	}
+<<<<<<< HEAD
 	/* Did we succeed? */
 	if (!chip_good(map, adr, datum)) {
+=======
+
+	/* Did we succeed? */
+	if (ret) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
 		/* FIXME - should have reset delay before continuing */
 
+<<<<<<< HEAD
 		if (++retry_cnt <= MAX_WORD_RETRIES)
 			goto retry;
 
 		ret = -EIO;
+=======
+		if (++retry_cnt <= MAX_RETRIES) {
+			ret = 0;
+			goto retry;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	xip_enable(map, chip, adr);
  op_done:
@@ -1874,10 +1917,21 @@ static int __xipram do_write_buffer(struct map_info *map, struct flchip *chip,
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (time_after(jiffies, timeo) && !chip_ready(map, adr))
 			break;
 
 		if (chip_ready(map, adr)) {
+=======
+		/*
+		 * We check "time_after" and "!chip_good" before checking "chip_good" to avoid
+		 * the failure due to scheduling.
+		 */
+		if (time_after(jiffies, timeo) && !chip_good(map, adr, datum))
+			break;
+
+		if (chip_good(map, adr, datum)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			xip_enable(map, chip, adr);
 			goto op_done;
 		}
@@ -2103,7 +2157,11 @@ retry:
 		map_write(map, CMD(0xF0), chip->start);
 		/* FIXME - should have reset delay before continuing */
 
+<<<<<<< HEAD
 		if (++retry_cnt <= MAX_WORD_RETRIES)
+=======
+		if (++retry_cnt <= MAX_RETRIES)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto retry;
 
 		ret = -EIO;
@@ -2238,6 +2296,10 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 	unsigned long int adr;
 	DECLARE_WAITQUEUE(wait, current);
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	int retry_cnt = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	adr = cfi->addr_unlock1;
 
@@ -2255,6 +2317,10 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 	ENABLE_VPP(map);
 	xip_disable(map, chip, adr);
 
+<<<<<<< HEAD
+=======
+ retry:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cfi_send_gen_cmd(0xAA, cfi->addr_unlock1, chip->start, map, cfi, cfi->device_type, NULL);
 	cfi_send_gen_cmd(0x55, cfi->addr_unlock2, chip->start, map, cfi, cfi->device_type, NULL);
 	cfi_send_gen_cmd(0x80, cfi->addr_unlock1, chip->start, map, cfi, cfi->device_type, NULL);
@@ -2265,6 +2331,10 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 	chip->state = FL_ERASING;
 	chip->erase_suspended = 0;
 	chip->in_progress_block_addr = adr;
+<<<<<<< HEAD
+=======
+	chip->in_progress_block_mask = ~(map->size - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	INVALIDATE_CACHE_UDELAY(map, chip,
 				adr, map->size,
@@ -2290,12 +2360,20 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 			chip->erase_suspended = 0;
 		}
 
+<<<<<<< HEAD
 		if (chip_ready(map, adr))
+=======
+		if (chip_good(map, adr, map_word_ff(map)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 		if (time_after(jiffies, timeo)) {
 			printk(KERN_WARNING "MTD %s(): software timeout\n",
 				__func__ );
+<<<<<<< HEAD
+=======
+			ret = -EIO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 
@@ -2303,12 +2381,23 @@ static int __xipram do_erase_chip(struct map_info *map, struct flchip *chip)
 		UDELAY(map, chip, adr, 1000000/HZ);
 	}
 	/* Did we succeed? */
+<<<<<<< HEAD
 	if (!chip_good(map, adr, map_word_ff(map))) {
+=======
+	if (ret) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
 		/* FIXME - should have reset delay before continuing */
 
+<<<<<<< HEAD
 		ret = -EIO;
+=======
+		if (++retry_cnt <= MAX_RETRIES) {
+			ret = 0;
+			goto retry;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	chip->state = FL_READY;
@@ -2327,6 +2416,10 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 	unsigned long timeo = jiffies + HZ;
 	DECLARE_WAITQUEUE(wait, current);
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	int retry_cnt = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	adr += chip->start;
 
@@ -2344,6 +2437,10 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 	ENABLE_VPP(map);
 	xip_disable(map, chip, adr);
 
+<<<<<<< HEAD
+=======
+ retry:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cfi_send_gen_cmd(0xAA, cfi->addr_unlock1, chip->start, map, cfi, cfi->device_type, NULL);
 	cfi_send_gen_cmd(0x55, cfi->addr_unlock2, chip->start, map, cfi, cfi->device_type, NULL);
 	cfi_send_gen_cmd(0x80, cfi->addr_unlock1, chip->start, map, cfi, cfi->device_type, NULL);
@@ -2354,6 +2451,10 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 	chip->state = FL_ERASING;
 	chip->erase_suspended = 0;
 	chip->in_progress_block_addr = adr;
+<<<<<<< HEAD
+=======
+	chip->in_progress_block_mask = ~(len - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	INVALIDATE_CACHE_UDELAY(map, chip,
 				adr, len,
@@ -2379,7 +2480,11 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 			chip->erase_suspended = 0;
 		}
 
+<<<<<<< HEAD
 		if (chip_ready(map, adr)) {
+=======
+		if (chip_good(map, adr, map_word_ff(map))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			xip_enable(map, chip, adr);
 			break;
 		}
@@ -2388,6 +2493,10 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 			xip_enable(map, chip, adr);
 			printk(KERN_WARNING "MTD %s(): software timeout\n",
 				__func__ );
+<<<<<<< HEAD
+=======
+			ret = -EIO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 
@@ -2395,12 +2504,23 @@ static int __xipram do_erase_oneblock(struct map_info *map, struct flchip *chip,
 		UDELAY(map, chip, adr, 1000000/HZ);
 	}
 	/* Did we succeed? */
+<<<<<<< HEAD
 	if (!chip_good(map, adr, map_word_ff(map))) {
+=======
+	if (ret) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* reset on all failures. */
 		map_write( map, CMD(0xF0), chip->start );
 		/* FIXME - should have reset delay before continuing */
 
+<<<<<<< HEAD
 		ret = -EIO;
+=======
+		if (++retry_cnt <= MAX_RETRIES) {
+			ret = 0;
+			goto retry;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	chip->state = FL_READY;
@@ -2530,7 +2650,11 @@ static int cfi_atmel_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 
 struct ppb_lock {
 	struct flchip *chip;
+<<<<<<< HEAD
 	loff_t offset;
+=======
+	unsigned long adr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int locked;
 };
 
@@ -2548,8 +2672,14 @@ static int __maybe_unused do_ppb_xxlock(struct map_info *map,
 	unsigned long timeo;
 	int ret;
 
+<<<<<<< HEAD
 	mutex_lock(&chip->mutex);
 	ret = get_chip(map, chip, adr + chip->start, FL_LOCKING);
+=======
+	adr += chip->start;
+	mutex_lock(&chip->mutex);
+	ret = get_chip(map, chip, adr, FL_LOCKING);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		mutex_unlock(&chip->mutex);
 		return ret;
@@ -2567,8 +2697,13 @@ static int __maybe_unused do_ppb_xxlock(struct map_info *map,
 
 	if (thunk == DO_XXLOCK_ONEBLOCK_LOCK) {
 		chip->state = FL_LOCKING;
+<<<<<<< HEAD
 		map_write(map, CMD(0xA0), chip->start + adr);
 		map_write(map, CMD(0x00), chip->start + adr);
+=======
+		map_write(map, CMD(0xA0), adr);
+		map_write(map, CMD(0x00), adr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (thunk == DO_XXLOCK_ONEBLOCK_UNLOCK) {
 		/*
 		 * Unlocking of one specific sector is not supported, so we
@@ -2606,7 +2741,11 @@ static int __maybe_unused do_ppb_xxlock(struct map_info *map,
 	map_write(map, CMD(0x00), chip->start);
 
 	chip->state = FL_READY;
+<<<<<<< HEAD
 	put_chip(map, chip, adr + chip->start);
+=======
+	put_chip(map, chip, adr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&chip->mutex);
 
 	return ret;
@@ -2663,9 +2802,15 @@ static int __maybe_unused cfi_ppb_unlock(struct mtd_info *mtd, loff_t ofs,
 		 * sectors shall be unlocked, so lets keep their locking
 		 * status at "unlocked" (locked=0) for the final re-locking.
 		 */
+<<<<<<< HEAD
 		if ((adr < ofs) || (adr >= (ofs + len))) {
 			sect[sectors].chip = &cfi->chips[chipnum];
 			sect[sectors].offset = offset;
+=======
+		if ((offset < ofs) || (offset >= (ofs + len))) {
+			sect[sectors].chip = &cfi->chips[chipnum];
+			sect[sectors].adr = adr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sect[sectors].locked = do_ppb_xxlock(
 				map, &cfi->chips[chipnum], adr, 0,
 				DO_XXLOCK_ONEBLOCK_GETLOCK);
@@ -2679,6 +2824,11 @@ static int __maybe_unused cfi_ppb_unlock(struct mtd_info *mtd, loff_t ofs,
 			i++;
 
 		if (adr >> cfi->chipshift) {
+<<<<<<< HEAD
+=======
+			if (offset >= (ofs + len))
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			adr = 0;
 			chipnum++;
 
@@ -2709,7 +2859,11 @@ static int __maybe_unused cfi_ppb_unlock(struct mtd_info *mtd, loff_t ofs,
 	 */
 	for (i = 0; i < sectors; i++) {
 		if (sect[i].locked)
+<<<<<<< HEAD
 			do_ppb_xxlock(map, sect[i].chip, sect[i].offset, 0,
+=======
+			do_ppb_xxlock(map, sect[i].chip, sect[i].adr, 0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				      DO_XXLOCK_ONEBLOCK_LOCK);
 	}
 

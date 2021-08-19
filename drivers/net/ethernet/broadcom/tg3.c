@@ -7829,6 +7829,17 @@ static int tigon3_dma_hwbug_workaround(struct tg3_napi *tnapi,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static bool tg3_tso_bug_gso_check(struct tg3_napi *tnapi, struct sk_buff *skb)
+{
+	/* Check if we will never have enough descriptors,
+	 * as gso_segs can be more than current ring size
+	 */
+	return skb_shinfo(skb)->gso_segs < tnapi->tx_pending / 3;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static netdev_tx_t tg3_start_xmit(struct sk_buff *, struct net_device *);
 
 /* Use GSO to workaround all TSO packets that meet HW bug conditions
@@ -7932,6 +7943,7 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		 * vlan encapsulated.
 		 */
 		if (skb->protocol == htons(ETH_P_8021Q) ||
+<<<<<<< HEAD
 		    skb->protocol == htons(ETH_P_8021AD))
 			return tg3_tso_bug(tp, tnapi, txq, skb);
 
@@ -7940,6 +7952,21 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			    tg3_flag(tp, TSO_BUG))
 				return tg3_tso_bug(tp, tnapi, txq, skb);
 
+=======
+		    skb->protocol == htons(ETH_P_8021AD)) {
+			if (tg3_tso_bug_gso_check(tnapi, skb))
+				return tg3_tso_bug(tp, tnapi, txq, skb);
+			goto drop;
+		}
+
+		if (!skb_is_gso_v6(skb)) {
+			if (unlikely((ETH_HLEN + hdr_len) > 80) &&
+			    tg3_flag(tp, TSO_BUG)) {
+				if (tg3_tso_bug_gso_check(tnapi, skb))
+					return tg3_tso_bug(tp, tnapi, txq, skb);
+				goto drop;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ip_csum = iph->check;
 			ip_tot_len = iph->tot_len;
 			iph->check = 0;
@@ -8071,7 +8098,11 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (would_hit_hwbug) {
 		tg3_tx_skb_unmap(tnapi, tnapi->tx_prod, i);
 
+<<<<<<< HEAD
 		if (mss) {
+=======
+		if (mss && tg3_tso_bug_gso_check(tnapi, skb)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* If it's a TSO packet, do GSO instead of
 			 * allocating and copying to a large linear SKB
 			 */
@@ -8705,6 +8736,13 @@ static void tg3_free_consistent(struct tg3 *tp)
 	tg3_mem_rx_release(tp);
 	tg3_mem_tx_release(tp);
 
+<<<<<<< HEAD
+=======
+	/* tp->hw_stats can be referenced safely:
+	 *     1. under rtnl_lock
+	 *     2. or under tp->lock if TG3_FLAG_INIT_COMPLETE is set.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (tp->hw_stats) {
 		dma_free_coherent(&tp->pdev->dev, sizeof(struct tg3_hw_stats),
 				  tp->hw_stats, tp->stats_mapping);
@@ -9251,6 +9289,18 @@ static int tg3_chip_reset(struct tg3 *tp)
 
 	tg3_restore_clk(tp);
 
+<<<<<<< HEAD
+=======
+	/* Increase the core clock speed to fix tx timeout issue for 5762
+	 * with 100Mbps link speed.
+	 */
+	if (tg3_asic_rev(tp) == ASIC_REV_5762) {
+		val = tr32(TG3_CPMU_CLCK_ORIDE_ENABLE);
+		tw32(TG3_CPMU_CLCK_ORIDE_ENABLE, val |
+		     TG3_CPMU_MAC_ORIDE_ENABLE);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Reprobe ASF enable state.  */
 	tg3_flag_clear(tp, ENABLE_ASF);
 	tp->phy_flags &= ~(TG3_PHYFLG_1G_ON_VAUX_OK |
@@ -10025,6 +10075,19 @@ static int tg3_reset_hw(struct tg3 *tp, bool reset_phy)
 
 	tw32(GRC_MODE, tp->grc_mode | val);
 
+<<<<<<< HEAD
+=======
+	/* On one of the AMD platform, MRRS is restricted to 4000 because of
+	 * south bridge limitation. As a workaround, Driver is setting MRRS
+	 * to 2048 instead of default 4096.
+	 */
+	if (tp->pdev->subsystem_vendor == PCI_VENDOR_ID_DELL &&
+	    tp->pdev->subsystem_device == TG3PCI_SUBDEVICE_ID_DELL_5762) {
+		val = tr32(TG3PCI_DEV_STATUS_CTRL) & ~MAX_READ_REQ_MASK;
+		tw32(TG3PCI_DEV_STATUS_CTRL, val | MAX_READ_REQ_SIZE_2048);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Setup the timer prescalar register.  Clock is always 66Mhz. */
 	val = tr32(GRC_MISC_CFG);
 	val &= ~0xff;
@@ -10752,7 +10815,11 @@ static ssize_t tg3_show_temp(struct device *dev,
 	tg3_ape_scratchpad_read(tp, &temperature, attr->index,
 				sizeof(temperature));
 	spin_unlock_bh(&tp->lock);
+<<<<<<< HEAD
 	return sprintf(buf, "%u\n", temperature);
+=======
+	return sprintf(buf, "%u\n", temperature * 1000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -12021,7 +12088,11 @@ static int tg3_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	int ret;
 	u32 offset, len, b_offset, odd_len;
 	u8 *buf;
+<<<<<<< HEAD
 	__be32 start, end;
+=======
+	__be32 start = 0, end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tg3_flag(tp, NO_NVRAM) ||
 	    eeprom->magic != TG3_EEPROM_MAGIC)
@@ -12346,6 +12417,10 @@ static int tg3_set_ringparam(struct net_device *dev, struct ethtool_ringparam *e
 {
 	struct tg3 *tp = netdev_priv(dev);
 	int i, irq_sync = 0, err = 0;
+<<<<<<< HEAD
+=======
+	bool reset_phy = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((ering->rx_pending > tp->rx_std_ring_mask) ||
 	    (ering->rx_jumbo_pending > tp->rx_jmb_ring_mask) ||
@@ -12377,7 +12452,17 @@ static int tg3_set_ringparam(struct net_device *dev, struct ethtool_ringparam *e
 
 	if (netif_running(dev)) {
 		tg3_halt(tp, RESET_KIND_SHUTDOWN, 1);
+<<<<<<< HEAD
 		err = tg3_restart_hw(tp, false);
+=======
+		/* Reset PHY to avoid PHY lock up */
+		if (tg3_asic_rev(tp) == ASIC_REV_5717 ||
+		    tg3_asic_rev(tp) == ASIC_REV_5719 ||
+		    tg3_asic_rev(tp) == ASIC_REV_5720)
+			reset_phy = true;
+
+		err = tg3_restart_hw(tp, reset_phy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!err)
 			tg3_netif_start(tp);
 	}
@@ -12411,6 +12496,10 @@ static int tg3_set_pauseparam(struct net_device *dev, struct ethtool_pauseparam 
 {
 	struct tg3 *tp = netdev_priv(dev);
 	int err = 0;
+<<<<<<< HEAD
+=======
+	bool reset_phy = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tp->link_config.autoneg == AUTONEG_ENABLE)
 		tg3_warn_mgmt_link_flap(tp);
@@ -12501,7 +12590,17 @@ static int tg3_set_pauseparam(struct net_device *dev, struct ethtool_pauseparam 
 
 		if (netif_running(dev)) {
 			tg3_halt(tp, RESET_KIND_SHUTDOWN, 1);
+<<<<<<< HEAD
 			err = tg3_restart_hw(tp, false);
+=======
+			/* Reset PHY to avoid PHY lock up */
+			if (tg3_asic_rev(tp) == ASIC_REV_5717 ||
+			    tg3_asic_rev(tp) == ASIC_REV_5719 ||
+			    tg3_asic_rev(tp) == ASIC_REV_5720)
+				reset_phy = true;
+
+			err = tg3_restart_hw(tp, reset_phy);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!err)
 				tg3_netif_start(tp);
 		}
@@ -14124,7 +14223,11 @@ static struct rtnl_link_stats64 *tg3_get_stats64(struct net_device *dev,
 	struct tg3 *tp = netdev_priv(dev);
 
 	spin_lock_bh(&tp->lock);
+<<<<<<< HEAD
 	if (!tp->hw_stats) {
+=======
+	if (!tp->hw_stats || !tg3_flag(tp, INIT_COMPLETE)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*stats = tp->net_stats_prev;
 		spin_unlock_bh(&tp->lock);
 		return stats;
@@ -14199,7 +14302,14 @@ static int tg3_change_mtu(struct net_device *dev, int new_mtu)
 	/* Reset PHY, otherwise the read DMA engine will be in a mode that
 	 * breaks all requests to 256 bytes.
 	 */
+<<<<<<< HEAD
 	if (tg3_asic_rev(tp) == ASIC_REV_57766)
+=======
+	if (tg3_asic_rev(tp) == ASIC_REV_57766 ||
+	    tg3_asic_rev(tp) == ASIC_REV_5717 ||
+	    tg3_asic_rev(tp) == ASIC_REV_5719 ||
+	    tg3_asic_rev(tp) == ASIC_REV_5720)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		reset_phy = true;
 
 	err = tg3_restart_hw(tp, reset_phy);
@@ -18106,12 +18216,20 @@ static pci_ers_result_t tg3_io_error_detected(struct pci_dev *pdev,
 
 	rtnl_lock();
 
+<<<<<<< HEAD
 	tp->pcierr_recovery = true;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* We probably don't have netdev yet */
 	if (!netdev || !netif_running(netdev))
 		goto done;
 
+<<<<<<< HEAD
+=======
+	tp->pcierr_recovery = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tg3_phy_stop(tp);
 
 	tg3_netif_stop(tp);
@@ -18208,7 +18326,11 @@ static void tg3_io_resume(struct pci_dev *pdev)
 
 	rtnl_lock();
 
+<<<<<<< HEAD
 	if (!netif_running(netdev))
+=======
+	if (!netdev || !netif_running(netdev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto done;
 
 	tg3_full_lock(tp, 0);

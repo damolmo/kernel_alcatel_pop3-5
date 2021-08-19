@@ -133,6 +133,10 @@ get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 			case USB_ENDPOINT_XFER_INT:
 				if (dev->info->intr)
 					goto try_intr;
+<<<<<<< HEAD
+=======
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			case USB_ENDPOINT_XFER_ISOC:
 				if (dev->info->iso)
 					goto try_iso;
@@ -182,12 +186,22 @@ found:
 			return tmp;
 	}
 
+<<<<<<< HEAD
 	if (in) {
 		dev->in_pipe = usb_rcvbulkpipe(udev,
 			in->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
 		dev->out_pipe = usb_sndbulkpipe(udev,
 			out->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
 	}
+=======
+	if (in)
+		dev->in_pipe = usb_rcvbulkpipe(udev,
+			in->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
+	if (out)
+		dev->out_pipe = usb_sndbulkpipe(udev,
+			out->desc.bEndpointAddress & USB_ENDPOINT_NUMBER_MASK);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (iso_in) {
 		dev->iso_in = &iso_in->desc;
 		dev->in_iso_pipe = usb_rcvisocpipe(udev,
@@ -303,11 +317,27 @@ static unsigned mod_pattern;
 module_param_named(pattern, mod_pattern, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(mod_pattern, "i/o pattern (0 == zeroes)");
 
+<<<<<<< HEAD
 static inline void simple_fill_buf(struct urb *urb)
+=======
+static unsigned get_maxpacket(struct usb_device *udev, int pipe)
+{
+	struct usb_host_endpoint	*ep;
+
+	ep = usb_pipe_endpoint(udev, pipe);
+	return le16_to_cpup(&ep->desc.wMaxPacketSize);
+}
+
+static void simple_fill_buf(struct urb *urb)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned	i;
 	u8		*buf = urb->transfer_buffer;
 	unsigned	len = urb->transfer_buffer_length;
+<<<<<<< HEAD
+=======
+	unsigned	maxpacket;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (pattern) {
 	default:
@@ -316,8 +346,14 @@ static inline void simple_fill_buf(struct urb *urb)
 		memset(buf, 0, len);
 		break;
 	case 1:			/* mod63 */
+<<<<<<< HEAD
 		for (i = 0; i < len; i++)
 			*buf++ = (u8) (i % 63);
+=======
+		maxpacket = get_maxpacket(urb->dev, urb->pipe);
+		for (i = 0; i < len; i++)
+			*buf++ = (u8) ((i % maxpacket) % 63);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 }
@@ -349,6 +385,10 @@ static int simple_check_buf(struct usbtest_dev *tdev, struct urb *urb)
 	u8		expected;
 	u8		*buf = urb->transfer_buffer;
 	unsigned	len = urb->actual_length;
+<<<<<<< HEAD
+=======
+	unsigned	maxpacket = get_maxpacket(urb->dev, urb->pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	int ret = check_guard_bytes(tdev, urb);
 	if (ret)
@@ -366,7 +406,11 @@ static int simple_check_buf(struct usbtest_dev *tdev, struct urb *urb)
 		 * with set_interface or set_config.
 		 */
 		case 1:			/* mod63 */
+<<<<<<< HEAD
 			expected = i % 63;
+=======
+			expected = (i % maxpacket) % 63;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		/* always fail unsupported patterns */
 		default:
@@ -478,11 +522,22 @@ static void free_sglist(struct scatterlist *sg, int nents)
 }
 
 static struct scatterlist *
+<<<<<<< HEAD
 alloc_sglist(int nents, int max, int vary)
 {
 	struct scatterlist	*sg;
 	unsigned		i;
 	unsigned		size = max;
+=======
+alloc_sglist(int nents, int max, int vary, struct usbtest_dev *dev, int pipe)
+{
+	struct scatterlist	*sg;
+	unsigned int		n_size = 0;
+	unsigned		i;
+	unsigned		size = max;
+	unsigned		maxpacket =
+		get_maxpacket(interface_to_usbdev(dev->intf), pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (max == 0)
 		return NULL;
@@ -511,7 +566,12 @@ alloc_sglist(int nents, int max, int vary)
 			break;
 		case 1:
 			for (j = 0; j < size; j++)
+<<<<<<< HEAD
 				*buf++ = (u8) (j % 63);
+=======
+				*buf++ = (u8) (((j + n_size) % maxpacket) % 63);
+			n_size += size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 
@@ -530,7 +590,10 @@ static void sg_timeout(unsigned long _req)
 {
 	struct usb_sg_request	*req = (struct usb_sg_request *) _req;
 
+<<<<<<< HEAD
 	req->status = -ETIMEDOUT;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_sg_cancel(req);
 }
 
@@ -561,8 +624,15 @@ static int perform_sglist(
 		mod_timer(&sg_timer, jiffies +
 				msecs_to_jiffies(SIMPLE_IO_TIMEOUT));
 		usb_sg_wait(req);
+<<<<<<< HEAD
 		del_timer_sync(&sg_timer);
 		retval = req->status;
+=======
+		if (!del_timer_sync(&sg_timer))
+			retval = -ETIMEDOUT;
+		else
+			retval = req->status;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* FIXME check resulting data pattern */
 
@@ -2175,7 +2245,12 @@ usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
 			"TEST 5:  write %d sglists %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
+<<<<<<< HEAD
 		sg = alloc_sglist(param->sglen, param->length, 0);
+=======
+		sg = alloc_sglist(param->sglen, param->length,
+				0, dev, dev->out_pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2193,7 +2268,12 @@ usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
 			"TEST 6:  read %d sglists %d entries of %d bytes\n",
 				param->iterations,
 				param->sglen, param->length);
+<<<<<<< HEAD
 		sg = alloc_sglist(param->sglen, param->length, 0);
+=======
+		sg = alloc_sglist(param->sglen, param->length,
+				0, dev, dev->in_pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2210,7 +2290,12 @@ usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
 			"TEST 7:  write/%d %d sglists %d entries 0..%d bytes\n",
 				param->vary, param->iterations,
 				param->sglen, param->length);
+<<<<<<< HEAD
 		sg = alloc_sglist(param->sglen, param->length, param->vary);
+=======
+		sg = alloc_sglist(param->sglen, param->length,
+				param->vary, dev, dev->out_pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2227,7 +2312,12 @@ usbtest_ioctl(struct usb_interface *intf, unsigned int code, void *buf)
 			"TEST 8:  read/%d %d sglists %d entries 0..%d bytes\n",
 				param->vary, param->iterations,
 				param->sglen, param->length);
+<<<<<<< HEAD
 		sg = alloc_sglist(param->sglen, param->length, param->vary);
+=======
+		sg = alloc_sglist(param->sglen, param->length,
+				param->vary, dev, dev->in_pipe);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!sg) {
 			retval = -ENOMEM;
 			break;
@@ -2637,6 +2727,10 @@ static void usbtest_disconnect(struct usb_interface *intf)
 
 	usb_set_intfdata(intf, NULL);
 	dev_dbg(&intf->dev, "disconnect\n");
+<<<<<<< HEAD
+=======
+	kfree(dev->buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(dev);
 }
 

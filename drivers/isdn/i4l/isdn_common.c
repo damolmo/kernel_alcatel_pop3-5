@@ -1379,6 +1379,10 @@ isdn_ioctl(struct file *file, uint cmd, ulong arg)
 			if (arg) {
 				if (copy_from_user(bname, argp, sizeof(bname) - 1))
 					return -EFAULT;
+<<<<<<< HEAD
+=======
+				bname[sizeof(bname)-1] = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			} else
 				return -EINVAL;
 			ret = mutex_lock_interruptible(&dev->mtx);
@@ -1654,6 +1658,7 @@ isdn_ioctl(struct file *file, uint cmd, ulong arg)
 			} else
 				return -EINVAL;
 		case IIOCDBGVAR:
+<<<<<<< HEAD
 			if (arg) {
 				if (copy_to_user(argp, &dev, sizeof(ulong)))
 					return -EFAULT;
@@ -1661,6 +1666,9 @@ isdn_ioctl(struct file *file, uint cmd, ulong arg)
 			} else
 				return -EINVAL;
 			break;
+=======
+			return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		default:
 			if ((cmd & IIOCDRVCTL) == IIOCDRVCTL)
 				cmd = ((cmd >> _IOC_NRSHIFT) & _IOC_NRMASK) & ISDN_DRVIOCTL_MASK;

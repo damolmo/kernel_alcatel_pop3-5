@@ -749,12 +749,24 @@ static int get_leaf_nr(struct gfs2_inode *dip, u32 index,
 		       u64 *leaf_out)
 {
 	__be64 *hash;
+<<<<<<< HEAD
 
 	hash = gfs2_dir_get_hash_table(dip);
 	if (IS_ERR(hash))
 		return PTR_ERR(hash);
 	*leaf_out = be64_to_cpu(*(hash + index));
 	return 0;
+=======
+	int error;
+
+	hash = gfs2_dir_get_hash_table(dip);
+	error = PTR_ERR_OR_ZERO(hash);
+
+	if (!error)
+		*leaf_out = be64_to_cpu(*(hash + index));
+
+	return error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int get_first_leaf(struct gfs2_inode *dip, u32 index,

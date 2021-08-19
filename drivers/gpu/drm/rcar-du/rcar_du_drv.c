@@ -200,6 +200,7 @@ done:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void rcar_du_preclose(struct drm_device *dev, struct drm_file *file)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
@@ -209,6 +210,8 @@ static void rcar_du_preclose(struct drm_device *dev, struct drm_file *file)
 		rcar_du_crtc_cancel_page_flip(&rcdu->crtcs[i], file);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void rcar_du_lastclose(struct drm_device *dev)
 {
 	struct rcar_du_device *rcdu = dev->dev_private;
@@ -250,7 +253,10 @@ static struct drm_driver rcar_du_driver = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_PRIME,
 	.load			= rcar_du_load,
 	.unload			= rcar_du_unload,
+<<<<<<< HEAD
 	.preclose		= rcar_du_preclose,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.lastclose		= rcar_du_lastclose,
 	.set_busid		= drm_platform_set_busid,
 	.get_vblank_counter	= drm_vblank_count,

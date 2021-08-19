@@ -20,6 +20,10 @@
 struct pci_controller *pci_vga_hose;
 static struct resource alpha_vga = {
 	.name	= "alpha-vga+",
+<<<<<<< HEAD
+=======
+	.flags	= IORESOURCE_IO,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.start	= 0x3C0,
 	.end	= 0x3DF
 };

@@ -24,7 +24,11 @@
 struct regulator_init_data;
 
 struct isl9305_pdata {
+<<<<<<< HEAD
 	struct regulator_init_data *init_data[ISL9305_MAX_REGULATOR];
+=======
+	struct regulator_init_data *init_data[ISL9305_MAX_REGULATOR + 1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #endif

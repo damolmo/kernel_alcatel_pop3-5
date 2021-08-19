@@ -389,6 +389,7 @@ static const struct regmap_irq_chip s2mps11_irq_chip = {
 	.ack_base = S2MPS11_REG_INT1,
 };
 
+<<<<<<< HEAD
 static const struct regmap_irq_chip s2mps14_irq_chip = {
 	.name = "s2mps14",
 	.irqs = s2mps14_irqs,
@@ -397,6 +398,24 @@ static const struct regmap_irq_chip s2mps14_irq_chip = {
 	.status_base = S2MPS14_REG_INT1,
 	.mask_base = S2MPS14_REG_INT1M,
 	.ack_base = S2MPS14_REG_INT1,
+=======
+#define S2MPS1X_IRQ_CHIP_COMMON_DATA		\
+	.irqs = s2mps14_irqs,			\
+	.num_irqs = ARRAY_SIZE(s2mps14_irqs),	\
+	.num_regs = 3,				\
+	.status_base = S2MPS14_REG_INT1,	\
+	.mask_base = S2MPS14_REG_INT1M,		\
+	.ack_base = S2MPS14_REG_INT1		\
+
+static const struct regmap_irq_chip s2mps13_irq_chip = {
+	.name = "s2mps13",
+	S2MPS1X_IRQ_CHIP_COMMON_DATA,
+};
+
+static const struct regmap_irq_chip s2mps14_irq_chip = {
+	.name = "s2mps14",
+	S2MPS1X_IRQ_CHIP_COMMON_DATA,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct regmap_irq_chip s2mpu02_irq_chip = {
@@ -452,6 +471,12 @@ int sec_irq_init(struct sec_pmic_dev *sec_pmic)
 	case S2MPS11X:
 		sec_irq_chip = &s2mps11_irq_chip;
 		break;
+<<<<<<< HEAD
+=======
+	case S2MPS13X:
+		sec_irq_chip = &s2mps13_irq_chip;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case S2MPS14X:
 		sec_irq_chip = &s2mps14_irq_chip;
 		break;

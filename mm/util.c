@@ -12,10 +12,36 @@
 #include <linux/hugetlb.h>
 #include <linux/vmalloc.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/sections.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/uaccess.h>
 
 #include "internal.h"
 
+<<<<<<< HEAD
+=======
+static inline int is_kernel_rodata(unsigned long addr)
+{
+	return addr >= (unsigned long)__start_rodata &&
+		addr < (unsigned long)__end_rodata;
+}
+
+/**
+ * kfree_const - conditionally free memory
+ * @x: pointer to the memory
+ *
+ * Function calls kfree only if @x is not in .rodata section.
+ */
+void kfree_const(const void *x)
+{
+	if (!is_kernel_rodata((unsigned long)x))
+		kfree(x);
+}
+EXPORT_SYMBOL(kfree_const);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * kstrdup - allocate space for and copy an existing string
  * @s: the string to duplicate
@@ -38,10 +64,36 @@ char *kstrdup(const char *s, gfp_t gfp)
 EXPORT_SYMBOL(kstrdup);
 
 /**
+<<<<<<< HEAD
+=======
+ * kstrdup_const - conditionally duplicate an existing const string
+ * @s: the string to duplicate
+ * @gfp: the GFP mask used in the kmalloc() call when allocating memory
+ *
+ * Function returns source string if it is in .rodata section otherwise it
+ * fallbacks to kstrdup.
+ * Strings allocated by kstrdup_const should be freed by kfree_const.
+ */
+const char *kstrdup_const(const char *s, gfp_t gfp)
+{
+	if (is_kernel_rodata((unsigned long)s))
+		return s;
+
+	return kstrdup(s, gfp);
+}
+EXPORT_SYMBOL(kstrdup_const);
+
+/**
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * kstrndup - allocate space for and copy an existing string
  * @s: the string to duplicate
  * @max: read at most @max chars from @s
  * @gfp: the GFP mask used in the kmalloc() call when allocating memory
+<<<<<<< HEAD
+=======
+ *
+ * Note: Use kmemdup_nul() instead if the size is known exactly.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 char *kstrndup(const char *s, size_t max, gfp_t gfp)
 {
@@ -80,6 +132,31 @@ void *kmemdup(const void *src, size_t len, gfp_t gfp)
 EXPORT_SYMBOL(kmemdup);
 
 /**
+<<<<<<< HEAD
+=======
+ * kmemdup_nul - Create a NUL-terminated string from unterminated data
+ * @s: The data to stringify
+ * @len: The size of the data
+ * @gfp: the GFP mask used in the kmalloc() call when allocating memory
+ */
+char *kmemdup_nul(const char *s, size_t len, gfp_t gfp)
+{
+	char *buf;
+
+	if (!s)
+		return NULL;
+
+	buf = kmalloc_track_caller(len + 1, gfp);
+	if (buf) {
+		memcpy(buf, s, len);
+		buf[len] = '\0';
+	}
+	return buf;
+}
+EXPORT_SYMBOL(kmemdup_nul);
+
+/**
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * memdup_user - duplicate memory region from user space
  *
  * @src: source address in user space
@@ -161,12 +238,17 @@ void __vma_link_list(struct mm_struct *mm, struct vm_area_struct *vma,
 }
 
 /* Check if the vma is being used as a stack by this task */
+<<<<<<< HEAD
 static int vm_is_stack_for_task(struct task_struct *t,
 				struct vm_area_struct *vma)
+=======
+int vma_is_stack_for_task(struct vm_area_struct *vma, struct task_struct *t)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return (vma->vm_start <= KSTK_ESP(t) && vma->vm_end >= KSTK_ESP(t));
 }
 
+<<<<<<< HEAD
 /*
  * Check if the vma is being used as a stack.
  * If is_group is non-zero, check in the entire thread group or else
@@ -191,6 +273,8 @@ struct task_struct *task_of_stack(struct task_struct *task,
 	return NULL;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if defined(CONFIG_MMU) && !defined(HAVE_ARCH_PICK_MMAP_LAYOUT)
 void arch_pick_mmap_layout(struct mm_struct *mm)
 {
@@ -310,7 +394,11 @@ struct address_space *page_mapping(struct page *page)
 		mapping = NULL;
 	return mapping;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(page_mapping);
+=======
+EXPORT_SYMBOL(page_mapping);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int overcommit_ratio_handler(struct ctl_table *table, int write,
 			     void __user *buffer, size_t *lenp,
@@ -367,17 +455,36 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
 	int res = 0;
 	unsigned int len;
 	struct mm_struct *mm = get_task_mm(task);
+<<<<<<< HEAD
+=======
+	unsigned long arg_start, arg_end, env_start, env_end;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!mm)
 		goto out;
 	if (!mm->arg_end)
 		goto out_mm;	/* Shh! No looking before we're done */
 
+<<<<<<< HEAD
 	len = mm->arg_end - mm->arg_start;
+=======
+	down_read(&mm->mmap_sem);
+	arg_start = mm->arg_start;
+	arg_end = mm->arg_end;
+	env_start = mm->env_start;
+	env_end = mm->env_end;
+	up_read(&mm->mmap_sem);
+
+	len = arg_end - arg_start;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (len > buflen)
 		len = buflen;
 
+<<<<<<< HEAD
 	res = access_process_vm(task, mm->arg_start, buffer, len, 0);
+=======
+	res = access_process_vm(task, arg_start, buffer, len, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If the nul at the end of args has been overwritten, then
@@ -388,10 +495,17 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
 		if (len < res) {
 			res = len;
 		} else {
+<<<<<<< HEAD
 			len = mm->env_end - mm->env_start;
 			if (len > buflen - res)
 				len = buflen - res;
 			res += access_process_vm(task, mm->env_start,
+=======
+			len = env_end - env_start;
+			if (len > buflen - res)
+				len = buflen - res;
+			res += access_process_vm(task, env_start,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						 buffer+res, len, 0);
 			res = strnlen(buffer, res);
 		}

@@ -3998,6 +3998,10 @@ static void __exit scsi_debug_exit(void)
 	if (dif_storep)
 		vfree(dif_storep);
 
+<<<<<<< HEAD
+=======
+	vfree(map_storep);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vfree(fake_storep);
 }
 

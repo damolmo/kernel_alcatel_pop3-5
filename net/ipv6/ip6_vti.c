@@ -172,14 +172,22 @@ static int vti6_tnl_create2(struct net_device *dev)
 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
 	int err;
 
+<<<<<<< HEAD
+=======
+	dev->rtnl_link_ops = &vti6_link_ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = register_netdevice(dev);
 	if (err < 0)
 		goto out;
 
 	strcpy(t->parms.name, dev->name);
+<<<<<<< HEAD
 	dev->rtnl_link_ops = &vti6_link_ops;
 
 	dev_hold(dev);
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vti6_tnl_link(ip6n, t);
 
 	return 0;
@@ -195,10 +203,20 @@ static struct ip6_tnl *vti6_tnl_create(struct net *net, struct __ip6_tnl_parm *p
 	char name[IFNAMSIZ];
 	int err;
 
+<<<<<<< HEAD
 	if (p->name[0])
 		strlcpy(name, p->name, IFNAMSIZ);
 	else
 		sprintf(name, "ip6_vti%%d");
+=======
+	if (p->name[0]) {
+		if (!dev_valid_name(p->name))
+			goto failed;
+		strlcpy(name, p->name, IFNAMSIZ);
+	} else {
+		sprintf(name, "ip6_vti%%d");
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev = alloc_netdev(sizeof(*t), name, NET_NAME_UNKNOWN, vti6_dev_setup);
 	if (dev == NULL)
@@ -295,7 +313,11 @@ static int vti6_rcv(struct sk_buff *skb)
 
 		if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
 			rcu_read_unlock();
+<<<<<<< HEAD
 			return 0;
+=======
+			goto discard;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (!ip6_tnl_rcv_ctl(t, &ipv6h->daddr, &ipv6h->saddr)) {
@@ -304,12 +326,18 @@ static int vti6_rcv(struct sk_buff *skb)
 			goto discard;
 		}
 
+<<<<<<< HEAD
 		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = t;
 		skb->mark = be32_to_cpu(t->parms.i_key);
 
 		rcu_read_unlock();
 
 		return xfrm6_rcv(skb);
+=======
+		rcu_read_unlock();
+
+		return xfrm6_rcv_tnl(skb, t);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	rcu_read_unlock();
 	return -EINVAL;
@@ -325,6 +353,11 @@ static int vti6_rcv_cb(struct sk_buff *skb, int err)
 	struct pcpu_sw_netstats *tstats;
 	struct xfrm_state *x;
 	struct ip6_tnl *t = XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6;
+<<<<<<< HEAD
+=======
+	u32 orig_mark = skb->mark;
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!t)
 		return 1;
@@ -341,7 +374,15 @@ static int vti6_rcv_cb(struct sk_buff *skb, int err)
 	x = xfrm_input_state(skb);
 	family = x->inner_mode->afinfo->family;
 
+<<<<<<< HEAD
 	if (!xfrm_policy_check(NULL, XFRM_POLICY_IN, skb, family))
+=======
+	skb->mark = be32_to_cpu(t->parms.i_key);
+	ret = xfrm_policy_check(NULL, XFRM_POLICY_IN, skb, family);
+	skb->mark = orig_mark;
+
+	if (!ret)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	skb_scrub_packet(skb, !net_eq(t->net, dev_net(skb->dev)));
@@ -411,10 +452,45 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
 	struct net_device_stats *stats = &t->dev->stats;
 	struct dst_entry *dst = skb_dst(skb);
 	struct net_device *tdev;
+<<<<<<< HEAD
 	int err = -1;
 
 	if (!dst)
 		goto tx_err_link_failure;
+=======
+	int pkt_len = skb->len;
+	int err = -1;
+
+	if (!dst) {
+		switch (skb->protocol) {
+		case htons(ETH_P_IP): {
+			struct rtable *rt;
+
+			fl->u.ip4.flowi4_oif = dev->ifindex;
+			fl->u.ip4.flowi4_flags |= FLOWI_FLAG_ANYSRC;
+			rt = __ip_route_output_key(dev_net(dev), &fl->u.ip4);
+			if (IS_ERR(rt))
+				goto tx_err_link_failure;
+			dst = &rt->dst;
+			skb_dst_set(skb, dst);
+			break;
+		}
+		case htons(ETH_P_IPV6):
+			fl->u.ip6.flowi6_oif = dev->ifindex;
+			fl->u.ip6.flowi6_flags |= FLOWI_FLAG_ANYSRC;
+			dst = ip6_route_output(dev_net(dev), NULL, &fl->u.ip6);
+			if (dst->error) {
+				dst_release(dst);
+				dst = NULL;
+				goto tx_err_link_failure;
+			}
+			skb_dst_set(skb, dst);
+			break;
+		default:
+			goto tx_err_link_failure;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dst_hold(dst);
 	dst = xfrm_lookup(t->net, dst, fl, NULL, 0);
@@ -445,7 +521,11 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
 		struct pcpu_sw_netstats *tstats = this_cpu_ptr(dev->tstats);
 
 		u64_stats_update_begin(&tstats->syncp);
+<<<<<<< HEAD
 		tstats->tx_bytes += skb->len;
+=======
+		tstats->tx_bytes += pkt_len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tstats->tx_packets++;
 		u64_stats_update_end(&tstats->syncp);
 	} else {
@@ -472,7 +552,10 @@ vti6_tnl_xmit(struct sk_buff *skb, struct net_device *dev)
 	int ret;
 
 	memset(&fl, 0, sizeof(fl));
+<<<<<<< HEAD
 	skb->mark = be32_to_cpu(t->parms.o_key);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (skb->protocol) {
 	case htons(ETH_P_IPV6):
@@ -493,6 +576,12 @@ vti6_tnl_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto tx_err;
 	}
 
+<<<<<<< HEAD
+=======
+	/* override mark with tunnel output key */
+	fl.flowi_mark = be32_to_cpu(t->parms.o_key);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = vti6_xmit(skb, dev, &fl);
 	if (ret < 0)
 		goto tx_err;
@@ -553,9 +642,16 @@ static int vti6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 		return 0;
 
 	if (type == NDISC_REDIRECT)
+<<<<<<< HEAD
 		ip6_redirect(skb, net, skb->dev->ifindex, 0);
 	else
 		ip6_update_pmtu(skb, net, info, 0, 0);
+=======
+		ip6_redirect(skb, net, skb->dev->ifindex, 0,
+			     sock_net_uid(net, NULL));
+	else
+		ip6_update_pmtu(skb, net, info, 0, 0, sock_net_uid(net, NULL));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	xfrm_state_put(x);
 
 	return 0;
@@ -638,6 +734,13 @@ vti6_parm_to_user(struct ip6_tnl_parm2 *u, const struct __ip6_tnl_parm *p)
 	u->link = p->link;
 	u->i_key = p->i_key;
 	u->o_key = p->o_key;
+<<<<<<< HEAD
+=======
+	if (u->i_key)
+		u->i_flags |= GRE_KEY;
+	if (u->o_key)
+		u->o_flags |= GRE_KEY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u->proto = p->proto;
 
 	memcpy(u->name, p->name, sizeof(u->name));
@@ -819,6 +922,10 @@ static inline int vti6_dev_init_gen(struct net_device *dev)
 	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
 	if (!dev->tstats)
 		return -ENOMEM;
+<<<<<<< HEAD
+=======
+	dev_hold(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -850,7 +957,10 @@ static int __net_init vti6_fb_tnl_dev_init(struct net_device *dev)
 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
 
 	t->parms.proto = IPPROTO_IPV6;
+<<<<<<< HEAD
 	dev_hold(dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_assign_pointer(ip6n->tnls_wc[0], t);
 	return 0;
@@ -1087,6 +1197,36 @@ static struct xfrm6_protocol vti_ipcomp6_protocol __read_mostly = {
 	.priority	=	100,
 };
 
+<<<<<<< HEAD
+=======
+static bool is_vti6_tunnel(const struct net_device *dev)
+{
+	return dev->netdev_ops == &vti6_netdev_ops;
+}
+
+static int vti6_device_event(struct notifier_block *unused,
+			     unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+	struct ip6_tnl *t = netdev_priv(dev);
+
+	if (!is_vti6_tunnel(dev))
+		return NOTIFY_DONE;
+
+	switch (event) {
+	case NETDEV_DOWN:
+		if (!net_eq(t->net, dev_net(dev)))
+			xfrm_garbage_collect(t->net);
+		break;
+	}
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block vti6_notifier_block __read_mostly = {
+	.notifier_call = vti6_device_event,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * vti6_tunnel_init - register protocol and reserve needed resources
  *
@@ -1097,6 +1237,11 @@ static int __init vti6_tunnel_init(void)
 	const char *msg;
 	int err;
 
+<<<<<<< HEAD
+=======
+	register_netdevice_notifier(&vti6_notifier_block);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	msg = "tunnel device";
 	err = register_pernet_device(&vti6_net_ops);
 	if (err < 0)
@@ -1129,6 +1274,10 @@ xfrm_proto_ah_failed:
 xfrm_proto_esp_failed:
 	unregister_pernet_device(&vti6_net_ops);
 pernet_dev_failed:
+<<<<<<< HEAD
+=======
+	unregister_netdevice_notifier(&vti6_notifier_block);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pr_err("vti6 init: failed to register %s\n", msg);
 	return err;
 }
@@ -1143,6 +1292,10 @@ static void __exit vti6_tunnel_cleanup(void)
 	xfrm6_protocol_deregister(&vti_ah6_protocol, IPPROTO_AH);
 	xfrm6_protocol_deregister(&vti_esp6_protocol, IPPROTO_ESP);
 	unregister_pernet_device(&vti6_net_ops);
+<<<<<<< HEAD
+=======
+	unregister_netdevice_notifier(&vti6_notifier_block);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 module_init(vti6_tunnel_init);

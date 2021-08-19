@@ -56,6 +56,11 @@
 #include <linux/uidgid.h>
 #include <linux/cred.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/kmsg_dump.h>
 /* Move somewhere else to avoid recompiling? */
 #include <generated/utsrelease.h>
@@ -1128,6 +1133,7 @@ static int override_release(char __user *release, size_t len)
 
 SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 {
+<<<<<<< HEAD
 	int errno = 0;
 
 	down_read(&uts_sem);
@@ -1140,6 +1146,21 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
 	if (!errno && override_architecture(name))
 		errno = -EFAULT;
 	return errno;
+=======
+	struct new_utsname tmp;
+
+	down_read(&uts_sem);
+	memcpy(&tmp, utsname(), sizeof(tmp));
+	up_read(&uts_sem);
+	if (copy_to_user(name, &tmp, sizeof(tmp)))
+		return -EFAULT;
+
+	if (override_release(name->release, sizeof(name->release)))
+		return -EFAULT;
+	if (override_architecture(name))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef __ARCH_WANT_SYS_OLD_UNAME
@@ -1148,12 +1169,17 @@ SYSCALL_DEFINE1(newuname, struct new_utsname __user *, name)
  */
 SYSCALL_DEFINE1(uname, struct old_utsname __user *, name)
 {
+<<<<<<< HEAD
 	int error = 0;
+=======
+	struct old_utsname tmp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!name)
 		return -EFAULT;
 
 	down_read(&uts_sem);
+<<<<<<< HEAD
 	if (copy_to_user(name, utsname(), sizeof(*name)))
 		error = -EFAULT;
 	up_read(&uts_sem);
@@ -1163,10 +1189,23 @@ SYSCALL_DEFINE1(uname, struct old_utsname __user *, name)
 	if (!error && override_architecture(name))
 		error = -EFAULT;
 	return error;
+=======
+	memcpy(&tmp, utsname(), sizeof(tmp));
+	up_read(&uts_sem);
+	if (copy_to_user(name, &tmp, sizeof(tmp)))
+		return -EFAULT;
+
+	if (override_release(name->release, sizeof(name->release)))
+		return -EFAULT;
+	if (override_architecture(name))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 SYSCALL_DEFINE1(olduname, struct oldold_utsname __user *, name)
 {
+<<<<<<< HEAD
 	int error;
 
 	if (!name)
@@ -1197,6 +1236,30 @@ SYSCALL_DEFINE1(olduname, struct oldold_utsname __user *, name)
 	if (!error && override_release(name->release, sizeof(name->release)))
 		error = -EFAULT;
 	return error ? -EFAULT : 0;
+=======
+	struct oldold_utsname tmp;
+
+	if (!name)
+		return -EFAULT;
+
+	memset(&tmp, 0, sizeof(tmp));
+
+	down_read(&uts_sem);
+	memcpy(&tmp.sysname, &utsname()->sysname, __OLD_UTS_LEN);
+	memcpy(&tmp.nodename, &utsname()->nodename, __OLD_UTS_LEN);
+	memcpy(&tmp.release, &utsname()->release, __OLD_UTS_LEN);
+	memcpy(&tmp.version, &utsname()->version, __OLD_UTS_LEN);
+	memcpy(&tmp.machine, &utsname()->machine, __OLD_UTS_LEN);
+	up_read(&uts_sem);
+	if (copy_to_user(name, &tmp, sizeof(tmp)))
+		return -EFAULT;
+
+	if (override_architecture(name))
+		return -EFAULT;
+	if (override_release(name->release, sizeof(name->release)))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif
 
@@ -1210,17 +1273,31 @@ SYSCALL_DEFINE2(sethostname, char __user *, name, int, len)
 
 	if (len < 0 || len > __NEW_UTS_LEN)
 		return -EINVAL;
+<<<<<<< HEAD
 	down_write(&uts_sem);
 	errno = -EFAULT;
 	if (!copy_from_user(tmp, name, len)) {
 		struct new_utsname *u = utsname();
 
+=======
+	errno = -EFAULT;
+	if (!copy_from_user(tmp, name, len)) {
+		struct new_utsname *u;
+
+		down_write(&uts_sem);
+		u = utsname();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(u->nodename, tmp, len);
 		memset(u->nodename + len, 0, sizeof(u->nodename) - len);
 		errno = 0;
 		uts_proc_notify(UTS_PROC_HOSTNAME);
+<<<<<<< HEAD
 	}
 	up_write(&uts_sem);
+=======
+		up_write(&uts_sem);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return errno;
 }
 
@@ -1228,8 +1305,14 @@ SYSCALL_DEFINE2(sethostname, char __user *, name, int, len)
 
 SYSCALL_DEFINE2(gethostname, char __user *, name, int, len)
 {
+<<<<<<< HEAD
 	int i, errno;
 	struct new_utsname *u;
+=======
+	int i;
+	struct new_utsname *u;
+	char tmp[__NEW_UTS_LEN + 1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (len < 0)
 		return -EINVAL;
@@ -1238,11 +1321,19 @@ SYSCALL_DEFINE2(gethostname, char __user *, name, int, len)
 	i = 1 + strlen(u->nodename);
 	if (i > len)
 		i = len;
+<<<<<<< HEAD
 	errno = 0;
 	if (copy_to_user(name, u->nodename, i))
 		errno = -EFAULT;
 	up_read(&uts_sem);
 	return errno;
+=======
+	memcpy(tmp, u->nodename, i);
+	up_read(&uts_sem);
+	if (copy_to_user(name, tmp, i))
+		return -EFAULT;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif
@@ -1261,17 +1352,31 @@ SYSCALL_DEFINE2(setdomainname, char __user *, name, int, len)
 	if (len < 0 || len > __NEW_UTS_LEN)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	down_write(&uts_sem);
 	errno = -EFAULT;
 	if (!copy_from_user(tmp, name, len)) {
 		struct new_utsname *u = utsname();
 
+=======
+	errno = -EFAULT;
+	if (!copy_from_user(tmp, name, len)) {
+		struct new_utsname *u;
+
+		down_write(&uts_sem);
+		u = utsname();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(u->domainname, tmp, len);
 		memset(u->domainname + len, 0, sizeof(u->domainname) - len);
 		errno = 0;
 		uts_proc_notify(UTS_PROC_DOMAINNAME);
+<<<<<<< HEAD
 	}
 	up_write(&uts_sem);
+=======
+		up_write(&uts_sem);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return errno;
 }
 
@@ -1299,6 +1404,10 @@ SYSCALL_DEFINE2(old_getrlimit, unsigned int, resource,
 	if (resource >= RLIM_NLIMITS)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	resource = array_index_nospec(resource, RLIM_NLIMITS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	task_lock(current->group_leader);
 	x = current->signal->rlim[resource];
 	task_unlock(current->group_leader);
@@ -1740,7 +1849,11 @@ static int validate_prctl_map(struct prctl_mm_map *prctl_map)
 	((unsigned long)prctl_map->__m1 __op				\
 	 (unsigned long)prctl_map->__m2) ? 0 : -EINVAL
 	error  = __prctl_check_order(start_code, <, end_code);
+<<<<<<< HEAD
 	error |= __prctl_check_order(start_data, <, end_data);
+=======
+	error |= __prctl_check_order(start_data,<=, end_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error |= __prctl_check_order(start_brk, <=, brk);
 	error |= __prctl_check_order(arg_start, <=, arg_end);
 	error |= __prctl_check_order(env_start, <=, env_end);

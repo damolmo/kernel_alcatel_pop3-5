@@ -104,7 +104,13 @@ static inline void dnrmg_receive_user_skb(struct sk_buff *skb)
 {
 	struct nlmsghdr *nlh = nlmsg_hdr(skb);
 
+<<<<<<< HEAD
 	if (nlh->nlmsg_len < sizeof(*nlh) || skb->len < nlh->nlmsg_len)
+=======
+	if (skb->len < sizeof(*nlh) ||
+	    nlh->nlmsg_len < sizeof(*nlh) ||
+	    skb->len < nlh->nlmsg_len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	if (!netlink_capable(skb, CAP_NET_ADMIN))

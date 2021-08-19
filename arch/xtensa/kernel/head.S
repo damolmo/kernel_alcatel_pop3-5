@@ -88,9 +88,18 @@ _SetupMMU:
 	initialize_mmu
 #if defined(CONFIG_MMU) && XCHAL_HAVE_PTP_MMU && XCHAL_HAVE_SPANNING_WAY
 	rsr	a2, excsave1
+<<<<<<< HEAD
 	movi	a3, 0x08000000
 	bgeu	a2, a3, 1f
 	movi	a3, 0xd0000000
+=======
+	movi	a3, XCHAL_KSEG_PADDR
+	bltu	a2, a3, 1f
+	sub	a2, a2, a3
+	movi	a3, XCHAL_KSEG_SIZE
+	bgeu	a2, a3, 1f
+	movi	a3, XCHAL_KSEG_CACHED_VADDR
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	add	a2, a2, a3
 	wsr	a2, excsave1
 1:
@@ -123,7 +132,11 @@ ENTRY(_startup)
 	wsr	a0, icountlevel
 
 	.set	_index, 0
+<<<<<<< HEAD
 	.rept	XCHAL_NUM_DBREAK - 1
+=======
+	.rept	XCHAL_NUM_DBREAK
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wsr	a0, SREG_DBREAKC + _index
 	.set	_index, _index + 1
 	.endr
@@ -278,12 +291,21 @@ should_never_return:
 
 	movi	a2, cpu_start_ccount
 1:
+<<<<<<< HEAD
+=======
+	memw
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	l32i	a3, a2, 0
 	beqi	a3, 0, 1b
 	movi	a3, 0
 	s32i	a3, a2, 0
+<<<<<<< HEAD
 	memw
 1:
+=======
+1:
+	memw
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	l32i	a3, a2, 0
 	beqi	a3, 0, 1b
 	wsr	a3, ccount
@@ -320,11 +342,19 @@ ENTRY(cpu_restart)
 	rsr	a0, prid
 	neg	a2, a0
 	movi	a3, cpu_start_id
+<<<<<<< HEAD
+=======
+	memw
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	s32i	a2, a3, 0
 #if XCHAL_DCACHE_IS_WRITEBACK
 	dhwbi	a3, 0
 #endif
 1:
+<<<<<<< HEAD
+=======
+	memw
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	l32i	a2, a3, 0
 	dhi	a3, 0
 	bne	a2, a0, 1b

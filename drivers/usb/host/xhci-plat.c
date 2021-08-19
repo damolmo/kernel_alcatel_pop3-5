@@ -20,6 +20,7 @@
 #include <linux/usb/xhci_pdriver.h>
 
 #include "xhci.h"
+<<<<<<< HEAD
 
 #ifdef CONFIG_USB_XHCI_MTK
 #include <xhci-mtk.h>
@@ -30,6 +31,10 @@
 #ifdef CONFIG_SSUSB_MTK_XHCI
 #include "xhci-ssusb-mtk.h"
 #endif
+=======
+#include "xhci-mvebu.h"
+#include "xhci-rcar.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct hc_driver __read_mostly xhci_plat_hc_driver;
 
@@ -41,6 +46,7 @@ static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
 	 * dev struct in order to setup MSI
 	 */
 	xhci->quirks |= XHCI_PLAT;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_XHCI_MTK
 	/*
 	 * MTK host controller gives a spurious successful event after a
@@ -49,6 +55,8 @@ static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
 	xhci->quirks |= XHCI_SPURIOUS_SUCCESS;
 	xhci->quirks |= XHCI_LPM_SUPPORT;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* called during probe() after chip reset completes */
@@ -56,9 +64,12 @@ static int xhci_plat_setup(struct usb_hcd *hcd)
 {
 	struct device_node *of_node = hcd->self.controller->of_node;
 	int ret;
+<<<<<<< HEAD
 #ifdef CONFIG_SSUSB_MTK_XHCI
 	struct xhci_hcd *xhci;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (of_device_is_compatible(of_node, "renesas,xhci-r8a7790") ||
 	    of_device_is_compatible(of_node, "renesas,xhci-r8a7791")) {
@@ -66,6 +77,7 @@ static int xhci_plat_setup(struct usb_hcd *hcd)
 		if (ret)
 			return ret;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_SSUSB_MTK_XHCI
 	ret = xhci_gen_setup(hcd, xhci_plat_quirks);
 	if (ret)
@@ -86,6 +98,10 @@ static int xhci_plat_setup(struct usb_hcd *hcd)
 #endif
 
 
+=======
+
+	return xhci_gen_setup(hcd, xhci_plat_quirks);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int xhci_plat_start(struct usb_hcd *hcd)
@@ -98,6 +114,7 @@ static int xhci_plat_start(struct usb_hcd *hcd)
 
 	return xhci_run(hcd);
 }
+<<<<<<< HEAD
 #if defined(CONFIG_MTK_LM_MODE)
 #define XHCI_DMA_BIT_MASK DMA_BIT_MASK(64)
 #else
@@ -110,6 +127,8 @@ static void xhci_hcd_release(struct device *dev)
 {
 	;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int xhci_plat_probe(struct platform_device *pdev)
 {
@@ -128,6 +147,7 @@ static int xhci_plat_probe(struct platform_device *pdev)
 
 	driver = &xhci_plat_hc_driver;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_XHCI_MTK  /* device tree support */
 	irq = platform_get_irq_byname(pdev, XHCI_DRIVER_NAME);
 	if (irq < 0)
@@ -144,11 +164,20 @@ static int xhci_plat_probe(struct platform_device *pdev)
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return -ENODEV;
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Initialize dma_mask and coherent_dma_mask to 32-bits */
 	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret)
@@ -180,6 +209,12 @@ static int xhci_plat_probe(struct platform_device *pdev)
 		ret = clk_prepare_enable(clk);
 		if (ret)
 			goto put_hcd;
+<<<<<<< HEAD
+=======
+	} else if (PTR_ERR(clk) == -EPROBE_DEFER) {
+		ret = -EPROBE_DEFER;
+		goto put_hcd;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (of_device_is_compatible(pdev->dev.of_node,
@@ -223,9 +258,13 @@ static int xhci_plat_probe(struct platform_device *pdev)
 	ret = usb_add_hcd(xhci->shared_hcd, irq, IRQF_SHARED);
 	if (ret)
 		goto put_usb3_hcd;
+<<<<<<< HEAD
 #ifdef CONFIG_USB_XHCI_MTK
 	mtk_xhci_vbus_on(pdev);
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 put_usb3_hcd:
@@ -250,9 +289,13 @@ static int xhci_plat_remove(struct platform_device *dev)
 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
 	struct clk *clk = xhci->clk;
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_XHCI_MTK
 	mtk_xhci_vbus_off(dev);
 #endif
+=======
+	xhci->xhc_state |= XHCI_STATE_REMOVING;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usb_remove_hcd(xhci->shared_hcd);
 	usb_put_hcd(xhci->shared_hcd);
@@ -261,10 +304,13 @@ static int xhci_plat_remove(struct platform_device *dev)
 	if (!IS_ERR(clk))
 		clk_disable_unprepare(clk);
 	usb_put_hcd(hcd);
+<<<<<<< HEAD
 #ifdef CONFIG_SSUSB_MTK_XHCI
 	if (xhci->quirks & XHCI_MTK_HOST)
 		xhci_mtk_exit_quirk(xhci);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(xhci);
 
 	return 0;
@@ -311,7 +357,10 @@ static const struct of_device_id usb_xhci_of_match[] = {
 	{ .compatible = "marvell,armada-380-xhci"},
 	{ .compatible = "renesas,xhci-r8a7790"},
 	{ .compatible = "renesas,xhci-r8a7791"},
+<<<<<<< HEAD
 	{ .compatible = "mediatek,usb3_xhci"},
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ },
 };
 MODULE_DEVICE_TABLE(of, usb_xhci_of_match);
@@ -320,6 +369,10 @@ MODULE_DEVICE_TABLE(of, usb_xhci_of_match);
 static struct platform_driver usb_xhci_driver = {
 	.probe	= xhci_plat_probe,
 	.remove	= xhci_plat_remove,
+<<<<<<< HEAD
+=======
+	.shutdown = usb_hcd_platform_shutdown,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.driver	= {
 		.name = "xhci-hcd",
 		.pm = DEV_PM_OPS,
@@ -328,6 +381,7 @@ static struct platform_driver usb_xhci_driver = {
 };
 MODULE_ALIAS("platform:xhci-hcd");
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_XHCI_MTK
 int xhci_register_plat(void)
 {
@@ -341,6 +395,8 @@ void xhci_unregister_plat(void)
 	platform_driver_unregister(&usb_xhci_driver);
 }
 #else
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init xhci_plat_init(void)
 {
 	xhci_init_driver(&xhci_plat_hc_driver, xhci_plat_setup);
@@ -354,7 +410,10 @@ static void __exit xhci_plat_exit(void)
 	platform_driver_unregister(&usb_xhci_driver);
 }
 module_exit(xhci_plat_exit);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 MODULE_DESCRIPTION("xHCI Platform Host Controller Driver");
 MODULE_LICENSE("GPL");

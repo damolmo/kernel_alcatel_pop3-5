@@ -27,6 +27,7 @@
 #include <drm/drmP.h>
 #include <drm/drm_plane_helper.h>
 #include <drm/drm_rect.h>
+<<<<<<< HEAD
 #include <drm/drm_atomic.h>
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_atomic_helper.h>
@@ -59,6 +60,12 @@
  * Again drivers are strongly urged to switch to the new interfaces.
  */
 
+=======
+#include <drm/drm_plane_helper.h>
+
+#define SUBPIXEL_MASK 0xffff
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * This is the minimal list of formats that seem to be safe for modeset use
  * with all current DRM drivers.  Most hardware can actually support more
@@ -142,6 +149,7 @@ int drm_plane_helper_check_update(struct drm_plane *plane,
 {
 	int hscale, vscale;
 
+<<<<<<< HEAD
 	if (!fb) {
 		*visible = false;
 		return 0;
@@ -153,6 +161,8 @@ int drm_plane_helper_check_update(struct drm_plane *plane,
 		return 0;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!crtc->enabled && !can_update_disabled) {
 		DRM_DEBUG_KMS("Cannot update plane of a disabled CRTC.\n");
 		return -EINVAL;
@@ -408,6 +418,7 @@ int drm_crtc_init(struct drm_device *dev, struct drm_crtc *crtc,
 	return drm_crtc_init_with_planes(dev, crtc, primary, NULL, funcs);
 }
 EXPORT_SYMBOL(drm_crtc_init);
+<<<<<<< HEAD
 
 int drm_plane_helper_commit(struct drm_plane *plane,
 			    struct drm_plane_state *plane_state,
@@ -594,3 +605,5 @@ int drm_plane_helper_disable(struct drm_plane *plane)
 	return drm_plane_helper_commit(plane, plane_state, plane->fb);
 }
 EXPORT_SYMBOL(drm_plane_helper_disable);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -610,6 +610,18 @@ config CRYPTO_SHA256_SPARC64
 	  SHA-256 secure hash standard (DFIPS 180-2) implemented
 	  using sparc64 crypto instructions, when available.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA2_ARM_CE
+	tristate "SHA-224/256 digest algorithm (ARM v8 Crypto Extensions)"
+	depends on ARM && KERNEL_MODE_NEON
+	select CRYPTO_SHA256
+	select CRYPTO_HASH
+	help
+	  SHA-256 secure hash standard (DFIPS 180-2) implemented
+	  using special ARMv8 Crypto Extensions.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config CRYPTO_SHA512
 	tristate "SHA384 and SHA512 digest algorithms"
 	select CRYPTO_HASH
@@ -631,6 +643,17 @@ config CRYPTO_SHA512_SPARC64
 	  SHA-512 secure hash standard (DFIPS 180-2) implemented
 	  using sparc64 crypto instructions, when available.
 
+<<<<<<< HEAD
+=======
+config CRYPTO_SHA256_ARM
+	tristate "SHA-224/256 digest algorithm (ARM-asm and NEON)"
+	select CRYPTO_HASH
+	help
+	  SHA-256 secure hash standard (DFIPS 180-2) implemented
+	  using optimized ARM assembler and NEON, when available.
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config CRYPTO_SHA512_ARM_NEON
 	tristate "SHA384 and SHA512 digest algorithm (ARM NEON)"
 	depends on ARM && KERNEL_MODE_NEON
@@ -848,6 +871,7 @@ config CRYPTO_AES_ARM_BS
 	  This implementation does not rely on any lookup tables so it is
 	  believed to be invulnerable to cache timing attacks.
 
+<<<<<<< HEAD
 config CRYPTO_AES_ARM32_CE
 	tristate "AES cipher using ARMv8 32bits Crypto Extensions"
 	depends on ARM && KERNEL_MODE_NEON
@@ -857,6 +881,16 @@ config CRYPTO_AES_ARM32_CE
 	  AES cipher using ARMv8 32bits Crypto Extensions to
 	  accelerate encryption/decryption.
 	  Such as AES, AES_CBC.
+=======
+config CRYPTO_AES_ARM_CE
+	tristate "Accelerated AES using ARMv8 Crypto Extensions"
+	depends on ARM && KERNEL_MODE_NEON
+	select CRYPTO_ALGAPI
+	select CRYPTO_ABLK_HELPER
+	help
+	  Use an implementation of AES in CBC, CTR and XTS modes that uses
+	  ARMv8 Crypto Extensions
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config CRYPTO_ANUBIS
 	tristate "Anubis cipher algorithm"
@@ -1422,6 +1456,7 @@ config CRYPTO_LZO
 	help
 	  This is the LZO algorithm.
 
+<<<<<<< HEAD
 config CRYPTO_LZ4K
         tristate "LZ4K compression algorithm"
 	default n
@@ -1431,6 +1466,8 @@ config CRYPTO_LZ4K
 	  It has better compression ratio than the one in LZO
 	  with less performance degradation.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config CRYPTO_842
 	tristate "842 compression algorithm"
 	depends on CRYPTO_DEV_NX_COMPRESS

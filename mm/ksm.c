@@ -37,11 +37,14 @@
 #include <linux/freezer.h>
 #include <linux/oom.h>
 #include <linux/numa.h>
+<<<<<<< HEAD
 #ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
 #endif
 #include <linux/cpumask.h>
 #include <linux/fb.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/tlbflush.h>
 #include "internal.h"
@@ -288,7 +291,12 @@ static inline struct rmap_item *alloc_rmap_item(void)
 {
 	struct rmap_item *rmap_item;
 
+<<<<<<< HEAD
 	rmap_item = kmem_cache_zalloc(rmap_item_cache, GFP_KERNEL);
+=======
+	rmap_item = kmem_cache_zalloc(rmap_item_cache, GFP_KERNEL |
+						__GFP_NORETRY | __GFP_NOWARN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rmap_item)
 		ksm_rmap_items++;
 	return rmap_item;
@@ -636,6 +644,10 @@ static void remove_rmap_item_from_tree(struct rmap_item *rmap_item)
 			ksm_pages_shared--;
 
 		put_anon_vma(rmap_item->anon_vma);
+<<<<<<< HEAD
+=======
+		rmap_item->head = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rmap_item->address &= PAGE_MASK;
 
 	} else if (rmap_item->address & UNSTABLE_FLAG) {
@@ -717,6 +729,7 @@ static int remove_stable_node(struct stable_node *stable_node)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if (WARN_ON_ONCE(page_mapped(page))) {
 		/*
 		 * This should not happen: but if it does, just refuse to let
@@ -724,6 +737,15 @@ static int remove_stable_node(struct stable_node *stable_node)
 		 */
 		err = -EBUSY;
 	} else {
+=======
+	/*
+	 * Page could be still mapped if this races with __mmput() running in
+	 * between ksm_exit() and exit_mmap(). Just refuse to let
+	 * merge_across_nodes/max_page_sharing be switched.
+	 */
+	err = -EBUSY;
+	if (!page_mapped(page)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * The stable node did not yet appear stale to get_ksm_page(),
 		 * since that allows for an unmapped ksm page to be recognized
@@ -1479,8 +1501,27 @@ static void cmp_and_merge_page(struct page *page, struct rmap_item *rmap_item)
 	tree_rmap_item =
 		unstable_tree_search_insert(rmap_item, page, &tree_page);
 	if (tree_rmap_item) {
+<<<<<<< HEAD
 		kpage = try_to_merge_two_pages(rmap_item, page,
 						tree_rmap_item, tree_page);
+=======
+		bool split;
+
+		kpage = try_to_merge_two_pages(rmap_item, page,
+						tree_rmap_item, tree_page);
+		/*
+		 * If both pages we tried to merge belong to the same compound
+		 * page, then we actually ended up increasing the reference
+		 * count of the same compound page twice, and split_huge_page
+		 * failed.
+		 * Here we set a flag if that happened, and we use it later to
+		 * try split_huge_page again. Since we call put_page right
+		 * afterwards, the reference count will be correct and
+		 * split_huge_page should succeed.
+		 */
+		split = PageTransCompound(page)
+			&& compound_head(page) == compound_head(tree_page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		put_page(tree_page);
 		if (kpage) {
 			/*
@@ -1505,6 +1546,23 @@ static void cmp_and_merge_page(struct page *page, struct rmap_item *rmap_item)
 				break_cow(tree_rmap_item);
 				break_cow(rmap_item);
 			}
+<<<<<<< HEAD
+=======
+		} else if (split) {
+			/*
+			 * We are here if we tried to merge two pages and
+			 * failed because they both belonged to the same
+			 * compound page. We will split the page now, but no
+			 * merging will take place.
+			 * We do not want to add the cost of a full lock; if
+			 * the page is locked, it is better to skip it and
+			 * perhaps try again later.
+			 */
+			if (!trylock_page(page))
+				return;
+			split_huge_page(page);
+			unlock_page(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 }
@@ -1710,6 +1768,7 @@ static void ksm_do_scan(unsigned int scan_npages)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * LCH_ADD: ksm kernel control interface for run or stop
  * flags: 1(KSM_RUN_MERGE) sets ksmd running
@@ -1829,6 +1888,8 @@ static ssize_t ksm_run_change(unsigned long flags)
 #endif
 EXPORT_SYMBOL(ksm_run_change);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ksmd_should_run(void)
 {
 	return (ksm_run & KSM_RUN_MERGE) && !list_empty(&ksm_mm_head.mm_list);
@@ -1837,19 +1898,28 @@ static int ksmd_should_run(void)
 static int ksm_scan_thread(void *nothing)
 {
 	set_freezable();
+<<<<<<< HEAD
 	/* M: set KSMD's priority to the lowest value */
 	set_user_nice(current, 19);
 	/* set_user_nice(current, 5); */
+=======
+	set_user_nice(current, 5);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (!kthread_should_stop()) {
 		mutex_lock(&ksm_thread_mutex);
 		wait_while_offlining();
+<<<<<<< HEAD
 		if (ksmd_should_run()) {
 		#ifdef KSM_KCTL_INTERFACE
 			ksm_tuning_pressure();
 		#endif
 			ksm_do_scan(ksm_thread_pages_to_scan);
 		}
+=======
+		if (ksmd_should_run())
+			ksm_do_scan(ksm_thread_pages_to_scan);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_unlock(&ksm_thread_mutex);
 
 		try_to_freeze();
@@ -2461,6 +2531,7 @@ static int __init ksm_init(void)
 	/* There is no significance to this priority 100 */
 	hotplug_memory_notifier(ksm_memory_callback, 100);
 #endif
+<<<<<<< HEAD
 
 #ifdef KSM_KCTL_INTERFACE
 #ifdef CONFIG_HAS_EARLYSUSPEND
@@ -2476,6 +2547,8 @@ static int __init ksm_init(void)
 #endif
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_free:

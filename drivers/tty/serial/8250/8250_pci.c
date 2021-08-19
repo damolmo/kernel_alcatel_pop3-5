@@ -56,6 +56,10 @@ struct serial_private {
 	unsigned int		nr;
 	void __iomem		*remapped_bar[PCI_NUM_BAR_RESOURCES];
 	struct pci_serial_quirk	*quirk;
+<<<<<<< HEAD
+=======
+	const struct pciserial_board *board;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int			line[0];
 };
 
@@ -1355,6 +1359,12 @@ ce4100_serial_setup(struct serial_private *priv,
 #define PCI_DEVICE_ID_INTEL_BSW_UART1	0x228a
 #define PCI_DEVICE_ID_INTEL_BSW_UART2	0x228c
 
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_INTEL_BDW_UART1	0x9ce3
+#define PCI_DEVICE_ID_INTEL_BDW_UART2	0x9ce4
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define BYT_PRV_CLK			0x800
 #define BYT_PRV_CLK_EN			(1 << 0)
 #define BYT_PRV_CLK_M_VAL_SHIFT		1
@@ -1456,11 +1466,19 @@ byt_serial_setup(struct serial_private *priv,
 	switch (pdev->device) {
 	case PCI_DEVICE_ID_INTEL_BYT_UART1:
 	case PCI_DEVICE_ID_INTEL_BSW_UART1:
+<<<<<<< HEAD
+=======
+	case PCI_DEVICE_ID_INTEL_BDW_UART1:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rx_param->src_id = 3;
 		tx_param->dst_id = 2;
 		break;
 	case PCI_DEVICE_ID_INTEL_BYT_UART2:
 	case PCI_DEVICE_ID_INTEL_BSW_UART2:
+<<<<<<< HEAD
+=======
+	case PCI_DEVICE_ID_INTEL_BDW_UART2:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rx_param->src_id = 5;
 		tx_param->dst_id = 4;
 		break;
@@ -1760,6 +1778,19 @@ pci_wch_ch353_setup(struct serial_private *priv,
 	return pci_default_setup(priv, board, port, idx);
 }
 
+<<<<<<< HEAD
+=======
+static int
+pci_wch_ch38x_setup(struct serial_private *priv,
+                    const struct pciserial_board *board,
+                    struct uart_8250_port *port, int idx)
+{
+	port->port.flags |= UPF_FIXED_TYPE;
+	port->port.type = PORT_16850;
+	return pci_default_setup(priv, board, port, idx);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define PCI_VENDOR_ID_SBSMODULARIO	0x124B
 #define PCI_SUBVENDOR_ID_SBSMODULARIO	0x124B
 #define PCI_DEVICE_ID_OCTPRO		0x0001
@@ -1814,6 +1845,59 @@ pci_wch_ch353_setup(struct serial_private *priv,
 #define PCI_VENDOR_ID_SUNIX		0x1fd4
 #define PCI_DEVICE_ID_SUNIX_1999	0x1999
 
+<<<<<<< HEAD
+=======
+#define PCIE_VENDOR_ID_WCH		0x1c00
+#define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
+#define PCIE_DEVICE_ID_WCH_CH384_4S	0x3470
+#define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
+
+#define PCI_DEVICE_ID_EXAR_XR17V4358	0x4358
+#define PCI_DEVICE_ID_EXAR_XR17V8358	0x8358
+
+#define PCI_VENDOR_ID_ACCESIO			0x494f
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SDB	0x1051
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2S	0x1053
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB	0x105C
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S	0x105E
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_2DB	0x1091
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_2	0x1093
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB	0x1099
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4	0x109B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SMDB	0x10D1
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2SM	0x10D3
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB	0x10DA
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM	0x10DC
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_1	0x1108
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_2	0x1110
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_2	0x1111
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4	0x1118
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4	0x1119
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2S	0x1152
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S	0x115A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_2	0x1190
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_2	0x1191
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4	0x1198
+#define PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4	0x1199
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2SM	0x11D0
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4	0x105A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4	0x105B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM422_8	0x106A
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM485_8	0x106B
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4	0x1098
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM232_8	0x10A9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM	0x10D9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_COM_8SM	0x10E9
+#define PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM	0x11D8
+
+
+
+#define PCI_VENDOR_ID_PERICOM			0x12D8
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7951	0x7951
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7952	0x7952
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
+#define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
 #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
@@ -1941,6 +2025,23 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= byt_serial_setup,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.vendor		= PCI_VENDOR_ID_INTEL,
+		.device		= PCI_DEVICE_ID_INTEL_BDW_UART1,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.setup		= byt_serial_setup,
+	},
+	{
+		.vendor		= PCI_VENDOR_ID_INTEL,
+		.device		= PCI_DEVICE_ID_INTEL_BDW_UART2,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.setup		= byt_serial_setup,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * ITE
 	 */
@@ -2108,6 +2209,7 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 	 * Pericom
 	 */
 	{
+<<<<<<< HEAD
 		.vendor		= 0x12d8,
 		.device		= 0x7952,
 		.subvendor	= PCI_ANY_ID,
@@ -2129,6 +2231,14 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.setup		= pci_pericom_setup,
 	},
 
+=======
+		.vendor         = PCI_VENDOR_ID_PERICOM,
+		.device         = PCI_ANY_ID,
+		.subvendor      = PCI_ANY_ID,
+		.subdevice      = PCI_ANY_ID,
+		.setup          = pci_pericom_setup,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * PLX
 	 */
@@ -2166,6 +2276,114 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.setup		= pci_default_setup,
 		.exit		= pci_plx9050_exit,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+	{
+		.vendor     = PCI_VENDOR_ID_ACCESIO,
+		.device     = PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM,
+		.subvendor  = PCI_ANY_ID,
+		.subdevice  = PCI_ANY_ID,
+		.setup      = pci_pericom_setup,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * SBS Technologies, Inc., PMC-OCTALPRO 232
 	 */
@@ -2323,6 +2541,23 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_xr17v35x_setup,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.vendor = PCI_VENDOR_ID_EXAR,
+		.device = PCI_DEVICE_ID_EXAR_XR17V4358,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.setup		= pci_xr17v35x_setup,
+	},
+	{
+		.vendor = PCI_VENDOR_ID_EXAR,
+		.device = PCI_DEVICE_ID_EXAR_XR17V8358,
+		.subvendor	= PCI_ANY_ID,
+		.subdevice	= PCI_ANY_ID,
+		.setup		= pci_xr17v35x_setup,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Xircom cards
 	 */
@@ -2494,6 +2729,33 @@ static struct pci_serial_quirk pci_serial_quirks[] __refdata = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_wch_ch353_setup,
 	},
+<<<<<<< HEAD
+=======
+	/* WCH CH382 2S card (16850 clone) */
+	{
+		.vendor         = PCIE_VENDOR_ID_WCH,
+		.device         = PCIE_DEVICE_ID_WCH_CH382_2S,
+		.subvendor      = PCI_ANY_ID,
+		.subdevice      = PCI_ANY_ID,
+		.setup          = pci_wch_ch38x_setup,
+	},
+	/* WCH CH382 2S1P card (16850 clone) */
+	{
+		.vendor         = PCIE_VENDOR_ID_WCH,
+		.device         = PCIE_DEVICE_ID_WCH_CH382_2S1P,
+		.subvendor      = PCI_ANY_ID,
+		.subdevice      = PCI_ANY_ID,
+		.setup          = pci_wch_ch38x_setup,
+	},
+	/* WCH CH384 4S card (16850 clone) */
+	{
+		.vendor         = PCIE_VENDOR_ID_WCH,
+		.device         = PCIE_DEVICE_ID_WCH_CH384_4S,
+		.subvendor      = PCI_ANY_ID,
+		.subdevice      = PCI_ANY_ID,
+		.setup          = pci_wch_ch38x_setup,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * ASIX devices with FIFO bug
 	 */
@@ -2669,6 +2931,11 @@ enum pci_board_num_t {
 	pbn_b0_4_1152000_200,
 	pbn_b0_8_1152000_200,
 
+<<<<<<< HEAD
+=======
+	pbn_b0_4_1250000,
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pbn_b0_2_1843200,
 	pbn_b0_4_1843200,
 
@@ -2771,6 +3038,11 @@ enum pci_board_num_t {
 	pbn_exar_XR17V352,
 	pbn_exar_XR17V354,
 	pbn_exar_XR17V358,
+<<<<<<< HEAD
+=======
+	pbn_exar_XR17V4358,
+	pbn_exar_XR17V8358,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pbn_exar_ibm_saturn,
 	pbn_pasemi_1682M,
 	pbn_ni8430_2,
@@ -2790,6 +3062,15 @@ enum pci_board_num_t {
 	pbn_fintek_4,
 	pbn_fintek_8,
 	pbn_fintek_12,
+<<<<<<< HEAD
+=======
+	pbn_wch382_2,
+	pbn_wch384_4,
+	pbn_pericom_PI7C9X7951,
+	pbn_pericom_PI7C9X7952,
+	pbn_pericom_PI7C9X7954,
+	pbn_pericom_PI7C9X7958,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -2893,6 +3174,16 @@ static struct pciserial_board pci_boards[] = {
 		.uart_offset	= 0x200,
 	},
 
+<<<<<<< HEAD
+=======
+	[pbn_b0_4_1250000] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 4,
+		.base_baud	= 1250000,
+		.uart_offset	= 8,
+	},
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	[pbn_b0_2_1843200] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 2,
@@ -3440,6 +3731,25 @@ static struct pciserial_board pci_boards[] = {
 		.reg_shift	= 0,
 		.first_offset	= 0,
 	},
+<<<<<<< HEAD
+=======
+	[pbn_exar_XR17V4358] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 12,
+		.base_baud	= 7812500,
+		.uart_offset	= 0x400,
+		.reg_shift	= 0,
+		.first_offset	= 0,
+	},
+	[pbn_exar_XR17V8358] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 16,
+		.base_baud	= 7812500,
+		.uart_offset	= 0x400,
+		.reg_shift	= 0,
+		.first_offset	= 0,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	[pbn_exar_ibm_saturn] = {
 		.flags		= FL_BASE0,
 		.num_ports	= 1,
@@ -3575,6 +3885,50 @@ static struct pciserial_board pci_boards[] = {
 		.base_baud	= 115200,
 		.first_offset	= 0x40,
 	},
+<<<<<<< HEAD
+=======
+	[pbn_wch382_2] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 2,
+		.base_baud	= 115200,
+		.uart_offset	= 8,
+		.first_offset	= 0xC0,
+	},
+	[pbn_wch384_4] = {
+		.flags		= FL_BASE0,
+		.num_ports	= 4,
+		.base_baud      = 115200,
+		.uart_offset    = 8,
+		.first_offset   = 0xC0,
+	},
+	/*
+	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+	 */
+	[pbn_pericom_PI7C9X7951] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 1,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7952] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 2,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7954] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 4,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+	[pbn_pericom_PI7C9X7958] = {
+		.flags          = FL_BASE0,
+		.num_ports      = 8,
+		.base_baud      = 921600,
+		.uart_offset	= 0x8,
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct pci_device_id blacklist[] = {
@@ -3586,6 +3940,11 @@ static const struct pci_device_id blacklist[] = {
 	/* multi-io cards handled by parport_serial */
 	{ PCI_DEVICE(0x4348, 0x7053), }, /* WCH CH353 2S1P */
 	{ PCI_DEVICE(0x4348, 0x5053), }, /* WCH CH353 1S1P */
+<<<<<<< HEAD
+=======
+	{ PCI_DEVICE(0x1c00, 0x3250), }, /* WCH CH382 2S1P */
+	{ PCI_DEVICE(0x1c00, 0x3470), }, /* WCH CH384 4S */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -3749,6 +4108,10 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 		}
 	}
 	priv->nr = i;
+<<<<<<< HEAD
+=======
+	priv->board = board;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return priv;
 
 err_deinit:
@@ -3759,7 +4122,11 @@ err_out:
 }
 EXPORT_SYMBOL_GPL(pciserial_init_ports);
 
+<<<<<<< HEAD
 void pciserial_remove_ports(struct serial_private *priv)
+=======
+void pciserial_detach_ports(struct serial_private *priv)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct pci_serial_quirk *quirk;
 	int i;
@@ -3779,7 +4146,15 @@ void pciserial_remove_ports(struct serial_private *priv)
 	quirk = find_quirk(priv->dev);
 	if (quirk->exit)
 		quirk->exit(priv->dev);
+<<<<<<< HEAD
 
+=======
+}
+
+void pciserial_remove_ports(struct serial_private *priv)
+{
+	pciserial_detach_ports(priv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(priv);
 }
 EXPORT_SYMBOL_GPL(pciserial_remove_ports);
@@ -4808,7 +5183,11 @@ static struct pci_device_id serial_pci_tbl[] = {
 		0,
 		0, pbn_exar_XR17C158 },
 	/*
+<<<<<<< HEAD
 	 * Exar Corp. XR17V35[248] Dual/Quad/Octal PCIe UARTs
+=======
+	 * Exar Corp. XR17V[48]35[248] Dual/Quad/Octal/Hexa PCIe UARTs
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 */
 	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V352,
 		PCI_ANY_ID, PCI_ANY_ID,
@@ -4822,7 +5201,139 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID,
 		0,
 		0, pbn_exar_XR17V358 },
+<<<<<<< HEAD
 
+=======
+	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V4358,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_exar_XR17V4358 },
+	{	PCI_VENDOR_ID_EXAR, PCI_DEVICE_ID_EXAR_XR17V8358,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_exar_XR17V8358 },
+	/*
+	 * ACCES I/O Products quad
+	 */
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_2DB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4DB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_2SMDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_2SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SMDB,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_COM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_1,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7951 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM422_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM485_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4S,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_2,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_MPCIE_ICM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_2SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7952 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM422_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM485_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM422_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM485_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_4,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM232_8,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_COM_8SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7958 },
+	{	PCI_VENDOR_ID_ACCESIO, PCI_DEVICE_ID_ACCESIO_PCIE_ICM_4SM,
+		PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+		pbn_pericom_PI7C9X7954 },
+	/*
+	 * Pericom PI7C9X795[1248] Uno/Dual/Quad/Octal UART
+	 */
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7951,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7951 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7952,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7952 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7954,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7954 },
+	{   PCI_VENDOR_ID_PERICOM, PCI_DEVICE_ID_PERICOM_PI7C9X7958,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0,
+		0, pbn_pericom_PI7C9X7958 },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Topic TP560 Data/Fax/Voice 56k modem (reported by Evan Clarke)
 	 */
@@ -4850,6 +5361,20 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
 		pbn_b2_4_115200 },
 	/*
+<<<<<<< HEAD
+=======
+	 * BrainBoxes UC-260
+	 */
+	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
+		PCI_ANY_ID, PCI_ANY_ID,
+		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
+		pbn_b2_4_115200 },
+	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
+		PCI_ANY_ID, PCI_ANY_ID,
+		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
+		pbn_b2_4_115200 },
+	/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * Perle PCI-RAS cards
 	 */
 	{       PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
@@ -5249,6 +5774,19 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_CLASS_COMMUNICATION_SERIAL << 8, 0xff0000,
 		pbn_byt },
 
+<<<<<<< HEAD
+=======
+	/* Intel Broadwell */
+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BDW_UART1,
+		PCI_ANY_ID,  PCI_ANY_ID,
+		PCI_CLASS_COMMUNICATION_SERIAL << 8, 0xff0000,
+		pbn_byt },
+	{	PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BDW_UART2,
+		PCI_ANY_ID,  PCI_ANY_ID,
+		PCI_CLASS_COMMUNICATION_SERIAL << 8, 0xff0000,
+		pbn_byt },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Intel Quark x1000
 	 */
@@ -5292,6 +5830,17 @@ static struct pci_device_id serial_pci_tbl[] = {
 		PCI_ANY_ID, PCI_ANY_ID,
 		0, 0, pbn_b0_bt_2_115200 },
 
+<<<<<<< HEAD
+=======
+	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH382_2S,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0, pbn_wch382_2 },
+
+	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH384_4S,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0, pbn_wch384_4 },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Commtech, Inc. Fastcom adapters
 	 */
@@ -5324,11 +5873,35 @@ static struct pci_device_id serial_pci_tbl[] = {
 		0,
 		0, pbn_exar_XR17V358 },
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Realtek RealManage
+	 */
+	{	PCI_VENDOR_ID_REALTEK, 0x816a,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0, pbn_b0_1_115200 },
+
+	{	PCI_VENDOR_ID_REALTEK, 0x816b,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0, pbn_b0_1_115200 },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Fintek PCI serial cards */
 	{ PCI_DEVICE(0x1c29, 0x1104), .driver_data = pbn_fintek_4 },
 	{ PCI_DEVICE(0x1c29, 0x1108), .driver_data = pbn_fintek_8 },
 	{ PCI_DEVICE(0x1c29, 0x1112), .driver_data = pbn_fintek_12 },
 
+<<<<<<< HEAD
+=======
+	/* MKS Tenta SCOM-080x serial cards */
+	{ PCI_DEVICE(0x1601, 0x0800), .driver_data = pbn_b0_4_1250000 },
+	{ PCI_DEVICE(0x1601, 0xa801), .driver_data = pbn_b0_4_1250000 },
+
+	/* Amazon PCI serial device */
+	{ PCI_DEVICE(0x1d0f, 0x8250), .driver_data = pbn_b0_1_115200 },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * These entries match devices with class COMMUNICATION_SERIAL,
 	 * COMMUNICATION_MODEM or COMMUNICATION_MULTISERIAL
@@ -5357,7 +5930,11 @@ static pci_ers_result_t serial8250_io_error_detected(struct pci_dev *dev,
 		return PCI_ERS_RESULT_DISCONNECT;
 
 	if (priv)
+<<<<<<< HEAD
 		pciserial_suspend_ports(priv);
+=======
+		pciserial_detach_ports(priv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pci_disable_device(dev);
 
@@ -5382,9 +5959,22 @@ static pci_ers_result_t serial8250_io_slot_reset(struct pci_dev *dev)
 static void serial8250_io_resume(struct pci_dev *dev)
 {
 	struct serial_private *priv = pci_get_drvdata(dev);
+<<<<<<< HEAD
 
 	if (priv)
 		pciserial_resume_ports(priv);
+=======
+	struct serial_private *new;
+
+	if (!priv)
+		return;
+
+	new = pciserial_init_ports(dev, priv->board);
+	if (!IS_ERR(new)) {
+		pci_set_drvdata(dev, new);
+		kfree(priv);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct pci_error_handlers serial8250_err_handler = {

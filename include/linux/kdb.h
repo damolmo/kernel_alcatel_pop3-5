@@ -84,8 +84,11 @@ extern const char *kdb_diemsg;
 
 extern int kdb_flags;	/* Global flags, see kdb_state for per cpu state */
 
+<<<<<<< HEAD
 DECLARE_PER_CPU(int, kdb_in_use);	/* Indicate if in kdb mode or not */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void kdb_save_flags(void);
 extern void kdb_restore_flags(void);
 

@@ -298,7 +298,11 @@ config FB_ARMCLCD
 
 # Helper logic selected only by the ARM Versatile platform family.
 config PLAT_VERSATILE_CLCD
+<<<<<<< HEAD
 	def_bool ARCH_VERSATILE || ARCH_REALVIEW || ARCH_VEXPRESS
+=======
+	def_bool ARCH_VERSATILE || ARCH_REALVIEW || ARCH_VEXPRESS || ARCH_INTEGRATOR
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on ARM
 	depends on FB_ARMCLCD && FB=y
 
@@ -1414,6 +1418,10 @@ config FB_ATY
 	select FB_CFB_IMAGEBLIT
 	select FB_BACKLIGHT if FB_ATY_BACKLIGHT
 	select FB_MACMODES if PPC
+<<<<<<< HEAD
+=======
+	select FB_ATY_CT if SPARC64 && PCI
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  This driver supports graphics boards with the ATI Mach64 chips.
 	  Say Y if you have such a graphics board.
@@ -1424,7 +1432,10 @@ config FB_ATY
 config FB_ATY_CT
 	bool "Mach64 CT/VT/GT/LT (incl. 3D RAGE) support"
 	depends on PCI && FB_ATY
+<<<<<<< HEAD
 	default y if SPARC64 && PCI
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Say Y here to support use of ATI's 64-bit Rage boards (or other
 	  boards based on the Mach64 CT, VT, GT, and LT chipsets) as a
@@ -1523,6 +1534,10 @@ config FB_SIS
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FB_BOOT_VESA_SUPPORT if FB_SIS = y
+<<<<<<< HEAD
+=======
+	select FB_SIS_300 if !FB_SIS_315
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  This is the frame buffer device driver for the SiS 300, 315, 330
 	  and 340 series as well as XGI V3XT, V5, V8, Z7 graphics chipsets.
@@ -2266,7 +2281,10 @@ config XEN_FBDEV_FRONTEND
 	select FB_SYS_IMAGEBLIT
 	select FB_SYS_FOPS
 	select FB_DEFERRED_IO
+<<<<<<< HEAD
 	select INPUT_XEN_KBDDEV_FRONTEND if INPUT_MISC
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select XEN_XENBUS_FRONTEND
 	default y
 	help

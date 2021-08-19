@@ -76,6 +76,14 @@ static void rds_recv_rcvbuf_delta(struct rds_sock *rs, struct sock *sk,
 		return;
 
 	rs->rs_rcv_bytes += delta;
+<<<<<<< HEAD
+=======
+
+	/* loop transport doesn't send/recv congestion updates */
+	if (rs->rs_transport->t_type == RDS_TRANS_LOOP)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	now_congested = rs->rs_rcv_bytes > rds_sk_rcvbuf(rs);
 
 	rdsdebug("rs %p (%pI4:%u) recv bytes %d buf %d "
@@ -296,12 +304,20 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
 int rds_notify_queue_get(struct rds_sock *rs, struct msghdr *msghdr)
 {
 	struct rds_notifier *notifier;
+<<<<<<< HEAD
 	struct rds_rdma_notify cmsg = { 0 }; /* fill holes with zero */
+=======
+	struct rds_rdma_notify cmsg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int count = 0, max_messages = ~0U;
 	unsigned long flags;
 	LIST_HEAD(copy);
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	memset(&cmsg, 0, sizeof(cmsg));	/* fill holes with zero */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* put_cmsg copies to user space and thus may sleep. We can't do this
 	 * with rs_lock held, so first grab as many notifications as we can stuff
@@ -474,7 +490,11 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 
 		if (rds_cmsg_recv(inc, msg)) {
 			ret = -EFAULT;
+<<<<<<< HEAD
 			goto out;
+=======
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		rds_stats_inc(s_recv_delivered);
@@ -543,5 +563,10 @@ void rds_inc_info_copy(struct rds_incoming *inc,
 		minfo.fport = inc->i_hdr.h_dport;
 	}
 
+<<<<<<< HEAD
+=======
+	minfo.flags = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rds_info_copy(iter, &minfo, sizeof(minfo));
 }

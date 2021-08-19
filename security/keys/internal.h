@@ -136,7 +136,11 @@ extern key_ref_t keyring_search_aux(key_ref_t keyring_ref,
 extern key_ref_t search_my_process_keyrings(struct keyring_search_context *ctx);
 extern key_ref_t search_process_keyrings(struct keyring_search_context *ctx);
 
+<<<<<<< HEAD
 extern struct key *find_keyring_by_name(const char *name, bool skip_perm_check);
+=======
+extern struct key *find_keyring_by_name(const char *name, bool uid_keyring);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern int install_user_keyrings(void);
 extern int install_thread_keyring_to_cred(struct cred *);

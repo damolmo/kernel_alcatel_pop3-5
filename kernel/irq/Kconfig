@@ -55,11 +55,14 @@ config GENERIC_IRQ_CHIP
 config IRQ_DOMAIN
 	bool
 
+<<<<<<< HEAD
 # Support for hierarchical irq domains
 config IRQ_DOMAIN_HIERARCHY
 	bool
 	select IRQ_DOMAIN
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config HANDLE_DOMAIN_IRQ
 	bool
 

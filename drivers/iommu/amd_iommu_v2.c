@@ -701,9 +701,15 @@ out_clear_state:
 
 out_unregister:
 	mmu_notifier_unregister(&pasid_state->mn, mm);
+<<<<<<< HEAD
 
 out_free:
 	mmput(mm);
+=======
+	mmput(mm);
+
+out_free:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	free_pasid_state(pasid_state);
 
 out:

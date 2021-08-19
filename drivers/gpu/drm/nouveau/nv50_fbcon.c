@@ -95,7 +95,11 @@ nv50_fbcon_imageblit(struct fb_info *info, const struct fb_image *image)
 	struct nouveau_fbdev *nfbdev = info->par;
 	struct nouveau_drm *drm = nouveau_drm(nfbdev->dev);
 	struct nouveau_channel *chan = drm->channel;
+<<<<<<< HEAD
 	uint32_t width, dwords, *data = (uint32_t *)image->data;
+=======
+	uint32_t dwords, *data = (uint32_t *)image->data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	uint32_t mask = ~(~0 >> (32 - info->var.bits_per_pixel));
 	uint32_t *palette = info->pseudo_palette;
 	int ret;
@@ -107,9 +111,12 @@ nv50_fbcon_imageblit(struct fb_info *info, const struct fb_image *image)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	width = ALIGN(image->width, 32);
 	dwords = (width * image->height) >> 5;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BEGIN_NV04(chan, NvSub2D, 0x0814, 2);
 	if (info->fix.visual == FB_VISUAL_TRUECOLOR ||
 	    info->fix.visual == FB_VISUAL_DIRECTCOLOR) {
@@ -128,6 +135,10 @@ nv50_fbcon_imageblit(struct fb_info *info, const struct fb_image *image)
 	OUT_RING(chan, 0);
 	OUT_RING(chan, image->dy);
 
+<<<<<<< HEAD
+=======
+	dwords = ALIGN(ALIGN(image->width, 8) * image->height, 32) >> 5;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (dwords) {
 		int push = dwords > 2047 ? 2047 : dwords;
 

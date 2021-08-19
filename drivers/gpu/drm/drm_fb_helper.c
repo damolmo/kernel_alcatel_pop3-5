@@ -145,6 +145,34 @@ int drm_fb_helper_add_one_connector(struct drm_fb_helper *fb_helper, struct drm_
 }
 EXPORT_SYMBOL(drm_fb_helper_add_one_connector);
 
+<<<<<<< HEAD
+=======
+static void remove_from_modeset(struct drm_mode_set *set,
+		struct drm_connector *connector)
+{
+	int i, j;
+
+	for (i = 0; i < set->num_connectors; i++) {
+		if (set->connectors[i] == connector)
+			break;
+	}
+
+	if (i == set->num_connectors)
+		return;
+
+	for (j = i + 1; j < set->num_connectors; j++) {
+		set->connectors[j - 1] = set->connectors[j];
+	}
+	set->num_connectors--;
+
+	/* because i915 is pissy about this..
+	 * TODO maybe need to makes sure we set it back to !=NULL somewhere?
+	 */
+	if (set->num_connectors == 0)
+		set->fb = NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int drm_fb_helper_remove_one_connector(struct drm_fb_helper *fb_helper,
 				       struct drm_connector *connector)
 {
@@ -167,6 +195,14 @@ int drm_fb_helper_remove_one_connector(struct drm_fb_helper *fb_helper,
 	}
 	fb_helper->connector_count--;
 	kfree(fb_helper_connector);
+<<<<<<< HEAD
+=======
+
+	/* also cleanup dangling references to the connector: */
+	for (i = 0; i < fb_helper->crtc_count; i++)
+		remove_from_modeset(&fb_helper->crtc_info[i].mode_set, connector);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(drm_fb_helper_remove_one_connector);
@@ -347,9 +383,24 @@ bool drm_fb_helper_restore_fbdev_mode_unlocked(struct drm_fb_helper *fb_helper)
 {
 	struct drm_device *dev = fb_helper->dev;
 	bool ret;
+<<<<<<< HEAD
 	drm_modeset_lock_all(dev);
 	ret = restore_fbdev_mode(fb_helper);
 	drm_modeset_unlock_all(dev);
+=======
+	bool do_delayed = false;
+
+	drm_modeset_lock_all(dev);
+	ret = restore_fbdev_mode(fb_helper);
+
+	do_delayed = fb_helper->delayed_hotplug;
+	if (do_delayed)
+		fb_helper->delayed_hotplug = false;
+	drm_modeset_unlock_all(dev);
+
+	if (do_delayed)
+		drm_fb_helper_hotplug_event(fb_helper);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 EXPORT_SYMBOL(drm_fb_helper_restore_fbdev_mode_unlocked);
@@ -783,9 +834,20 @@ int drm_fb_helper_check_var(struct fb_var_screeninfo *var,
 	struct drm_framebuffer *fb = fb_helper->fb;
 	int depth;
 
+<<<<<<< HEAD
 	if (var->pixclock != 0 || in_dbg_master())
 		return -EINVAL;
 
+=======
+	if (in_dbg_master())
+		return -EINVAL;
+
+	if (var->pixclock != 0) {
+		DRM_DEBUG("fbdev emulation doesn't support changing the pixel clock, value of pixclock is ignored\n");
+		var->pixclock = 0;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Need to resize the fb object !!! */
 	if (var->bits_per_pixel > fb->bits_per_pixel ||
 	    var->xres > fb->width || var->yres > fb->height ||
@@ -888,10 +950,13 @@ int drm_fb_helper_set_par(struct fb_info *info)
 
 	drm_fb_helper_restore_fbdev_mode_unlocked(fb_helper);
 
+<<<<<<< HEAD
 	if (fb_helper->delayed_hotplug) {
 		fb_helper->delayed_hotplug = false;
 		drm_fb_helper_hotplug_event(fb_helper);
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(drm_fb_helper_set_par);
@@ -1418,7 +1483,10 @@ static int drm_pick_crtcs(struct drm_fb_helper *fb_helper,
 			  int n, int width, int height)
 {
 	int c, o;
+<<<<<<< HEAD
 	struct drm_device *dev = fb_helper->dev;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct drm_connector *connector;
 	struct drm_connector_helper_funcs *connector_funcs;
 	struct drm_encoder *encoder;
@@ -1437,7 +1505,11 @@ static int drm_pick_crtcs(struct drm_fb_helper *fb_helper,
 	if (modes[n] == NULL)
 		return best_score;
 
+<<<<<<< HEAD
 	crtcs = kzalloc(dev->mode_config.num_connector *
+=======
+	crtcs = kzalloc(fb_helper->connector_count *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sizeof(struct drm_fb_helper_crtc *), GFP_KERNEL);
 	if (!crtcs)
 		return best_score;
@@ -1483,7 +1555,11 @@ static int drm_pick_crtcs(struct drm_fb_helper *fb_helper,
 		if (score > best_score) {
 			best_score = score;
 			memcpy(best_crtcs, crtcs,
+<<<<<<< HEAD
 			       dev->mode_config.num_connector *
+=======
+			       fb_helper->connector_count *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       sizeof(struct drm_fb_helper_crtc *));
 		}
 	}

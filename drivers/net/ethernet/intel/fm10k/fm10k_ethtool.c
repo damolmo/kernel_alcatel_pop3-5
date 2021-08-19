@@ -840,7 +840,11 @@ static void fm10k_self_test(struct net_device *dev,
 
 	memset(data, 0, sizeof(*data) * FM10K_TEST_LEN);
 
+<<<<<<< HEAD
 	if (FM10K_REMOVED(hw)) {
+=======
+	if (FM10K_REMOVED(hw->hw_addr)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		netif_err(interface, drv, dev,
 			  "Interface removed - test blocked\n");
 		eth_test->flags |= ETH_TEST_FL_FAILED;

@@ -121,9 +121,17 @@ static void dump_port_status_diff(u32 prev_status, u32 new_status)
 
 void rh_port_connect(int rhport, enum usb_device_speed speed)
 {
+<<<<<<< HEAD
 	usbip_dbg_vhci_rh("rh_port_connect %d\n", rhport);
 
 	spin_lock(&the_controller->lock);
+=======
+	unsigned long	flags;
+
+	usbip_dbg_vhci_rh("rh_port_connect %d\n", rhport);
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	the_controller->port_status[rhport] |= USB_PORT_STAT_CONNECTION
 		| (1 << USB_PORT_FEAT_C_CONNECTION);
@@ -139,22 +147,38 @@ void rh_port_connect(int rhport, enum usb_device_speed speed)
 		break;
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usb_hcd_poll_rh_status(vhci_to_hcd(the_controller));
 }
 
 static void rh_port_disconnect(int rhport)
 {
+<<<<<<< HEAD
 	usbip_dbg_vhci_rh("rh_port_disconnect %d\n", rhport);
 
 	spin_lock(&the_controller->lock);
+=======
+	unsigned long	flags;
+
+	usbip_dbg_vhci_rh("rh_port_disconnect %d\n", rhport);
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	the_controller->port_status[rhport] &= ~USB_PORT_STAT_CONNECTION;
 	the_controller->port_status[rhport] |=
 					(1 << USB_PORT_FEAT_C_CONNECTION);
 
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_hcd_poll_rh_status(vhci_to_hcd(the_controller));
 }
 
@@ -182,13 +206,21 @@ static int vhci_hub_status(struct usb_hcd *hcd, char *buf)
 	int		retval;
 	int		rhport;
 	int		changed = 0;
+<<<<<<< HEAD
+=======
+	unsigned long	flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	retval = DIV_ROUND_UP(VHCI_NPORTS + 1, 8);
 	memset(buf, 0, retval);
 
 	vhci = hcd_to_vhci(hcd);
 
+<<<<<<< HEAD
 	spin_lock(&vhci->lock);
+=======
+	spin_lock_irqsave(&vhci->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!HCD_HW_ACCESSIBLE(hcd)) {
 		usbip_dbg_vhci_rh("hw accessible flag not on?\n");
 		goto done;
@@ -209,12 +241,17 @@ static int vhci_hub_status(struct usb_hcd *hcd, char *buf)
 		usb_hcd_resume_root_hub(hcd);
 
 done:
+<<<<<<< HEAD
 	spin_unlock(&vhci->lock);
+=======
+	spin_unlock_irqrestore(&vhci->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return changed ? retval : 0;
 }
 
 static inline void hub_descriptor(struct usb_hub_descriptor *desc)
 {
+<<<<<<< HEAD
 	memset(desc, 0, sizeof(*desc));
 	desc->bDescriptorType = 0x29;
 	desc->bDescLength = 9;
@@ -222,6 +259,20 @@ static inline void hub_descriptor(struct usb_hub_descriptor *desc)
 	desc->bNbrPorts = VHCI_NPORTS;
 	desc->u.hs.DeviceRemovable[0] = 0xff;
 	desc->u.hs.DeviceRemovable[1] = 0xff;
+=======
+	int width;
+
+	memset(desc, 0, sizeof(*desc));
+	desc->bDescriptorType = 0x29;
+	desc->wHubCharacteristics = (__constant_cpu_to_le16(0x0001));
+
+	desc->bNbrPorts = VHCI_NPORTS;
+	BUILD_BUG_ON(VHCI_NPORTS > USB_MAXCHILDREN);
+	width = desc->bNbrPorts / 8 + 1;
+	desc->bDescLength = USB_DT_HUB_NONVAR_SIZE + 2 * width;
+	memset(&desc->u.hs.DeviceRemovable[0], 0, width);
+	memset(&desc->u.hs.DeviceRemovable[width], 0xff, width);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
@@ -230,6 +281,10 @@ static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	struct vhci_hcd	*dum;
 	int             retval = 0;
 	int		rhport;
+<<<<<<< HEAD
+=======
+	unsigned long	flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	u32 prev_port_status[VHCI_NPORTS];
 
@@ -248,7 +303,11 @@ static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 	dum = hcd_to_vhci(hcd);
 
+<<<<<<< HEAD
 	spin_lock(&dum->lock);
+=======
+	spin_lock_irqsave(&dum->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* store old status and compare now and old later */
 	if (usbip_dbg_flag_vhci_rh) {
@@ -273,7 +332,11 @@ static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		case USB_PORT_FEAT_POWER:
 			usbip_dbg_vhci_rh(
 				" ClearPortFeature: USB_PORT_FEAT_POWER\n");
+<<<<<<< HEAD
 			dum->port_status[rhport] = 0;
+=======
+			dum->port_status[rhport] &= ~USB_PORT_STAT_POWER;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dum->resuming = 0;
 			break;
 		case USB_PORT_FEAT_C_RESET:
@@ -291,6 +354,10 @@ static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			default:
 				break;
 			}
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		default:
 			usbip_dbg_vhci_rh(" ClearPortFeature: default %x\n",
 					  wValue);
@@ -402,7 +469,11 @@ static int vhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	}
 	usbip_dbg_vhci_rh(" bye\n");
 
+<<<<<<< HEAD
 	spin_unlock(&dum->lock);
+=======
+	spin_unlock_irqrestore(&dum->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return retval;
 }
@@ -425,6 +496,10 @@ static void vhci_tx_urb(struct urb *urb)
 {
 	struct vhci_device *vdev = get_vdev(urb->dev);
 	struct vhci_priv *priv;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!vdev) {
 		pr_err("could not get virtual device");
@@ -437,7 +512,11 @@ static void vhci_tx_urb(struct urb *urb)
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&vdev->priv_lock);
+=======
+	spin_lock_irqsave(&vdev->priv_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv->seqnum = atomic_inc_return(&the_controller->seqnum);
 	if (priv->seqnum == 0xffff)
@@ -451,7 +530,11 @@ static void vhci_tx_urb(struct urb *urb)
 	list_add_tail(&priv->list, &vdev->priv_tx);
 
 	wake_up(&vdev->waitq_tx);
+<<<<<<< HEAD
 	spin_unlock(&vdev->priv_lock);
+=======
+	spin_unlock_irqrestore(&vdev->priv_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int vhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
@@ -460,18 +543,30 @@ static int vhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 	struct device *dev = &urb->dev->dev;
 	int ret = 0;
 	struct vhci_device *vdev;
+<<<<<<< HEAD
 
 	usbip_dbg_vhci_hc("enter, usb_hcd %p urb %p mem_flags %d\n",
 			  hcd, urb, mem_flags);
+=======
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* patch to usb_sg_init() is in 2.5.60 */
 	BUG_ON(!urb->transfer_buffer && urb->transfer_buffer_length);
 
+<<<<<<< HEAD
 	spin_lock(&the_controller->lock);
 
 	if (urb->status != -EINPROGRESS) {
 		dev_err(dev, "URB already unlinked!, status %d\n", urb->status);
 		spin_unlock(&the_controller->lock);
+=======
+	spin_lock_irqsave(&the_controller->lock, flags);
+
+	if (urb->status != -EINPROGRESS) {
+		dev_err(dev, "URB already unlinked!, status %d\n", urb->status);
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return urb->status;
 	}
 
@@ -483,7 +578,11 @@ static int vhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 	    vdev->ud.status == VDEV_ST_ERROR) {
 		dev_err(dev, "enqueue for inactive port %d\n", vdev->rhport);
 		spin_unlock(&vdev->ud.lock);
+<<<<<<< HEAD
 		spin_unlock(&the_controller->lock);
+=======
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENODEV;
 	}
 	spin_unlock(&vdev->ud.lock);
@@ -558,14 +657,22 @@ static int vhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 
 out:
 	vhci_tx_urb(urb);
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 
 no_need_xmit:
 	usb_hcd_unlink_urb_from_ep(hcd, urb);
 no_need_unlink:
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_hcd_giveback_urb(vhci_to_hcd(the_controller), urb, urb->status);
 	return ret;
 }
@@ -620,16 +727,26 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 {
 	struct vhci_priv *priv;
 	struct vhci_device *vdev;
+<<<<<<< HEAD
 
 	pr_info("dequeue a urb %p\n", urb);
 
 	spin_lock(&the_controller->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv = urb->hcpriv;
 	if (!priv) {
 		/* URB was never linked! or will be soon given back by
 		 * vhci_rx. */
+<<<<<<< HEAD
 		spin_unlock(&the_controller->lock);
+=======
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 
@@ -638,7 +755,11 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 
 		ret = usb_hcd_check_unlink_urb(hcd, urb, status);
 		if (ret) {
+<<<<<<< HEAD
 			spin_unlock(&the_controller->lock);
+=======
+			spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 		}
 	}
@@ -650,7 +771,10 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		/* tcp connection is closed */
 		spin_lock(&vdev->priv_lock);
 
+<<<<<<< HEAD
 		pr_info("device %p seems to be disconnected\n", vdev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		list_del(&priv->list);
 		kfree(priv);
 		urb->hcpriv = NULL;
@@ -662,6 +786,7 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		 * vhci_rx will receive RET_UNLINK and give back the URB.
 		 * Otherwise, we give back it here.
 		 */
+<<<<<<< HEAD
 		pr_info("gives back urb %p\n", urb);
 
 		usb_hcd_unlink_urb_from_ep(hcd, urb);
@@ -670,6 +795,14 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		usb_hcd_giveback_urb(vhci_to_hcd(the_controller), urb,
 				     urb->status);
 		spin_lock(&the_controller->lock);
+=======
+		usb_hcd_unlink_urb_from_ep(hcd, urb);
+
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+		usb_hcd_giveback_urb(vhci_to_hcd(the_controller), urb,
+				     urb->status);
+		spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	} else {
 		/* tcp connection is alive */
@@ -681,7 +814,11 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		unlink = kzalloc(sizeof(struct vhci_unlink), GFP_ATOMIC);
 		if (!unlink) {
 			spin_unlock(&vdev->priv_lock);
+<<<<<<< HEAD
 			spin_unlock(&the_controller->lock);
+=======
+			spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			usbip_event_add(&vdev->ud, VDEV_EVENT_ERROR_MALLOC);
 			return -ENOMEM;
 		}
@@ -692,8 +829,11 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 
 		unlink->unlink_seqnum = priv->seqnum;
 
+<<<<<<< HEAD
 		pr_info("device %p seems to be still connected\n", vdev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* send cmd_unlink and try to cancel the pending URB in the
 		 * peer */
 		list_add_tail(&unlink->list, &vdev->unlink_tx);
@@ -702,7 +842,11 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		spin_unlock(&vdev->priv_lock);
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usbip_dbg_vhci_hc("leave\n");
 	return 0;
@@ -711,8 +855,14 @@ static int vhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 static void vhci_device_unlink_cleanup(struct vhci_device *vdev)
 {
 	struct vhci_unlink *unlink, *tmp;
+<<<<<<< HEAD
 
 	spin_lock(&the_controller->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(&vdev->priv_lock);
 
 	list_for_each_entry_safe(unlink, tmp, &vdev->unlink_tx, list) {
@@ -746,19 +896,31 @@ static void vhci_device_unlink_cleanup(struct vhci_device *vdev)
 		list_del(&unlink->list);
 
 		spin_unlock(&vdev->priv_lock);
+<<<<<<< HEAD
 		spin_unlock(&the_controller->lock);
+=======
+		spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		usb_hcd_giveback_urb(vhci_to_hcd(the_controller), urb,
 				     urb->status);
 
+<<<<<<< HEAD
 		spin_lock(&the_controller->lock);
+=======
+		spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock(&vdev->priv_lock);
 
 		kfree(unlink);
 	}
 
 	spin_unlock(&vdev->priv_lock);
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -772,7 +934,11 @@ static void vhci_shutdown_connection(struct usbip_device *ud)
 
 	/* need this? see stub_dev.c */
 	if (ud->tcp_socket) {
+<<<<<<< HEAD
 		pr_debug("shutdown tcp_socket %p\n", ud->tcp_socket);
+=======
+		pr_debug("shutdown sockfd %d\n", ud->sockfd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kernel_sock_shutdown(ud->tcp_socket, SHUT_RDWR);
 	}
 
@@ -791,6 +957,10 @@ static void vhci_shutdown_connection(struct usbip_device *ud)
 	if (vdev->ud.tcp_socket) {
 		sockfd_put(vdev->ud.tcp_socket);
 		vdev->ud.tcp_socket = NULL;
+<<<<<<< HEAD
+=======
+		vdev->ud.sockfd = -1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	pr_info("release socket\n");
 
@@ -825,8 +995,14 @@ static void vhci_shutdown_connection(struct usbip_device *ud)
 static void vhci_device_reset(struct usbip_device *ud)
 {
 	struct vhci_device *vdev = container_of(ud, struct vhci_device, ud);
+<<<<<<< HEAD
 
 	spin_lock(&ud->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&ud->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vdev->speed  = 0;
 	vdev->devid  = 0;
@@ -838,17 +1014,33 @@ static void vhci_device_reset(struct usbip_device *ud)
 	if (ud->tcp_socket) {
 		sockfd_put(ud->tcp_socket);
 		ud->tcp_socket = NULL;
+<<<<<<< HEAD
 	}
 	ud->status = VDEV_ST_NULL;
 
 	spin_unlock(&ud->lock);
+=======
+		ud->sockfd = -1;
+	}
+	ud->status = VDEV_ST_NULL;
+
+	spin_unlock_irqrestore(&ud->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void vhci_device_unusable(struct usbip_device *ud)
 {
+<<<<<<< HEAD
 	spin_lock(&ud->lock);
 	ud->status = VDEV_ST_ERROR;
 	spin_unlock(&ud->lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&ud->lock, flags);
+	ud->status = VDEV_ST_ERROR;
+	spin_unlock_irqrestore(&ud->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void vhci_device_init(struct vhci_device *vdev)
@@ -938,12 +1130,22 @@ static int vhci_get_frame_number(struct usb_hcd *hcd)
 static int vhci_bus_suspend(struct usb_hcd *hcd)
 {
 	struct vhci_hcd *vhci = hcd_to_vhci(hcd);
+<<<<<<< HEAD
 
 	dev_dbg(&hcd->self.root_hub->dev, "%s\n", __func__);
 
 	spin_lock(&vhci->lock);
 	hcd->state = HC_STATE_SUSPENDED;
 	spin_unlock(&vhci->lock);
+=======
+	unsigned long flags;
+
+	dev_dbg(&hcd->self.root_hub->dev, "%s\n", __func__);
+
+	spin_lock_irqsave(&vhci->lock, flags);
+	hcd->state = HC_STATE_SUSPENDED;
+	spin_unlock_irqrestore(&vhci->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -952,15 +1154,27 @@ static int vhci_bus_resume(struct usb_hcd *hcd)
 {
 	struct vhci_hcd *vhci = hcd_to_vhci(hcd);
 	int rc = 0;
+<<<<<<< HEAD
 
 	dev_dbg(&hcd->self.root_hub->dev, "%s\n", __func__);
 
 	spin_lock(&vhci->lock);
+=======
+	unsigned long flags;
+
+	dev_dbg(&hcd->self.root_hub->dev, "%s\n", __func__);
+
+	spin_lock_irqsave(&vhci->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!HCD_HW_ACCESSIBLE(hcd))
 		rc = -ESHUTDOWN;
 	else
 		hcd->state = HC_STATE_RUNNING;
+<<<<<<< HEAD
 	spin_unlock(&vhci->lock);
+=======
+	spin_unlock_irqrestore(&vhci->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return rc;
 }
@@ -1058,17 +1272,29 @@ static int vhci_hcd_suspend(struct platform_device *pdev, pm_message_t state)
 	int rhport = 0;
 	int connected = 0;
 	int ret = 0;
+<<<<<<< HEAD
 
 	hcd = platform_get_drvdata(pdev);
 
 	spin_lock(&the_controller->lock);
+=======
+	unsigned long flags;
+
+	hcd = platform_get_drvdata(pdev);
+
+	spin_lock_irqsave(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (rhport = 0; rhport < VHCI_NPORTS; rhport++)
 		if (the_controller->port_status[rhport] &
 		    USB_PORT_STAT_CONNECTION)
 			connected += 1;
 
+<<<<<<< HEAD
 	spin_unlock(&the_controller->lock);
+=======
+	spin_unlock_irqrestore(&the_controller->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (connected > 0) {
 		dev_info(&pdev->dev,

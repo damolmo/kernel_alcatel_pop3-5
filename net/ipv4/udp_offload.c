@@ -198,7 +198,11 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
 	if (uh->check == 0)
 		uh->check = CSUM_MANGLED_0;
 
+<<<<<<< HEAD
 	skb->ip_summed = CHECKSUM_NONE;
+=======
+	skb->ip_summed = CHECKSUM_UNNECESSARY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Fragment the skb. IP headers of the fragments are updated in
 	 * inet_gso_segment()
@@ -266,14 +270,24 @@ struct sk_buff **udp_gro_receive(struct sk_buff **head, struct sk_buff *skb,
 	unsigned int off = skb_gro_offset(skb);
 	int flush = 1;
 
+<<<<<<< HEAD
 	if (NAPI_GRO_CB(skb)->udp_mark ||
 	    (skb->ip_summed != CHECKSUM_PARTIAL &&
+=======
+	if (NAPI_GRO_CB(skb)->encap_mark ||
+	    (uh->check && skb->ip_summed != CHECKSUM_PARTIAL &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
 	     !NAPI_GRO_CB(skb)->csum_valid))
 		goto out;
 
+<<<<<<< HEAD
 	/* mark that this skb passed once through the udp gro layer */
 	NAPI_GRO_CB(skb)->udp_mark = 1;
+=======
+	/* mark that this skb passed once through the tunnel gro layer */
+	NAPI_GRO_CB(skb)->encap_mark = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_read_lock();
 	uo_priv = rcu_dereference(udp_offload_base);

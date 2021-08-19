@@ -147,7 +147,11 @@ extern pgprot_t kmap_prot;
 extern pte_t *pkmap_page_table;
 
 void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
+<<<<<<< HEAD
 void native_set_fixmap(enum fixed_addresses idx,
+=======
+void native_set_fixmap(unsigned /* enum fixed_addresses */ idx,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		       phys_addr_t phys, pgprot_t flags);
 
 #ifndef CONFIG_PARAVIRT

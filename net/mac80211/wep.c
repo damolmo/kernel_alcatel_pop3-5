@@ -295,7 +295,12 @@ ieee80211_crypto_wep_decrypt(struct ieee80211_rx_data *rx)
 			return RX_DROP_UNUSABLE;
 		ieee80211_wep_remove_iv(rx->local, rx->skb, rx->key);
 		/* remove ICV */
+<<<<<<< HEAD
 		if (pskb_trim(rx->skb, rx->skb->len - IEEE80211_WEP_ICV_LEN))
+=======
+		if (!(status->flag & RX_FLAG_ICV_STRIPPED) &&
+		    pskb_trim(rx->skb, rx->skb->len - IEEE80211_WEP_ICV_LEN))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return RX_DROP_UNUSABLE;
 	}
 

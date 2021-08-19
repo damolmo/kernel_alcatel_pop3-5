@@ -30,7 +30,11 @@
 #define BRCMF_ARP_OL_PEER_AUTO_REPLY	0x00000008
 
 #define	BRCMF_BSS_INFO_VERSION	109 /* curr ver of brcmf_bss_info_le struct */
+<<<<<<< HEAD
 #define BRCMF_BSS_RSSI_ON_CHANNEL	0x0002
+=======
+#define BRCMF_BSS_RSSI_ON_CHANNEL	0x0004
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define BRCMF_STA_ASSOC			0x10		/* Associated */
 

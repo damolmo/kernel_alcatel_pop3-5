@@ -38,6 +38,10 @@ ENTRY(__get_user_1)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_1)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ENTRY(__get_user_2)
 	check_uaccess r0, 2, r1, r2, __get_user_bad
@@ -58,6 +62,10 @@ rb	.req	r0
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_2)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_2)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ENTRY(__get_user_4)
 	check_uaccess r0, 4, r1, r2, __get_user_bad
@@ -65,9 +73,16 @@ ENTRY(__get_user_4)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_4)
+<<<<<<< HEAD
 
 ENTRY(__get_user_8)
 	check_uaccess r0, 8, r1, r2, __get_user_bad
+=======
+_ASM_NOKPROBE(__get_user_4)
+
+ENTRY(__get_user_8)
+	check_uaccess r0, 8, r1, r2, __get_user_bad8
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_THUMB2_KERNEL
 5: TUSER(ldr)	r2, [r0]
 6: TUSER(ldr)	r3, [r0, #4]
@@ -78,6 +93,10 @@ ENTRY(__get_user_8)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_8)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_8)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef __ARMEB__
 ENTRY(__get_user_32t_8)
@@ -91,6 +110,10 @@ ENTRY(__get_user_32t_8)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_32t_8)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_32t_8)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ENTRY(__get_user_64t_1)
 	check_uaccess r0, 1, r1, r2, __get_user_bad8
@@ -98,6 +121,10 @@ ENTRY(__get_user_64t_1)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_64t_1)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_64t_1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ENTRY(__get_user_64t_2)
 	check_uaccess r0, 2, r1, r2, __get_user_bad8
@@ -114,6 +141,10 @@ rb	.req	r0
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_64t_2)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_64t_2)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ENTRY(__get_user_64t_4)
 	check_uaccess r0, 4, r1, r2, __get_user_bad8
@@ -121,6 +152,10 @@ ENTRY(__get_user_64t_4)
 	mov	r0, #0
 	ret	lr
 ENDPROC(__get_user_64t_4)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_64t_4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 __get_user_bad8:
@@ -131,6 +166,11 @@ __get_user_bad:
 	ret	lr
 ENDPROC(__get_user_bad)
 ENDPROC(__get_user_bad8)
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE(__get_user_bad)
+_ASM_NOKPROBE(__get_user_bad8)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 .pushsection __ex_table, "a"
 	.long	1b, __get_user_bad

@@ -388,6 +388,12 @@ static inline int gred_change_vq(struct Qdisc *sch, int dp,
 	struct gred_sched *table = qdisc_priv(sch);
 	struct gred_sched_data *q = table->tab[dp];
 
+<<<<<<< HEAD
+=======
+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log, stab))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!q) {
 		table->tab[dp] = q = *prealloc;
 		*prealloc = NULL;
@@ -434,7 +440,11 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt)
 		return err;
 
 	if (tb[TCA_GRED_PARMS] == NULL && tb[TCA_GRED_STAB] == NULL)
+<<<<<<< HEAD
 		return gred_change_table_def(sch, opt);
+=======
+		return gred_change_table_def(sch, tb[TCA_GRED_DPS]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tb[TCA_GRED_PARMS] == NULL ||
 	    tb[TCA_GRED_STAB] == NULL)

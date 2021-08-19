@@ -769,7 +769,11 @@ u32 svcauth_gss_flavor(struct auth_domain *dom)
 
 EXPORT_SYMBOL_GPL(svcauth_gss_flavor);
 
+<<<<<<< HEAD
 int
+=======
+struct auth_domain *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 svcauth_gss_register_pseudoflavor(u32 pseudoflavor, char * name)
 {
 	struct gss_domain	*new;
@@ -786,6 +790,7 @@ svcauth_gss_register_pseudoflavor(u32 pseudoflavor, char * name)
 	new->h.flavour = &svcauthops_gss;
 	new->pseudoflavor = pseudoflavor;
 
+<<<<<<< HEAD
 	stat = 0;
 	test = auth_domain_lookup(name, &new->h);
 	if (test != &new->h) { /* Duplicate registration */
@@ -801,6 +806,25 @@ out:
 	return stat;
 }
 
+=======
+	test = auth_domain_lookup(name, &new->h);
+	if (test != &new->h) {
+		pr_warn("svc: duplicate registration of gss pseudo flavour %s.\n",
+			name);
+		stat = -EADDRINUSE;
+		auth_domain_put(test);
+		goto out_free_name;
+	}
+	return test;
+
+out_free_name:
+	kfree(new->h.name);
+out_free_dom:
+	kfree(new);
+out:
+	return ERR_PTR(stat);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL_GPL(svcauth_gss_register_pseudoflavor);
 
 static inline int
@@ -855,8 +879,13 @@ unwrap_integ_data(struct svc_rqst *rqstp, struct xdr_buf *buf, u32 seq, struct g
 		goto out;
 	if (svc_getnl(&buf->head[0]) != seq)
 		goto out;
+<<<<<<< HEAD
 	/* trim off the mic at the end before returning */
 	xdr_buf_trim(buf, mic.len + 4);
+=======
+	/* trim off the mic and padding at the end before returning */
+	xdr_buf_trim(buf, round_up_to_quad(mic.len) + 4);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stat = 0;
 out:
 	kfree(mic.data);
@@ -1102,7 +1131,11 @@ static int svcauth_gss_legacy_init(struct svc_rqst *rqstp,
 	struct kvec *resv = &rqstp->rq_res.head[0];
 	struct rsi *rsip, rsikey;
 	int ret;
+<<<<<<< HEAD
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
+=======
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	memset(&rsikey, 0, sizeof(rsikey));
 	ret = gss_read_verf(gc, argv, authp,
@@ -1213,7 +1246,11 @@ static int svcauth_gss_proxy_init(struct svc_rqst *rqstp,
 	uint64_t handle;
 	int status;
 	int ret;
+<<<<<<< HEAD
 	struct net *net = rqstp->rq_xprt->xpt_net;
+=======
+	struct net *net = SVC_NET(rqstp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
 
 	memset(&ud, 0, sizeof(ud));
@@ -1403,7 +1440,11 @@ svcauth_gss_accept(struct svc_rqst *rqstp, __be32 *authp)
 	__be32		*rpcstart;
 	__be32		*reject_stat = resv->iov_base + resv->iov_len;
 	int		ret;
+<<<<<<< HEAD
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
+=======
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dprintk("RPC:       svcauth_gss: argv->iov_len = %zd\n",
 			argv->iov_len);
@@ -1479,7 +1520,11 @@ svcauth_gss_accept(struct svc_rqst *rqstp, __be32 *authp)
 	case RPC_GSS_PROC_DESTROY:
 		if (gss_write_verf(rqstp, rsci->mechctx, gc->gc_seq))
 			goto auth_err;
+<<<<<<< HEAD
 		rsci->h.expiry_time = get_seconds();
+=======
+		rsci->h.expiry_time = seconds_since_boot();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_bit(CACHE_NEGATIVE, &rsci->h.flags);
 		if (resv->iov_len + 4 > PAGE_SIZE)
 			goto drop;
@@ -1688,11 +1733,22 @@ static int
 svcauth_gss_release(struct svc_rqst *rqstp)
 {
 	struct gss_svc_data *gsd = (struct gss_svc_data *)rqstp->rq_auth_data;
+<<<<<<< HEAD
 	struct rpc_gss_wire_cred *gc = &gsd->clcred;
 	struct xdr_buf *resbuf = &rqstp->rq_res;
 	int stat = -EINVAL;
 	struct sunrpc_net *sn = net_generic(rqstp->rq_xprt->xpt_net, sunrpc_net_id);
 
+=======
+	struct rpc_gss_wire_cred *gc;
+	struct xdr_buf *resbuf = &rqstp->rq_res;
+	int stat = -EINVAL;
+	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+
+	if (!gsd)
+		goto out;
+	gc = &gsd->clcred;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (gc->gc_proc != RPC_GSS_PROC_DATA)
 		goto out;
 	/* Release can be called twice, but we only wrap once. */
@@ -1733,10 +1789,17 @@ out_err:
 	if (rqstp->rq_cred.cr_group_info)
 		put_group_info(rqstp->rq_cred.cr_group_info);
 	rqstp->rq_cred.cr_group_info = NULL;
+<<<<<<< HEAD
 	if (gsd->rsci)
 		cache_put(&gsd->rsci->h, sn->rsc_cache);
 	gsd->rsci = NULL;
 
+=======
+	if (gsd && gsd->rsci) {
+		cache_put(&gsd->rsci->h, sn->rsc_cache);
+		gsd->rsci = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return stat;
 }
 

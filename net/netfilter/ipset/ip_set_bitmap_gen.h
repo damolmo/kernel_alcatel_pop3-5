@@ -66,12 +66,19 @@ mtype_destroy(struct ip_set *set)
 	if (SET_WITH_TIMEOUT(set))
 		del_timer_sync(&map->gc);
 
+<<<<<<< HEAD
 	ip_set_free(map->members);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (set->dsize) {
 		if (set->extensions & IPSET_EXT_DESTROY)
 			mtype_ext_cleanup(set);
 		ip_set_free(map->extensions);
 	}
+<<<<<<< HEAD
+=======
+	ip_set_free(map->members);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(map);
 
 	set->data = NULL;

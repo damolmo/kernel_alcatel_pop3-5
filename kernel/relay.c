@@ -166,7 +166,11 @@ static struct rchan_buf *relay_create_buf(struct rchan *chan)
 {
 	struct rchan_buf *buf;
 
+<<<<<<< HEAD
 	if (chan->n_subbufs > UINT_MAX / sizeof(size_t *))
+=======
+	if (chan->n_subbufs > KMALLOC_MAX_SIZE / sizeof(size_t *))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 
 	buf = kzalloc(sizeof(struct rchan_buf), GFP_KERNEL);

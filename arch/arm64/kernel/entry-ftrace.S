@@ -78,7 +78,10 @@
 	.macro mcount_get_lr reg
 	ldr	\reg, [x29]
 	ldr	\reg, [\reg, #8]
+<<<<<<< HEAD
 	mcount_adjust_addr	\reg, \reg
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.endm
 
 	.macro mcount_get_lr_addr reg
@@ -177,6 +180,27 @@ ENTRY(ftrace_stub)
 ENDPROC(ftrace_stub)
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+<<<<<<< HEAD
+=======
+	/* save return value regs*/
+	.macro save_return_regs
+	sub sp, sp, #64
+	stp x0, x1, [sp]
+	stp x2, x3, [sp, #16]
+	stp x4, x5, [sp, #32]
+	stp x6, x7, [sp, #48]
+	.endm
+
+	/* restore return value regs*/
+	.macro restore_return_regs
+	ldp x0, x1, [sp]
+	ldp x2, x3, [sp, #16]
+	ldp x4, x5, [sp, #32]
+	ldp x6, x7, [sp, #48]
+	add sp, sp, #64
+	.endm
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * void ftrace_graph_caller(void)
  *
@@ -203,11 +227,19 @@ ENDPROC(ftrace_graph_caller)
  * only when CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST is enabled.
  */
 ENTRY(return_to_handler)
+<<<<<<< HEAD
 	str	x0, [sp, #-16]!
 	mov	x0, x29			//     parent's fp
 	bl	ftrace_return_to_handler// addr = ftrace_return_to_hander(fp);
 	mov	x30, x0			// restore the original return address
 	ldr	x0, [sp], #16
+=======
+	save_return_regs
+	mov	x0, x29			//     parent's fp
+	bl	ftrace_return_to_handler// addr = ftrace_return_to_hander(fp);
+	mov	x30, x0			// restore the original return address
+	restore_return_regs
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 END(return_to_handler)
 #endif /* CONFIG_FUNCTION_GRAPH_TRACER */

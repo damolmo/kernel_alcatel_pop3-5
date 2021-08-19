@@ -1147,7 +1147,11 @@ static inline void mmc_davinci_cpufreq_deregister(struct mmc_davinci_host *host)
 {
 }
 #endif
+<<<<<<< HEAD
 static void __init init_mmcsd_host(struct mmc_davinci_host *host)
+=======
+static void init_mmcsd_host(struct mmc_davinci_host *host)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 
 	mmc_davinci_reset_ctrl(host, 1);

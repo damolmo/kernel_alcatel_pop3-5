@@ -538,7 +538,11 @@ static struct vpif_display_config dm646x_vpif_display_config = {
 		.outputs = dm6467_ch0_outputs,
 		.output_count = ARRAY_SIZE(dm6467_ch0_outputs),
 	},
+<<<<<<< HEAD
 	.card_name	= "DM646x EVM",
+=======
+	.card_name	= "DM646x EVM Video Display",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -696,6 +700,10 @@ static struct vpif_capture_config dm646x_vpif_capture_cfg = {
 			.fid_pol = 0,
 		},
 	},
+<<<<<<< HEAD
+=======
+	.card_name = "DM646x EVM Video Capture",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static void __init evm_init_video(void)

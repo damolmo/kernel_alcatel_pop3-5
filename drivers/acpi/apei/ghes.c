@@ -198,29 +198,46 @@ static int ghes_estatus_pool_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void ghes_estatus_pool_free_chunk_page(struct gen_pool *pool,
 					      struct gen_pool_chunk *chunk,
 					      void *data)
 {
 	free_page(chunk->start_addr);
+=======
+static void ghes_estatus_pool_free_chunk(struct gen_pool *pool,
+					      struct gen_pool_chunk *chunk,
+					      void *data)
+{
+	vfree((void *)chunk->start_addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void ghes_estatus_pool_exit(void)
 {
 	gen_pool_for_each_chunk(ghes_estatus_pool,
+<<<<<<< HEAD
 				ghes_estatus_pool_free_chunk_page, NULL);
+=======
+				ghes_estatus_pool_free_chunk, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	gen_pool_destroy(ghes_estatus_pool);
 }
 
 static int ghes_estatus_pool_expand(unsigned long len)
 {
+<<<<<<< HEAD
 	unsigned long i, pages, size, addr;
 	int ret;
+=======
+	unsigned long size, addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ghes_estatus_pool_size_request += PAGE_ALIGN(len);
 	size = gen_pool_size(ghes_estatus_pool);
 	if (size >= ghes_estatus_pool_size_request)
 		return 0;
+<<<<<<< HEAD
 	pages = (ghes_estatus_pool_size_request - size) / PAGE_SIZE;
 	for (i = 0; i < pages; i++) {
 		addr = __get_free_page(GFP_KERNEL);
@@ -232,6 +249,20 @@ static int ghes_estatus_pool_expand(unsigned long len)
 	}
 
 	return 0;
+=======
+
+	addr = (unsigned long)vmalloc(PAGE_ALIGN(len));
+	if (!addr)
+		return -ENOMEM;
+
+	/*
+	 * New allocation must be visible in all pgd before it can be found by
+	 * an NMI allocating from the pool.
+	 */
+	vmalloc_sync_mappings();
+
+	return gen_pool_add(ghes_estatus_pool, addr, PAGE_ALIGN(len), -1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct ghes *ghes_new(struct acpi_hest_generic *generic)
@@ -657,7 +688,11 @@ static int ghes_proc(struct ghes *ghes)
 	ghes_do_proc(ghes, ghes->estatus);
 out:
 	ghes_clear_estatus(ghes);
+<<<<<<< HEAD
 	return 0;
+=======
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void ghes_add_timer(struct ghes *ghes)
@@ -822,6 +857,11 @@ static int ghes_notify_nmi(unsigned int cmd, struct pt_regs *regs)
 		if (ghes_read_estatus(ghes, 1)) {
 			ghes_clear_estatus(ghes);
 			continue;
+<<<<<<< HEAD
+=======
+		} else {
+			ret = NMI_HANDLED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		sev = ghes_severity(ghes->estatus->error_severity);
 		if (sev > sev_global) {
@@ -873,7 +913,12 @@ next:
 		ghes_clear_estatus(ghes);
 	}
 #ifdef CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG
+<<<<<<< HEAD
 	irq_work_queue(&ghes_proc_irq_work);
+=======
+	if (ret == NMI_HANDLED)
+		irq_work_queue(&ghes_proc_irq_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 out:
@@ -1078,6 +1123,10 @@ static int ghes_remove(struct platform_device *ghes_dev)
 		if (list_empty(&ghes_sci))
 			unregister_acpi_hed_notifier(&ghes_notifier_sci);
 		mutex_unlock(&ghes_list_mutex);
+<<<<<<< HEAD
+=======
+		synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case ACPI_HEST_NOTIFY_NMI:
 		ghes_nmi_remove(ghes);

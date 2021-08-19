@@ -172,7 +172,10 @@ static int vol_cdev_fsync(struct file *file, loff_t start, loff_t end,
 	struct ubi_device *ubi = desc->vol->ubi;
 	struct inode *inode = file_inode(file);
 	int err;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&inode->i_mutex);
 	err = ubi_sync(ubi->ubi_num);
 	mutex_unlock(&inode->i_mutex);
@@ -311,6 +314,7 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 			err = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 		if (lnum >= 10)
 			err = ubi_eba_write_tlc_leb(ubi, vol, lnum, tbuf, off, len);
@@ -318,6 +322,10 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 #endif
 		err = ubi_eba_write_leb(ubi, vol, lnum, tbuf, off, len);
 
+=======
+
+		err = ubi_eba_write_leb(ubi, vol, lnum, tbuf, off, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err)
 			break;
 
@@ -402,9 +410,13 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 	case UBI_IOCVOLUP:
 	{
 		int64_t bytes, rsvd_bytes;
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 		struct ubi_volume *backup_vol = ubi->volumes[vol_id2idx(ubi, UBI_BACKUP_VOLUME_ID)];
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!capable(CAP_SYS_RESOURCE)) {
 			err = -EPERM;
 			break;
@@ -437,10 +449,13 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			ubi_volume_notify(ubi, vol, UBI_VOLUME_UPDATED);
 			revoke_exclusive(desc, UBI_READWRITE);
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 		ubi_eba_unmap_leb(ubi, backup_vol, 0);
 		ubi_eba_unmap_leb(ubi, backup_vol, 1);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 
@@ -519,6 +534,7 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			err = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 		ubi->ipoh_ops = 1;
 #endif
@@ -526,6 +542,9 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 #ifdef CONFIG_MTK_HIBERNATION
 		ubi->ipoh_ops = 0;
 #endif
+=======
+		err = ubi_leb_map(desc, req.lnum);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 
@@ -539,6 +558,7 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 			err = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 		ubi->ipoh_ops = 1;
 #endif
@@ -546,6 +566,9 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 #ifdef CONFIG_MTK_HIBERNATION
 		ubi->ipoh_ops = 0;
 #endif
+=======
+		err = ubi_leb_unmap(desc, lnum);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 
@@ -606,6 +629,7 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		err = ubiblock_remove(&vi);
 		break;
 	}
+<<<<<<< HEAD
 	case UBI_IOCLBMAP:
 	{
 		int LEB[2];
@@ -623,6 +647,9 @@ static long vol_cdev_ioctl(struct file *file, unsigned int cmd,
 		}
 		break;
 	}
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		err = -ENOTTY;
 		break;

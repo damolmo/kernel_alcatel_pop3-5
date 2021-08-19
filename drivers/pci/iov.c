@@ -57,6 +57,17 @@ static void virtfn_remove_bus(struct pci_bus *physbus, struct pci_bus *virtbus)
 		pci_remove_bus(virtbus);
 }
 
+<<<<<<< HEAD
+=======
+resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno)
+{
+	if (!dev->is_physfn)
+		return 0;
+
+	return dev->sriov->barsz[resno - PCI_IOV_RESOURCES];
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int virtfn_add(struct pci_dev *dev, int id, int reset)
 {
 	int i;
@@ -92,8 +103,12 @@ static int virtfn_add(struct pci_dev *dev, int id, int reset)
 			continue;
 		virtfn->resource[i].name = pci_name(virtfn);
 		virtfn->resource[i].flags = res->flags;
+<<<<<<< HEAD
 		size = resource_size(res);
 		do_div(size, iov->total_VFs);
+=======
+		size = pci_iov_resource_size(dev, i + PCI_IOV_RESOURCES);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		virtfn->resource[i].start = res->start + size * id;
 		virtfn->resource[i].end = virtfn->resource[i].start + size - 1;
 		rc = request_resource(res, &virtfn->resource[i]);
@@ -106,7 +121,10 @@ static int virtfn_add(struct pci_dev *dev, int id, int reset)
 	pci_device_add(virtfn, virtfn->bus);
 	mutex_unlock(&iov->dev->sriov->lock);
 
+<<<<<<< HEAD
 	pci_bus_add_device(virtfn);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sprintf(buf, "virtfn%u", id);
 	rc = sysfs_create_link(&dev->dev.kobj, &virtfn->dev.kobj, buf);
 	if (rc)
@@ -117,6 +135,11 @@ static int virtfn_add(struct pci_dev *dev, int id, int reset)
 
 	kobject_uevent(&virtfn->dev.kobj, KOBJ_CHANGE);
 
+<<<<<<< HEAD
+=======
+	pci_bus_add_device(virtfn);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 failed2:
@@ -308,7 +331,11 @@ static void sriov_disable(struct pci_dev *dev)
 
 static int sriov_init(struct pci_dev *dev, int pos)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	int i, bar64;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int rc;
 	int nres;
 	u32 pgsz;
@@ -357,17 +384,30 @@ found:
 	pgsz &= ~(pgsz - 1);
 	pci_write_config_dword(dev, pos + PCI_SRIOV_SYS_PGSIZE, pgsz);
 
+<<<<<<< HEAD
 	nres = 0;
 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
 		res = dev->resource + PCI_IOV_RESOURCES + i;
 		i += __pci_read_base(dev, pci_bar_unknown, res,
 				     pos + PCI_SRIOV_BAR + i * 4);
+=======
+	iov = kzalloc(sizeof(*iov), GFP_KERNEL);
+	if (!iov)
+		return -ENOMEM;
+
+	nres = 0;
+	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
+		res = dev->resource + PCI_IOV_RESOURCES + i;
+		bar64 = __pci_read_base(dev, pci_bar_unknown, res,
+					pos + PCI_SRIOV_BAR + i * 4);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!res->flags)
 			continue;
 		if (resource_size(res) & (PAGE_SIZE - 1)) {
 			rc = -EIO;
 			goto failed;
 		}
+<<<<<<< HEAD
 		res->end = res->start + resource_size(res) * total - 1;
 		nres++;
 	}
@@ -378,6 +418,14 @@ found:
 		goto failed;
 	}
 
+=======
+		iov->barsz[i] = resource_size(res);
+		res->end = res->start + resource_size(res) * total - 1;
+		i += bar64;
+		nres++;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iov->pos = pos;
 	iov->nres = nres;
 	iov->ctrl = ctrl;
@@ -409,6 +457,10 @@ failed:
 		res->flags = 0;
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(iov);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -476,6 +528,7 @@ void pci_iov_release(struct pci_dev *dev)
 }
 
 /**
+<<<<<<< HEAD
  * pci_iov_resource_bar - get position of the SR-IOV BAR
  * @dev: the PCI device
  * @resno: the resource number
@@ -498,6 +551,8 @@ int pci_iov_resource_bar(struct pci_dev *dev, int resno,
 }
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * pci_sriov_resource_alignment - get resource alignment for VF BAR
  * @dev: the PCI device
  * @resno: the resource number
@@ -509,6 +564,7 @@ int pci_iov_resource_bar(struct pci_dev *dev, int resno,
  */
 resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno)
 {
+<<<<<<< HEAD
 	struct resource tmp;
 	enum pci_bar_type type;
 	int reg = pci_iov_resource_bar(dev, resno, &type);
@@ -518,6 +574,9 @@ resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno)
 
 	 __pci_read_base(dev, type, &tmp, reg);
 	return resource_alignment(&tmp);
+=======
+	return pci_iov_resource_size(dev, resno);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

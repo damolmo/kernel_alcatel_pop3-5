@@ -276,8 +276,12 @@ COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 	 * core implementation decides to return random nonsense.
 	 */
 	if (ret == -ERESTART_RESTARTBLOCK) {
+<<<<<<< HEAD
 		struct restart_block *restart
 			= &current_thread_info()->restart_block;
+=======
+		struct restart_block *restart = &current->restart_block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		restart->fn = compat_nanosleep_restart;
 		restart->nanosleep.compat_rmtp = rmtp;
@@ -860,7 +864,11 @@ COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
 		return -EFAULT;
 
 	if (err == -ERESTART_RESTARTBLOCK) {
+<<<<<<< HEAD
 		restart = &current_thread_info()->restart_block;
+=======
+		restart = &current->restart_block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		restart->fn = compat_clock_nanosleep_restart;
 		restart->nanosleep.compat_rmtp = rmtp;
 	}

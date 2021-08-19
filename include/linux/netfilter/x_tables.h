@@ -239,11 +239,30 @@ void xt_unregister_match(struct xt_match *target);
 int xt_register_matches(struct xt_match *match, unsigned int n);
 void xt_unregister_matches(struct xt_match *match, unsigned int n);
 
+<<<<<<< HEAD
+=======
+int xt_check_entry_offsets(const void *base, const char *elems,
+			   unsigned int target_offset,
+			   unsigned int next_offset);
+
+unsigned int *xt_alloc_entry_offsets(unsigned int size);
+bool xt_find_jump_offset(const unsigned int *offsets,
+			 unsigned int target, unsigned int size);
+
+int xt_check_proc_name(const char *name, unsigned int size);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int xt_check_match(struct xt_mtchk_param *, unsigned int size, u_int8_t proto,
 		   bool inv_proto);
 int xt_check_target(struct xt_tgchk_param *, unsigned int size, u_int8_t proto,
 		    bool inv_proto);
 
+<<<<<<< HEAD
+=======
+void *xt_copy_counters_from_user(const void __user *user, unsigned int len,
+				 struct xt_counters_info *info, bool compat);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct xt_table *xt_register_table(struct net *net,
 				   const struct xt_table *table,
 				   struct xt_table_info *bootstrap,
@@ -308,7 +327,11 @@ static inline unsigned int xt_write_recseq_begin(void)
 	 * since addend is most likely 1
 	 */
 	__this_cpu_add(xt_recseq.sequence, addend);
+<<<<<<< HEAD
 	smp_wmb();
+=======
+	smp_mb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return addend;
 }
@@ -421,7 +444,11 @@ void xt_compat_init_offsets(u_int8_t af, unsigned int number);
 int xt_compat_calc_jump(u_int8_t af, unsigned int offset);
 
 int xt_compat_match_offset(const struct xt_match *match);
+<<<<<<< HEAD
 int xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
+=======
+void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			      unsigned int *size);
 int xt_compat_match_to_user(const struct xt_entry_match *m,
 			    void __user **dstptr, unsigned int *size);
@@ -431,6 +458,12 @@ void xt_compat_target_from_user(struct xt_entry_target *t, void **dstptr,
 				unsigned int *size);
 int xt_compat_target_to_user(const struct xt_entry_target *t,
 			     void __user **dstptr, unsigned int *size);
+<<<<<<< HEAD
+=======
+int xt_compat_check_entry_offsets(const void *base, const char *elems,
+				  unsigned int target_offset,
+				  unsigned int next_offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* CONFIG_COMPAT */
 #endif /* _X_TABLES_H */

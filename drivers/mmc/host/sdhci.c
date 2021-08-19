@@ -540,9 +540,17 @@ static int sdhci_adma_table_pre(struct sdhci_host *host,
 
 		BUG_ON(len > 65536);
 
+<<<<<<< HEAD
 		/* tran, valid */
 		sdhci_set_adma_desc(desc, addr, len, 0x21);
 		desc += 8;
+=======
+		if (len) {
+			/* tran, valid */
+			sdhci_set_adma_desc(desc, addr, len, 0x21);
+			desc += 8;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * If this triggers then we have a calculation bug
@@ -660,9 +668,26 @@ static u8 sdhci_calc_timeout(struct sdhci_host *host, struct mmc_command *cmd)
 	if (!data)
 		target_timeout = cmd->busy_timeout * 1000;
 	else {
+<<<<<<< HEAD
 		target_timeout = data->timeout_ns / 1000;
 		if (host->clock)
 			target_timeout += data->timeout_clks / host->clock;
+=======
+		target_timeout = DIV_ROUND_UP(data->timeout_ns, 1000);
+		if (host->clock && data->timeout_clks) {
+			unsigned long long val;
+
+			/*
+			 * data->timeout_clks is in units of clock cycles.
+			 * host->clock is in Hz.  target_timeout is in us.
+			 * Hence, us = 1000000 * cycles / Hz.  Round up.
+			 */
+			val = 1000000ULL * data->timeout_clks;
+			if (do_div(val, host->clock))
+				target_timeout++;
+			target_timeout += val;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*
@@ -1221,7 +1246,13 @@ clock_set:
 			return;
 		}
 		timeout--;
+<<<<<<< HEAD
 		mdelay(1);
+=======
+		spin_unlock_irq(&host->lock);
+		usleep_range(900, 1100);
+		spin_lock_irq(&host->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	clk |= SDHCI_CLOCK_CARD_EN;
@@ -1229,6 +1260,7 @@ clock_set:
 }
 EXPORT_SYMBOL_GPL(sdhci_set_clock);
 
+<<<<<<< HEAD
 static void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
 			    unsigned short vdd)
 {
@@ -1247,6 +1279,27 @@ static void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
 
 		return;
 	}
+=======
+static void sdhci_set_power_reg(struct sdhci_host *host, unsigned char mode,
+				unsigned short vdd)
+{
+	struct mmc_host *mmc = host->mmc;
+
+	spin_unlock_irq(&host->lock);
+	mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, vdd);
+	spin_lock_irq(&host->lock);
+
+	if (mode != MMC_POWER_OFF)
+		sdhci_writeb(host, SDHCI_POWER_ON, SDHCI_POWER_CONTROL);
+	else
+		sdhci_writeb(host, 0, SDHCI_POWER_CONTROL);
+}
+
+void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
+		     unsigned short vdd)
+{
+	u8 pwr = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (mode != MMC_POWER_OFF) {
 		switch (1 << vdd) {
@@ -1262,7 +1315,13 @@ static void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
 			pwr = SDHCI_POWER_330;
 			break;
 		default:
+<<<<<<< HEAD
 			BUG();
+=======
+			WARN(1, "%s: Invalid vdd %#x\n",
+			     mmc_hostname(host->mmc), vdd);
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1275,7 +1334,10 @@ static void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
 		sdhci_writeb(host, 0, SDHCI_POWER_CONTROL);
 		if (host->quirks2 & SDHCI_QUIRK2_CARD_ON_NEEDS_BUS_ON)
 			sdhci_runtime_pm_bus_off(host);
+<<<<<<< HEAD
 		vdd = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		/*
 		 * Spec says that we should clear the power reg before setting
@@ -1307,6 +1369,23 @@ static void sdhci_set_power(struct sdhci_host *host, unsigned char mode,
 			mdelay(10);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(sdhci_set_power);
+
+static void __sdhci_set_power(struct sdhci_host *host, unsigned char mode,
+			      unsigned short vdd)
+{
+	struct mmc_host *mmc = host->mmc;
+
+	if (host->ops->set_power)
+		host->ops->set_power(host, mode, vdd);
+	else if (!IS_ERR(mmc->supply.vmmc))
+		sdhci_set_power_reg(host, mode, vdd);
+	else
+		sdhci_set_power(host, mode, vdd);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*****************************************************************************\
  *                                                                           *
@@ -1325,7 +1404,11 @@ static void sdhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 	sdhci_runtime_pm_get(host);
 
+<<<<<<< HEAD
 	present = mmc_gpio_get_cd(host->mmc);
+=======
+	present = mmc->ops->get_cd(mmc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_irqsave(&host->lock, flags);
 
@@ -1502,7 +1585,11 @@ static void sdhci_do_set_ios(struct sdhci_host *host, struct mmc_ios *ios)
 		}
 	}
 
+<<<<<<< HEAD
 	sdhci_set_power(host, ios->power_mode, ios->vdd);
+=======
+	__sdhci_set_power(host, ios->power_mode, ios->vdd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (host->ops->platform_send_init_74_clocks)
 		host->ops->platform_send_init_74_clocks(host, ios->power_mode);
@@ -1968,7 +2055,11 @@ static int sdhci_execute_tuning(struct mmc_host *mmc, u32 opcode)
 		spin_lock_irqsave(&host->lock, flags);
 
 		if (!host->tuning_done) {
+<<<<<<< HEAD
 			pr_info(DRIVER_NAME ": Timeout waiting for "
+=======
+			pr_debug(DRIVER_NAME ": Timeout waiting for "
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				"Buffer Read Ready interrupt during tuning "
 				"procedure, falling back to fixed sampling "
 				"clock\n");
@@ -1977,7 +2068,31 @@ static int sdhci_execute_tuning(struct mmc_host *mmc, u32 opcode)
 			ctrl &= ~SDHCI_CTRL_EXEC_TUNING;
 			sdhci_writew(host, ctrl, SDHCI_HOST_CONTROL2);
 
+<<<<<<< HEAD
 			err = -EIO;
+=======
+			sdhci_do_reset(host, SDHCI_RESET_CMD);
+			sdhci_do_reset(host, SDHCI_RESET_DATA);
+
+			err = -EIO;
+
+			if (cmd.opcode != MMC_SEND_TUNING_BLOCK_HS200)
+				goto out;
+
+			sdhci_writel(host, host->ier, SDHCI_INT_ENABLE);
+			sdhci_writel(host, host->ier, SDHCI_SIGNAL_ENABLE);
+
+			spin_unlock_irqrestore(&host->lock, flags);
+
+			memset(&cmd, 0, sizeof(cmd));
+			cmd.opcode = MMC_STOP_TRANSMISSION;
+			cmd.flags = MMC_RSP_SPI_R1B | MMC_RSP_R1B | MMC_CMD_AC;
+			cmd.busy_timeout = 50;
+			mmc_wait_for_cmd(mmc, &cmd, 0);
+
+			spin_lock_irqsave(&host->lock, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		}
 
@@ -2504,7 +2619,12 @@ static irqreturn_t sdhci_irq(int irq, void *dev_id)
 			pr_err("%s: Card is consuming too much power!\n",
 				mmc_hostname(host->mmc));
 
+<<<<<<< HEAD
 		if (intmask & SDHCI_INT_CARD_INT) {
+=======
+		if ((intmask & SDHCI_INT_CARD_INT) &&
+		    (host->ier & SDHCI_INT_CARD_INT)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sdhci_enable_sdio_irq_nolock(host, false);
 			host->thread_isr |= SDHCI_INT_CARD_INT;
 			result = IRQ_WAKE_THREAD;
@@ -2681,7 +2801,11 @@ static int sdhci_runtime_pm_put(struct sdhci_host *host)
 
 static void sdhci_runtime_pm_bus_on(struct sdhci_host *host)
 {
+<<<<<<< HEAD
 	if (host->runtime_suspended || host->bus_on)
+=======
+	if (host->bus_on)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	host->bus_on = true;
 	pm_runtime_get_noresume(host->mmc->parent);
@@ -2689,7 +2813,11 @@ static void sdhci_runtime_pm_bus_on(struct sdhci_host *host)
 
 static void sdhci_runtime_pm_bus_off(struct sdhci_host *host)
 {
+<<<<<<< HEAD
 	if (host->runtime_suspended || !host->bus_on)
+=======
+	if (!host->bus_on)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	host->bus_on = false;
 	pm_runtime_put_noidle(host->mmc->parent);
@@ -2953,11 +3081,21 @@ int sdhci_add_host(struct sdhci_host *host)
 	if (host->ops->get_min_clock)
 		mmc->f_min = host->ops->get_min_clock(host);
 	else if (host->version >= SDHCI_SPEC_300) {
+<<<<<<< HEAD
 		if (host->clk_mul) {
 			mmc->f_min = (host->max_clk * host->clk_mul) / 1024;
 			mmc->f_max = host->max_clk * host->clk_mul;
 		} else
 			mmc->f_min = host->max_clk / SDHCI_MAX_DIV_SPEC_300;
+=======
+		if (host->clk_mul)
+			mmc->f_max = host->max_clk * host->clk_mul;
+		/*
+		 * Divided Clock Mode minimum clock rate is always less than
+		 * Programmable Clock Mode minimum clock rate.
+		 */
+		mmc->f_min = host->max_clk / SDHCI_MAX_DIV_SPEC_300;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		mmc->f_min = host->max_clk / SDHCI_MAX_DIV_SPEC_200;
 
@@ -2978,14 +3116,23 @@ int sdhci_add_host(struct sdhci_host *host)
 		if (caps[0] & SDHCI_TIMEOUT_CLK_UNIT)
 			host->timeout_clk *= 1000;
 
+<<<<<<< HEAD
+=======
+		if (override_timeout_clk)
+			host->timeout_clk = override_timeout_clk;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mmc->max_busy_timeout = host->ops->get_max_timeout_count ?
 			host->ops->get_max_timeout_count(host) : 1 << 27;
 		mmc->max_busy_timeout /= host->timeout_clk;
 	}
 
+<<<<<<< HEAD
 	if (override_timeout_clk)
 		host->timeout_clk = override_timeout_clk;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mmc->caps |= MMC_CAP_SDIO_IRQ | MMC_CAP_ERASE | MMC_CAP_CMD23;
 	mmc->caps2 |= MMC_CAP2_SDIO_IRQ_NOTHREAD;
 

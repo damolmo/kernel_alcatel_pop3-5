@@ -646,6 +646,12 @@ static int atk_read_value(struct atk_sensor_data *sensor, u64 *value)
 		else
 			err = atk_read_value_new(sensor, value);
 
+<<<<<<< HEAD
+=======
+		if (err)
+			return err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sensor->is_valid = true;
 		sensor->last_updated = jiffies;
 		sensor->cached_value = *value;

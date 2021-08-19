@@ -31,6 +31,10 @@ struct ibmvtpm_crq_queue {
 	struct ibmvtpm_crq *crq_addr;
 	u32 index;
 	u32 num_entry;
+<<<<<<< HEAD
+=======
+	wait_queue_head_t wq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct ibmvtpm_dev {

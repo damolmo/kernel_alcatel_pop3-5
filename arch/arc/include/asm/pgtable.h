@@ -372,7 +372,11 @@ void update_mmu_cache(struct vm_area_struct *vma, unsigned long address,
 
 /* Decode a PTE containing swap "identifier "into constituents */
 #define __swp_type(pte_lookalike)	(((pte_lookalike).val) & 0x1f)
+<<<<<<< HEAD
 #define __swp_offset(pte_lookalike)	((pte_lookalike).val << 13)
+=======
+#define __swp_offset(pte_lookalike)	((pte_lookalike).val >> 13)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* NOPs, to keep generic kernel happy */
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })

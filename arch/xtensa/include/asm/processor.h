@@ -25,7 +25,15 @@
 # error Linux requires the Xtensa Windowed Registers Option.
 #endif
 
+<<<<<<< HEAD
 #define ARCH_SLAB_MINALIGN	XCHAL_DATA_WIDTH
+=======
+/* Xtensa ABI requires stack alignment to be at least 16 */
+
+#define STACK_ALIGN (XCHAL_DATA_WIDTH > 16 ? XCHAL_DATA_WIDTH : 16)
+
+#define ARCH_SLAB_MINALIGN STACK_ALIGN
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * User space process size: 1 GB.

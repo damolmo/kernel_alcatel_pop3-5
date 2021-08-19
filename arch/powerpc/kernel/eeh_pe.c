@@ -840,6 +840,7 @@ void eeh_pe_restore_bars(struct eeh_pe *pe)
 const char *eeh_pe_loc_get(struct eeh_pe *pe)
 {
 	struct pci_bus *bus = eeh_pe_bus_get(pe);
+<<<<<<< HEAD
 	struct device_node *dn = pci_bus_to_OF_node(bus);
 	const char *loc = NULL;
 
@@ -866,6 +867,31 @@ const char *eeh_pe_loc_get(struct eeh_pe *pe)
 
 out:
 	return loc ? loc : "N/A";
+=======
+	struct device_node *dn;
+	const char *loc = NULL;
+
+	while (bus) {
+		dn = pci_bus_to_OF_node(bus);
+		if (!dn) {
+			bus = bus->parent;
+			continue;
+		}
+
+		if (pci_is_root_bus(bus))
+			loc = of_get_property(dn, "ibm,io-base-loc-code", NULL);
+		else
+			loc = of_get_property(dn, "ibm,slot-location-code",
+					      NULL);
+
+		if (loc)
+			return loc;
+
+		bus = bus->parent;
+	}
+
+	return "N/A";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

@@ -84,6 +84,10 @@ int handle_mmio_page_fault_common(struct kvm_vcpu *vcpu, u64 addr, bool direct);
 void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu, struct kvm_mmu *context);
 void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, struct kvm_mmu *context,
 		bool execonly);
+<<<<<<< HEAD
+=======
+bool kvm_can_do_async_pf(struct kvm_vcpu *vcpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline unsigned int kvm_mmu_available_pages(struct kvm *kvm)
 {

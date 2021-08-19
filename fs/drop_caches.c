@@ -8,7 +8,10 @@
 #include <linux/writeback.h>
 #include <linux/sysctl.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "internal.h"
 
 /* A global variable is a bit ugly, but it keeps the code simple */
@@ -21,14 +24,29 @@ static void drop_pagecache_sb(struct super_block *sb, void *unused)
 	spin_lock(&inode_sb_list_lock);
 	list_for_each_entry(inode, &sb->s_inodes, i_sb_list) {
 		spin_lock(&inode->i_lock);
+<<<<<<< HEAD
 		if ((inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW)) ||
 		    (inode->i_mapping->nrpages == 0)) {
+=======
+		/*
+		 * We must skip inodes in unusual state. We may also skip
+		 * inodes without pages but we deliberately won't in case
+		 * we need to reschedule to avoid softlockups.
+		 */
+		if ((inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW)) ||
+		    (inode->i_mapping->nrpages == 0 && !need_resched())) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			spin_unlock(&inode->i_lock);
 			continue;
 		}
 		__iget(inode);
 		spin_unlock(&inode->i_lock);
 		spin_unlock(&inode_sb_list_lock);
+<<<<<<< HEAD
+=======
+
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		invalidate_mapping_pages(inode->i_mapping, 0, -1);
 		iput(toput_inode);
 		toput_inode = inode;
@@ -51,6 +69,7 @@ static void drop_slab(void)
 	} while (nr_objects > 10);
 }
 
+<<<<<<< HEAD
 /* For TuxOnIce */
 void drop_pagecache(void)
 {
@@ -58,6 +77,8 @@ void drop_pagecache(void)
 }
 EXPORT_SYMBOL_GPL(drop_pagecache);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int drop_caches_sysctl_handler(struct ctl_table *table, int write,
 	void __user *buffer, size_t *length, loff_t *ppos)
 {

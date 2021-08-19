@@ -187,7 +187,11 @@ EXPORT_SYMBOL(setattr_copy);
  * the file open for write, as there can be no conflicting delegation in
  * that case.
  */
+<<<<<<< HEAD
 int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **delegated_inode)
+=======
+int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * attr, struct inode **delegated_inode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inode *inode = dentry->d_inode;
 	umode_t mode = inode->i_mode;
@@ -202,6 +206,24 @@ int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **de
 			return -EPERM;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If utimes(2) and friends are called with times == NULL (or both
+	 * times are UTIME_NOW), then we need to check for write permission
+	 */
+	if (ia_valid & ATTR_TOUCH) {
+		if (IS_IMMUTABLE(inode))
+			return -EPERM;
+
+		if (!inode_owner_or_capable(inode)) {
+			error = inode_permission(inode, MAY_WRITE);
+			if (error)
+				return error;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((ia_valid & ATTR_MODE)) {
 		umode_t amode = attr->ia_mode;
 		/* Flag setting protected by i_mutex */
@@ -262,7 +284,13 @@ int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **de
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	if (inode->i_op->setattr)
+=======
+	if (mnt && inode->i_op->setattr2)
+		error = inode->i_op->setattr2(mnt, dentry, attr);
+	else if (inode->i_op->setattr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		error = inode->i_op->setattr(dentry, attr);
 	else
 		error = simple_setattr(dentry, attr);
@@ -275,4 +303,13 @@ int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **de
 
 	return error;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(notify_change2);
+
+int notify_change(struct dentry * dentry, struct iattr * attr, struct inode **delegated_inode)
+{
+	return notify_change2(NULL, dentry, attr, delegated_inode);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL(notify_change);

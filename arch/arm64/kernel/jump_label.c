@@ -22,9 +22,14 @@
 
 #ifdef HAVE_JUMP_LABEL
 
+<<<<<<< HEAD
 static void __arch_jump_label_transform(struct jump_entry *entry,
 					enum jump_label_type type,
 					bool is_static)
+=======
+void arch_jump_label_transform(struct jump_entry *entry,
+			       enum jump_label_type type)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	void *addr = (void *)entry->code;
 	u32 insn;
@@ -37,6 +42,7 @@ static void __arch_jump_label_transform(struct jump_entry *entry,
 		insn = aarch64_insn_gen_nop();
 	}
 
+<<<<<<< HEAD
 	if (is_static)
 		aarch64_insn_patch_text_nosync(addr, insn);
 	else
@@ -47,12 +53,24 @@ void arch_jump_label_transform(struct jump_entry *entry,
 			       enum jump_label_type type)
 {
 	__arch_jump_label_transform(entry, type, false);
+=======
+	aarch64_insn_patch_text(&addr, &insn, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void arch_jump_label_transform_static(struct jump_entry *entry,
 				      enum jump_label_type type)
 {
+<<<<<<< HEAD
 	__arch_jump_label_transform(entry, type, true);
+=======
+	/*
+	 * We use the architected A64 NOP in arch_static_branch, so there's no
+	 * need to patch an identical A64 NOP over the top of it here. The core
+	 * will call arch_jump_label_transform from a module notifier if the
+	 * NOP needs to be replaced by a branch.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif	/* HAVE_JUMP_LABEL */

@@ -651,7 +651,11 @@ csio_shost_init(struct csio_hw *hw, struct device *dev,
 	if (csio_lnode_init(ln, hw, pln))
 		goto err_shost_put;
 
+<<<<<<< HEAD
 	if (scsi_add_host(shost, dev))
+=======
+	if (scsi_add_host_with_dma(shost, dev, &hw->pdev->dev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto err_lnode_exit;
 
 	return ln;

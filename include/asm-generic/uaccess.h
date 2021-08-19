@@ -163,9 +163,16 @@ static inline __must_check long __copy_to_user(void __user *to,
 
 #define put_user(x, ptr)					\
 ({								\
+<<<<<<< HEAD
 	might_fault();						\
 	access_ok(VERIFY_WRITE, ptr, sizeof(*ptr)) ?		\
 		__put_user(x, ptr) :				\
+=======
+	void *__p = (ptr);					\
+	might_fault();						\
+	access_ok(VERIFY_WRITE, __p, sizeof(*ptr)) ?		\
+		__put_user((x), ((__typeof__(*(ptr)) *)__p)) :	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		-EFAULT;					\
 })
 
@@ -225,17 +232,34 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define get_user(x, ptr)					\
 ({								\
+<<<<<<< HEAD
 	might_fault();						\
 	access_ok(VERIFY_READ, ptr, sizeof(*ptr)) ?		\
 		__get_user(x, ptr) :				\
 		-EFAULT;					\
+=======
+	const void *__p = (ptr);				\
+	might_fault();						\
+	access_ok(VERIFY_READ, __p, sizeof(*ptr)) ?		\
+		__get_user((x), (__typeof__(*(ptr)) *)__p) :	\
+		((x) = (__typeof__(*(ptr)))0,-EFAULT);		\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 })
 
 #ifndef __get_user_fn
 static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 {
+<<<<<<< HEAD
 	size = __copy_from_user(x, ptr, size);
 	return size ? -EFAULT : size;
+=======
+	size_t n = __copy_from_user(x, ptr, size);
+	if (unlikely(n)) {
+		memset(x + (size - n), 0, n);
+		return -EFAULT;
+	}
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define __get_user_fn(sz, u, k)	__get_user_fn(sz, u, k)
@@ -255,11 +279,21 @@ extern int __get_user_bad(void) __attribute__((noreturn));
 static inline long copy_from_user(void *to,
 		const void __user * from, unsigned long n)
 {
+<<<<<<< HEAD
 	might_fault();
 	if (access_ok(VERIFY_READ, from, n))
 		return __copy_from_user(to, from, n);
 	else
 		return n;
+=======
+	unsigned long res = n;
+	might_fault();
+	if (likely(access_ok(VERIFY_READ, from, n)))
+		res = __copy_from_user(to, from, n);
+	if (unlikely(res))
+		memset(to + (n - res), 0, res);
+	return res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline long copy_to_user(void __user *to,

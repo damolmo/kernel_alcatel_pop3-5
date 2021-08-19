@@ -769,6 +769,10 @@ submit_page_section(struct dio *dio, struct dio_submit *sdio, struct page *page,
 		    struct buffer_head *map_bh)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	int boundary = sdio->boundary;	/* dio_send_cur_page may clear it */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dio->rw & WRITE) {
 		/*
@@ -807,12 +811,22 @@ submit_page_section(struct dio *dio, struct dio_submit *sdio, struct page *page,
 	sdio->cur_page_fs_offset = sdio->block_in_file << sdio->blkbits;
 out:
 	/*
+<<<<<<< HEAD
 	 * If sdio->boundary then we want to schedule the IO now to
 	 * avoid metadata seeks.
 	 */
 	if (sdio->boundary) {
 		ret = dio_send_cur_page(dio, sdio, map_bh);
 		dio_bio_submit(dio, sdio);
+=======
+	 * If boundary then we want to schedule the IO now to
+	 * avoid metadata seeks.
+	 */
+	if (boundary) {
+		ret = dio_send_cur_page(dio, sdio, map_bh);
+		if (sdio->bio)
+			dio_bio_submit(dio, sdio);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		page_cache_release(sdio->cur_page);
 		sdio->cur_page = NULL;
 	}

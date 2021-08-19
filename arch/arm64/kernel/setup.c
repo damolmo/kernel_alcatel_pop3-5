@@ -27,7 +27,10 @@
 #include <linux/console.h>
 #include <linux/cache.h>
 #include <linux/bootmem.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/screen_info.h>
 #include <linux/init.h>
 #include <linux/kexec.h>
@@ -49,7 +52,10 @@
 #include <asm/cpu.h>
 #include <asm/cputype.h>
 #include <asm/elf.h>
+<<<<<<< HEAD
 #include <asm/cputable.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/cpufeature.h>
 #include <asm/cpu_ops.h>
 #include <asm/sections.h>
@@ -62,6 +68,7 @@
 #include <asm/psci.h>
 #include <asm/efi.h>
 
+<<<<<<< HEAD
 unsigned int processor_id;
 EXPORT_SYMBOL(processor_id);
 
@@ -84,6 +91,8 @@ DECLARE_BITMAP(cpu_hwcaps, ARM64_NCAPS);
 
 static const char *cpu_name;
 static const char *machine_name;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 phys_addr_t __fdt_pointer __initdata;
 
 /*
@@ -119,6 +128,14 @@ void __init early_print(const char *str, ...)
 	printk("%s", buf);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The recorded values of x0 .. x3 upon kernel entry.
+ */
+u64 __cacheline_aligned boot_args[4];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __init smp_setup_processor_id(void)
 {
 	/*
@@ -135,7 +152,10 @@ bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
 }
 
 struct mpidr_hash mpidr_hash;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * smp_build_mpidr_hash - Pre-compute shifts required at each affinity
  *			  level in order to build a linear index from an
@@ -201,6 +221,7 @@ static void __init smp_build_mpidr_hash(void)
 		pr_warn("Large number of MPIDR hash buckets detected\n");
 	__flush_dcache_area(&mpidr_hash, sizeof(struct mpidr_hash));
 }
+<<<<<<< HEAD
 #endif
 
 static void __init setup_processor(void)
@@ -302,6 +323,8 @@ static void __init setup_processor(void)
 		compat_elf_hwcap2 |= COMPAT_HWCAP2_CRC32;
 #endif
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
@@ -316,7 +339,10 @@ static void __init setup_machine_fdt(phys_addr_t dt_phys)
 			cpu_relax();
 	}
 
+<<<<<<< HEAD
 	machine_name = of_flat_dt_get_machine_name();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dump_stack_set_arch_desc("%s (DT)", of_flat_dt_get_machine_name());
 }
 
@@ -345,7 +371,11 @@ static void __init request_standard_resources(void)
 	struct resource *res;
 
 	kernel_code.start   = virt_to_phys(_text);
+<<<<<<< HEAD
 	kernel_code.end     = virt_to_phys(_etext - 1);
+=======
+	kernel_code.end     = virt_to_phys(__init_begin - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kernel_data.start   = virt_to_phys(_sdata);
 	kernel_data.end     = virt_to_phys(_end - 1);
 
@@ -371,10 +401,18 @@ u64 __cpu_logical_map[NR_CPUS] = { [0 ... NR_CPUS-1] = INVALID_HWID };
 
 void __init setup_arch(char **cmdline_p)
 {
+<<<<<<< HEAD
 	setup_processor();
 
 	setup_machine_fdt(__fdt_pointer);
 
+=======
+	pr_info("Boot CPU: AArch64 Processor [%08x]\n", read_cpuid_id());
+
+	setup_machine_fdt(__fdt_pointer);
+
+	sprintf(init_utsname()->machine, ELF_PLATFORM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	init_mm.start_code = (unsigned long) _text;
 	init_mm.end_code   = (unsigned long) _etext;
 	init_mm.end_data   = (unsigned long) _edata;
@@ -382,6 +420,10 @@ void __init setup_arch(char **cmdline_p)
 
 	*cmdline_p = boot_command_line;
 
+<<<<<<< HEAD
+=======
+	early_fixmap_init();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	early_ioremap_init();
 
 	parse_early_param();
@@ -398,7 +440,10 @@ void __init setup_arch(char **cmdline_p)
 	paging_init();
 	request_standard_resources();
 
+<<<<<<< HEAD
 	efi_idmap_init();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	early_ioremap_reset();
 
 	unflatten_device_tree();
@@ -407,9 +452,22 @@ void __init setup_arch(char **cmdline_p)
 
 	cpu_logical_map(0) = read_cpuid_mpidr() & MPIDR_HWID_BITMASK;
 	cpu_read_bootcpu_ops();
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	smp_init_cpus();
 	smp_build_mpidr_hash();
+=======
+	smp_init_cpus();
+	smp_build_mpidr_hash();
+
+#ifdef CONFIG_ARM64_SW_TTBR0_PAN
+	/*
+	 * Make sure init_thread_info.ttbr0 always generates translation
+	 * faults in case uaccess_enable() is inadvertently called by the init
+	 * thread.
+	 */
+	init_thread_info.ttbr0 = virt_to_phys(empty_zero_page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #ifdef CONFIG_VT
@@ -419,6 +477,15 @@ void __init setup_arch(char **cmdline_p)
 	conswitchp = &dummy_con;
 #endif
 #endif
+<<<<<<< HEAD
+=======
+	if (boot_args[1] || boot_args[2] || boot_args[3]) {
+		pr_err("WARNING: x1-x3 nonzero in violation of boot protocol:\n"
+			"\tx1: %016llx\n\tx2: %016llx\n\tx3: %016llx\n"
+			"This indicates a broken bootloader or old kernel\n",
+			boot_args[1], boot_args[2], boot_args[3]);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __init arm64_device_init(void)
@@ -441,6 +508,7 @@ static int __init topology_init(void)
 	return 0;
 }
 subsys_initcall(topology_init);
+<<<<<<< HEAD
 
 static const char *hwcap_str[] = {
 	"fp",
@@ -575,3 +643,5 @@ const struct seq_operations cpuinfo_op = {
 	.stop	= c_stop,
 	.show	= c_show
 };
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

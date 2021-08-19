@@ -70,16 +70,26 @@ static int osiris_dvs_notify(struct notifier_block *nb,
 
 	switch (val) {
 	case CPUFREQ_PRECHANGE:
+<<<<<<< HEAD
 		if (old_dvs & !new_dvs ||
 		    cur_dvs & !new_dvs) {
+=======
+		if ((old_dvs && !new_dvs) ||
+		    (cur_dvs && !new_dvs)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pr_debug("%s: exiting dvs\n", __func__);
 			cur_dvs = false;
 			gpio_set_value(OSIRIS_GPIO_DVS, 1);
 		}
 		break;
 	case CPUFREQ_POSTCHANGE:
+<<<<<<< HEAD
 		if (!old_dvs & new_dvs ||
 		    !cur_dvs & new_dvs) {
+=======
+		if ((!old_dvs && new_dvs) ||
+		    (!cur_dvs && new_dvs)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pr_debug("entering dvs\n");
 			cur_dvs = true;
 			gpio_set_value(OSIRIS_GPIO_DVS, 0);

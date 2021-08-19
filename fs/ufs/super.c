@@ -118,7 +118,11 @@ static struct inode *ufs_nfs_get_inode(struct super_block *sb, u64 ino, u32 gene
 	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
 	struct inode *inode;
 
+<<<<<<< HEAD
 	if (ino < UFS_ROOTINO || ino > uspi->s_ncg * uspi->s_ipg)
+=======
+	if (ino < UFS_ROOTINO || ino > (u64)uspi->s_ncg * uspi->s_ipg)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-ESTALE);
 
 	inode = ufs_iget(sb, ino);
@@ -768,6 +772,26 @@ static void ufs_put_super(struct super_block *sb)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+static u64 ufs_max_bytes(struct super_block *sb)
+{
+	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
+	int bits = uspi->s_apbshift;
+	u64 res;
+
+	if (bits > 21)
+		res = ~0ULL;
+	else
+		res = UFS_NDADDR + (1LL << bits) + (1LL << (2*bits)) +
+			(1LL << (3*bits));
+
+	if (res >= (MAX_LFS_FILESIZE >> uspi->s_bshift))
+		return MAX_LFS_FILESIZE;
+	return res << uspi->s_bshift;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ufs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct ufs_sb_info * sbi;
@@ -1235,6 +1259,10 @@ magic_found:
 			    "fast symlink size (%u)\n", uspi->s_maxsymlinklen);
 		uspi->s_maxsymlinklen = maxsymlen;
 	}
+<<<<<<< HEAD
+=======
+	sb->s_maxbytes = ufs_max_bytes(sb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sb->s_max_links = UFS_LINK_MAX;
 
 	inode = ufs_iget(sb, UFS_ROOTINO);

@@ -689,9 +689,12 @@ void do_tlb_overlap_fault(unsigned long cause, unsigned long address,
 
 	local_irq_save(flags);
 
+<<<<<<< HEAD
 	/* re-enable the MMU */
 	write_aux_reg(ARC_REG_PID, MMU_ENABLE | read_aux_reg(ARC_REG_PID));
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* loop thru all sets of TLB */
 	for (set = 0; set < mmu->sets; set++) {
 

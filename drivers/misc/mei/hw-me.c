@@ -895,6 +895,17 @@ static bool mei_me_fw_type_sps(struct pci_dev *pdev)
 	.fw_status.status[0] = PCI_CFG_HFS_1,   \
 	.fw_status.status[1] = PCI_CFG_HFS_2
 
+<<<<<<< HEAD
+=======
+#define MEI_CFG_PCH8_HFS                        \
+	.fw_status.count = 6,                   \
+	.fw_status.status[0] = PCI_CFG_HFS_1,   \
+	.fw_status.status[1] = PCI_CFG_HFS_2,   \
+	.fw_status.status[2] = PCI_CFG_HFS_3,   \
+	.fw_status.status[3] = PCI_CFG_HFS_4,   \
+	.fw_status.status[4] = PCI_CFG_HFS_5,   \
+	.fw_status.status[5] = PCI_CFG_HFS_6
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* ICH Legacy devices */
 const struct mei_cfg mei_me_legacy_cfg = {
@@ -918,6 +929,14 @@ const struct mei_cfg mei_me_pch_cpt_pbg_cfg = {
 	MEI_CFG_FW_NM,
 };
 
+<<<<<<< HEAD
+=======
+/* PCH8 Lynx Point and newer devices */
+const struct mei_cfg mei_me_pch8_cfg = {
+	MEI_CFG_PCH8_HFS,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* PCH Lynx Point with quirk for SPS Firmware exclusion */
 const struct mei_cfg mei_me_lpt_cfg = {
 	MEI_CFG_PCH_HFS,

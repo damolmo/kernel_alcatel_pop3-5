@@ -732,6 +732,14 @@ static void atmel_complete_tx_dma(void *arg)
 	/* Do we really need this? */
 	if (!uart_circ_empty(xmit))
 		tasklet_schedule(&atmel_port->tasklet);
+<<<<<<< HEAD
+=======
+	else if ((atmel_port->rs485.flags & SER_RS485_ENABLED) &&
+		 !(atmel_port->rs485.flags & SER_RS485_RX_DURING_TX)) {
+		/* DMA done, stop TX, start RX for RS485 */
+		atmel_start_rx(port);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_unlock_irqrestore(&port->lock, flags);
 }
@@ -804,12 +812,15 @@ static void atmel_tx_dma(struct uart_port *port)
 		desc->callback = atmel_complete_tx_dma;
 		desc->callback_param = atmel_port;
 		atmel_port->cookie_tx = dmaengine_submit(desc);
+<<<<<<< HEAD
 
 	} else {
 		if (atmel_port->rs485.flags & SER_RS485_ENABLED) {
 			/* DMA done, stop TX, start RX for RS485 */
 			atmel_start_rx(port);
 		}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
@@ -1044,6 +1055,13 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
 				sg_dma_len(&atmel_port->sg_rx)/2,
 				DMA_DEV_TO_MEM,
 				DMA_PREP_INTERRUPT);
+<<<<<<< HEAD
+=======
+	if (!desc) {
+		dev_err(port->dev, "Preparing DMA cyclic failed\n");
+		goto chan_err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	desc->callback = atmel_complete_rx_dma;
 	desc->callback_param = port;
 	atmel_port->desc_rx = desc;
@@ -1643,6 +1661,10 @@ static void atmel_get_ip_name(struct uart_port *port)
 		switch (version) {
 		case 0x302:
 		case 0x10213:
+<<<<<<< HEAD
+=======
+		case 0x10302:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev_dbg(port->dev, "This version is usart\n");
 			atmel_port->is_usart = true;
 			break;
@@ -1867,6 +1889,14 @@ static void atmel_flush_buffer(struct uart_port *port)
 		UART_PUT_TCR(port, 0);
 		atmel_port->pdc_tx.ofs = 0;
 	}
+<<<<<<< HEAD
+=======
+	/*
+	 * in uart_flush_buffer(), the xmit circular buffer has just
+	 * been cleared, so we have to reset tx_len accordingly.
+	 */
+	sg_dma_len(&atmel_port->sg_tx) = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

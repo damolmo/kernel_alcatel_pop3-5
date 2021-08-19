@@ -88,6 +88,10 @@
 #include <linux/mutex.h>
 #include <linux/net.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/skbuff.h>
 #include <linux/smp.h>
 #include <linux/socket.h>
@@ -431,14 +435,22 @@ static int vsock_send_shutdown(struct sock *sk, int mode)
 	return transport->shutdown(vsock_sk(sk), mode);
 }
 
+<<<<<<< HEAD
 void vsock_pending_work(struct work_struct *work)
+=======
+static void vsock_pending_work(struct work_struct *work)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct sock *sk;
 	struct sock *listener;
 	struct vsock_sock *vsk;
 	bool cleanup;
 
+<<<<<<< HEAD
 	vsk = container_of(work, struct vsock_sock, dwork.work);
+=======
+	vsk = container_of(work, struct vsock_sock, pending_work.work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sk = sk_vsock(vsk);
 	listener = vsk->listener;
 	cleanup = true;
@@ -478,16 +490,29 @@ out:
 	sock_put(sk);
 	sock_put(listener);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(vsock_pending_work);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**** SOCKET OPERATIONS ****/
 
 static int __vsock_bind_stream(struct vsock_sock *vsk,
 			       struct sockaddr_vm *addr)
 {
+<<<<<<< HEAD
 	static u32 port = LAST_RESERVED_PORT + 1;
 	struct sockaddr_vm new_addr;
 
+=======
+	static u32 port = 0;
+	struct sockaddr_vm new_addr;
+
+	if (!port)
+		port = LAST_RESERVED_PORT + 1 +
+			prandom_u32_max(U32_MAX - LAST_RESERVED_PORT);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vsock_addr_init(&new_addr, addr->svm_cid, addr->svm_port);
 
 	if (addr->svm_port == VMADDR_PORT_ANY) {
@@ -577,6 +602,11 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+static void vsock_connect_timeout(struct work_struct *work);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct sock *__vsock_create(struct net *net,
 			    struct socket *sock,
 			    struct sock *parent,
@@ -618,12 +648,21 @@ struct sock *__vsock_create(struct net *net,
 	vsk->sent_request = false;
 	vsk->ignore_connecting_rst = false;
 	vsk->peer_shutdown = 0;
+<<<<<<< HEAD
+=======
+	INIT_DELAYED_WORK(&vsk->connect_work, vsock_connect_timeout);
+	INIT_DELAYED_WORK(&vsk->pending_work, vsock_pending_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	psk = parent ? vsock_sk(parent) : NULL;
 	if (parent) {
 		vsk->trusted = psk->trusted;
 		vsk->owner = get_cred(psk->owner);
 		vsk->connect_timeout = psk->connect_timeout;
+<<<<<<< HEAD
+=======
+		security_sk_clone(parent, sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		vsk->trusted = capable(CAP_NET_ADMIN);
 		vsk->owner = get_current_cred();
@@ -810,10 +849,19 @@ static int vsock_shutdown(struct socket *sock, int mode)
 	 */
 
 	sk = sock->sk;
+<<<<<<< HEAD
 	if (sock->state == SS_UNCONNECTED) {
 		err = -ENOTCONN;
 		if (sk->sk_type == SOCK_STREAM)
 			return err;
+=======
+
+	lock_sock(sk);
+	if (sock->state == SS_UNCONNECTED) {
+		err = -ENOTCONN;
+		if (sk->sk_type == SOCK_STREAM)
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		sock->state = SS_DISCONNECTING;
 		err = 0;
@@ -822,10 +870,15 @@ static int vsock_shutdown(struct socket *sock, int mode)
 	/* Receive and send shutdowns are treated alike. */
 	mode = mode & (RCV_SHUTDOWN | SEND_SHUTDOWN);
 	if (mode) {
+<<<<<<< HEAD
 		lock_sock(sk);
 		sk->sk_shutdown |= mode;
 		sk->sk_state_change(sk);
 		release_sock(sk);
+=======
+		sk->sk_shutdown |= mode;
+		sk->sk_state_change(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (sk->sk_type == SOCK_STREAM) {
 			sock_reset_flag(sk, SOCK_DONE);
@@ -833,6 +886,11 @@ static int vsock_shutdown(struct socket *sock, int mode)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+out:
+	release_sock(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -1095,7 +1153,11 @@ static void vsock_connect_timeout(struct work_struct *work)
 	struct sock *sk;
 	struct vsock_sock *vsk;
 
+<<<<<<< HEAD
 	vsk = container_of(work, struct vsock_sock, dwork.work);
+=======
+	vsk = container_of(work, struct vsock_sock, connect_work.work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sk = sk_vsock(vsk);
 
 	lock_sock(sk);
@@ -1196,9 +1258,13 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
 			 * timeout fires.
 			 */
 			sock_hold(sk);
+<<<<<<< HEAD
 			INIT_DELAYED_WORK(&vsk->dwork,
 					  vsock_connect_timeout);
 			schedule_delayed_work(&vsk->dwork, timeout);
+=======
+			schedule_delayed_work(&vsk->connect_work, timeout);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/* Skip ahead to preserve error code set above. */
 			goto out_wait;
@@ -1210,10 +1276,21 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
 
 		if (signal_pending(current)) {
 			err = sock_intr_errno(timeout);
+<<<<<<< HEAD
 			goto out_wait_error;
 		} else if (timeout == 0) {
 			err = -ETIMEDOUT;
 			goto out_wait_error;
+=======
+			sk->sk_state = SS_UNCONNECTED;
+			sock->state = SS_UNCONNECTED;
+			goto out_wait;
+		} else if (timeout == 0) {
+			err = -ETIMEDOUT;
+			sk->sk_state = SS_UNCONNECTED;
+			sock->state = SS_UNCONNECTED;
+			goto out_wait;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
@@ -1221,20 +1298,31 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
 
 	if (sk->sk_err) {
 		err = -sk->sk_err;
+<<<<<<< HEAD
 		goto out_wait_error;
 	} else
 		err = 0;
+=======
+		sk->sk_state = SS_UNCONNECTED;
+		sock->state = SS_UNCONNECTED;
+	} else {
+		err = 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out_wait:
 	finish_wait(sk_sleep(sk), &wait);
 out:
 	release_sock(sk);
 	return err;
+<<<<<<< HEAD
 
 out_wait_error:
 	sk->sk_state = SS_UNCONNECTED;
 	sock->state = SS_UNCONNECTED;
 	goto out_wait;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int vsock_accept(struct socket *sock, struct socket *newsock, int flags)
@@ -1264,25 +1352,44 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags)
 	/* Wait for children sockets to appear; these are the new sockets
 	 * created upon connection establishment.
 	 */
+<<<<<<< HEAD
 	timeout = sock_sndtimeo(listener, flags & O_NONBLOCK);
+=======
+	timeout = sock_rcvtimeo(listener, flags & O_NONBLOCK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	prepare_to_wait(sk_sleep(listener), &wait, TASK_INTERRUPTIBLE);
 
 	while ((connected = vsock_dequeue_accept(listener)) == NULL &&
 	       listener->sk_err == 0) {
 		release_sock(listener);
 		timeout = schedule_timeout(timeout);
+<<<<<<< HEAD
+=======
+		finish_wait(sk_sleep(listener), &wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		lock_sock(listener);
 
 		if (signal_pending(current)) {
 			err = sock_intr_errno(timeout);
+<<<<<<< HEAD
 			goto out_wait;
 		} else if (timeout == 0) {
 			err = -EAGAIN;
 			goto out_wait;
+=======
+			goto out;
+		} else if (timeout == 0) {
+			err = -EAGAIN;
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		prepare_to_wait(sk_sleep(listener), &wait, TASK_INTERRUPTIBLE);
 	}
+<<<<<<< HEAD
+=======
+	finish_wait(sk_sleep(listener), &wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (listener->sk_err)
 		err = -listener->sk_err;
@@ -1302,6 +1409,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags)
 		 */
 		if (err) {
 			vconnected->rejected = true;
+<<<<<<< HEAD
 			release_sock(connected);
 			sock_put(connected);
 			goto out_wait;
@@ -1309,12 +1417,22 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags)
 
 		newsock->state = SS_CONNECTED;
 		sock_graft(connected, newsock);
+=======
+		} else {
+			newsock->state = SS_CONNECTED;
+			sock_graft(connected, newsock);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		release_sock(connected);
 		sock_put(connected);
 	}
 
+<<<<<<< HEAD
 out_wait:
 	finish_wait(sk_sleep(listener), &wait);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	release_sock(listener);
 	return err;
@@ -1514,8 +1632,12 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	long timeout;
 	int err;
 	struct vsock_transport_send_notify_data send_data;
+<<<<<<< HEAD
 
 	DEFINE_WAIT(wait);
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sk = sock->sk;
 	vsk = vsock_sk(sk);
@@ -1558,11 +1680,18 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (err < 0)
 		goto out;
 
+<<<<<<< HEAD
 	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 
 	while (total_written < len) {
 		ssize_t written;
 
+=======
+	while (total_written < len) {
+		ssize_t written;
+
+		add_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		while (vsock_stream_has_space(vsk) == 0 &&
 		       sk->sk_err == 0 &&
 		       !(sk->sk_shutdown & SEND_SHUTDOWN) &&
@@ -1571,6 +1700,7 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			/* Don't wait for non-blocking sockets. */
 			if (timeout == 0) {
 				err = -EAGAIN;
+<<<<<<< HEAD
 				goto out_wait;
 			}
 
@@ -1592,6 +1722,32 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			prepare_to_wait(sk_sleep(sk), &wait,
 					TASK_INTERRUPTIBLE);
 		}
+=======
+				remove_wait_queue(sk_sleep(sk), &wait);
+				goto out_err;
+			}
+
+			err = transport->notify_send_pre_block(vsk, &send_data);
+			if (err < 0) {
+				remove_wait_queue(sk_sleep(sk), &wait);
+				goto out_err;
+			}
+
+			release_sock(sk);
+			timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
+			lock_sock(sk);
+			if (signal_pending(current)) {
+				err = sock_intr_errno(timeout);
+				remove_wait_queue(sk_sleep(sk), &wait);
+				goto out_err;
+			} else if (timeout == 0) {
+				err = -EAGAIN;
+				remove_wait_queue(sk_sleep(sk), &wait);
+				goto out_err;
+			}
+		}
+		remove_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* These checks occur both as part of and after the loop
 		 * conditional since we need to check before and after
@@ -1599,16 +1755,28 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		 */
 		if (sk->sk_err) {
 			err = -sk->sk_err;
+<<<<<<< HEAD
 			goto out_wait;
 		} else if ((sk->sk_shutdown & SEND_SHUTDOWN) ||
 			   (vsk->peer_shutdown & RCV_SHUTDOWN)) {
 			err = -EPIPE;
 			goto out_wait;
+=======
+			goto out_err;
+		} else if ((sk->sk_shutdown & SEND_SHUTDOWN) ||
+			   (vsk->peer_shutdown & RCV_SHUTDOWN)) {
+			err = -EPIPE;
+			goto out_err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		err = transport->notify_send_pre_enqueue(vsk, &send_data);
 		if (err < 0)
+<<<<<<< HEAD
 			goto out_wait;
+=======
+			goto out_err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Note that enqueue will only write as many bytes as are free
 		 * in the produce queue, so we don't need to ensure len is
@@ -1621,7 +1789,11 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 				len - total_written);
 		if (written < 0) {
 			err = -ENOMEM;
+<<<<<<< HEAD
 			goto out_wait;
+=======
+			goto out_err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		total_written += written;
@@ -1629,6 +1801,7 @@ static int vsock_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		err = transport->notify_send_post_enqueue(
 				vsk, written, &send_data);
 		if (err < 0)
+<<<<<<< HEAD
 			goto out_wait;
 
 	}
@@ -1637,6 +1810,15 @@ out_wait:
 	if (total_written > 0)
 		err = total_written;
 	finish_wait(sk_sleep(sk), &wait);
+=======
+			goto out_err;
+
+	}
+
+out_err:
+	if (total_written > 0)
+		err = total_written;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	release_sock(sk);
 	return err;
@@ -1718,6 +1900,7 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 	if (err < 0)
 		goto out;
 
+<<<<<<< HEAD
 	prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 
 	while (1) {
@@ -1733,6 +1916,63 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 		} else if (ready > 0) {
 			ssize_t read;
 
+=======
+
+	while (1) {
+		s64 ready;
+
+		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+		ready = vsock_stream_has_data(vsk);
+
+		if (ready == 0) {
+			if (sk->sk_err != 0 ||
+			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
+			    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
+				finish_wait(sk_sleep(sk), &wait);
+				break;
+			}
+			/* Don't wait for non-blocking sockets. */
+			if (timeout == 0) {
+				err = -EAGAIN;
+				finish_wait(sk_sleep(sk), &wait);
+				break;
+			}
+
+			err = transport->notify_recv_pre_block(
+					vsk, target, &recv_data);
+			if (err < 0) {
+				finish_wait(sk_sleep(sk), &wait);
+				break;
+			}
+			release_sock(sk);
+			timeout = schedule_timeout(timeout);
+			lock_sock(sk);
+
+			if (signal_pending(current)) {
+				err = sock_intr_errno(timeout);
+				finish_wait(sk_sleep(sk), &wait);
+				break;
+			} else if (timeout == 0) {
+				err = -EAGAIN;
+				finish_wait(sk_sleep(sk), &wait);
+				break;
+			}
+		} else {
+			ssize_t read;
+
+			finish_wait(sk_sleep(sk), &wait);
+
+			if (ready < 0) {
+				/* Invalid queue pair content. XXX This should
+				* be changed to a connection reset in a later
+				* change.
+				*/
+
+				err = -ENOMEM;
+				goto out;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = transport->notify_recv_pre_dequeue(
 					vsk, target, &recv_data);
 			if (err < 0)
@@ -1752,12 +1992,17 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 					vsk, target, read,
 					!(flags & MSG_PEEK), &recv_data);
 			if (err < 0)
+<<<<<<< HEAD
 				goto out_wait;
+=======
+				goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			if (read >= target || flags & MSG_PEEK)
 				break;
 
 			target -= read;
+<<<<<<< HEAD
 		} else {
 			if (sk->sk_err != 0 || (sk->sk_shutdown & RCV_SHUTDOWN)
 			    || (vsk->peer_shutdown & SEND_SHUTDOWN)) {
@@ -1788,6 +2033,8 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 
 			prepare_to_wait(sk_sleep(sk), &wait,
 					TASK_INTERRUPTIBLE);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1796,6 +2043,7 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 	else if (sk->sk_shutdown & RCV_SHUTDOWN)
 		err = 0;
 
+<<<<<<< HEAD
 	if (copied > 0) {
 		/* We only do these additional bookkeeping/notification steps
 		 * if we actually copied something out of the queue pair
@@ -1820,6 +2068,11 @@ vsock_stream_recvmsg(struct kiocb *kiocb,
 
 out_wait:
 	finish_wait(sk_sleep(sk), &wait);
+=======
+	if (copied > 0)
+		err = copied;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	release_sock(sk);
 	return err;

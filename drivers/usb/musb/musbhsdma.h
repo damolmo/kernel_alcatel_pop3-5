@@ -157,5 +157,9 @@ struct musb_dma_controller {
 	void __iomem			*base;
 	u8				channel_count;
 	u8				used_channels;
+<<<<<<< HEAD
 	u8				irq;
+=======
+	int				irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };

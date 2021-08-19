@@ -39,8 +39,13 @@
 	.previous
 
 	.section .altinstructions,"a"
+<<<<<<< HEAD
 	altinstruction_entry 0b,2b,\feature1,5,5
 	altinstruction_entry 0b,3b,\feature2,5,5
+=======
+	altinstruction_entry 0b,2b,\feature1,5,5,0
+	altinstruction_entry 0b,3b,\feature2,5,5,0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.previous
 	.endm
 
@@ -138,7 +143,11 @@ ENTRY(copy_user_generic_unrolled)
 	movl %edx,%ecx
 	andl $63,%edx
 	shrl $6,%ecx
+<<<<<<< HEAD
 	jz 17f
+=======
+	jz .L_copy_short_string
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 1:	movq (%rsi),%r8
 2:	movq 1*8(%rsi),%r9
 3:	movq 2*8(%rsi),%r10
@@ -159,7 +168,12 @@ ENTRY(copy_user_generic_unrolled)
 	leaq 64(%rdi),%rdi
 	decl %ecx
 	jnz 1b
+<<<<<<< HEAD
 17:	movl %edx,%ecx
+=======
+.L_copy_short_string:
+	movl %edx,%ecx
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	andl $7,%edx
 	shrl $3,%ecx
 	jz 20f
@@ -277,6 +291,11 @@ ENDPROC(copy_user_generic_string)
 ENTRY(copy_user_enhanced_fast_string)
 	CFI_STARTPROC
 	ASM_STAC
+<<<<<<< HEAD
+=======
+	cmpl $64,%edx
+	jb .L_copy_short_string	/* less then 64 bytes, avoid the costly 'rep' */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	movl %edx,%ecx
 1:	rep
 	movsb

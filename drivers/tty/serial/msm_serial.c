@@ -58,10 +58,20 @@ struct msm_port {
 
 static inline void wait_for_xmitr(struct uart_port *port)
 {
+<<<<<<< HEAD
+=======
+	unsigned int timeout = 500000;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (!(msm_read(port, UART_SR) & UART_SR_TX_EMPTY)) {
 		if (msm_read(port, UART_ISR) & UART_ISR_TX_READY)
 			break;
 		udelay(1);
+<<<<<<< HEAD
+=======
+		if (!timeout--)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	msm_write(port, UART_CR_CMD_RESET_TX_READY, UART_CR);
 }
@@ -317,6 +327,10 @@ static unsigned int msm_get_mctrl(struct uart_port *port)
 static void msm_reset(struct uart_port *port)
 {
 	struct msm_port *msm_port = UART_TO_MSM(port);
+<<<<<<< HEAD
+=======
+	unsigned int mr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* reset everything */
 	msm_write(port, UART_CR_CMD_RESET_RX, UART_CR);
@@ -324,7 +338,14 @@ static void msm_reset(struct uart_port *port)
 	msm_write(port, UART_CR_CMD_RESET_ERR, UART_CR);
 	msm_write(port, UART_CR_CMD_RESET_BREAK_INT, UART_CR);
 	msm_write(port, UART_CR_CMD_RESET_CTS, UART_CR);
+<<<<<<< HEAD
 	msm_write(port, UART_CR_CMD_SET_RFR, UART_CR);
+=======
+	msm_write(port, UART_CR_CMD_RESET_RFR, UART_CR);
+	mr = msm_read(port, UART_MR1);
+	mr &= ~UART_MR1_RX_RDY_CTL;
+	msm_write(port, mr, UART_MR1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Disable DM modes */
 	if (msm_port->is_uartdm)
@@ -852,6 +873,10 @@ static void __msm_console_write(struct uart_port *port, const char *s,
 	int num_newlines = 0;
 	bool replaced = false;
 	void __iomem *tf;
+<<<<<<< HEAD
+=======
+	int locked = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (is_uartdm)
 		tf = port->membase + UARTDM_TF;
@@ -864,7 +889,17 @@ static void __msm_console_write(struct uart_port *port, const char *s,
 			num_newlines++;
 	count += num_newlines;
 
+<<<<<<< HEAD
 	spin_lock(&port->lock);
+=======
+	if (port->sysrq)
+		locked = 0;
+	else if (oops_in_progress)
+		locked = spin_trylock(&port->lock);
+	else
+		spin_lock(&port->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (is_uartdm)
 		reset_dm_count(port, count);
 
@@ -900,7 +935,13 @@ static void __msm_console_write(struct uart_port *port, const char *s,
 		iowrite32_rep(tf, buf, 1);
 		i += num_chars;
 	}
+<<<<<<< HEAD
 	spin_unlock(&port->lock);
+=======
+
+	if (locked)
+		spin_unlock(&port->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void msm_console_write(struct console *co, const char *s,
@@ -1108,6 +1149,10 @@ static const struct of_device_id msm_match_table[] = {
 	{ .compatible = "qcom,msm-uartdm" },
 	{}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, msm_match_table);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct platform_driver msm_platform_driver = {
 	.remove = msm_serial_remove,

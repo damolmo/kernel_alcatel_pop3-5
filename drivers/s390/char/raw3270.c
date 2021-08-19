@@ -956,7 +956,11 @@ raw3270_deactivate_view(struct raw3270_view *view)
  * Add view to device with minor "minor".
  */
 int
+<<<<<<< HEAD
 raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor)
+=======
+raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor, int subclass)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -978,6 +982,10 @@ raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor)
 		view->cols = rp->cols;
 		view->ascebc = rp->ascebc;
 		spin_lock_init(&view->lock);
+<<<<<<< HEAD
+=======
+		lockdep_set_subclass(&view->lock, subclass);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		list_add(&view->list, &rp->view_list);
 		rc = 0;
 		spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);

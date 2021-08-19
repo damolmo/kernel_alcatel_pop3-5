@@ -1069,7 +1069,11 @@ static int dvb_demux_do_ioctl(struct file *file,
 		break;
 
 	default:
+<<<<<<< HEAD
 		ret = -EINVAL;
+=======
+		ret = -ENOTTY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 	mutex_unlock(&dmxdev->mutex);

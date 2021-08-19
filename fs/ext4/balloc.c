@@ -184,7 +184,10 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 	unsigned int bit, bit_max;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	ext4_fsblk_t start, tmp;
+<<<<<<< HEAD
 	int flex_bg = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ext4_group_info *grp;
 
 	J_ASSERT_BH(bh, buffer_locked(bh));
@@ -209,11 +212,18 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 	memset(bh->b_data, 0, sb->s_blocksize);
 
 	bit_max = ext4_num_base_meta_clusters(sb, block_group);
+<<<<<<< HEAD
+=======
+	if ((bit_max >> 3) >= bh->b_size)
+		return -EIO;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (bit = 0; bit < bit_max; bit++)
 		ext4_set_bit(bit, bh->b_data);
 
 	start = ext4_group_first_block_no(sb, block_group);
 
+<<<<<<< HEAD
 	if (EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_FLEX_BG))
 		flex_bg = 1;
 
@@ -224,12 +234,25 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 
 	tmp = ext4_inode_bitmap(sb, gdp);
 	if (!flex_bg || ext4_block_in_group(sb, tmp, block_group))
+=======
+	/* Set bits for block and inode bitmaps, and inode table */
+	tmp = ext4_block_bitmap(sb, gdp);
+	if (ext4_block_in_group(sb, tmp, block_group))
+		ext4_set_bit(EXT4_B2C(sbi, tmp - start), bh->b_data);
+
+	tmp = ext4_inode_bitmap(sb, gdp);
+	if (ext4_block_in_group(sb, tmp, block_group))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ext4_set_bit(EXT4_B2C(sbi, tmp - start), bh->b_data);
 
 	tmp = ext4_inode_table(sb, gdp);
 	for (; tmp < ext4_inode_table(sb, gdp) +
 		     sbi->s_itb_per_group; tmp++) {
+<<<<<<< HEAD
 		if (!flex_bg || ext4_block_in_group(sb, tmp, block_group))
+=======
+		if (ext4_block_in_group(sb, tmp, block_group))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ext4_set_bit(EXT4_B2C(sbi, tmp - start), bh->b_data);
 	}
 
@@ -240,8 +263,11 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 	 */
 	ext4_mark_bitmap_end(num_clusters_in_group(sb, block_group),
 			     sb->s_blocksize * 8, bh->b_data);
+<<<<<<< HEAD
 	ext4_block_bitmap_csum_set(sb, block_group, gdp, bh);
 	ext4_group_desc_csum_set(sb, block_group, gdp);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -283,6 +309,10 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
 	struct ext4_group_desc *desc;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+<<<<<<< HEAD
+=======
+	struct buffer_head *bh_p;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (block_group >= ngroups) {
 		ext4_error(sb, "block_group >= groups_count - block_group = %u,"
@@ -293,7 +323,18 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 
 	group_desc = block_group >> EXT4_DESC_PER_BLOCK_BITS(sb);
 	offset = block_group & (EXT4_DESC_PER_BLOCK(sb) - 1);
+<<<<<<< HEAD
 	if (!sbi->s_group_desc[group_desc]) {
+=======
+	bh_p = sbi_array_rcu_deref(sbi, s_group_desc, group_desc);
+	/*
+	 * sbi_array_rcu_deref returns with rcu unlocked, this is ok since
+	 * the pointer being dereferenced won't be dereferenced again. By
+	 * looking at the usage in add_new_gdb() the value isn't modified,
+	 * just the pointer, and so it remains valid.
+	 */
+	if (!bh_p) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ext4_error(sb, "Group descriptor not loaded - "
 			   "block_group = %u, group_desc = %u, desc = %u",
 			   block_group, group_desc, offset);
@@ -301,10 +342,17 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 	}
 
 	desc = (struct ext4_group_desc *)(
+<<<<<<< HEAD
 		(__u8 *)sbi->s_group_desc[group_desc]->b_data +
 		offset * EXT4_DESC_SIZE(sb));
 	if (bh)
 		*bh = sbi->s_group_desc[group_desc];
+=======
+		(__u8 *)bh_p->b_data +
+		offset * EXT4_DESC_SIZE(sb));
+	if (bh)
+		*bh = bh_p;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return desc;
 }
 
@@ -320,6 +368,10 @@ static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	ext4_grpblk_t offset;
 	ext4_grpblk_t next_zero_bit;
+<<<<<<< HEAD
+=======
+	ext4_grpblk_t max_bit = EXT4_CLUSTERS_PER_GROUP(sb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ext4_fsblk_t blk;
 	ext4_fsblk_t group_first_block;
 
@@ -337,20 +389,36 @@ static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 	/* check whether block bitmap block number is set */
 	blk = ext4_block_bitmap(sb, desc);
 	offset = blk - group_first_block;
+<<<<<<< HEAD
 	if (!ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+=======
+	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
+	    !ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* bad block bitmap */
 		return blk;
 
 	/* check whether the inode bitmap block number is set */
 	blk = ext4_inode_bitmap(sb, desc);
 	offset = blk - group_first_block;
+<<<<<<< HEAD
 	if (!ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+=======
+	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
+	    !ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* bad block bitmap */
 		return blk;
 
 	/* check whether the inode table block number is set */
 	blk = ext4_inode_table(sb, desc);
 	offset = blk - group_first_block;
+<<<<<<< HEAD
+=======
+	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
+	    EXT4_B2C(sbi, offset + sbi->s_itb_per_group) >= max_bit)
+		return blk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	next_zero_bit = ext4_find_next_zero_bit(bh->b_data,
 			EXT4_B2C(sbi, offset + EXT4_SB(sb)->s_itb_per_group),
 			EXT4_B2C(sbi, offset));
@@ -413,6 +481,10 @@ struct buffer_head *
 ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 {
 	struct ext4_group_desc *desc;
+<<<<<<< HEAD
+=======
+	struct ext4_sb_info *sbi = EXT4_SB(sb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct buffer_head *bh;
 	ext4_fsblk_t bitmap_blk;
 
@@ -420,6 +492,15 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 	if (!desc)
 		return NULL;
 	bitmap_blk = ext4_block_bitmap(sb, desc);
+<<<<<<< HEAD
+=======
+	if ((bitmap_blk <= le32_to_cpu(sbi->s_es->s_first_data_block)) ||
+	    (bitmap_blk >= ext4_blocks_count(sbi->s_es))) {
+		ext4_error(sb, "Invalid block bitmap block %llu in "
+			   "block_group %u", bitmap_blk, block_group);
+		return ERR_PTR(-EUCLEAN);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bh = sb_getblk(sb, bitmap_blk);
 	if (unlikely(!bh)) {
 		ext4_error(sb, "Cannot get buffer for block bitmap - "
@@ -437,12 +518,31 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 		goto verify;
 	}
 	ext4_lock_group(sb, block_group);
+<<<<<<< HEAD
 	if (desc->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT)) {
 		int err;
 
 		err = ext4_init_block_bitmap(sb, bh, block_group, desc);
 		set_bitmap_uptodate(bh);
 		set_buffer_uptodate(bh);
+=======
+	if (ext4_has_group_desc_csum(sb) &&
+	    (desc->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT))) {
+		int err;
+
+		if (block_group == 0) {
+			ext4_unlock_group(sb, block_group);
+			unlock_buffer(bh);
+			ext4_error(sb, "Block bitmap for bg 0 marked "
+				   "uninitialized");
+			put_bh(bh);
+			return NULL;
+		}
+		err = ext4_init_block_bitmap(sb, bh, block_group, desc);
+		set_bitmap_uptodate(bh);
+		set_buffer_uptodate(bh);
+		set_buffer_verified(bh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ext4_unlock_group(sb, block_group);
 		unlock_buffer(bh);
 		if (err)
@@ -555,7 +655,11 @@ static int ext4_has_free_clusters(struct ext4_sb_info *sbi,
 		return 1;
 
 	/* Hm, nope.  Are (enough) root reserved clusters available? */
+<<<<<<< HEAD
 	if (uid_gte(sbi->s_resuid, current_fsuid()) ||
+=======
+	if (uid_eq(sbi->s_resuid, current_fsuid()) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (!gid_eq(sbi->s_resgid, GLOBAL_ROOT_GID) && in_group_p(sbi->s_resgid)) ||
 	    capable(CAP_SYS_RESOURCE) ||
 	    (flags & EXT4_MB_USE_ROOT_BLOCKS)) {

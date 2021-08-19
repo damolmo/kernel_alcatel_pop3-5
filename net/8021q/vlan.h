@@ -109,6 +109,12 @@ int vlan_check_real_dev(struct net_device *real_dev,
 void vlan_setup(struct net_device *dev);
 int register_vlan_dev(struct net_device *dev);
 void unregister_vlan_dev(struct net_device *dev, struct list_head *head);
+<<<<<<< HEAD
+=======
+void vlan_dev_uninit(struct net_device *dev);
+bool vlan_dev_inherit_address(struct net_device *dev,
+			      struct net_device *real_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline u32 vlan_get_ingress_priority(struct net_device *dev,
 					    u16 vlan_tci)

@@ -332,7 +332,12 @@ static void sh_msiof_spi_set_mode_regs(struct sh_msiof_spi_priv *p,
 
 static void sh_msiof_reset_str(struct sh_msiof_spi_priv *p)
 {
+<<<<<<< HEAD
 	sh_msiof_write(p, STR, sh_msiof_read(p, STR));
+=======
+	sh_msiof_write(p, STR,
+		       sh_msiof_read(p, STR) & ~(STR_TDREQ | STR_RDREQ));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void sh_msiof_spi_write_fifo_8(struct sh_msiof_spi_priv *p,
@@ -818,7 +823,11 @@ static int sh_msiof_transfer_one(struct spi_master *master,
 				break;
 			copy32 = copy_bswap32;
 		} else if (bits <= 16) {
+<<<<<<< HEAD
 			if (l & 1)
+=======
+			if (l & 3)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				break;
 			copy32 = copy_wswap32;
 		} else {
@@ -1151,8 +1160,13 @@ static int sh_msiof_spi_probe(struct platform_device *pdev)
 
 	i = platform_get_irq(pdev, 0);
 	if (i < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "cannot get platform IRQ\n");
 		ret = -ENOENT;
+=======
+		dev_err(&pdev->dev, "cannot get IRQ\n");
+		ret = i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto err1;
 	}
 
@@ -1234,6 +1248,33 @@ static struct platform_device_id spi_driver_ids[] = {
 };
 MODULE_DEVICE_TABLE(platform, spi_driver_ids);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sh_msiof_spi_suspend(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct sh_msiof_spi_priv *p = platform_get_drvdata(pdev);
+
+	return spi_master_suspend(p->master);
+}
+
+static int sh_msiof_spi_resume(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct sh_msiof_spi_priv *p = platform_get_drvdata(pdev);
+
+	return spi_master_resume(p->master);
+}
+
+static SIMPLE_DEV_PM_OPS(sh_msiof_spi_pm_ops, sh_msiof_spi_suspend,
+			 sh_msiof_spi_resume);
+#define DEV_PM_OPS	&sh_msiof_spi_pm_ops
+#else
+#define DEV_PM_OPS	NULL
+#endif /* CONFIG_PM_SLEEP */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct platform_driver sh_msiof_spi_drv = {
 	.probe		= sh_msiof_spi_probe,
 	.remove		= sh_msiof_spi_remove,
@@ -1241,6 +1282,10 @@ static struct platform_driver sh_msiof_spi_drv = {
 	.driver		= {
 		.name		= "spi_sh_msiof",
 		.owner		= THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.pm		= DEV_PM_OPS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.of_match_table = of_match_ptr(sh_msiof_match),
 	},
 };

@@ -16,7 +16,10 @@ struct sh_eth_plat_data {
 	unsigned char mac_addr[ETH_ALEN];
 	unsigned no_ether_link:1;
 	unsigned ether_link_active_low:1;
+<<<<<<< HEAD
 	unsigned needs_init:1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #endif

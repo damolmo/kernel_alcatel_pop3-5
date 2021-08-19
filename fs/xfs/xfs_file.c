@@ -1083,7 +1083,11 @@ xfs_find_get_desired_pgoff(
 		unsigned	nr_pages;
 		unsigned int	i;
 
+<<<<<<< HEAD
 		want = min_t(pgoff_t, end - index, PAGEVEC_SIZE);
+=======
+		want = min_t(pgoff_t, end - index, PAGEVEC_SIZE - 1) + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nr_pages = pagevec_lookup(&pvec, inode->i_mapping, index,
 					  want);
 		/*
@@ -1110,6 +1114,7 @@ xfs_find_get_desired_pgoff(
 			break;
 		}
 
+<<<<<<< HEAD
 		/*
 		 * At lease we found one page.  If this is the first time we
 		 * step into the loop, and if the first page index offset is
@@ -1121,6 +1126,8 @@ xfs_find_get_desired_pgoff(
 			break;
 		}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < nr_pages; i++) {
 			struct page	*page = pvec.pages[i];
 			loff_t		b_offset;
@@ -1132,6 +1139,7 @@ xfs_find_get_desired_pgoff(
 			 * file mapping. However, page->index will not change
 			 * because we have a reference on the page.
 			 *
+<<<<<<< HEAD
 			 * Searching done if the page index is out of range.
 			 * If the current offset is not reaches the end of
 			 * the specified search range, there should be a hole
@@ -1144,6 +1152,20 @@ xfs_find_get_desired_pgoff(
 				}
 				goto out;
 			}
+=======
+			 * If current page offset is beyond where we've ended,
+			 * we've found a hole.
+			 */
+			if (type == HOLE_OFF && lastoff < endoff &&
+			    lastoff < page_offset(pvec.pages[i])) {
+				found = true;
+				*offset = lastoff;
+				goto out;
+			}
+			/* Searching done if the page index is out of range. */
+			if (page->index > end)
+				goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			lock_page(page);
 			/*

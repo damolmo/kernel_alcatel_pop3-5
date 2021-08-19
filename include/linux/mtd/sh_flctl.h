@@ -148,6 +148,10 @@ struct sh_flctl {
 	struct platform_device	*pdev;
 	struct dev_pm_qos_request pm_qos;
 	void __iomem		*reg;
+<<<<<<< HEAD
+=======
+	resource_size_t		fifo;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	uint8_t	done_buff[2048 + 64];	/* max size 2048 + 64 */
 	int	read_bytes;

@@ -20,7 +20,10 @@
 
 #include "ion.h"
 #include "compat_ion.h"
+<<<<<<< HEAD
 #include "mtk/ion_drv.h"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* See drivers/staging/android/uapi/ion.h for the definition of these structs */
 struct compat_ion_allocation_data {
@@ -40,6 +43,7 @@ struct compat_ion_handle_data {
 	compat_int_t handle;
 };
 
+<<<<<<< HEAD
 /* ion_custom_ioctl */
 struct compat_ion_sys_cache_sync_param {
 	union {
@@ -129,6 +133,8 @@ struct compat_ion_mm_data {
 	};
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define COMPAT_ION_IOC_ALLOC	_IOWR(ION_IOC_MAGIC, 0, \
 				      struct compat_ion_allocation_data)
 #define COMPAT_ION_IOC_FREE	_IOWR(ION_IOC_MAGIC, 1, \
@@ -136,7 +142,10 @@ struct compat_ion_mm_data {
 #define COMPAT_ION_IOC_CUSTOM	_IOWR(ION_IOC_MAGIC, 6, \
 				      struct compat_ion_custom_data)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int compat_get_ion_allocation_data(
 			struct compat_ion_allocation_data __user *data32,
 			struct ion_allocation_data __user *data)
@@ -196,6 +205,7 @@ static int compat_put_ion_allocation_data(
 	return err;
 }
 
+<<<<<<< HEAD
 static int compat_get_ion_mm_config_buffer_param(
 			struct compat_ion_mm_config_buffer_param __user *data32,
 			struct ion_mm_config_buffer_param __user *data)
@@ -618,6 +628,8 @@ static int compat_put_ion_sys_data(
 	return err;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int compat_get_ion_custom_data(
 			struct compat_ion_custom_data __user *data32,
 			struct ion_custom_data __user *data)
@@ -628,6 +640,7 @@ static int compat_get_ion_custom_data(
 
 	err = get_user(cmd, &data32->cmd);
 	err |= put_user(cmd, &data->cmd);
+<<<<<<< HEAD
 
 	/* err = get_user(arg, &data32->arg); */
 	/* err |= put_user(arg, &data->arg); */
@@ -716,15 +729,27 @@ static int compat_put_ion_custom_data(
 
 	return err;
 }
+=======
+	err |= get_user(arg, &data32->arg);
+	err |= put_user(arg, &data->arg);
+
+	return err;
+};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	long ret;
 
+<<<<<<< HEAD
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl) {
 		IONMSG("compat_ion_ioctl file has no f_op or no f_op->unlocked_ioctl.\n");
 		return -ENOTTY;
 	}
+=======
+	if (!filp->f_op->unlocked_ioctl)
+		return -ENOTTY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (cmd) {
 	case COMPAT_ION_IOC_ALLOC:
@@ -735,6 +760,7 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 		data32 = compat_ptr(arg);
 		data = compat_alloc_user_space(sizeof(*data));
+<<<<<<< HEAD
 		if (data == NULL) {
 			IONMSG("COMPAT_ION_IOC_ALLOC alloc user space fail!.\n");
 			return -EFAULT;
@@ -754,6 +780,17 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		if (err)
 			IONMSG("COMPAT_ION_IOC_ALLOC put ion allocation data fail! err = %d.\n", err);
 
+=======
+		if (data == NULL)
+			return -EFAULT;
+
+		err = compat_get_ion_allocation_data(data32, data);
+		if (err)
+			return err;
+		ret = filp->f_op->unlocked_ioctl(filp, ION_IOC_ALLOC,
+							(unsigned long)data);
+		err = compat_put_ion_allocation_data(data32, data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ret ? ret : err;
 	}
 	case COMPAT_ION_IOC_FREE:
@@ -764,6 +801,7 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 		data32 = compat_ptr(arg);
 		data = compat_alloc_user_space(sizeof(*data));
+<<<<<<< HEAD
 		if (data == NULL) {
 			IONMSG("COMPAT_ION_IOC_FREE alloc user space fail!.\n");
 			return -EFAULT;
@@ -781,6 +819,17 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			IONMSG("COMPAT_ION_IOC_FREE unlocked_ioctl fail! ret = %ld.\n", ret);
 
 		return ret;
+=======
+		if (data == NULL)
+			return -EFAULT;
+
+		err = compat_get_ion_handle_data(data32, data);
+		if (err)
+			return err;
+
+		return filp->f_op->unlocked_ioctl(filp, ION_IOC_FREE,
+							(unsigned long)data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	case COMPAT_ION_IOC_CUSTOM: {
 		struct compat_ion_custom_data __user *data32;
@@ -789,6 +838,7 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 		data32 = compat_ptr(arg);
 		data = compat_alloc_user_space(sizeof(*data));
+<<<<<<< HEAD
 		if (data == NULL) {
 			IONMSG("COMPAT_ION_IOC_CUSTOM alloc user space fail!.\n");
 			return -EFAULT;
@@ -809,6 +859,17 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		if (err)
 			IONMSG("COMPAT_ION_IOC_CUSTOM put ion custom data fail! err = %d.\n", err);
 		return ret ? ret : err;
+=======
+		if (data == NULL)
+			return -EFAULT;
+
+		err = compat_get_ion_custom_data(data32, data);
+		if (err)
+			return err;
+
+		return filp->f_op->unlocked_ioctl(filp, ION_IOC_CUSTOM,
+							(unsigned long)data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	case ION_IOC_SHARE:
 	case ION_IOC_MAP:
@@ -816,9 +877,15 @@ long compat_ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case ION_IOC_SYNC:
 		return filp->f_op->unlocked_ioctl(filp, cmd,
 						(unsigned long)compat_ptr(arg));
+<<<<<<< HEAD
 	default: {
 		IONMSG("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 	}
+=======
+	default:
+		return -ENOIOCTLCMD;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

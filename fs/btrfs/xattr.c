@@ -111,6 +111,11 @@ static int do_setxattr(struct btrfs_trans_handle *trans,
 					name, name_len, -1);
 		if (!di && (flags & XATTR_REPLACE))
 			ret = -ENODATA;
+<<<<<<< HEAD
+=======
+		else if (IS_ERR(di))
+			ret = PTR_ERR(di);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else if (di)
 			ret = btrfs_delete_one_dir_name(trans, root, path, di);
 		goto out;
@@ -127,10 +132,19 @@ static int do_setxattr(struct btrfs_trans_handle *trans,
 		ASSERT(mutex_is_locked(&inode->i_mutex));
 		di = btrfs_lookup_xattr(NULL, root, path, btrfs_ino(inode),
 					name, name_len, 0);
+<<<<<<< HEAD
 		if (!di) {
 			ret = -ENODATA;
 			goto out;
 		}
+=======
+		if (!di)
+			ret = -ENODATA;
+		else if (IS_ERR(di))
+			ret = PTR_ERR(di);
+		if (ret)
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		btrfs_release_path(path);
 		di = NULL;
 	}
@@ -309,8 +323,15 @@ ssize_t btrfs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 		/* check to make sure this item is what we want */
 		if (found_key.objectid != key.objectid)
 			break;
+<<<<<<< HEAD
 		if (found_key.type != BTRFS_XATTR_ITEM_KEY)
 			break;
+=======
+		if (found_key.type > BTRFS_XATTR_ITEM_KEY)
+			break;
+		if (found_key.type < BTRFS_XATTR_ITEM_KEY)
+			goto next;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		di = btrfs_item_ptr(leaf, slot, struct btrfs_dir_item);
 		if (verify_dir_item(root, leaf, di))

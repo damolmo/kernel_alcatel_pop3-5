@@ -245,17 +245,34 @@ struct drm_fb_helper *msm_fbdev_init(struct drm_device *dev)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	drm_fb_helper_single_add_all_connectors(helper);
+=======
+	ret = drm_fb_helper_single_add_all_connectors(helper);
+	if (ret)
+		goto fini;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+<<<<<<< HEAD
 	drm_fb_helper_initial_config(helper, 32);
+=======
+	ret = drm_fb_helper_initial_config(helper, 32);
+	if (ret)
+		goto fini;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv->fbdev = helper;
 
 	return helper;
 
+<<<<<<< HEAD
+=======
+fini:
+	drm_fb_helper_fini(helper);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 fail:
 	kfree(fbdev);
 	return NULL;

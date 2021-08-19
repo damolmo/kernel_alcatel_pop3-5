@@ -499,7 +499,11 @@ xsc3_crval:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", #alloc
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 .macro xsc3_proc_info name:req, cpu_val:req, cpu_mask:req
 	.type	__\name\()_proc_info,#object
@@ -514,7 +518,11 @@ __\name\()_proc_info:
 	.long	PMD_TYPE_SECT | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__xsc3_setup
+=======
+	initfn	__xsc3_setup, __\name\()_proc_info
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

@@ -80,6 +80,10 @@ struct adu_device {
 	char			serial_number[8];
 
 	int			open_count; /* number of times this port has been opened */
+<<<<<<< HEAD
+=======
+	unsigned long		disconnected:1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	char		*read_buffer_primary;
 	int			read_buffer_length;
@@ -121,7 +125,11 @@ static void adu_abort_transfers(struct adu_device *dev)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (dev->udev == NULL)
+=======
+	if (dev->disconnected)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	/* shutdown transfer */
@@ -151,6 +159,10 @@ static void adu_delete(struct adu_device *dev)
 	kfree(dev->read_buffer_secondary);
 	kfree(dev->interrupt_in_buffer);
 	kfree(dev->interrupt_out_buffer);
+<<<<<<< HEAD
+=======
+	usb_put_dev(dev->udev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(dev);
 }
 
@@ -208,6 +220,10 @@ static void adu_interrupt_out_callback(struct urb *urb)
 
 	if (status != 0) {
 		if ((status != -ENOENT) &&
+<<<<<<< HEAD
+=======
+		    (status != -ESHUTDOWN) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    (status != -ECONNRESET)) {
 			dev_dbg(&dev->udev->dev,
 				"%s :nonzero status received: %d\n", __func__,
@@ -244,7 +260,11 @@ static int adu_open(struct inode *inode, struct file *file)
 	}
 
 	dev = usb_get_intfdata(interface);
+<<<<<<< HEAD
 	if (!dev || !dev->udev) {
+=======
+	if (!dev) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = -ENODEV;
 		goto exit_no_device;
 	}
@@ -327,7 +347,11 @@ static int adu_release(struct inode *inode, struct file *file)
 	}
 
 	adu_release_internal(dev);
+<<<<<<< HEAD
 	if (dev->udev == NULL) {
+=======
+	if (dev->disconnected) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* the device was unplugged before the file was released */
 		if (!dev->open_count)	/* ... and we're the last user */
 			adu_delete(dev);
@@ -356,7 +380,11 @@ static ssize_t adu_read(struct file *file, __user char *buffer, size_t count,
 		return -ERESTARTSYS;
 
 	/* verify that the device wasn't unplugged */
+<<<<<<< HEAD
 	if (dev->udev == NULL) {
+=======
+	if (dev->disconnected) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = -ENODEV;
 		pr_err("No device or device unplugged %d\n", retval);
 		goto exit;
@@ -525,7 +553,11 @@ static ssize_t adu_write(struct file *file, const __user char *buffer,
 		goto exit_nolock;
 
 	/* verify that the device wasn't unplugged */
+<<<<<<< HEAD
 	if (dev->udev == NULL) {
+=======
+	if (dev->disconnected) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = -ENODEV;
 		pr_err("No device or device unplugged %d\n", retval);
 		goto exit;
@@ -680,11 +712,19 @@ static int adu_probe(struct usb_interface *interface,
 
 	mutex_init(&dev->mtx);
 	spin_lock_init(&dev->buflock);
+<<<<<<< HEAD
 	dev->udev = udev;
 	init_waitqueue_head(&dev->read_wait);
 	init_waitqueue_head(&dev->write_wait);
 
 	iface_desc = &interface->altsetting[0];
+=======
+	dev->udev = usb_get_dev(udev);
+	init_waitqueue_head(&dev->read_wait);
+	init_waitqueue_head(&dev->write_wait);
+
+	iface_desc = &interface->cur_altsetting[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* set up the endpoint information */
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
@@ -800,6 +840,7 @@ error:
 static void adu_disconnect(struct usb_interface *interface)
 {
 	struct adu_device *dev;
+<<<<<<< HEAD
 	int minor;
 
 	dev = usb_get_intfdata(interface);
@@ -809,10 +850,26 @@ static void adu_disconnect(struct usb_interface *interface)
 	minor = dev->minor;
 	usb_deregister_dev(interface, &adu_class);
 	mutex_unlock(&dev->mtx);
+=======
+
+	dev = usb_get_intfdata(interface);
+
+	usb_deregister_dev(interface, &adu_class);
+
+	usb_poison_urb(dev->interrupt_in_urb);
+	usb_poison_urb(dev->interrupt_out_urb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&adutux_mutex);
 	usb_set_intfdata(interface, NULL);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&dev->mtx);	/* not interruptible */
+	dev->disconnected = 1;
+	mutex_unlock(&dev->mtx);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* if the device is not opened, then we clean up right now */
 	dev_dbg(&dev->udev->dev, "%s : open count %d\n",
 		__func__, dev->open_count);
@@ -820,9 +877,12 @@ static void adu_disconnect(struct usb_interface *interface)
 		adu_delete(dev);
 
 	mutex_unlock(&adutux_mutex);
+<<<<<<< HEAD
 
 	dev_info(&interface->dev, "ADU device adutux%d now disconnected\n",
 		 (minor - ADU_MINOR_BASE));
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* usb specific object needed to register this driver with the usb subsystem */

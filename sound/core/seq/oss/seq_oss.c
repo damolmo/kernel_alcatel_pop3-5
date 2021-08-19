@@ -144,8 +144,11 @@ odev_release(struct inode *inode, struct file *file)
 	if ((dp = file->private_data) == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	snd_seq_oss_drain_write(dp);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&register_mutex);
 	snd_seq_oss_release(dp);
 	mutex_unlock(&register_mutex);
@@ -178,10 +181,26 @@ static long
 odev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct seq_oss_devinfo *dp;
+<<<<<<< HEAD
 	dp = file->private_data;
 	if (snd_BUG_ON(!dp))
 		return -ENXIO;
 	return snd_seq_oss_ioctl(dp, cmd, arg);
+=======
+	long rc;
+
+	dp = file->private_data;
+	if (snd_BUG_ON(!dp))
+		return -ENXIO;
+
+	if (cmd != SNDCTL_SEQ_SYNC &&
+	    mutex_lock_interruptible(&register_mutex))
+		return -ERESTARTSYS;
+	rc = snd_seq_oss_ioctl(dp, cmd, arg);
+	if (cmd != SNDCTL_SEQ_SYNC)
+		mutex_unlock(&register_mutex);
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_COMPAT

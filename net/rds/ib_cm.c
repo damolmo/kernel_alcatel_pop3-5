@@ -298,7 +298,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 		ret = PTR_ERR(ic->i_send_cq);
 		ic->i_send_cq = NULL;
 		rdsdebug("ib_create_cq send failed: %d\n", ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto rds_ibdev_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_recv_cq = ib_create_cq(dev, rds_ib_recv_cq_comp_handler,
@@ -308,19 +312,31 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 		ret = PTR_ERR(ic->i_recv_cq);
 		ic->i_recv_cq = NULL;
 		rdsdebug("ib_create_cq recv failed: %d\n", ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto send_cq_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = ib_req_notify_cq(ic->i_send_cq, IB_CQ_NEXT_COMP);
 	if (ret) {
 		rdsdebug("ib_req_notify_cq send failed: %d\n", ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto recv_cq_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = ib_req_notify_cq(ic->i_recv_cq, IB_CQ_SOLICITED);
 	if (ret) {
 		rdsdebug("ib_req_notify_cq recv failed: %d\n", ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto recv_cq_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* XXX negotiate max send/recv with remote? */
@@ -344,7 +360,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	ret = rdma_create_qp(ic->i_cm_id, ic->i_pd, &attr);
 	if (ret) {
 		rdsdebug("rdma_create_qp failed: %d\n", ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		goto recv_cq_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_send_hdrs = ib_dma_alloc_coherent(dev,
@@ -354,7 +374,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!ic->i_send_hdrs) {
 		ret = -ENOMEM;
 		rdsdebug("ib_dma_alloc_coherent send failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto qp_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_recv_hdrs = ib_dma_alloc_coherent(dev,
@@ -364,7 +388,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!ic->i_recv_hdrs) {
 		ret = -ENOMEM;
 		rdsdebug("ib_dma_alloc_coherent recv failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto send_hdrs_dma_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_ack = ib_dma_alloc_coherent(dev, sizeof(struct rds_header),
@@ -372,7 +400,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!ic->i_ack) {
 		ret = -ENOMEM;
 		rdsdebug("ib_dma_alloc_coherent ack failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto recv_hdrs_dma_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_sends = vzalloc_node(ic->i_send_ring.w_nr * sizeof(struct rds_ib_send_work),
@@ -380,7 +412,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!ic->i_sends) {
 		ret = -ENOMEM;
 		rdsdebug("send allocation failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto ack_dma_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ic->i_recvs = vzalloc_node(ic->i_recv_ring.w_nr * sizeof(struct rds_ib_recv_work),
@@ -388,7 +424,11 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	if (!ic->i_recvs) {
 		ret = -ENOMEM;
 		rdsdebug("recv allocation failed\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		goto sends_out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	rds_ib_recv_init_ack(ic);
@@ -396,8 +436,39 @@ static int rds_ib_setup_qp(struct rds_connection *conn)
 	rdsdebug("conn %p pd %p mr %p cq %p %p\n", conn, ic->i_pd, ic->i_mr,
 		 ic->i_send_cq, ic->i_recv_cq);
 
+<<<<<<< HEAD
 out:
 	rds_ib_dev_put(rds_ibdev);
+=======
+	goto out;
+
+sends_out:
+	vfree(ic->i_sends);
+ack_dma_out:
+	ib_dma_free_coherent(dev, sizeof(struct rds_header),
+			     ic->i_ack, ic->i_ack_dma);
+recv_hdrs_dma_out:
+	ib_dma_free_coherent(dev, ic->i_recv_ring.w_nr *
+					sizeof(struct rds_header),
+					ic->i_recv_hdrs, ic->i_recv_hdrs_dma);
+send_hdrs_dma_out:
+	ib_dma_free_coherent(dev, ic->i_send_ring.w_nr *
+					sizeof(struct rds_header),
+					ic->i_send_hdrs, ic->i_send_hdrs_dma);
+qp_out:
+	rdma_destroy_qp(ic->i_cm_id);
+recv_cq_out:
+	if (!ib_destroy_cq(ic->i_recv_cq))
+		ic->i_recv_cq = NULL;
+send_cq_out:
+	if (!ib_destroy_cq(ic->i_send_cq))
+		ic->i_send_cq = NULL;
+rds_ibdev_out:
+	rds_ib_remove_conn(rds_ibdev, conn);
+out:
+	rds_ib_dev_put(rds_ibdev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

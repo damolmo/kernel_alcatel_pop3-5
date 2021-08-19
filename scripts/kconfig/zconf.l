@@ -180,6 +180,11 @@ n	[A-Za-z0-9_]
 	}
 	<<EOF>>	{
 		BEGIN(INITIAL);
+<<<<<<< HEAD
+=======
+		yylval.string = text;
+		return T_WORD_QUOTE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

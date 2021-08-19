@@ -12,7 +12,10 @@
 #include <linux/suspend.h>
 #include <linux/syscalls.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/string.h>
 #include <linux/device.h>
 #include <linux/miscdevice.h>
@@ -44,12 +47,19 @@ static struct snapshot_data {
 } snapshot_state;
 
 atomic_t snapshot_device_available = ATOMIC_INIT(1);
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(snapshot_device_available);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int snapshot_open(struct inode *inode, struct file *filp)
 {
 	struct snapshot_data *data;
+<<<<<<< HEAD
 	int error;
+=======
+	int error, nr_calls = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!hibernation_available())
 		return -EPERM;
@@ -76,9 +86,15 @@ static int snapshot_open(struct inode *inode, struct file *filp)
 			swap_type_of(swsusp_resume_device, 0, NULL) : -1;
 		data->mode = O_RDONLY;
 		data->free_bitmaps = false;
+<<<<<<< HEAD
 		error = pm_notifier_call_chain(PM_HIBERNATION_PREPARE);
 		if (error)
 			pm_notifier_call_chain(PM_POST_HIBERNATION);
+=======
+		error = __pm_notifier_call_chain(PM_HIBERNATION_PREPARE, -1, &nr_calls);
+		if (error)
+			__pm_notifier_call_chain(PM_POST_HIBERNATION, --nr_calls, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		/*
 		 * Resuming.  We may need to wait for the image device to
@@ -88,6 +104,7 @@ static int snapshot_open(struct inode *inode, struct file *filp)
 
 		data->swap = -1;
 		data->mode = O_WRONLY;
+<<<<<<< HEAD
 		error = pm_notifier_call_chain(PM_RESTORE_PREPARE);
 		if (!error) {
 			error = create_basic_memory_bitmaps();
@@ -95,6 +112,17 @@ static int snapshot_open(struct inode *inode, struct file *filp)
 		}
 		if (error)
 			pm_notifier_call_chain(PM_POST_RESTORE);
+=======
+		error = __pm_notifier_call_chain(PM_RESTORE_PREPARE, -1, &nr_calls);
+		if (!error) {
+			error = create_basic_memory_bitmaps();
+			data->free_bitmaps = !error;
+		} else
+			nr_calls--;
+
+		if (error)
+			__pm_notifier_call_chain(PM_POST_RESTORE, nr_calls, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (error)
 		atomic_inc(&snapshot_device_available);
@@ -186,6 +214,14 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
 		res = PAGE_SIZE - pg_offp;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!data_of(data->handle)) {
+		res = -EINVAL;
+		goto unlock;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	res = simple_write_to_buffer(data_of(data->handle), res, &pg_offp,
 			buf, count);
 	if (res > 0)

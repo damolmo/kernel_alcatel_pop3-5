@@ -305,11 +305,23 @@ static void macvlan_process_broadcast(struct work_struct *w)
 
 		rcu_read_unlock();
 
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+		if (src)
+			dev_put(src->dev);
+		kfree_skb(skb);
+
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
 static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+<<<<<<< HEAD
+=======
+				      const struct macvlan_dev *src,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				      struct sk_buff *skb)
 {
 	struct sk_buff *nskb;
@@ -319,17 +331,34 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
 	if (!nskb)
 		goto err;
 
+<<<<<<< HEAD
 	spin_lock(&port->bc_queue.lock);
 	if (skb_queue_len(&port->bc_queue) < MACVLAN_BC_QUEUE_LEN) {
+=======
+	MACVLAN_SKB_CB(nskb)->src = src;
+
+	spin_lock(&port->bc_queue.lock);
+	if (skb_queue_len(&port->bc_queue) < MACVLAN_BC_QUEUE_LEN) {
+		if (src)
+			dev_hold(src->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__skb_queue_tail(&port->bc_queue, nskb);
 		err = 0;
 	}
 	spin_unlock(&port->bc_queue.lock);
 
+<<<<<<< HEAD
 	if (err)
 		goto free_nskb;
 
 	schedule_work(&port->bc_work);
+=======
+	schedule_work(&port->bc_work);
+
+	if (err)
+		goto free_nskb;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return;
 
 free_nskb:
@@ -410,6 +439,13 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 	int ret;
 	rx_handler_result_t handle_res;
 
+<<<<<<< HEAD
+=======
+	/* Packets from dev_loopback_xmit() do not have L2 header, bail out */
+	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))
+		return RX_HANDLER_PASS;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	port = macvlan_port_get_rcu(skb->dev);
 	if (is_multicast_ether_addr(eth->h_dest)) {
 		skb = ip_check_defrag(skb, IP_DEFRAG_MACVLAN);
@@ -428,8 +464,12 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 			goto out;
 		}
 
+<<<<<<< HEAD
 		MACVLAN_SKB_CB(skb)->src = src;
 		macvlan_broadcast_enqueue(port, skb);
+=======
+		macvlan_broadcast_enqueue(port, src, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		return RX_HANDLER_PASS;
 	}
@@ -440,7 +480,11 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 					      struct macvlan_dev, list);
 	else
 		vlan = macvlan_hash_lookup(port, eth->h_dest);
+<<<<<<< HEAD
 	if (vlan == NULL)
+=======
+	if (!vlan || vlan->mode == MACVLAN_MODE_SOURCE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return RX_HANDLER_PASS;
 
 	dev = vlan->dev;
@@ -473,10 +517,18 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 	const struct macvlan_dev *dest;
 
 	if (vlan->mode == MACVLAN_MODE_BRIDGE) {
+<<<<<<< HEAD
 		const struct ethhdr *eth = (void *)skb->data;
 
 		/* send to other bridge ports directly */
 		if (is_multicast_ether_addr(eth->h_dest)) {
+=======
+		const struct ethhdr *eth = skb_eth_hdr(skb);
+
+		/* send to other bridge ports directly */
+		if (is_multicast_ether_addr(eth->h_dest)) {
+			skb_reset_mac_header(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			macvlan_broadcast(skb, port, dev, MACVLAN_MODE_BRIDGE);
 			goto xmit_world;
 		}
@@ -1081,6 +1133,10 @@ static int macvlan_port_create(struct net_device *dev)
 static void macvlan_port_destroy(struct net_device *dev)
 {
 	struct macvlan_port *port = macvlan_port_get_rtnl(dev);
+<<<<<<< HEAD
+=======
+	struct sk_buff *skb;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev->priv_flags &= ~IFF_MACVLAN_PORT;
 	netdev_rx_handler_unregister(dev);
@@ -1089,7 +1145,19 @@ static void macvlan_port_destroy(struct net_device *dev)
 	 * but we need to cancel it and purge left skbs if any.
 	 */
 	cancel_work_sync(&port->bc_work);
+<<<<<<< HEAD
 	__skb_queue_purge(&port->bc_queue);
+=======
+
+	while ((skb = __skb_dequeue(&port->bc_queue))) {
+		const struct macvlan_dev *src = MACVLAN_SKB_CB(skb)->src;
+
+		if (src)
+			dev_put(src->dev);
+
+		kfree_skb(skb);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree_rcu(port, rcu);
 }
@@ -1513,7 +1581,11 @@ static int macvlan_device_event(struct notifier_block *unused,
 						struct macvlan_dev,
 						list);
 
+<<<<<<< HEAD
 		if (macvlan_sync_address(vlan->dev, dev->dev_addr))
+=======
+		if (vlan && macvlan_sync_address(vlan->dev, dev->dev_addr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return NOTIFY_BAD;
 
 		break;

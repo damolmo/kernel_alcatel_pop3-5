@@ -7,6 +7,10 @@
  * Copyright (C) 1996, Linus Torvalds
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/machvec.h>
 #include <asm/compiler.h>
 #include <asm-generic/mm_hooks.h>

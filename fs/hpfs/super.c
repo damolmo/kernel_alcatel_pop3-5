@@ -15,6 +15,10 @@
 #include <linux/sched.h>
 #include <linux/bitmap.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/seq_file.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Mark the filesystem dirty, so that chkdsk checks it when os/2 booted */
 
@@ -52,6 +56,7 @@ static void unmark_dirty(struct super_block *s)
 }
 
 /* Filesystem error... */
+<<<<<<< HEAD
 static char err_buf[1024];
 
 void hpfs_error(struct super_block *s, const char *fmt, ...)
@@ -63,6 +68,22 @@ void hpfs_error(struct super_block *s, const char *fmt, ...)
 	va_end(args);
 
 	pr_err("filesystem error: %s", err_buf);
+=======
+void hpfs_error(struct super_block *s, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	pr_err("filesystem error: %pV", &vaf);
+
+	va_end(args);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!hpfs_sb(s)->sb_was_error) {
 		if (hpfs_sb(s)->sb_err == 2) {
 			pr_cont("; crashing the system because you wanted it\n");
@@ -423,8 +444,12 @@ static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 	int lowercase, eas, chk, errs, chkdsk, timeshift;
 	int o;
 	struct hpfs_sb_info *sbi = hpfs_sb(s);
+<<<<<<< HEAD
 	char *new_opts = kstrdup(data, GFP_KERNEL);
 	
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sync_filesystem(s);
 
 	*flags |= MS_NOATIME;
@@ -460,17 +485,56 @@ static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 
 	if (!(*flags & MS_RDONLY)) mark_dirty(s, 1);
 
+<<<<<<< HEAD
 	replace_mount_options(s, new_opts);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hpfs_unlock(s);
 	return 0;
 
 out_err:
 	hpfs_unlock(s);
+<<<<<<< HEAD
 	kfree(new_opts);
 	return -EINVAL;
 }
 
+=======
+	return -EINVAL;
+}
+
+static int hpfs_show_options(struct seq_file *seq, struct dentry *root)
+{
+	struct hpfs_sb_info *sbi = hpfs_sb(root->d_sb);
+
+	seq_printf(seq, ",uid=%u", from_kuid_munged(&init_user_ns, sbi->sb_uid));
+	seq_printf(seq, ",gid=%u", from_kgid_munged(&init_user_ns, sbi->sb_gid));
+	seq_printf(seq, ",umask=%03o", (~sbi->sb_mode & 0777));
+	if (sbi->sb_lowercase)
+		seq_printf(seq, ",case=lower");
+	if (!sbi->sb_chk)
+		seq_printf(seq, ",check=none");
+	if (sbi->sb_chk == 2)
+		seq_printf(seq, ",check=strict");
+	if (!sbi->sb_err)
+		seq_printf(seq, ",errors=continue");
+	if (sbi->sb_err == 2)
+		seq_printf(seq, ",errors=panic");
+	if (!sbi->sb_chkdsk)
+		seq_printf(seq, ",chkdsk=no");
+	if (sbi->sb_chkdsk == 2)
+		seq_printf(seq, ",chkdsk=always");
+	if (!sbi->sb_eas)
+		seq_printf(seq, ",eas=no");
+	if (sbi->sb_eas == 1)
+		seq_printf(seq, ",eas=ro");
+	if (sbi->sb_timeshift)
+		seq_printf(seq, ",timeshift=%d", sbi->sb_timeshift);
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Super operations */
 
 static const struct super_operations hpfs_sops =
@@ -481,7 +545,11 @@ static const struct super_operations hpfs_sops =
 	.put_super	= hpfs_put_super,
 	.statfs		= hpfs_statfs,
 	.remount_fs	= hpfs_remount_fs,
+<<<<<<< HEAD
 	.show_options	= generic_show_options,
+=======
+	.show_options	= hpfs_show_options,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static int hpfs_fill_super(struct super_block *s, void *options, int silent)
@@ -504,8 +572,11 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 
 	int o;
 
+<<<<<<< HEAD
 	save_mount_options(s, options);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
 	if (!sbi) {
 		return -ENOMEM;

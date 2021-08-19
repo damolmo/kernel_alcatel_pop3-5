@@ -40,6 +40,12 @@
 /* No upper/lower limit requirement */
 #define THERMAL_NO_LIMIT	THERMAL_CSTATE_INVALID
 
+<<<<<<< HEAD
+=======
+/* use value, which < 0K, to indicate an invalid/uninitialized temperature */
+#define THERMAL_TEMP_INVALID	-274000
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Unit conversion macros */
 #define KELVIN_TO_CELSIUS(t)	(long)(((long)t-2732 >= 0) ?	\
 				((long)t-2732+5)/10 : ((long)t-2732-5)/10)
@@ -61,8 +67,11 @@
 #define DEFAULT_THERMAL_GOVERNOR       "fair_share"
 #elif defined(CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE)
 #define DEFAULT_THERMAL_GOVERNOR       "user_space"
+<<<<<<< HEAD
 #elif defined(CONFIG_THERMAL_DEFAULT_GOV_BACKWARD_COMPATIBLE)
 #define DEFAULT_THERMAL_GOVERNOR       "backward_compatible"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 struct thermal_zone_device;
@@ -174,6 +183,10 @@ struct thermal_attr {
  * @trip_hyst_attrs:	attributes for trip points for sysfs: trip hysteresis
  * @devdata:	private pointer for device private data
  * @trips:	number of trip points the thermal zone supports
+<<<<<<< HEAD
+=======
+ * @trips_disabled;	bitmap for disabled trips
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @passive_delay:	number of milliseconds to wait between polls when
  *			performing passive cooling.  Currenty only used by the
  *			step-wise governor
@@ -190,6 +203,10 @@ struct thermal_attr {
  * @forced_passive:	If > 0, temperature at which to switch on all ACPI
  *			processor cooling devices.  Currently only used by the
  *			step-wise governor.
+<<<<<<< HEAD
+=======
+ * @need_update:	if equals 1, thermal_zone_device_update needs to be invoked.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @ops:	operations this &thermal_zone_device supports
  * @tzp:	thermal zone parameters
  * @governor:	pointer to the governor for this thermal zone
@@ -209,6 +226,10 @@ struct thermal_zone_device {
 	struct thermal_attr *trip_hyst_attrs;
 	void *devdata;
 	int trips;
+<<<<<<< HEAD
+=======
+	unsigned long trips_disabled;	/* bitmap for disabled trips */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int passive_delay;
 	int polling_delay;
 	int temperature;
@@ -216,6 +237,10 @@ struct thermal_zone_device {
 	int emul_temperature;
 	int passive;
 	unsigned int forced_passive;
+<<<<<<< HEAD
+=======
+	atomic_t need_update;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct thermal_zone_device_ops *ops;
 	const struct thermal_zone_params *tzp;
 	struct thermal_governor *governor;

@@ -722,6 +722,10 @@ xfs_bmbt_write_verify(
 }
 
 const struct xfs_buf_ops xfs_bmbt_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_bmbt",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_bmbt_read_verify,
 	.verify_write = xfs_bmbt_write_verify,
 };

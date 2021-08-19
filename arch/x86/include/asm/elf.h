@@ -203,6 +203,10 @@ void set_personality_ia32(bool);
 
 #define ELF_CORE_COPY_REGS(pr_reg, regs)			\
 do {								\
+<<<<<<< HEAD
+=======
+	unsigned long base;					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned v;						\
 	(pr_reg)[0] = (regs)->r15;				\
 	(pr_reg)[1] = (regs)->r14;				\
@@ -225,8 +229,13 @@ do {								\
 	(pr_reg)[18] = (regs)->flags;				\
 	(pr_reg)[19] = (regs)->sp;				\
 	(pr_reg)[20] = (regs)->ss;				\
+<<<<<<< HEAD
 	(pr_reg)[21] = current->thread.fs;			\
 	(pr_reg)[22] = current->thread.gs;			\
+=======
+	rdmsrl(MSR_FS_BASE, base); (pr_reg)[21] = base;		\
+	rdmsrl(MSR_KERNEL_GS_BASE, base); (pr_reg)[22] = base;	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	asm("movl %%ds,%0" : "=r" (v)); (pr_reg)[23] = v;	\
 	asm("movl %%es,%0" : "=r" (v)); (pr_reg)[24] = v;	\
 	asm("movl %%fs,%0" : "=r" (v)); (pr_reg)[25] = v;	\
@@ -244,12 +253,22 @@ extern int force_personality32;
 #define CORE_DUMP_USE_REGSET
 #define ELF_EXEC_PAGESIZE	4096
 
+<<<<<<< HEAD
 /* This is the location that an ET_DYN program is loaded if exec'ed.  Typical
    use of this is to invoke "./ld.so someprog" to test out a new version of
    the loader.  We need to make sure that it is out of the way of the program
    that it will "exec", and that there is sufficient room for the brk.  */
 
 #define ELF_ET_DYN_BASE		(TASK_SIZE / 3 * 2)
+=======
+/*
+ * This is the base location for PIE (ET_DYN with INTERP) loads. On
+ * 64-bit, this is above 4GB to leave the entire 32-bit address
+ * space open for things that want to use the area for 32-bit pointers.
+ */
+#define ELF_ET_DYN_BASE		(mmap_is_ia32() ? 0x000400000UL : \
+						  (TASK_SIZE / 3 * 2))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* This yields a mask that user programs can use to figure out what
    instruction set this CPU supports.  This could be done in user space,
@@ -277,7 +296,11 @@ struct task_struct;
 
 #define	ARCH_DLINFO_IA32						\
 do {									\
+<<<<<<< HEAD
 	if (vdso32_enabled) {						\
+=======
+	if (VDSO_CURRENT_BASE) {					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		NEW_AUX_ENT(AT_SYSINFO,	VDSO_ENTRY);			\
 		NEW_AUX_ENT(AT_SYSINFO_EHDR, VDSO_CURRENT_BASE);	\
 	}								\

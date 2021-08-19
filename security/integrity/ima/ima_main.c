@@ -16,6 +16,12 @@
  *	implements the IMA hooks: ima_bprm_check, ima_file_mmap,
  *	and ima_file_check.
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/binfmts.h>
@@ -52,6 +58,11 @@ static int __init hash_setup(char *str)
 			ima_hash_algo = HASH_ALGO_SHA1;
 		else if (strncmp(str, "md5", 3) == 0)
 			ima_hash_algo = HASH_ALGO_MD5;
+<<<<<<< HEAD
+=======
+		else
+			return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -61,6 +72,11 @@ static int __init hash_setup(char *str)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (i == HASH_ALGO__LAST)
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	hash_setup_done = 1;
 	return 1;
@@ -347,6 +363,19 @@ static int __init init_ima(void)
 
 	hash_setup(CONFIG_IMA_DEFAULT_HASH);
 	error = ima_init();
+<<<<<<< HEAD
+=======
+
+	if (error && strcmp(hash_algo_name[ima_hash_algo],
+			    CONFIG_IMA_DEFAULT_HASH) != 0) {
+		pr_info("Allocating %s failed, going to use default hash algorithm %s\n",
+			hash_algo_name[ima_hash_algo], CONFIG_IMA_DEFAULT_HASH);
+		hash_setup_done = 0;
+		hash_setup(CONFIG_IMA_DEFAULT_HASH);
+		error = ima_init();
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!error) {
 		ima_initialized = 1;
 		ima_update_policy_flag();

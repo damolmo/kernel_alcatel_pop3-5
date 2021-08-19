@@ -302,7 +302,10 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			advance = 0;
 			printk(KERN_ERR "Couldn't emulate instruction 0x%08x "
 			       "(op %d xop %d)\n", inst, get_op(inst), get_xop(inst));
+<<<<<<< HEAD
 			kvmppc_core_queue_program(vcpu, 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 

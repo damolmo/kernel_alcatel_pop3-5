@@ -59,9 +59,21 @@ void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
 	u32 *d = dst;
 	const volatile u32 __iomem *s = src;
 
+<<<<<<< HEAD
 	/* size_t is unsigned, if (count%4 != 0) it will wrap */
 	for (count += 4; count > 4; count -= 4)
 		*d++ = __raw_readl(s++);
+=======
+	for (; count >= 4; count -= 4)
+		*d++ = __raw_readl(s++);
+
+	if (unlikely(count)) {
+		/* count can be 1..3 */
+		u32 tmp = __raw_readl(s);
+
+		memcpy(d, &tmp, count);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
@@ -70,8 +82,21 @@ void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
 	volatile u32 __iomem *d = dst;
 	const u32 *s = src;
 
+<<<<<<< HEAD
 	for (count += 4; count > 4; count -= 4)
 		__raw_writel(*s++, d++);
+=======
+	for (; count >= 4; count -= 4)
+		__raw_writel(*s++, d++);
+
+	if (unlikely(count)) {
+		/* count can be 1..3 */
+		u32 tmp = 0;
+
+		memcpy(&tmp, s, count);
+		__raw_writel(tmp, d);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void wil_disconnect_cid(struct wil6210_priv *wil, int cid)
@@ -240,11 +265,22 @@ static void wil_fw_error_worker(struct work_struct *work)
 
 	wil->last_fw_recovery = jiffies;
 
+<<<<<<< HEAD
+=======
+	wil_info(wil, "fw error recovery requested (try %d)...\n",
+		 wil->recovery_count);
+	if (!no_fw_recovery)
+		wil->recovery_state = fw_recovery_running;
+	if (wil_wait_for_recovery(wil) != 0)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&wil->mutex);
 	switch (wdev->iftype) {
 	case NL80211_IFTYPE_STATION:
 	case NL80211_IFTYPE_P2P_CLIENT:
 	case NL80211_IFTYPE_MONITOR:
+<<<<<<< HEAD
 		wil_info(wil, "fw error recovery requested (try %d)...\n",
 			 wil->recovery_count);
 		if (!no_fw_recovery)
@@ -252,6 +288,9 @@ static void wil_fw_error_worker(struct work_struct *work)
 		if (0 != wil_wait_for_recovery(wil))
 			break;
 
+=======
+		/* silent recovery, upper layers will see disconnect */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__wil_down(wil);
 		__wil_up(wil);
 		break;
@@ -507,7 +546,11 @@ void wil_mbox_ring_le2cpus(struct wil6210_mbox_ring *r)
 
 static int wil_wait_for_fw_ready(struct wil6210_priv *wil)
 {
+<<<<<<< HEAD
 	ulong to = msecs_to_jiffies(1000);
+=======
+	ulong to = msecs_to_jiffies(2000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ulong left = wait_for_completion_timeout(&wil->wmi_ready, to);
 
 	if (0 == left) {

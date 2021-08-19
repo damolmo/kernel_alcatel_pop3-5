@@ -32,6 +32,15 @@ static const struct i2c_device_id isp1301_id[] = {
 	{ }
 };
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id isp1301_of_match[] = {
+	{.compatible = "nxp,isp1301" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, isp1301_of_match);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct i2c_client *isp1301_i2c_client;
 
 static int __isp1301_write(struct isp1301 *isp, u8 reg, u8 value, u8 clear)
@@ -129,6 +138,10 @@ static int isp1301_remove(struct i2c_client *client)
 static struct i2c_driver isp1301_driver = {
 	.driver = {
 		.name = DRV_NAME,
+<<<<<<< HEAD
+=======
+		.of_match_table = of_match_ptr(isp1301_of_match),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	.probe = isp1301_probe,
 	.remove = isp1301_remove,

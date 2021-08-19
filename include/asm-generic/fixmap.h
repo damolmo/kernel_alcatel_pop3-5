@@ -67,12 +67,21 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 #endif
 
 /* Return a pointer with offset calculated */
+<<<<<<< HEAD
 #define __set_fixmap_offset(idx, phys, flags)		      \
 ({							      \
 	unsigned long addr;				      \
 	__set_fixmap(idx, phys, flags);			      \
 	addr = fix_to_virt(idx) + ((phys) & (PAGE_SIZE - 1)); \
 	addr;						      \
+=======
+#define __set_fixmap_offset(idx, phys, flags)				\
+({									\
+	unsigned long ________addr;					\
+	__set_fixmap(idx, phys, flags);					\
+	________addr = fix_to_virt(idx) + ((phys) & (PAGE_SIZE - 1));	\
+	________addr;							\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 })
 
 #define set_fixmap_offset(idx, phys) \

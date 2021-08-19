@@ -544,7 +544,11 @@ static int rxrpc_send_data(struct kiocb *iocb,
 	/* this should be in poll */
 	clear_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
 
+<<<<<<< HEAD
 	if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))
+=======
+	if (sk->sk_shutdown & SEND_SHUTDOWN)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPIPE;
 
 	iov = msg->msg_iov;

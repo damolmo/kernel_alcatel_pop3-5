@@ -21,7 +21,11 @@ config ARM64
 	select DCACHE_WORD_ACCESS
 	select GENERIC_ALLOCATOR
 	select GENERIC_CLOCKEVENTS
+<<<<<<< HEAD
 	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
+=======
+	select GENERIC_CLOCKEVENTS_BROADCAST
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select GENERIC_CPU_AUTOPROBE
 	select GENERIC_EARLY_IOREMAP
 	select GENERIC_IOMAP
@@ -35,8 +39,16 @@ config ARM64
 	select HANDLE_DOMAIN_IRQ
 	select HARDIRQS_SW_RESEND
 	select HAVE_ARCH_AUDITSYSCALL
+<<<<<<< HEAD
 	select HAVE_ARCH_JUMP_LABEL
 	select HAVE_ARCH_KGDB
+=======
+	select HAVE_ARCH_HARDENED_USERCOPY
+	select HAVE_ARCH_JUMP_LABEL
+	select HAVE_ARCH_KGDB
+	select HAVE_ARCH_MMAP_RND_BITS
+	select HAVE_ARCH_MMAP_RND_COMPAT_BITS if COMPAT
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select HAVE_ARCH_SECCOMP_FILTER
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_BPF_JIT
@@ -70,11 +82,17 @@ config ARM64
 	select PERF_USE_VMALLOC
 	select POWER_RESET
 	select POWER_SUPPLY
+<<<<<<< HEAD
 	select RTC_LIB
 	select SPARSE_IRQ
 	select SYSCTL_EXCEPTION_TRACE
 	select HAVE_CONTEXT_TRACKING
 	select DT_IDLE_STATES
+=======
+	select SPARSE_IRQ
+	select SYSCTL_EXCEPTION_TRACE
+	select HAVE_CONTEXT_TRACKING
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  ARM 64-bit (AArch64) Linux support.
 
@@ -87,12 +105,56 @@ config ARCH_PHYS_ADDR_T_64BIT
 config MMU
 	def_bool y
 
+<<<<<<< HEAD
 config NO_IOPORT_MAP
 	def_bool y if !PCI
 
 config STACKTRACE_SUPPORT
 	def_bool y
 
+=======
+config ARCH_MMAP_RND_BITS_MIN
+       default 14 if ARM64_64K_PAGES
+       default 16 if ARM64_16K_PAGES
+       default 18
+
+# max bits determined by the following formula:
+#  VA_BITS - PAGE_SHIFT - 3
+config ARCH_MMAP_RND_BITS_MAX
+       default 19 if ARM64_VA_BITS=36
+       default 24 if ARM64_VA_BITS=39
+       default 27 if ARM64_VA_BITS=42
+       default 30 if ARM64_VA_BITS=47
+       default 29 if ARM64_VA_BITS=48 && ARM64_64K_PAGES
+       default 31 if ARM64_VA_BITS=48 && ARM64_16K_PAGES
+       default 33 if ARM64_VA_BITS=48
+       default 14 if ARM64_64K_PAGES
+       default 16 if ARM64_16K_PAGES
+       default 18
+
+config ARCH_MMAP_RND_COMPAT_BITS_MIN
+       default 7 if ARM64_64K_PAGES
+       default 9 if ARM64_16K_PAGES
+       default 11
+
+config ARCH_MMAP_RND_COMPAT_BITS_MAX
+       default 16
+
+config NO_IOPORT_MAP
+	def_bool y if !PCI
+
+config ILLEGAL_POINTER_VALUE
+	hex
+	default 0xdead000000000000
+
+config STACKTRACE_SUPPORT
+	def_bool y
+
+config ILLEGAL_POINTER_VALUE
+	hex
+	default 0xdead000000000000
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config LOCKDEP_SUPPORT
 	def_bool y
 
@@ -106,7 +168,11 @@ config GENERIC_HWEIGHT
 	def_bool y
 
 config GENERIC_CSUM
+<<<<<<< HEAD
 	def_bool y
+=======
+        def_bool y
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config GENERIC_CALIBRATE_DELAY
 	def_bool y
@@ -126,6 +192,12 @@ config NEED_DMA_MAP_STATE
 config NEED_SG_DMA_LENGTH
 	def_bool y
 
+<<<<<<< HEAD
+=======
+config SMP
+	def_bool y
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config SWIOTLB
 	def_bool y
 
@@ -138,6 +210,7 @@ config KERNEL_MODE_NEON
 config FIX_EARLYCON_MEM
 	def_bool y
 
+<<<<<<< HEAD
 config ARM64_ERRATUM_836870
 	bool "Cortex-A53: 836870: Non-allocating reads might prevent a store exclusive from passing"
 	depends on ARM64
@@ -178,6 +251,14 @@ config ARM64_ERRATUM_845719
 	  the kernel if an affected CPU is detected.
 
 	  If unsure, say Y.
+=======
+config PGTABLE_LEVELS
+	int
+	default 2 if ARM64_64K_PAGES && ARM64_VA_BITS_42
+	default 3 if ARM64_64K_PAGES && ARM64_VA_BITS_48
+	default 3 if ARM64_4K_PAGES && ARM64_VA_BITS_39
+	default 4 if ARM64_4K_PAGES && ARM64_VA_BITS_48
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 source "init/Kconfig"
 
@@ -200,6 +281,7 @@ config ARCH_VEXPRESS
 	  This enables support for the ARMv8 software model (Versatile
 	  Express).
 
+<<<<<<< HEAD
 config ARCH_MEDIATEK
 	bool
 	select GENERIC_TIME
@@ -408,6 +490,8 @@ config ARCH_MT6735M
 	  Support for k35mv1_64_op01
 	  Support for k35mv1_64_op02
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config ARCH_XGENE
 	bool "AppliedMicro X-Gene SOC Family"
 	help
@@ -415,8 +499,11 @@ config ARCH_XGENE
 
 endmenu
 
+<<<<<<< HEAD
 source "drivers/misc/mediatek/mach/Kconfig"
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 menu "Bus support"
 
 config ARM_AMBA
@@ -625,6 +712,7 @@ config ARM64_VA_BITS
 	default 42 if ARM64_VA_BITS_42
 	default 48 if ARM64_VA_BITS_48
 
+<<<<<<< HEAD
 config ARM64_PGTABLE_LEVELS
 	int
 	default 2 if ARM64_64K_PAGES && ARM64_VA_BITS_42
@@ -653,6 +741,15 @@ config SMP
 config SCHED_MC
 	bool "Multi-core scheduler support"
 	depends on SMP
+=======
+config CPU_BIG_ENDIAN
+       bool "Build big-endian kernel"
+       help
+         Say Y if you plan on running a kernel in big-endian mode.
+
+config SCHED_MC
+	bool "Multi-core scheduler support"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Multi-core scheduler support improves the CPU scheduler's decision
 	  making when dealing with multi-core CPU chips at a cost of slightly
@@ -660,7 +757,10 @@ config SCHED_MC
 
 config SCHED_SMT
 	bool "SMT scheduler support"
+<<<<<<< HEAD
 	depends on SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Improves the CPU scheduler's decision making when dealing with
 	  MultiThreading at a cost of slightly increased overhead in some
@@ -668,14 +768,20 @@ config SCHED_SMT
 
 config NR_CPUS
 	int "Maximum number of CPUs (2-64)"
+<<<<<<< HEAD
 	range 2 64
 	depends on SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	# These have to remain sorted largest to smallest
 	default "64"
 
 config HOTPLUG_CPU
 	bool "Support for hot-pluggable CPUs"
+<<<<<<< HEAD
 	depends on SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Say Y here to experiment with turning CPUs off and on.  CPUs
 	  can be controlled through /sys/devices/system/cpu.
@@ -756,6 +862,21 @@ config FORCE_MAX_ZONEORDER
 	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
 	default "11"
 
+<<<<<<< HEAD
+=======
+config UNMAP_KERNEL_AT_EL0
+	bool "Unmap kernel when running in userspace (aka \"KAISER\")" if EXPERT
+	default y
+	help
+	  Speculation attacks against some high-performance processors can
+	  be used to bypass MMU permission checks and leak kernel data to
+	  userspace. This can be defended against by unmapping the kernel
+	  when running in userspace, mapping it back in on exception entry
+	  via a trampoline page in the vector table.
+
+	  If unsure, say Y.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 menuconfig ARMV8_DEPRECATED
 	bool "Emulate deprecated/obsolete ARMv8 instructions"
 	depends on COMPAT
@@ -824,6 +945,56 @@ config SETEND_EMULATION
 
 endif
 
+<<<<<<< HEAD
+=======
+config ARM64_SW_TTBR0_PAN
+	bool "Emulate Privileged Access Never using TTBR0_EL1 switching"
+	help
+	  Enabling this option prevents the kernel from accessing
+	  user-space memory directly by pointing TTBR0_EL1 to a reserved
+	  zeroed area and reserved ASID. The user access routines
+	  restore the valid TTBR0_EL1 temporarily.
+
+menu "ARMv8.1 architectural features"
+
+config ARM64_PAN
+	bool "Enable support for Privileged Access Never (PAN)"
+	default y
+	help
+	 Privileged Access Never (PAN; part of the ARMv8.1 Extensions)
+	 prevents the kernel or hypervisor from accessing user-space (EL0)
+	 memory directly.
+
+	 Choosing this option will cause any unprotected (not using
+	 copy_to_user et al) memory access to fail with a permission fault.
+
+	 The feature is detected at runtime, and will remain as a 'nop'
+	 instruction if the cpu does not implement the feature.
+
+endmenu
+
+config ARM64_UAO
+	bool "Enable support for User Access Override (UAO)"
+	default y
+	help
+	  User Access Override (UAO; part of the ARMv8.2 Extensions)
+	  causes the 'unprivileged' variant of the load/store instructions to
+	  be overriden to be privileged.
+
+	  This option changes get_user() and friends to use the 'unprivileged'
+	  variant of the load/store instructions. This ensures that user-space
+	  really did have access to the supplied memory. When addr_limit is
+	  set to kernel memory the UAO bit will be set, allowing privileged
+	  access to kernel memory.
+
+	  Choosing this option will cause copy_to_user() et al to use user-space
+	  memory permissions.
+
+	  The feature is detected at runtime, the kernel will use the
+	  regular load/store instructions if the cpu does not implement the
+	  feature.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 menu "Boot options"
@@ -878,7 +1049,11 @@ config EFI
 	help
 	  This option provides support for runtime services provided
 	  by UEFI firmware (such as non-volatile variables, realtime
+<<<<<<< HEAD
 	  clock, and platform reset). A UEFI stub is also provided to
+=======
+          clock, and platform reset). A UEFI stub is also provided to
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	  allow the kernel to be booted as an EFI application. This
 	  is only useful on systems that have UEFI firmware.
 
@@ -897,6 +1072,20 @@ config BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES
 	  Space separated list of names of dtbs to append when
 	  building a concatenated Image.gz-dtb.
 
+<<<<<<< HEAD
+=======
+config DMI
+	bool "Enable support for SMBIOS (DMI) tables"
+	depends on EFI
+	default y
+	help
+	  This enables SMBIOS/DMI feature for systems.
+
+	  This option is only useful on systems that have UEFI firmware.
+	  However, even with this option, the resultant kernel should
+	  continue to boot on existing non-UEFI platforms.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 menu "Userspace binary formats"
@@ -906,7 +1095,11 @@ source "fs/Kconfig.binfmt"
 config COMPAT
 	bool "Kernel support for 32-bit EL0"
 	depends on !ARM64_64K_PAGES
+<<<<<<< HEAD
 	select COMPAT_BINFMT_ELF
+=======
+	select COMPAT_BINFMT_ELF if BINFMT_ELF
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select HAVE_UID16
 	select OLD_SIGSUSPEND3
 	select COMPAT_OLD_SIGACTION
@@ -922,6 +1115,13 @@ config SYSVIPC_COMPAT
 	def_bool y
 	depends on COMPAT && SYSVIPC
 
+<<<<<<< HEAD
+=======
+config KEYS_COMPAT
+	def_bool y
+	depends on COMPAT && KEYS
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 menu "Power management options"
@@ -934,11 +1134,14 @@ config ARCH_SUSPEND_POSSIBLE
 config ARM64_CPU_SUSPEND
 	def_bool PM_SLEEP
 
+<<<<<<< HEAD
 config ARCH_HIBERNATION_POSSIBLE
         bool
         depends on MMU
         default y if ARCH_SUSPEND_POSSIBLE
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 menu "CPU Power Management"
@@ -947,6 +1150,25 @@ source "drivers/cpuidle/Kconfig"
 
 source "drivers/cpufreq/Kconfig"
 
+<<<<<<< HEAD
+=======
+config ARM64_ERRATUM_843419
+	bool "Cortex-A53: 843419: A load or store might access an incorrect address"
+	depends on MODULES
+	default y
+	help
+	  This option builds kernel modules using the large memory model in
+	  order to avoid the use of the ADRP instruction, which can cause
+	  a subsequent memory access to use an incorrect address on Cortex-A53
+	  parts up to r0p4.
+
+	  Note that the kernel itself must be linked with a version of ld
+	  which fixes potentially affected ADRP instructions through the
+	  use of veneers.
+
+	  If unsure, say Y.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 source "net/Kconfig"

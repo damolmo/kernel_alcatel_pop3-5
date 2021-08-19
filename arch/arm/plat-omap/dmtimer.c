@@ -853,11 +853,16 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
 	timer->irq = irq->start;
 	timer->pdev = pdev;
 
+<<<<<<< HEAD
 	/* Skip pm_runtime_enable for OMAP1 */
 	if (!(timer->capability & OMAP_TIMER_NEEDS_RESET)) {
 		pm_runtime_enable(dev);
 		pm_runtime_irq_safe(dev);
 	}
+=======
+	pm_runtime_enable(dev);
+	pm_runtime_irq_safe(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!timer->reserved) {
 		pm_runtime_get_sync(dev);

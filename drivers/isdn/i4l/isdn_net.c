@@ -2644,10 +2644,16 @@ isdn_net_newslave(char *parm)
 	char newname[10];
 
 	if (p) {
+<<<<<<< HEAD
 		/* Slave-Name MUST not be empty */
 		if (!strlen(p + 1))
 			return NULL;
 		strcpy(newname, p + 1);
+=======
+		/* Slave-Name MUST not be empty or overflow 'newname' */
+		if (strscpy(newname, p + 1, sizeof(newname)) <= 0)
+			return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*p = 0;
 		/* Master must already exist */
 		if (!(n = isdn_net_findif(parm)))

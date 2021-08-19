@@ -335,6 +335,11 @@ extern const struct aty_pll_ops aty_pll_ct; /* Integrated */
 extern void aty_set_pll_ct(const struct fb_info *info, const union aty_pll *pll);
 extern u8 aty_ld_pll_ct(int offset, const struct atyfb_par *par);
 
+<<<<<<< HEAD
+=======
+extern const u8 aty_postdividers[8];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
     /*
      *  Hardware cursor support
@@ -361,7 +366,10 @@ static inline void wait_for_idle(struct atyfb_par *par)
 
 extern void aty_reset_engine(const struct atyfb_par *par);
 extern void aty_init_engine(struct atyfb_par *par, struct fb_info *info);
+<<<<<<< HEAD
 extern u8   aty_ld_pll_ct(int offset, const struct atyfb_par *par);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void atyfb_copyarea(struct fb_info *info, const struct fb_copyarea *area);
 void atyfb_fillrect(struct fb_info *info, const struct fb_fillrect *rect);

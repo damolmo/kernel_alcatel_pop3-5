@@ -127,10 +127,13 @@ struct ubifs_debug_info {
 	struct dentry *dfs_chk_fs;
 	struct dentry *dfs_tst_rcvry;
 	struct dentry *dfs_ro_error;
+<<<<<<< HEAD
 	struct dentry *dfs_lca_debug;
 	struct dentry *dfs_lca_show_tnc;
 	struct dentry *dfs_wbuf_count;
 	struct dentry *dfs_host_wcount;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -152,6 +155,7 @@ struct ubifs_global_debug_info {
 	unsigned int tst_rcvry:1;
 };
 
+<<<<<<< HEAD
 /**
  * ubifs_global_debug_tnc - global (not per-FS) UBIFS debugging tnc information.
  *
@@ -164,11 +168,17 @@ struct ubifs_global_debug_tnc {
 	uint32_t total_clean_tnc_leaf_lens;
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ubifs_assert(expr) do {                                                \
 	if (unlikely(!(expr))) {                                               \
 		pr_crit("UBIFS assert failed in %s at %u (pid %d)\n",          \
 		       __func__, __LINE__, current->pid);                      \
+<<<<<<< HEAD
 		show_stack(NULL, NULL);                                                  \
+=======
+		dump_stack();                                                  \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}                                                                      \
 } while (0)
 

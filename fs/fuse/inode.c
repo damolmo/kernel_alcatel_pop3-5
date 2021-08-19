@@ -7,7 +7,11 @@
 */
 
 #include "fuse_i.h"
+<<<<<<< HEAD
 #include "mt_fuse.h"
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/pagemap.h>
 #include <linux/slab.h>
 #include <linux/file.h>
@@ -933,7 +937,11 @@ static void fuse_send_init(struct fuse_conn *fc, struct fuse_req *req)
 	arg->flags |= FUSE_ASYNC_READ | FUSE_POSIX_LOCKS | FUSE_ATOMIC_O_TRUNC |
 		FUSE_EXPORT_SUPPORT | FUSE_BIG_WRITES | FUSE_DONT_MASK |
 		FUSE_SPLICE_WRITE | FUSE_SPLICE_MOVE | FUSE_SPLICE_READ |
+<<<<<<< HEAD
 		FUSE_FLOCK_LOCKS | FUSE_IOCTL_DIR | FUSE_AUTO_INVAL_DATA |
+=======
+		FUSE_FLOCK_LOCKS | FUSE_HAS_IOCTL_DIR | FUSE_AUTO_INVAL_DATA |
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		FUSE_DO_READDIRPLUS | FUSE_READDIRPLUS_AUTO | FUSE_ASYNC_DIO |
 		FUSE_WRITEBACK_CACHE | FUSE_NO_OPEN_SUPPORT;
 	req->in.h.opcode = FUSE_INIT;
@@ -1125,6 +1133,10 @@ static int fuse_fill_super(struct super_block *sb, void *data, int silent)
  err_put_conn:
 	fuse_bdi_destroy(fc);
 	fuse_conn_put(fc);
+<<<<<<< HEAD
+=======
+	sb->s_fs_info = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  err_fput:
 	fput(file);
  err:
@@ -1319,7 +1331,11 @@ static int __init fuse_init(void)
 
 	sanitize_global_limit(&max_user_bgreq);
 	sanitize_global_limit(&max_user_congthresh);
+<<<<<<< HEAD
 	fuse_iolog_init();
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  err_sysfs_cleanup:
@@ -1340,7 +1356,10 @@ static void __exit fuse_exit(void)
 	fuse_sysfs_cleanup();
 	fuse_fs_cleanup();
 	fuse_dev_cleanup();
+<<<<<<< HEAD
 	fuse_iolog_exit();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 module_init(fuse_init);

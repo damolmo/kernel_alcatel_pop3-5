@@ -35,6 +35,7 @@
  */
 
 /* indicates that the Short Address changed */
+<<<<<<< HEAD
 #define IEEE802515_AFILT_SADDR_CHANGED		0x00000001
 /* indicates that the IEEE Address changed */
 #define IEEE802515_AFILT_IEEEADDR_CHANGED	0x00000002
@@ -42,6 +43,15 @@
 #define IEEE802515_AFILT_PANID_CHANGED		0x00000004
 /* indicates that PAN Coordinator status changed */
 #define	IEEE802515_AFILT_PANC_CHANGED		0x00000008
+=======
+#define IEEE802154_AFILT_SADDR_CHANGED		0x00000001
+/* indicates that the IEEE Address changed */
+#define IEEE802154_AFILT_IEEEADDR_CHANGED	0x00000002
+/* indicates that the PAN ID changed */
+#define IEEE802154_AFILT_PANID_CHANGED		0x00000004
+/* indicates that PAN Coordinator status changed */
+#define IEEE802154_AFILT_PANC_CHANGED		0x00000008
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct ieee802154_hw_addr_filt {
 	__le16	pan_id;		/* Each independent PAN selects a unique

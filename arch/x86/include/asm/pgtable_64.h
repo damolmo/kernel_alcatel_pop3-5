@@ -44,6 +44,7 @@ struct mm_struct;
 void set_pte_vaddr_pud(pud_t *pud_page, unsigned long vaddr, pte_t new_pte);
 
 
+<<<<<<< HEAD
 static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
 				    pte_t *ptep)
 {
@@ -53,6 +54,17 @@ static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
 static inline void native_set_pte(pte_t *ptep, pte_t pte)
 {
 	*ptep = pte;
+=======
+static inline void native_set_pte(pte_t *ptep, pte_t pte)
+{
+	WRITE_ONCE(*ptep, pte);
+}
+
+static inline void native_pte_clear(struct mm_struct *mm, unsigned long addr,
+				    pte_t *ptep)
+{
+	native_set_pte(ptep, native_make_pte(0));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
@@ -62,7 +74,11 @@ static inline void native_set_pte_atomic(pte_t *ptep, pte_t pte)
 
 static inline void native_set_pmd(pmd_t *pmdp, pmd_t pmd)
 {
+<<<<<<< HEAD
 	*pmdp = pmd;
+=======
+	WRITE_ONCE(*pmdp, pmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void native_pmd_clear(pmd_t *pmd)
@@ -98,7 +114,11 @@ static inline pmd_t native_pmdp_get_and_clear(pmd_t *xp)
 
 static inline void native_set_pud(pud_t *pudp, pud_t pud)
 {
+<<<<<<< HEAD
 	*pudp = pud;
+=======
+	WRITE_ONCE(*pudp, pud);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void native_pud_clear(pud_t *pud)
@@ -108,7 +128,11 @@ static inline void native_pud_clear(pud_t *pud)
 
 static inline void native_set_pgd(pgd_t *pgdp, pgd_t pgd)
 {
+<<<<<<< HEAD
 	*pgdp = pgd;
+=======
+	WRITE_ONCE(*pgdp, pgd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void native_pgd_clear(pgd_t *pgd)
@@ -187,6 +211,11 @@ extern void cleanup_highmap(void);
 extern void init_extra_mapping_uc(unsigned long phys, unsigned long size);
 extern void init_extra_mapping_wb(unsigned long phys, unsigned long size);
 
+<<<<<<< HEAD
+=======
+#include <asm/pgtable-invert.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* !__ASSEMBLY__ */
 
 #endif /* _ASM_X86_PGTABLE_64_H */

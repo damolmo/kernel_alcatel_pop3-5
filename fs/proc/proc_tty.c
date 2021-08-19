@@ -14,6 +14,10 @@
 #include <linux/tty.h>
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
+=======
+#include "internal.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * The /proc/tty directory inodes...
@@ -164,7 +168,11 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
 	if (!ent)
 		return;
 		
+<<<<<<< HEAD
 	remove_proc_entry(driver->driver_name, proc_tty_driver);
+=======
+	remove_proc_entry(ent->name, proc_tty_driver);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	driver->proc_entry = NULL;
 }

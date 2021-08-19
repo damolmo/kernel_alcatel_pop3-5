@@ -52,7 +52,11 @@ static void genwqe_add_file(struct genwqe_dev *cd, struct genwqe_file *cfile)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	cfile->owner = current;
+=======
+	cfile->opener = get_pid(task_tgid(current));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&cd->file_lock, flags);
 	list_add(&cfile->list, &cd->file_list);
 	spin_unlock_irqrestore(&cd->file_lock, flags);
@@ -65,6 +69,10 @@ static int genwqe_del_file(struct genwqe_dev *cd, struct genwqe_file *cfile)
 	spin_lock_irqsave(&cd->file_lock, flags);
 	list_del(&cfile->list);
 	spin_unlock_irqrestore(&cd->file_lock, flags);
+<<<<<<< HEAD
+=======
+	put_pid(cfile->opener);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -275,7 +283,11 @@ static int genwqe_kill_fasync(struct genwqe_dev *cd, int sig)
 	return files;
 }
 
+<<<<<<< HEAD
 static int genwqe_force_sig(struct genwqe_dev *cd, int sig)
+=======
+static int genwqe_terminate(struct genwqe_dev *cd)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned int files = 0;
 	unsigned long flags;
@@ -283,7 +295,11 @@ static int genwqe_force_sig(struct genwqe_dev *cd, int sig)
 
 	spin_lock_irqsave(&cd->file_lock, flags);
 	list_for_each_entry(cfile, &cd->file_list, list) {
+<<<<<<< HEAD
 		force_sig(sig, cfile->owner);
+=======
+		kill_pid(cfile->opener, SIGKILL, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		files++;
 	}
 	spin_unlock_irqrestore(&cd->file_lock, flags);
@@ -781,6 +797,11 @@ static int genwqe_pin_mem(struct genwqe_file *cfile, struct genwqe_mem *m)
 
 	if ((m->addr == 0x0) || (m->size == 0))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (m->size > ULONG_MAX - PAGE_SIZE - (m->addr & ~PAGE_MASK))
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	map_addr = (m->addr & PAGE_MASK);
 	map_size = round_up(m->size + (m->addr & ~PAGE_MASK), PAGE_SIZE);
@@ -1356,7 +1377,11 @@ static int genwqe_inform_and_stop_processes(struct genwqe_dev *cd)
 		dev_warn(&pci_dev->dev,
 			 "[%s] send SIGKILL and wait ...\n", __func__);
 
+<<<<<<< HEAD
 		rc = genwqe_force_sig(cd, SIGKILL); /* force terminate */
+=======
+		rc = genwqe_terminate(cd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (rc) {
 			/* Give kill_timout more seconds to end processes */
 			for (i = 0; (i < genwqe_kill_timeout) &&

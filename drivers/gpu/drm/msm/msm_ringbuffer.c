@@ -23,7 +23,12 @@ struct msm_ringbuffer *msm_ringbuffer_new(struct msm_gpu *gpu, int size)
 	struct msm_ringbuffer *ring;
 	int ret;
 
+<<<<<<< HEAD
 	size = ALIGN(size, 4);   /* size should be dword aligned */
+=======
+	if (WARN_ON(!is_power_of_2(size)))
+		return ERR_PTR(-EINVAL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ring = kzalloc(sizeof(*ring), GFP_KERNEL);
 	if (!ring) {

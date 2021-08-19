@@ -1997,7 +1997,11 @@ void show_code(struct pt_regs *regs)
 {
 	char *mode = user_mode(regs) ? "User" : "Krnl";
 	unsigned char code[64];
+<<<<<<< HEAD
 	char buffer[64], *ptr;
+=======
+	char buffer[128], *ptr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mm_segment_t old_fs;
 	unsigned long addr;
 	int start, end, opsize, hops, i;
@@ -2060,7 +2064,11 @@ void show_code(struct pt_regs *regs)
 		start += opsize;
 		printk(buffer);
 		ptr = buffer;
+<<<<<<< HEAD
 		ptr += sprintf(ptr, "\n          ");
+=======
+		ptr += sprintf(ptr, "\n\t  ");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hops++;
 	}
 	printk("\n");

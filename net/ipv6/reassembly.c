@@ -108,7 +108,14 @@ bool ip6_frag_match(const struct inet_frag_queue *q, const void *a)
 	return	fq->id == arg->id &&
 		fq->user == arg->user &&
 		ipv6_addr_equal(&fq->saddr, arg->src) &&
+<<<<<<< HEAD
 		ipv6_addr_equal(&fq->daddr, arg->dst);
+=======
+		ipv6_addr_equal(&fq->daddr, arg->dst) &&
+		(arg->iif == fq->iif ||
+		 !(ipv6_addr_type(arg->dst) & (IPV6_ADDR_MULTICAST |
+					       IPV6_ADDR_LINKLOCAL)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(ip6_frag_match);
 
@@ -129,7 +136,13 @@ void ip6_expire_frag_queue(struct net *net, struct frag_queue *fq,
 			   struct inet_frags *frags)
 {
 	struct net_device *dev = NULL;
+<<<<<<< HEAD
 
+=======
+	struct sk_buff *head;
+
+	rcu_read_lock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(&fq->q.lock);
 
 	if (fq->q.flags & INET_FRAG_COMPLETE)
@@ -137,6 +150,7 @@ void ip6_expire_frag_queue(struct net *net, struct frag_queue *fq,
 
 	inet_frag_kill(&fq->q, frags);
 
+<<<<<<< HEAD
 	rcu_read_lock();
 	dev = dev_get_by_index_rcu(net, fq->iif);
 	if (!dev)
@@ -152,17 +166,45 @@ void ip6_expire_frag_queue(struct net *net, struct frag_queue *fq,
 	/* Don't send error if the first segment did not arrive. */
 	if (!(fq->q.flags & INET_FRAG_FIRST_IN) || !fq->q.fragments)
 		goto out_rcu_unlock;
+=======
+	dev = dev_get_by_index_rcu(net, fq->iif);
+	if (!dev)
+		goto out;
+
+	IP6_INC_STATS_BH(net, __in6_dev_get(dev), IPSTATS_MIB_REASMFAILS);
+	IP6_INC_STATS_BH(net, __in6_dev_get(dev), IPSTATS_MIB_REASMTIMEOUT);
+
+	/* Don't send error if the first segment did not arrive. */
+	head = fq->q.fragments;
+	if (!(fq->q.flags & INET_FRAG_FIRST_IN) || !head)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* But use as source device on which LAST ARRIVED
 	 * segment was received. And do not use fq->dev
 	 * pointer directly, device might already disappeared.
 	 */
+<<<<<<< HEAD
 	fq->q.fragments->dev = dev;
 	icmpv6_send(fq->q.fragments, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
 out_rcu_unlock:
 	rcu_read_unlock();
 out:
 	spin_unlock(&fq->q.lock);
+=======
+	head->dev = dev;
+	skb_get(head);
+	spin_unlock(&fq->q.lock);
+
+	icmpv6_send(head, ICMPV6_TIME_EXCEED, ICMPV6_EXC_FRAGTIME, 0);
+	kfree_skb(head);
+	goto out_rcu_unlock;
+
+out:
+	spin_unlock(&fq->q.lock);
+out_rcu_unlock:
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	inet_frag_put(&fq->q, frags);
 }
 EXPORT_SYMBOL(ip6_expire_frag_queue);
@@ -180,7 +222,11 @@ static void ip6_frag_expire(unsigned long data)
 
 static __inline__ struct frag_queue *
 fq_find(struct net *net, __be32 id, const struct in6_addr *src,
+<<<<<<< HEAD
 	const struct in6_addr *dst, u8 ecn)
+=======
+	const struct in6_addr *dst, int iif, u8 ecn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inet_frag_queue *q;
 	struct ip6_create_arg arg;
@@ -190,6 +236,10 @@ fq_find(struct net *net, __be32 id, const struct in6_addr *src,
 	arg.user = IP6_DEFRAG_LOCAL_DELIVER;
 	arg.src = src;
 	arg.dst = dst;
+<<<<<<< HEAD
+=======
+	arg.iif = iif;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	arg.ecn = ecn;
 
 	hash = inet6_hash_frag(id, src, dst);
@@ -549,8 +599,17 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
 		return 1;
 	}
 
+<<<<<<< HEAD
 	fq = fq_find(net, fhdr->identification, &hdr->saddr, &hdr->daddr,
 		     ip6_frag_ecn(hdr));
+=======
+	if (skb->len - skb_network_offset(skb) < IPV6_MIN_MTU &&
+	    fhdr->frag_off & htons(IP6_MF))
+		goto fail_hdr;
+
+	fq = fq_find(net, fhdr->identification, &hdr->saddr, &hdr->daddr,
+		     skb->dev ? skb->dev->ifindex : 0, ip6_frag_ecn(hdr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (fq != NULL) {
 		int ret;
 
@@ -729,10 +788,28 @@ int __init ipv6_frag_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = inet6_add_protocol(&frag_protocol, IPPROTO_FRAGMENT);
 	if (ret)
 		goto out;
 
+=======
+	ip6_frags.hashfn = ip6_hashfn;
+	ip6_frags.constructor = ip6_frag_init;
+	ip6_frags.destructor = NULL;
+	ip6_frags.qsize = sizeof(struct frag_queue);
+	ip6_frags.match = ip6_frag_match;
+	ip6_frags.frag_expire = ip6_frag_expire;
+	ip6_frags.frags_cache_name = ip6_frag_cache_name;
+	ret = inet_frags_init(&ip6_frags);
+	if (ret)
+		goto out;
+
+	ret = inet6_add_protocol(&frag_protocol, IPPROTO_FRAGMENT);
+	if (ret)
+		goto err_protocol;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = ip6_frags_sysctl_register();
 	if (ret)
 		goto err_sysctl;
@@ -741,6 +818,7 @@ int __init ipv6_frag_init(void)
 	if (ret)
 		goto err_pernet;
 
+<<<<<<< HEAD
 	ip6_frags.hashfn = ip6_hashfn;
 	ip6_frags.constructor = ip6_frag_init;
 	ip6_frags.destructor = NULL;
@@ -752,6 +830,8 @@ int __init ipv6_frag_init(void)
 	ret = inet_frags_init(&ip6_frags);
 	if (ret)
 		goto err_pernet;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 
@@ -759,6 +839,11 @@ err_pernet:
 	ip6_frags_sysctl_unregister();
 err_sysctl:
 	inet6_del_protocol(&frag_protocol, IPPROTO_FRAGMENT);
+<<<<<<< HEAD
+=======
+err_protocol:
+	inet_frags_fini(&ip6_frags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	goto out;
 }
 

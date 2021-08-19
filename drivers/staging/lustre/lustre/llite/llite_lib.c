@@ -1504,7 +1504,11 @@ int ll_setattr_raw(struct dentry *dentry, struct iattr *attr, bool hsm_import)
 
 	if (attr->ia_valid & (ATTR_SIZE |
 			      ATTR_ATIME | ATTR_ATIME_SET |
+<<<<<<< HEAD
 			      ATTR_MTIME | ATTR_MTIME_SET))
+=======
+			      ATTR_MTIME | ATTR_MTIME_SET)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* For truncate and utimes sending attributes to OSTs, setting
 		 * mtime/atime to the past will be performed under PW [0:EOF]
 		 * extent lock (new_size:EOF for truncate).  It may seem
@@ -1516,6 +1520,10 @@ int ll_setattr_raw(struct dentry *dentry, struct iattr *attr, bool hsm_import)
 		rc = ll_setattr_ost(inode, attr);
 		if (attr->ia_valid & ATTR_SIZE)
 			up_write(&lli->lli_trunc_sem);
+<<<<<<< HEAD
+=======
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	if (op_data) {
 		if (op_data->op_ioepoch) {

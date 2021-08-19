@@ -28,13 +28,22 @@ static struct xfrm_policy_afinfo xfrm6_policy_afinfo;
 
 static struct dst_entry *xfrm6_dst_lookup(struct net *net, int tos,
 					  const xfrm_address_t *saddr,
+<<<<<<< HEAD
 					  const xfrm_address_t *daddr)
+=======
+					  const xfrm_address_t *daddr,
+					  u32 mark)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct flowi6 fl6;
 	struct dst_entry *dst;
 	int err;
 
 	memset(&fl6, 0, sizeof(fl6));
+<<<<<<< HEAD
+=======
+	fl6.flowi6_mark = mark;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(&fl6.daddr, daddr, sizeof(fl6.daddr));
 	if (saddr)
 		memcpy(&fl6.saddr, saddr, sizeof(fl6.saddr));
@@ -51,12 +60,21 @@ static struct dst_entry *xfrm6_dst_lookup(struct net *net, int tos,
 }
 
 static int xfrm6_get_saddr(struct net *net,
+<<<<<<< HEAD
 			   xfrm_address_t *saddr, xfrm_address_t *daddr)
+=======
+			   xfrm_address_t *saddr, xfrm_address_t *daddr,
+			   u32 mark)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dst_entry *dst;
 	struct net_device *dev;
 
+<<<<<<< HEAD
 	dst = xfrm6_dst_lookup(net, 0, NULL, daddr);
+=======
+	dst = xfrm6_dst_lookup(net, 0, NULL, daddr, mark);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(dst))
 		return -EHOSTUNREACH;
 
@@ -85,8 +103,12 @@ static int xfrm6_init_path(struct xfrm_dst *path, struct dst_entry *dst,
 {
 	if (dst->ops->family == AF_INET6) {
 		struct rt6_info *rt = (struct rt6_info *)dst;
+<<<<<<< HEAD
 		if (rt->rt6i_node)
 			path->path_cookie = rt->rt6i_node->fn_sernum;
+=======
+		path->path_cookie = rt6_get_cookie(rt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	path->u.rt6.rt6i_nfheader_len = nfheader_len;
@@ -116,8 +138,12 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 						   RTF_LOCAL);
 	xdst->u.rt6.rt6i_metric = rt->rt6i_metric;
 	xdst->u.rt6.rt6i_node = rt->rt6i_node;
+<<<<<<< HEAD
 	if (rt->rt6i_node)
 		xdst->route_cookie = rt->rt6i_node->fn_sernum;
+=======
+	xdst->route_cookie = rt6_get_cookie(rt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	xdst->u.rt6.rt6i_gateway = rt->rt6i_gateway;
 	xdst->u.rt6.rt6i_dst = rt->rt6i_dst;
 	xdst->u.rt6.rt6i_src = rt->rt6i_src;
@@ -284,7 +310,11 @@ static void xfrm6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
 	xfrm_dst_ifdown(dst, dev);
 }
 
+<<<<<<< HEAD
 static struct dst_ops xfrm6_dst_ops = {
+=======
+static struct dst_ops xfrm6_dst_ops_template = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.family =		AF_INET6,
 	.protocol =		cpu_to_be16(ETH_P_IPV6),
 	.gc =			xfrm6_garbage_collect,
@@ -299,7 +329,11 @@ static struct dst_ops xfrm6_dst_ops = {
 
 static struct xfrm_policy_afinfo xfrm6_policy_afinfo = {
 	.family =		AF_INET6,
+<<<<<<< HEAD
 	.dst_ops =		&xfrm6_dst_ops,
+=======
+	.dst_ops =		&xfrm6_dst_ops_template,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.dst_lookup =		xfrm6_dst_lookup,
 	.get_saddr =		xfrm6_get_saddr,
 	.decode_session =	_decode_session6,
@@ -332,7 +366,11 @@ static struct ctl_table xfrm6_policy_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static int __net_init xfrm6_net_init(struct net *net)
+=======
+static int __net_init xfrm6_net_sysctl_init(struct net *net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ctl_table *table;
 	struct ctl_table_header *hdr;
@@ -360,7 +398,11 @@ err_alloc:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static void __net_exit xfrm6_net_exit(struct net *net)
+=======
+static void __net_exit xfrm6_net_sysctl_exit(struct net *net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ctl_table *table;
 
@@ -372,17 +414,57 @@ static void __net_exit xfrm6_net_exit(struct net *net)
 	if (!net_eq(net, &init_net))
 		kfree(table);
 }
+<<<<<<< HEAD
+=======
+#else /* CONFIG_SYSCTL */
+static int inline xfrm6_net_sysctl_init(struct net *net)
+{
+	return 0;
+}
+
+static void inline xfrm6_net_sysctl_exit(struct net *net)
+{
+}
+#endif
+
+static int __net_init xfrm6_net_init(struct net *net)
+{
+	int ret;
+
+	memcpy(&net->xfrm.xfrm6_dst_ops, &xfrm6_dst_ops_template,
+	       sizeof(xfrm6_dst_ops_template));
+	ret = dst_entries_init(&net->xfrm.xfrm6_dst_ops);
+	if (ret)
+		return ret;
+
+	ret = xfrm6_net_sysctl_init(net);
+	if (ret)
+		dst_entries_destroy(&net->xfrm.xfrm6_dst_ops);
+
+	return ret;
+}
+
+static void __net_exit xfrm6_net_exit(struct net *net)
+{
+	xfrm6_net_sysctl_exit(net);
+	dst_entries_destroy(&net->xfrm.xfrm6_dst_ops);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct pernet_operations xfrm6_net_ops = {
 	.init	= xfrm6_net_init,
 	.exit	= xfrm6_net_exit,
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int __init xfrm6_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	dst_entries_init(&xfrm6_dst_ops);
 
 	ret = xfrm6_policy_init();
@@ -390,6 +472,11 @@ int __init xfrm6_init(void)
 		dst_entries_destroy(&xfrm6_dst_ops);
 		goto out;
 	}
+=======
+	ret = xfrm6_policy_init();
+	if (ret)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = xfrm6_state_init();
 	if (ret)
 		goto out_policy;
@@ -398,9 +485,13 @@ int __init xfrm6_init(void)
 	if (ret)
 		goto out_state;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	register_pernet_subsys(&xfrm6_net_ops);
 #endif
+=======
+	register_pernet_subsys(&xfrm6_net_ops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 out_state:
@@ -412,6 +503,7 @@ out_policy:
 
 void xfrm6_fini(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	unregister_pernet_subsys(&xfrm6_net_ops);
 #endif
@@ -419,4 +511,10 @@ void xfrm6_fini(void)
 	xfrm6_policy_fini();
 	xfrm6_state_fini();
 	dst_entries_destroy(&xfrm6_dst_ops);
+=======
+	unregister_pernet_subsys(&xfrm6_net_ops);
+	xfrm6_protocol_fini();
+	xfrm6_policy_fini();
+	xfrm6_state_fini();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

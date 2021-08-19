@@ -104,7 +104,11 @@ static int update_config(struct clk_rcg2 *rcg)
 	}
 
 	WARN(1, "%s: rcg didn't update its configuration.", name);
+<<<<<<< HEAD
 	return 0;
+=======
+	return -EBUSY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int clk_rcg2_set_parent(struct clk_hw *hw, u8 index)
@@ -185,6 +189,12 @@ static long _freq_tbl_determine_rate(struct clk_hw *hw,
 
 	clk_flags = __clk_get_flags(hw->clk);
 	*p = clk_get_parent_by_index(hw->clk, f->src);
+<<<<<<< HEAD
+=======
+	if (!p)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (clk_flags & CLK_SET_RATE_PARENT) {
 		if (f->pre_div) {
 			rate /= 2;

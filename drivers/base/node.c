@@ -396,6 +396,19 @@ int register_mem_sect_under_node(struct memory_block *mem_blk, int nid)
 	for (pfn = sect_start_pfn; pfn <= sect_end_pfn; pfn++) {
 		int page_nid;
 
+<<<<<<< HEAD
+=======
+		/*
+		 * memory block could have several absent sections from start.
+		 * skip pfn range from absent section
+		 */
+		if (!pfn_present(pfn)) {
+			pfn = round_down(pfn + PAGES_PER_SECTION,
+					 PAGES_PER_SECTION) - 1;
+			continue;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		page_nid = get_nid_for_pfn(pfn);
 		if (page_nid < 0)
 			continue;

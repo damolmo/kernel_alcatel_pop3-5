@@ -266,6 +266,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
 	desc_max = vrh->vring.num;
 	up_next = -1;
 
+<<<<<<< HEAD
 	if (riov)
 		riov->i = riov->used = 0;
 	else if (wiov)
@@ -273,6 +274,16 @@ __vringh_iov(struct vringh *vrh, u16 i,
 	else
 		/* You must want something! */
 		BUG();
+=======
+	/* You must want something! */
+	if (WARN_ON(!riov && !wiov))
+		return -EINVAL;
+
+	if (riov)
+		riov->i = riov->used = 0;
+	if (wiov)
+		wiov->i = wiov->used = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (;;) {
 		void *addr;

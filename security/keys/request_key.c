@@ -250,11 +250,19 @@ static int construct_key(struct key *key, const void *callout_info,
  * The keyring selected is returned with an extra reference upon it which the
  * caller must release.
  */
+<<<<<<< HEAD
 static void construct_get_dest_keyring(struct key **_dest_keyring)
+=======
+static int construct_get_dest_keyring(struct key **_dest_keyring)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct request_key_auth *rka;
 	const struct cred *cred = current_cred();
 	struct key *dest_keyring = *_dest_keyring, *authkey;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kenter("%p", dest_keyring);
 
@@ -263,6 +271,11 @@ static void construct_get_dest_keyring(struct key **_dest_keyring)
 		/* the caller supplied one */
 		key_get(dest_keyring);
 	} else {
+<<<<<<< HEAD
+=======
+		bool do_perm_check = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* use a default keyring; falling through the cases until we
 		 * find one that we actually have */
 		switch (cred->jit_keyring) {
@@ -277,8 +290,15 @@ static void construct_get_dest_keyring(struct key **_dest_keyring)
 					dest_keyring =
 						key_get(rka->dest_keyring);
 				up_read(&authkey->sem);
+<<<<<<< HEAD
 				if (dest_keyring)
 					break;
+=======
+				if (dest_keyring) {
+					do_perm_check = false;
+					break;
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 
 		case KEY_REQKEY_DEFL_THREAD_KEYRING:
@@ -313,11 +333,36 @@ static void construct_get_dest_keyring(struct key **_dest_keyring)
 		default:
 			BUG();
 		}
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Require Write permission on the keyring.  This is essential
+		 * because the default keyring may be the session keyring, and
+		 * joining a keyring only requires Search permission.
+		 *
+		 * However, this check is skipped for the "requestor keyring" so
+		 * that /sbin/request-key can itself use request_key() to add
+		 * keys to the original requestor's destination keyring.
+		 */
+		if (dest_keyring && do_perm_check) {
+			ret = key_permission(make_key_ref(dest_keyring, 1),
+					     KEY_NEED_WRITE);
+			if (ret) {
+				key_put(dest_keyring);
+				return ret;
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	*_dest_keyring = dest_keyring;
 	kleave(" [dk %d]", key_serial(dest_keyring));
+<<<<<<< HEAD
 	return;
+=======
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -414,6 +459,10 @@ link_check_failed:
 
 link_prealloc_failed:
 	mutex_unlock(&user->cons_lock);
+<<<<<<< HEAD
+=======
+	key_put(key);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kleave(" = %d [prelink]", ret);
 	return ret;
 
@@ -439,11 +488,26 @@ static struct key *construct_key_and_link(struct keyring_search_context *ctx,
 
 	kenter("");
 
+<<<<<<< HEAD
 	user = key_user_lookup(current_fsuid());
 	if (!user)
 		return ERR_PTR(-ENOMEM);
 
 	construct_get_dest_keyring(&dest_keyring);
+=======
+	ret = construct_get_dest_keyring(&dest_keyring);
+	if (ret)
+		goto error;
+
+	if (ctx->index_key.type == &key_type_keyring)
+		return ERR_PTR(-EPERM);
+
+	user = key_user_lookup(current_fsuid());
+	if (!user) {
+		ret = -ENOMEM;
+		goto error_put_dest_keyring;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = construct_alloc_key(ctx, dest_keyring, flags, user, &key);
 	key_user_put(user);
@@ -458,7 +522,11 @@ static struct key *construct_key_and_link(struct keyring_search_context *ctx,
 	} else if (ret == -EINPROGRESS) {
 		ret = 0;
 	} else {
+<<<<<<< HEAD
 		goto couldnt_alloc_key;
+=======
+		goto error_put_dest_keyring;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	key_put(dest_keyring);
@@ -468,8 +536,14 @@ static struct key *construct_key_and_link(struct keyring_search_context *ctx,
 construction_failed:
 	key_negate_and_link(key, key_negative_timeout, NULL, NULL);
 	key_put(key);
+<<<<<<< HEAD
 couldnt_alloc_key:
 	key_put(dest_keyring);
+=======
+error_put_dest_keyring:
+	key_put(dest_keyring);
+error:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kleave(" = %d", ret);
 	return ERR_PTR(ret);
 }
@@ -512,6 +586,10 @@ struct key *request_key_and_link(struct key_type *type,
 	struct keyring_search_context ctx = {
 		.index_key.type		= type,
 		.index_key.description	= description,
+<<<<<<< HEAD
+=======
+		.index_key.desc_len	= strlen(description),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.cred			= current_cred(),
 		.match_data.cmp		= key_default_cmp,
 		.match_data.raw_data	= description,
@@ -590,10 +668,16 @@ int wait_for_key_construction(struct key *key, bool intr)
 			  intr ? TASK_INTERRUPTIBLE : TASK_UNINTERRUPTIBLE);
 	if (ret)
 		return -ERESTARTSYS;
+<<<<<<< HEAD
 	if (test_bit(KEY_FLAG_NEGATIVE, &key->flags)) {
 		smp_rmb();
 		return key->type_data.reject_error;
 	}
+=======
+	ret = key_read_state(key);
+	if (ret < 0)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return key_validate(key);
 }
 EXPORT_SYMBOL(wait_for_key_construction);

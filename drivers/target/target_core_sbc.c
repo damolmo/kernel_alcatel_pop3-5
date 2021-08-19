@@ -299,7 +299,12 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char *flags, struct sbc_ops *o
 	return 0;
 }
 
+<<<<<<< HEAD
 static sense_reason_t xdreadwrite_callback(struct se_cmd *cmd, bool success)
+=======
+static sense_reason_t xdreadwrite_callback(struct se_cmd *cmd, bool success,
+					   int *post_ret)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned char *buf, *addr;
 	struct scatterlist *sg;
@@ -363,9 +368,17 @@ sbc_execute_rw(struct se_cmd *cmd)
 			       cmd->data_direction);
 }
 
+<<<<<<< HEAD
 static sense_reason_t compare_and_write_post(struct se_cmd *cmd, bool success)
 {
 	struct se_device *dev = cmd->se_dev;
+=======
+static sense_reason_t compare_and_write_post(struct se_cmd *cmd, bool success,
+					     int *post_ret)
+{
+	struct se_device *dev = cmd->se_dev;
+	sense_reason_t ret = TCM_NO_SENSE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Only set SCF_COMPARE_AND_WRITE_POST to force a response fall-through
@@ -373,8 +386,18 @@ static sense_reason_t compare_and_write_post(struct se_cmd *cmd, bool success)
 	 * sent to the backend driver.
 	 */
 	spin_lock_irq(&cmd->t_state_lock);
+<<<<<<< HEAD
 	if ((cmd->transport_state & CMD_T_SENT) && !cmd->scsi_status)
 		cmd->se_cmd_flags |= SCF_COMPARE_AND_WRITE_POST;
+=======
+	if (cmd->transport_state & CMD_T_SENT) {
+		cmd->se_cmd_flags |= SCF_COMPARE_AND_WRITE_POST;
+		*post_ret = 1;
+
+		if (cmd->scsi_status == SAM_STAT_CHECK_CONDITION)
+			ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irq(&cmd->t_state_lock);
 
 	/*
@@ -383,10 +406,18 @@ static sense_reason_t compare_and_write_post(struct se_cmd *cmd, bool success)
 	 */
 	up(&dev->caw_sem);
 
+<<<<<<< HEAD
 	return TCM_NO_SENSE;
 }
 
 static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool success)
+=======
+	return ret;
+}
+
+static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool success,
+						 int *post_ret)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct se_device *dev = cmd->se_dev;
 	struct scatterlist *write_sg = NULL, *sg;
@@ -415,8 +446,16 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 	 * been failed with a non-zero SCSI status.
 	 */
 	if (cmd->scsi_status) {
+<<<<<<< HEAD
 		pr_err("compare_and_write_callback: non zero scsi_status:"
 			" 0x%02x\n", cmd->scsi_status);
+=======
+		pr_debug("compare_and_write_callback: non zero scsi_status:"
+			" 0x%02x\n", cmd->scsi_status);
+		*post_ret = 1;
+		if (cmd->scsi_status == SAM_STAT_CHECK_CONDITION)
+			ret = TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -482,11 +521,19 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 
 		if (block_size < PAGE_SIZE) {
 			sg_set_page(&write_sg[i], m.page, block_size,
+<<<<<<< HEAD
 				    block_size);
 		} else {
 			sg_miter_next(&m);
 			sg_set_page(&write_sg[i], m.page, block_size,
 				    0);
+=======
+				    m.piter.sg->offset + block_size);
+		} else {
+			sg_miter_next(&m);
+			sg_set_page(&write_sg[i], m.page, block_size,
+				    m.piter.sg->offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		len -= block_size;
 		i++;
@@ -515,7 +562,11 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 	cmd->transport_state |= CMD_T_ACTIVE|CMD_T_BUSY|CMD_T_SENT;
 	spin_unlock_irq(&cmd->t_state_lock);
 
+<<<<<<< HEAD
 	__target_execute_cmd(cmd);
+=======
+	__target_execute_cmd(cmd, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree(buf);
 	return ret;
@@ -941,9 +992,21 @@ sbc_parse_cdb(struct se_cmd *cmd, struct sbc_ops *ops)
 			return ret;
 		break;
 	case VERIFY:
+<<<<<<< HEAD
 		size = 0;
 		sectors = transport_get_sectors_10(cdb);
 		cmd->t_task_lba = transport_lba_32(cdb);
+=======
+	case VERIFY_16:
+		size = 0;
+		if (cdb[0] == VERIFY) {
+			sectors = transport_get_sectors_10(cdb);
+			cmd->t_task_lba = transport_lba_32(cdb);
+		} else {
+			sectors = transport_get_sectors_16(cdb);
+			cmd->t_task_lba = transport_lba_64(cdb);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cmd->execute_cmd = sbc_emulate_noop;
 		goto check_lba;
 	case REZERO_UNIT:

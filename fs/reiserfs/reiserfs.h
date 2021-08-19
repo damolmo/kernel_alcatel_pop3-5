@@ -266,7 +266,11 @@ struct reiserfs_journal_list {
 
 	struct mutex j_commit_mutex;
 	unsigned int j_trans_id;
+<<<<<<< HEAD
 	time_t j_timestamp;
+=======
+	time64_t j_timestamp; /* write-only but useful for crash dump analysis */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct reiserfs_list_bitmap *j_list_bitmap;
 	struct buffer_head *j_commit_bh;	/* commit buffer head */
 	struct reiserfs_journal_cnode *j_realblock;
@@ -1323,7 +1327,10 @@ struct cpu_key {
 #define KEY_NOT_FOUND 0
 
 #define KEY_SIZE (sizeof(struct reiserfs_key))
+<<<<<<< HEAD
 #define SHORT_KEY_SIZE (sizeof (__u32) + sizeof (__u32))
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* return values for search_by_key and clones */
 #define ITEM_FOUND 1
@@ -2946,6 +2953,10 @@ int reiserfs_allocate_list_bitmaps(struct super_block *s,
 				   struct reiserfs_list_bitmap *, unsigned int);
 
 void reiserfs_schedule_old_flush(struct super_block *s);
+<<<<<<< HEAD
+=======
+void reiserfs_cancel_old_flush(struct super_block *s);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void add_save_link(struct reiserfs_transaction_handle *th,
 		   struct inode *inode, int truncate);
 int remove_save_link(struct inode *inode, int truncate);

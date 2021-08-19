@@ -735,7 +735,11 @@ module_param_named(logsyscall, aa_g_logsyscall, aabool, S_IRUSR | S_IWUSR);
 
 /* Maximum pathname length before accesses will start getting rejected */
 unsigned int aa_g_path_max = 2 * PATH_MAX;
+<<<<<<< HEAD
 module_param_named(path_max, aa_g_path_max, aauint, S_IRUSR | S_IWUSR);
+=======
+module_param_named(path_max, aa_g_path_max, aauint, S_IRUSR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Determines how paranoid loading of policy is and how much verification
  * on the loaded policy is done.
@@ -762,51 +766,80 @@ __setup("apparmor=", apparmor_enabled_setup);
 /* set global flag turning off the ability to load policy */
 static int param_set_aalockpolicy(const char *val, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
 		return -EPERM;
 	if (aa_g_lock_policy)
 		return -EACCES;
+=======
+	if (!policy_admin_capable())
+		return -EPERM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return param_set_bool(val, kp);
 }
 
 static int param_get_aalockpolicy(char *buffer, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_view_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 	return param_get_bool(buffer, kp);
 }
 
 static int param_set_aabool(const char *val, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_admin_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 	return param_set_bool(val, kp);
 }
 
 static int param_get_aabool(char *buffer, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_view_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 	return param_get_bool(buffer, kp);
 }
 
 static int param_set_aauint(const char *val, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_admin_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 	return param_set_uint(val, kp);
 }
 
 static int param_get_aauint(char *buffer, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_view_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 	return param_get_uint(buffer, kp);
 }
 
 static int param_get_audit(char *buffer, struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_view_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	if (!apparmor_enabled)
@@ -818,7 +851,11 @@ static int param_get_audit(char *buffer, struct kernel_param *kp)
 static int param_set_audit(const char *val, struct kernel_param *kp)
 {
 	int i;
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_admin_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	if (!apparmor_enabled)
@@ -839,7 +876,11 @@ static int param_set_audit(const char *val, struct kernel_param *kp)
 
 static int param_get_mode(char *buffer, struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_admin_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	if (!apparmor_enabled)
@@ -851,7 +892,11 @@ static int param_get_mode(char *buffer, struct kernel_param *kp)
 static int param_set_mode(const char *val, struct kernel_param *kp)
 {
 	int i;
+<<<<<<< HEAD
 	if (!capable(CAP_MAC_ADMIN))
+=======
+	if (!policy_admin_capable())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	if (!apparmor_enabled)

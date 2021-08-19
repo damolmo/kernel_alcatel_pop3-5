@@ -55,12 +55,20 @@ struct bdi_writeback {
 	struct list_head b_dirty;	/* dirty inodes */
 	struct list_head b_io;		/* parked for writeback */
 	struct list_head b_more_io;	/* parked for more writeback */
+<<<<<<< HEAD
+=======
+	struct list_head b_dirty_time;	/* time stamps are dirty */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spinlock_t list_lock;		/* protects the b_* lists */
 };
 
 struct backing_dev_info {
 	struct list_head bdi_list;
 	unsigned long ra_pages;	/* max readahead in PAGE_CACHE_SIZE units */
+<<<<<<< HEAD
+=======
+	unsigned long io_pages;	/* max allowed IO size */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long state;	/* Always use atomic bitops on this */
 	unsigned int capabilities; /* Device capabilities */
 	congested_fn *congested_fn; /* Function pointer if device is md/dm */

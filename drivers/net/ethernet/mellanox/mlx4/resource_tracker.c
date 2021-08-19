@@ -2474,13 +2474,22 @@ static int qp_get_mtt_size(struct mlx4_qp_context *qpc)
 	int total_pages;
 	int total_mem;
 	int page_offset = (be32_to_cpu(qpc->params2) >> 6) & 0x3f;
+<<<<<<< HEAD
+=======
+	int tot;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sq_size = 1 << (log_sq_size + log_sq_sride + 4);
 	rq_size = (srq|rss|xrc) ? 0 : (1 << (log_rq_size + log_rq_stride + 4));
 	total_mem = sq_size + rq_size;
+<<<<<<< HEAD
 	total_pages =
 		roundup_pow_of_two((total_mem + (page_offset << 6)) >>
 				   page_shift);
+=======
+	tot = (total_mem + (page_offset << 6)) >> page_shift;
+	total_pages = !tot ? 1 : roundup_pow_of_two(tot);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return total_pages;
 }
@@ -2709,7 +2718,11 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 	u32 srqn = qp_get_srqn(qpc) & 0xffffff;
 	int use_srq = (qp_get_srqn(qpc) >> 24) & 1;
 	struct res_srq *srq;
+<<<<<<< HEAD
 	int local_qpn = be32_to_cpu(qpc->local_qpn) & 0xffffff;
+=======
+	int local_qpn = vhcr->in_modifier & 0xffffff;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = qp_res_start_move_to(dev, slave, qpn, RES_QP_HW, &qp, 0);
 	if (err)
@@ -2769,6 +2782,12 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 		put_res(dev, slave, srqn, RES_SRQ);
 		qp->srq = srq;
 	}
+<<<<<<< HEAD
+=======
+
+	/* Save param3 for dynamic changes from VST back to VGT */
+	qp->param3 = qpc->param3;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	put_res(dev, slave, rcqn, RES_CQ);
 	put_res(dev, slave, mtt_base, RES_MTT);
 	res_end_move(dev, slave, RES_QP, qpn);
@@ -2922,7 +2941,11 @@ static int verify_qp_parameters(struct mlx4_dev *dev,
 		case QP_TRANS_RTS2RTS:
 		case QP_TRANS_SQD2SQD:
 		case QP_TRANS_SQD2RTS:
+<<<<<<< HEAD
 			if (slave != mlx4_master_func_num(dev))
+=======
+			if (slave != mlx4_master_func_num(dev)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (optpar & MLX4_QP_OPTPAR_PRIMARY_ADDR_PATH) {
 					port = (qp_ctx->pri_path.sched_queue >> 6 & 1) + 1;
 					if (dev->caps.port_mask[port] != MLX4_PORT_TYPE_IB)
@@ -2941,6 +2964,10 @@ static int verify_qp_parameters(struct mlx4_dev *dev,
 					if (qp_ctx->alt_path.mgid_index >= num_gids)
 						return -EINVAL;
 				}
+<<<<<<< HEAD
+=======
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		default:
 			break;
@@ -3530,7 +3557,10 @@ int mlx4_INIT2RTR_QP_wrapper(struct mlx4_dev *dev, int slave,
 	int qpn = vhcr->in_modifier & 0x7fffff;
 	struct res_qp *qp;
 	u8 orig_sched_queue;
+<<<<<<< HEAD
 	__be32	orig_param3 = qpc->param3;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 orig_vlan_control = qpc->pri_path.vlan_control;
 	u8 orig_fvl_rx = qpc->pri_path.fvl_rx;
 	u8 orig_pri_path_fl = qpc->pri_path.fl;
@@ -3571,7 +3601,10 @@ out:
 	 */
 	if (!err) {
 		qp->sched_queue = orig_sched_queue;
+<<<<<<< HEAD
 		qp->param3	= orig_param3;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		qp->vlan_control = orig_vlan_control;
 		qp->fvl_rx	=  orig_fvl_rx;
 		qp->pri_path_fl = orig_pri_path_fl;

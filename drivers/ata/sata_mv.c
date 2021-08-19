@@ -600,8 +600,13 @@ static int mv5_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 static int mv_port_start(struct ata_port *ap);
 static void mv_port_stop(struct ata_port *ap);
 static int mv_qc_defer(struct ata_queued_cmd *qc);
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc);
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc);
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static unsigned int mv_qc_issue(struct ata_queued_cmd *qc);
 static int mv_hardreset(struct ata_link *link, unsigned int *class,
 			unsigned long deadline);
@@ -2034,7 +2039,11 @@ static void mv_rw_multi_errata_sata24(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2046,15 +2055,25 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	switch (tf->protocol) {
 	case ATA_PROT_DMA:
 		if (tf->command == ATA_CMD_DSM)
+<<<<<<< HEAD
 			return;
+=======
+			return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* fall-thru */
 	case ATA_PROT_NCQ:
 		break;	/* continue below */
 	case ATA_PROT_PIO:
 		mv_rw_multi_errata_sata24(qc);
+<<<<<<< HEAD
 		return;
 	default:
 		return;
+=======
+		return AC_ERR_OK;
+	default:
+		return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Fill in command request block
@@ -2101,12 +2120,19 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 		 * non-NCQ mode are: [RW] STREAM DMA and W DMA FUA EXT, none
 		 * of which are defined/used by Linux.  If we get here, this
 		 * driver needs work.
+<<<<<<< HEAD
 		 *
 		 * FIXME: modify libata to give qc_prep a return value and
 		 * return error here.
 		 */
 		BUG_ON(tf->command);
 		break;
+=======
+		 */
+		ata_port_err(ap, "%s: unsupported command: %.2x\n", __func__,
+				tf->command);
+		return AC_ERR_INVALID;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	mv_crqb_pack_cmd(cw++, tf->nsect, ATA_REG_NSECT, 0);
 	mv_crqb_pack_cmd(cw++, tf->hob_lbal, ATA_REG_LBAL, 0);
@@ -2119,8 +2145,15 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	mv_crqb_pack_cmd(cw++, tf->command, ATA_REG_CMD, 1);	/* last */
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -2135,7 +2168,11 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2146,9 +2183,15 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 
 	if ((tf->protocol != ATA_PROT_DMA) &&
 	    (tf->protocol != ATA_PROT_NCQ))
+<<<<<<< HEAD
 		return;
 	if (tf->command == ATA_CMD_DSM)
 		return;  /* use bmdma for this */
+=======
+		return AC_ERR_OK;
+	if (tf->command == ATA_CMD_DSM)
+		return AC_ERR_OK;  /* use bmdma for this */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Fill in Gen IIE command request block */
 	if (!(tf->flags & ATA_TFLAG_WRITE))
@@ -2189,8 +2232,15 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 		);
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -4087,6 +4137,13 @@ static int mv_platform_probe(struct platform_device *pdev)
 		n_ports = mv_platform_data->n_ports;
 		irq = platform_get_irq(pdev, 0);
 	}
+<<<<<<< HEAD
+=======
+	if (irq < 0)
+		return irq;
+	if (!irq)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	host = ata_host_alloc_pinfo(&pdev->dev, ppi, n_ports);
 	hpriv = devm_kzalloc(&pdev->dev, sizeof(*hpriv), GFP_KERNEL);
@@ -4109,6 +4166,12 @@ static int mv_platform_probe(struct platform_device *pdev)
 	host->iomap = NULL;
 	hpriv->base = devm_ioremap(&pdev->dev, res->start,
 				   resource_size(res));
+<<<<<<< HEAD
+=======
+	if (!hpriv->base)
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hpriv->base -= SATAHC0_REG_BASE;
 
 	hpriv->clk = clk_get(&pdev->dev, NULL);

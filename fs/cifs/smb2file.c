@@ -104,12 +104,23 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 
 	/*
 	 * Accessing maxBuf is racy with cifs_reconnect - need to store value
+<<<<<<< HEAD
 	 * and check it for zero before using.
 	 */
 	max_buf = tcon->ses->server->maxBuf;
 	if (!max_buf)
 		return -EINVAL;
 
+=======
+	 * and check it before using.
+	 */
+	max_buf = tcon->ses->server->maxBuf;
+	if (max_buf < sizeof(struct smb2_lock_element))
+		return -EINVAL;
+
+	BUILD_BUG_ON(sizeof(struct smb2_lock_element) > PAGE_SIZE);
+	max_buf = min_t(unsigned int, max_buf, PAGE_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	max_num = max_buf / sizeof(struct smb2_lock_element);
 	buf = kzalloc(max_num * sizeof(struct smb2_lock_element), GFP_KERNEL);
 	if (!buf)
@@ -117,7 +128,11 @@ smb2_unlock_range(struct cifsFileInfo *cfile, struct file_lock *flock,
 
 	cur = buf;
 
+<<<<<<< HEAD
 	down_write(&cinode->lock_sem);
+=======
+	cifs_down_write(&cinode->lock_sem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry_safe(li, tmp, &cfile->llist->locks, llist) {
 		if (flock->fl_start > li->offset ||
 		    (flock->fl_start + length) <
@@ -241,11 +256,20 @@ smb2_push_mandatory_locks(struct cifsFileInfo *cfile)
 	 * and check it for zero before using.
 	 */
 	max_buf = tlink_tcon(cfile->tlink)->ses->server->maxBuf;
+<<<<<<< HEAD
 	if (!max_buf) {
+=======
+	if (max_buf < sizeof(struct smb2_lock_element)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		free_xid(xid);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(sizeof(struct smb2_lock_element) > PAGE_SIZE);
+	max_buf = min_t(unsigned int, max_buf, PAGE_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	max_num = max_buf / sizeof(struct smb2_lock_element);
 	buf = kzalloc(max_num * sizeof(struct smb2_lock_element), GFP_KERNEL);
 	if (!buf) {

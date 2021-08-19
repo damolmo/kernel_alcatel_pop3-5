@@ -145,6 +145,12 @@ process_mbx:
 		struct fm10k_mbx_info *mbx = &vf_info->mbx;
 		u16 glort = vf_info->glort;
 
+<<<<<<< HEAD
+=======
+		/* process the SM mailbox first to drain outgoing messages */
+		hw->mbx.ops.process(hw, &hw->mbx);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* verify port mapping is valid, if not reset port */
 		if (vf_info->vf_flags && !fm10k_glort_valid_pf(hw, glort))
 			hw->iov.ops.reset_lport(hw, vf_info);

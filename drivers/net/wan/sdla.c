@@ -711,7 +711,11 @@ static netdev_tx_t sdla_transmit(struct sk_buff *skb,
 
 					spin_lock_irqsave(&sdla_lock, flags);
 					SDLA_WINDOW(dev, addr);
+<<<<<<< HEAD
 					pbuf = (void *)(((int) dev->mem_start) + (addr & SDLA_ADDR_MASK));
+=======
+					pbuf = (void *)(dev->mem_start + (addr & SDLA_ADDR_MASK));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					__sdla_write(dev, pbuf->buf_addr, skb->data, skb->len);
 					SDLA_WINDOW(dev, addr);
 					pbuf->opp_flag = 1;

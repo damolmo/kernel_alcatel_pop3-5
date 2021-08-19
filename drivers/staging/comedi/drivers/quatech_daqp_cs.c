@@ -646,7 +646,11 @@ static int daqp_ao_insn_write(struct comedi_device *dev,
 	/* Make sure D/A update mode is direct update */
 	outb(0, dev->iobase + DAQP_AUX);
 
+<<<<<<< HEAD
 	for (i = 0; i > insn->n; i++) {
+=======
+	for (i = 0; i < insn->n; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		unsigned val = data[i];
 
 		s->readback[chan] = val;

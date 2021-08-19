@@ -52,4 +52,9 @@ static inline unsigned long find_zero(unsigned long bits)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#define zero_bytemask(mask) ((2ul << (find_zero(mask) * 8)) - 1)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _ASM_WORD_AT_A_TIME_H */

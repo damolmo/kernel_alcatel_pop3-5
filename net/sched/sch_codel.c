@@ -68,7 +68,12 @@ static struct sk_buff *dequeue(struct codel_vars *vars, struct Qdisc *sch)
 {
 	struct sk_buff *skb = __skb_dequeue(&sch->q);
 
+<<<<<<< HEAD
 	prefetch(&skb->end); /* we'll need skb_shinfo() */
+=======
+	if (skb)
+		prefetch(&skb->end); /* we'll need skb_shinfo() */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return skb;
 }
 
@@ -79,12 +84,22 @@ static struct sk_buff *codel_qdisc_dequeue(struct Qdisc *sch)
 
 	skb = codel_dequeue(sch, &q->params, &q->vars, &q->stats, dequeue);
 
+<<<<<<< HEAD
 	/* We cant call qdisc_tree_decrease_qlen() if our qlen is 0,
 	 * or HTB crashes. Defer it for next round.
 	 */
 	if (q->stats.drop_count && sch->q.qlen) {
 		qdisc_tree_decrease_qlen(sch, q->stats.drop_count);
 		q->stats.drop_count = 0;
+=======
+	/* We cant call qdisc_tree_reduce_backlog() if our qlen is 0,
+	 * or HTB crashes. Defer it for next round.
+	 */
+	if (q->stats.drop_count && sch->q.qlen) {
+		qdisc_tree_reduce_backlog(sch, q->stats.drop_count, q->stats.drop_len);
+		q->stats.drop_count = 0;
+		q->stats.drop_len = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (skb)
 		qdisc_bstats_update(sch, skb);
@@ -115,7 +130,11 @@ static int codel_change(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct codel_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tb[TCA_CODEL_MAX + 1];
+<<<<<<< HEAD
 	unsigned int qlen;
+=======
+	unsigned int qlen, dropped = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 
 	if (!opt)
@@ -149,10 +168,18 @@ static int codel_change(struct Qdisc *sch, struct nlattr *opt)
 	while (sch->q.qlen > sch->limit) {
 		struct sk_buff *skb = __skb_dequeue(&sch->q);
 
+<<<<<<< HEAD
 		qdisc_qstats_backlog_dec(sch, skb);
 		qdisc_drop(skb, sch);
 	}
 	qdisc_tree_decrease_qlen(sch, qlen - sch->q.qlen);
+=======
+		dropped += qdisc_pkt_len(skb);
+		qdisc_qstats_backlog_dec(sch, skb);
+		qdisc_drop(skb, sch);
+	}
+	qdisc_tree_reduce_backlog(sch, qlen - sch->q.qlen, dropped);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sch_tree_unlock(sch);
 	return 0;

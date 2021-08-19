@@ -117,8 +117,18 @@ static int mlx4_alloc_icm_coherent(struct device *dev, struct scatterlist *mem,
 	if (!buf)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sg_set_buf(mem, buf, PAGE_SIZE << order);
 	BUG_ON(mem->offset);
+=======
+	if (offset_in_page(buf)) {
+		dma_free_coherent(dev, PAGE_SIZE << order,
+				  buf, sg_dma_address(mem));
+		return -ENOMEM;
+	}
+
+	sg_set_buf(mem, buf, PAGE_SIZE << order);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sg_dma_len(mem) = PAGE_SIZE << order;
 	return 0;
 }

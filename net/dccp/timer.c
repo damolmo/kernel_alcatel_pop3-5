@@ -252,12 +252,19 @@ static void dccp_write_xmitlet(unsigned long data)
 	else
 		dccp_write_xmit(sk);
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
+=======
+	sock_put(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void dccp_write_xmit_timer(unsigned long data)
 {
 	dccp_write_xmitlet(data);
+<<<<<<< HEAD
 	sock_put((struct sock *)data);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void dccp_init_xmit_timers(struct sock *sk)

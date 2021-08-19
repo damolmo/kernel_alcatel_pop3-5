@@ -111,12 +111,16 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 		vlan_gvrp_uninit_applicant(real_dev);
 	}
 
+<<<<<<< HEAD
 	/* Take it out of our own structures, but be sure to interlock with
 	 * HW accelerating devices or SW vlan input packet processing if
 	 * VLAN is not 0 (leave it there for 802.1p).
 	 */
 	if (vlan_id)
 		vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
+=======
+	vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Get rid of the vlan's reference to real_dev */
 	dev_put(real_dev);
@@ -278,7 +282,12 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	return 0;
 
 out_free_newdev:
+<<<<<<< HEAD
 	free_netdev(new_dev);
+=======
+	if (new_dev->reg_state == NETREG_UNINITIALIZED)
+		free_netdev(new_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -291,6 +300,13 @@ static void vlan_sync_address(struct net_device *dev,
 	if (ether_addr_equal(vlan->real_dev_addr, dev->dev_addr))
 		return;
 
+<<<<<<< HEAD
+=======
+	/* vlan continues to inherit address of lower device */
+	if (vlan_dev_inherit_address(vlandev, dev))
+		goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* vlan address was different from the old address and is equal to
 	 * the new address */
 	if (!ether_addr_equal(vlandev->dev_addr, vlan->real_dev_addr) &&
@@ -303,6 +319,10 @@ static void vlan_sync_address(struct net_device *dev,
 	    !ether_addr_equal(vlandev->dev_addr, dev->dev_addr))
 		dev_uc_add(dev, vlandev->dev_addr);
 
+<<<<<<< HEAD
+=======
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ether_addr_copy(vlan->real_dev_addr, dev->dev_addr);
 }
 
@@ -370,6 +390,12 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 			dev->name);
 		vlan_vid_add(dev, htons(ETH_P_8021Q), 0);
 	}
+<<<<<<< HEAD
+=======
+	if (event == NETDEV_DOWN &&
+	    (dev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
+		vlan_vid_del(dev, htons(ETH_P_8021Q), 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vlan_info = rtnl_dereference(dev->vlan_info);
 	if (!vlan_info)
@@ -414,9 +440,12 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 		break;
 
 	case NETDEV_DOWN:
+<<<<<<< HEAD
 		if (dev->features & NETIF_F_HW_VLAN_CTAG_FILTER)
 			vlan_vid_del(dev, htons(ETH_P_8021Q), 0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Put all VLANs for this dev in the down state too.  */
 		vlan_group_for_each_dev(grp, i, vlandev) {
 			flgs = vlandev->flags;

@@ -198,6 +198,12 @@ static int __init mic_probe(struct platform_device *pdev)
 	mdrv->dev = &pdev->dev;
 	snprintf(mdrv->name, sizeof(mic_driver_name), mic_driver_name);
 
+<<<<<<< HEAD
+=======
+	/* FIXME: use dma_set_mask_and_coherent() and check result */
+	dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mdev->mmio.pa = MIC_X100_MMIO_BASE;
 	mdev->mmio.len = MIC_X100_MMIO_LEN;
 	mdev->mmio.va = devm_ioremap(&pdev->dev, MIC_X100_MMIO_BASE,
@@ -243,12 +249,15 @@ static void mic_platform_shutdown(struct platform_device *pdev)
 	mic_remove(pdev);
 }
 
+<<<<<<< HEAD
 static struct platform_device mic_platform_dev = {
 	.name = mic_driver_name,
 	.id   = 0,
 	.num_resources = 0,
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct platform_driver __refdata mic_platform_driver = {
 	.probe = mic_probe,
 	.remove = mic_remove,
@@ -259,6 +268,11 @@ static struct platform_driver __refdata mic_platform_driver = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct platform_device *mic_platform_dev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init mic_init(void)
 {
 	int ret;
@@ -271,9 +285,18 @@ static int __init mic_init(void)
 	}
 
 	mic_init_card_debugfs();
+<<<<<<< HEAD
 	ret = platform_device_register(&mic_platform_dev);
 	if (ret) {
 		pr_err("platform_device_register ret %d\n", ret);
+=======
+
+	mic_platform_dev = platform_device_register_simple(mic_driver_name,
+							   0, NULL, 0);
+	ret = PTR_ERR_OR_ZERO(mic_platform_dev);
+	if (ret) {
+		pr_err("platform_device_register_full ret %d\n", ret);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto cleanup_debugfs;
 	}
 	ret = platform_driver_register(&mic_platform_driver);
@@ -284,7 +307,11 @@ static int __init mic_init(void)
 	return ret;
 
 device_unregister:
+<<<<<<< HEAD
 	platform_device_unregister(&mic_platform_dev);
+=======
+	platform_device_unregister(mic_platform_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cleanup_debugfs:
 	mic_exit_card_debugfs();
 done:
@@ -294,7 +321,11 @@ done:
 static void __exit mic_exit(void)
 {
 	platform_driver_unregister(&mic_platform_driver);
+<<<<<<< HEAD
 	platform_device_unregister(&mic_platform_dev);
+=======
+	platform_device_unregister(mic_platform_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mic_exit_card_debugfs();
 }
 

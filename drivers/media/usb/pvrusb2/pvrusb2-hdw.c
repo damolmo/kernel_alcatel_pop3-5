@@ -670,6 +670,11 @@ static int ctrl_get_input(struct pvr2_ctrl *cptr,int *vp)
 
 static int ctrl_check_input(struct pvr2_ctrl *cptr,int v)
 {
+<<<<<<< HEAD
+=======
+	if (v < 0 || v > PVR2_CVAL_INPUT_MAX)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ((1 << v) & cptr->hdw->input_allowed_mask) != 0;
 }
 

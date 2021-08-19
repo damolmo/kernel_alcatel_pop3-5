@@ -626,6 +626,12 @@ static struct platform_device da8xx_lcdc_device = {
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(da8xx_lcdc_resources),
 	.resource	= da8xx_lcdc_resources,
+<<<<<<< HEAD
+=======
+	.dev		= {
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 int __init da8xx_register_lcdc(struct da8xx_lcdc_platform_data *pdata)
@@ -761,6 +767,11 @@ static struct platform_device da8xx_dsp = {
 	.resource	= da8xx_rproc_resources,
 };
 
+<<<<<<< HEAD
+=======
+static bool rproc_mem_inited __initdata;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if IS_ENABLED(CONFIG_DA8XX_REMOTEPROC)
 
 static phys_addr_t rproc_base __initdata;
@@ -799,6 +810,11 @@ void __init da8xx_rproc_reserve_cma(void)
 	ret = dma_declare_contiguous(&da8xx_dsp.dev, rproc_size, rproc_base, 0);
 	if (ret)
 		pr_err("%s: dma_declare_contiguous failed %d\n", __func__, ret);
+<<<<<<< HEAD
+=======
+	else
+		rproc_mem_inited = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #else
@@ -813,6 +829,15 @@ int __init da8xx_register_rproc(void)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!rproc_mem_inited) {
+		pr_warn("%s: memory not reserved for DSP, not registering DSP device\n",
+			__func__);
+		return -ENOMEM;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = platform_device_register(&da8xx_dsp);
 	if (ret)
 		pr_err("%s: can't register DSP device: %d\n", __func__, ret);

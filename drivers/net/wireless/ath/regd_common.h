@@ -35,6 +35,10 @@ enum EnumRd {
 	FRANCE_RES = 0x31,
 	FCC3_FCCA = 0x3A,
 	FCC3_WORLD = 0x3B,
+<<<<<<< HEAD
+=======
+	FCC3_ETSIC = 0x3F,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ETSI1_WORLD = 0x37,
 	ETSI3_ETSIA = 0x32,
@@ -44,6 +48,10 @@ enum EnumRd {
 	ETSI4_ETSIC = 0x38,
 	ETSI5_WORLD = 0x39,
 	ETSI6_WORLD = 0x34,
+<<<<<<< HEAD
+=======
+	ETSI8_WORLD = 0x3D,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ETSI_RESERVED = 0x33,
 
 	MKK1_MKKA = 0x40,
@@ -59,6 +67,10 @@ enum EnumRd {
 	MKK1_MKKA1 = 0x4A,
 	MKK1_MKKA2 = 0x4B,
 	MKK1_MKKC = 0x4C,
+<<<<<<< HEAD
+=======
+	APL2_FCCA = 0x4D,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	APL3_FCCA = 0x50,
 	APL1_WORLD = 0x52,
@@ -67,6 +79,10 @@ enum EnumRd {
 	APL1_ETSIC = 0x55,
 	APL2_ETSIC = 0x56,
 	APL5_WORLD = 0x58,
+<<<<<<< HEAD
+=======
+	APL13_WORLD = 0x5A,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	APL6_WORLD = 0x5B,
 	APL7_FCCA = 0x5C,
 	APL8_WORLD = 0x5D,
@@ -168,6 +184,10 @@ static struct reg_dmn_pair_mapping regDomainPairs[] = {
 	{FCC2_ETSIC, CTL_FCC, CTL_ETSI},
 	{FCC3_FCCA, CTL_FCC, CTL_FCC},
 	{FCC3_WORLD, CTL_FCC, CTL_ETSI},
+<<<<<<< HEAD
+=======
+	{FCC3_ETSIC, CTL_FCC, CTL_ETSI},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{FCC4_FCCA, CTL_FCC, CTL_FCC},
 	{FCC5_FCCA, CTL_FCC, CTL_FCC},
 	{FCC6_FCCA, CTL_FCC, CTL_FCC},
@@ -179,6 +199,10 @@ static struct reg_dmn_pair_mapping regDomainPairs[] = {
 	{ETSI4_WORLD, CTL_ETSI, CTL_ETSI},
 	{ETSI5_WORLD, CTL_ETSI, CTL_ETSI},
 	{ETSI6_WORLD, CTL_ETSI, CTL_ETSI},
+<<<<<<< HEAD
+=======
+	{ETSI8_WORLD, CTL_ETSI, CTL_ETSI},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* XXX: For ETSI3_ETSIA, Was NO_CTL meant for the 2 GHz band ? */
 	{ETSI3_ETSIA, CTL_ETSI, CTL_ETSI},
@@ -188,9 +212,17 @@ static struct reg_dmn_pair_mapping regDomainPairs[] = {
 	{FCC1_FCCA, CTL_FCC, CTL_FCC},
 	{APL1_WORLD, CTL_FCC, CTL_ETSI},
 	{APL2_WORLD, CTL_FCC, CTL_ETSI},
+<<<<<<< HEAD
 	{APL3_WORLD, CTL_FCC, CTL_ETSI},
 	{APL4_WORLD, CTL_FCC, CTL_ETSI},
 	{APL5_WORLD, CTL_FCC, CTL_ETSI},
+=======
+	{APL2_FCCA, CTL_FCC, CTL_FCC},
+	{APL3_WORLD, CTL_FCC, CTL_ETSI},
+	{APL4_WORLD, CTL_FCC, CTL_ETSI},
+	{APL5_WORLD, CTL_FCC, CTL_ETSI},
+	{APL13_WORLD, CTL_ETSI, CTL_ETSI},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{APL6_WORLD, CTL_ETSI, CTL_ETSI},
 	{APL8_WORLD, CTL_ETSI, CTL_ETSI},
 	{APL9_WORLD, CTL_ETSI, CTL_ETSI},
@@ -298,6 +330,10 @@ static struct country_code_to_enum_rd allCountries[] = {
 	{CTRY_AUSTRALIA2, FCC6_WORLD, "AU"},
 	{CTRY_AUSTRIA, ETSI1_WORLD, "AT"},
 	{CTRY_AZERBAIJAN, ETSI4_WORLD, "AZ"},
+<<<<<<< HEAD
+=======
+	{CTRY_BAHAMAS, FCC3_WORLD, "BS"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{CTRY_BAHRAIN, APL6_WORLD, "BH"},
 	{CTRY_BANGLADESH, NULL1_WORLD, "BD"},
 	{CTRY_BARBADOS, FCC2_WORLD, "BB"},
@@ -305,6 +341,10 @@ static struct country_code_to_enum_rd allCountries[] = {
 	{CTRY_BELGIUM, ETSI1_WORLD, "BE"},
 	{CTRY_BELGIUM2, ETSI4_WORLD, "BL"},
 	{CTRY_BELIZE, APL1_ETSIC, "BZ"},
+<<<<<<< HEAD
+=======
+	{CTRY_BERMUDA, FCC3_FCCA, "BM"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{CTRY_BOLIVIA, APL1_ETSIC, "BO"},
 	{CTRY_BOSNIA_HERZ, ETSI1_WORLD, "BA"},
 	{CTRY_BRAZIL, FCC3_WORLD, "BR"},
@@ -444,6 +484,10 @@ static struct country_code_to_enum_rd allCountries[] = {
 	{CTRY_ROMANIA, NULL1_WORLD, "RO"},
 	{CTRY_RUSSIA, NULL1_WORLD, "RU"},
 	{CTRY_SAUDI_ARABIA, NULL1_WORLD, "SA"},
+<<<<<<< HEAD
+=======
+	{CTRY_SERBIA, ETSI1_WORLD, "RS"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{CTRY_SERBIA_MONTENEGRO, ETSI1_WORLD, "CS"},
 	{CTRY_SINGAPORE, APL6_WORLD, "SG"},
 	{CTRY_SLOVAKIA, ETSI1_WORLD, "SK"},
@@ -455,10 +499,18 @@ static struct country_code_to_enum_rd allCountries[] = {
 	{CTRY_SWITZERLAND, ETSI1_WORLD, "CH"},
 	{CTRY_SYRIA, NULL1_WORLD, "SY"},
 	{CTRY_TAIWAN, APL3_FCCA, "TW"},
+<<<<<<< HEAD
+=======
+	{CTRY_TANZANIA, APL1_WORLD, "TZ"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{CTRY_THAILAND, FCC3_WORLD, "TH"},
 	{CTRY_TRINIDAD_Y_TOBAGO, FCC3_WORLD, "TT"},
 	{CTRY_TUNISIA, ETSI3_WORLD, "TN"},
 	{CTRY_TURKEY, ETSI3_WORLD, "TR"},
+<<<<<<< HEAD
+=======
+	{CTRY_UGANDA, FCC3_WORLD, "UG"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{CTRY_UKRAINE, NULL1_WORLD, "UA"},
 	{CTRY_UAE, NULL1_WORLD, "AE"},
 	{CTRY_UNITED_KINGDOM, ETSI1_WORLD, "GB"},

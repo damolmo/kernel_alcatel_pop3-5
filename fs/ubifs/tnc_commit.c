@@ -248,6 +248,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 	 * it is more comprehensive and less efficient than is needed for this
 	 * purpose.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	if (mutex_trylock(&ubifs_sbuf_mutex) == 0) {
 		atomic_long_inc(&ubifs_sbuf_lock_count);
@@ -264,6 +265,12 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 #endif
 		return PTR_ERR(sleb);
 	}
+=======
+	sleb = ubifs_scan(c, lnum, 0, c->ileb_buf, 0);
+	c->ileb_len = 0;
+	if (IS_ERR(sleb))
+		return PTR_ERR(sleb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	gap_start = 0;
 	list_for_each_entry(snod, &sleb->nodes, list) {
 		struct ubifs_idx_node *idx;
@@ -278,9 +285,12 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 					    snod->offs);
 		if (in_use < 0) {
 			ubifs_scan_destroy(sleb);
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 			mutex_unlock(&ubifs_sbuf_mutex);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return in_use; /* Error code */
 		}
 		if (in_use) {
@@ -308,19 +318,27 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 	gap_end = c->leb_size;
 	/* Try to fill gap */
 	written = fill_gap(c, lnum, gap_start, gap_end, &dirt);
+<<<<<<< HEAD
 	if (written < 0) {
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 		mutex_unlock(&ubifs_sbuf_mutex);
 #endif
 		return written; /* Error code */
 	}
+=======
+	if (written < 0)
+		return written; /* Error code */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tot_written += written;
 	if (tot_written == 0) {
 		struct ubifs_lprops lp;
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 		mutex_unlock(&ubifs_sbuf_mutex);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dbg_gc("LEB %d wrote %d index nodes", lnum, tot_written);
 		err = ubifs_read_one_lp(c, lnum, &lp);
 		if (err)
@@ -340,6 +358,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 	}
 	err = ubifs_change_one_lp(c, lnum, c->leb_size - c->ileb_len, dirt,
 				  0, 0, 0);
+<<<<<<< HEAD
 	if (err) {
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 		mutex_unlock(&ubifs_sbuf_mutex);
@@ -350,6 +369,11 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	mutex_unlock(&ubifs_sbuf_mutex);
 #endif
+=======
+	if (err)
+		return err;
+	err = ubifs_leb_change(c, lnum, c->ileb_buf, c->ileb_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err)
 		return err;
 	dbg_gc("LEB %d wrote %d index nodes", lnum, tot_written);
@@ -399,7 +423,11 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 
 	p = c->gap_lebs;
 	do {
+<<<<<<< HEAD
 		ubifs_assert(p < c->gap_lebs + sizeof(int) * c->lst.idx_lebs);
+=======
+		ubifs_assert(p < c->gap_lebs + c->lst.idx_lebs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		written = layout_leb_in_gaps(c, p);
 		if (written < 0) {
 			err = written;

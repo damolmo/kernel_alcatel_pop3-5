@@ -88,8 +88,14 @@ extern int remap_vmalloc_range_partial(struct vm_area_struct *vma,
 
 extern int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
 							unsigned long pgoff);
+<<<<<<< HEAD
 void vmalloc_sync_all(void);
  
+=======
+void vmalloc_sync_mappings(void);
+void vmalloc_sync_unmappings(void);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  *	Lowlevel-APIs (not for driver use!)
  */

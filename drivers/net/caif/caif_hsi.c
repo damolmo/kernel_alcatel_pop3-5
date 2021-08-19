@@ -1468,7 +1468,11 @@ static void __exit cfhsi_exit_module(void)
 	rtnl_lock();
 	list_for_each_safe(list_node, n, &cfhsi_list) {
 		cfhsi = list_entry(list_node, struct cfhsi, list);
+<<<<<<< HEAD
 		unregister_netdev(cfhsi->ndev);
+=======
+		unregister_netdevice(cfhsi->ndev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	rtnl_unlock();
 }

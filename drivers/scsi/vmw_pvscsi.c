@@ -567,15 +567,36 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 	    (btstat == BTSTAT_SUCCESS ||
 	     btstat == BTSTAT_LINKED_COMMAND_COMPLETED ||
 	     btstat == BTSTAT_LINKED_COMMAND_COMPLETED_WITH_FLAG)) {
+<<<<<<< HEAD
 		cmd->result = (DID_OK << 16) | sdstat;
 		if (sdstat == SAM_STAT_CHECK_CONDITION && cmd->sense_buffer)
 			cmd->result |= (DRIVER_SENSE << 24);
+=======
+		if (sdstat == SAM_STAT_COMMAND_TERMINATED) {
+			cmd->result = (DID_RESET << 16);
+		} else {
+			cmd->result = (DID_OK << 16) | sdstat;
+			if (sdstat == SAM_STAT_CHECK_CONDITION &&
+			    cmd->sense_buffer)
+				cmd->result |= (DRIVER_SENSE << 24);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		switch (btstat) {
 		case BTSTAT_SUCCESS:
 		case BTSTAT_LINKED_COMMAND_COMPLETED:
 		case BTSTAT_LINKED_COMMAND_COMPLETED_WITH_FLAG:
+<<<<<<< HEAD
 			/* If everything went fine, let's move on..  */
+=======
+			/*
+			 * Commands like INQUIRY may transfer less data than
+			 * requested by the initiator via bufflen. Set residual
+			 * count to make upper layer aware of the actual amount
+			 * of data returned.
+			 */
+			scsi_set_resid(cmd, scsi_bufflen(cmd) - e->dataLen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cmd->result = (DID_OK << 16);
 			break;
 
@@ -615,7 +636,11 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 			break;
 
 		case BTSTAT_ABORTQUEUE:
+<<<<<<< HEAD
 			cmd->result = (DID_ABORT << 16);
+=======
+			cmd->result = (DID_BUS_BUSY << 16);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 		case BTSTAT_SCSIPARITY:
@@ -754,6 +779,10 @@ static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd
 	struct pvscsi_adapter *adapter = shost_priv(host);
 	struct pvscsi_ctx *ctx;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	unsigned char op;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
@@ -766,6 +795,7 @@ static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd
 	}
 
 	cmd->scsi_done = done;
+<<<<<<< HEAD
 
 	dev_dbg(&cmd->device->sdev_gendev,
 		"queued cmd %p, ctx %p, op=%x\n", cmd, ctx, cmd->cmnd[0]);
@@ -773,6 +803,16 @@ static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd
 	spin_unlock_irqrestore(&adapter->hw_lock, flags);
 
 	pvscsi_kick_io(adapter, cmd->cmnd[0]);
+=======
+	op = cmd->cmnd[0];
+
+	dev_dbg(&cmd->device->sdev_gendev,
+		"queued cmd %p, ctx %p, op=%x\n", cmd, ctx, op);
+
+	spin_unlock_irqrestore(&adapter->hw_lock, flags);
+
+	pvscsi_kick_io(adapter, op);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -1220,8 +1260,11 @@ static void pvscsi_shutdown_intr(struct pvscsi_adapter *adapter)
 
 static void pvscsi_release_resources(struct pvscsi_adapter *adapter)
 {
+<<<<<<< HEAD
 	pvscsi_shutdown_intr(adapter);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (adapter->workqueue)
 		destroy_workqueue(adapter->workqueue);
 
@@ -1550,6 +1593,10 @@ static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 out_reset_adapter:
 	ll_adapter_reset(adapter);
 out_release_resources:
+<<<<<<< HEAD
+=======
+	pvscsi_shutdown_intr(adapter);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pvscsi_release_resources(adapter);
 	scsi_host_put(host);
 out_disable_device:
@@ -1558,6 +1605,10 @@ out_disable_device:
 	return error;
 
 out_release_resources_and_disable:
+<<<<<<< HEAD
+=======
+	pvscsi_shutdown_intr(adapter);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pvscsi_release_resources(adapter);
 	goto out_disable_device;
 }

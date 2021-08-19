@@ -185,7 +185,11 @@ static void slave_event(struct mlx4_dev *dev, u8 slave, struct mlx4_eqe *eqe)
 		return;
 	}
 
+<<<<<<< HEAD
 	memcpy(s_eqe, eqe, dev->caps.eqe_size - 1);
+=======
+	memcpy(s_eqe, eqe, sizeof(struct mlx4_eqe) - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	s_eqe->slave_id = slave;
 	/* ensure all information is written before setting the ownersip bit */
 	wmb();
@@ -510,8 +514,14 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 			break;
 
 		case MLX4_EVENT_TYPE_SRQ_LIMIT:
+<<<<<<< HEAD
 			mlx4_dbg(dev, "%s: MLX4_EVENT_TYPE_SRQ_LIMIT\n",
 				 __func__);
+=======
+			mlx4_dbg(dev, "%s: MLX4_EVENT_TYPE_SRQ_LIMIT. srq_no=0x%x, eq 0x%x\n",
+				 __func__, be32_to_cpu(eqe->event.srq.srqn),
+				 eq->eqn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case MLX4_EVENT_TYPE_SRQ_CATAS_ERROR:
 			if (mlx4_is_master(dev)) {
 				/* forward only to slave owning the SRQ */
@@ -526,6 +536,7 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 						  eq->eqn, eq->cons_index, ret);
 					break;
 				}
+<<<<<<< HEAD
 				mlx4_warn(dev, "%s: slave:%d, srq_no:0x%x, event: %02x(%02x)\n",
 					  __func__, slave,
 					  be32_to_cpu(eqe->event.srq.srqn),
@@ -535,6 +546,21 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 					mlx4_warn(dev, "%s: sending event %02x(%02x) to slave:%d\n",
 						  __func__, eqe->type,
 						  eqe->subtype, slave);
+=======
+				if (eqe->type ==
+				    MLX4_EVENT_TYPE_SRQ_CATAS_ERROR)
+					mlx4_warn(dev, "%s: slave:%d, srq_no:0x%x, event: %02x(%02x)\n",
+						  __func__, slave,
+						  be32_to_cpu(eqe->event.srq.srqn),
+						  eqe->type, eqe->subtype);
+
+				if (!ret && slave != dev->caps.function) {
+					if (eqe->type ==
+					    MLX4_EVENT_TYPE_SRQ_CATAS_ERROR)
+						mlx4_warn(dev, "%s: sending event %02x(%02x) to slave:%d\n",
+							  __func__, eqe->type,
+							  eqe->subtype, slave);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					mlx4_slave_event(dev, slave, eqe);
 					break;
 				}
@@ -568,7 +594,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 							continue;
 						mlx4_dbg(dev, "%s: Sending MLX4_PORT_CHANGE_SUBTYPE_DOWN to slave: %d, port:%d\n",
 							 __func__, i, port);
+<<<<<<< HEAD
 						s_info = &priv->mfunc.master.vf_oper[slave].vport[port].state;
+=======
+						s_info = &priv->mfunc.master.vf_oper[i].vport[port].state;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						if (IFLA_VF_LINK_STATE_AUTO == s_info->link_state) {
 							eqe->event.port_change.port =
 								cpu_to_be32(
@@ -601,7 +631,11 @@ static int mlx4_eq_int(struct mlx4_dev *dev, struct mlx4_eq *eq)
 							continue;
 						if (i == mlx4_master_func_num(dev))
 							continue;
+<<<<<<< HEAD
 						s_info = &priv->mfunc.master.vf_oper[slave].vport[port].state;
+=======
+						s_info = &priv->mfunc.master.vf_oper[i].vport[port].state;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						if (IFLA_VF_LINK_STATE_AUTO == s_info->link_state) {
 							eqe->event.port_change.port =
 								cpu_to_be32(

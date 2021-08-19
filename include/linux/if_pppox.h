@@ -56,7 +56,11 @@ struct pppopns_opt {
 	__u16		remote;
 	__u32		recv_sequence;
 	__u32		xmit_sequence;
+<<<<<<< HEAD
 	void		(*data_ready)(struct sock *sk_raw, int length);
+=======
+	void		(*data_ready)(struct sock *sk_raw);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int		(*backlog_rcv)(struct sock *sk_raw, struct sk_buff *skb);
 };
 
@@ -103,6 +107,12 @@ extern int register_pppox_proto(int proto_num, const struct pppox_proto *pp);
 extern void unregister_pppox_proto(int proto_num);
 extern void pppox_unbind_sock(struct sock *sk);/* delete ppp-channel binding */
 extern int pppox_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+<<<<<<< HEAD
+=======
+extern int pppox_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+
+#define PPPOEIOCSFWD32    _IOW(0xB1 ,0, compat_size_t)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* PPPoX socket states */
 enum {

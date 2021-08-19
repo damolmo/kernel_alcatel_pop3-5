@@ -286,6 +286,11 @@ s32 ixgbe_dcb_hw_config(struct ixgbe_hw *hw,
 						 bwgid, ptype);
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ixgbe_dcb_hw_config_82599(hw, pfc_en, refill, max,
 						 bwgid, ptype, prio_tc);
 	default:
@@ -302,6 +307,11 @@ s32 ixgbe_dcb_hw_pfc_config(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 		return ixgbe_dcb_config_pfc_82598(hw, pfc_en);
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ixgbe_dcb_config_pfc_82599(hw, pfc_en, prio_tc);
 	default:
 		break;
@@ -357,6 +367,11 @@ s32 ixgbe_dcb_hw_ets_config(struct ixgbe_hw *hw,
 		break;
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ixgbe_dcb_config_rx_arbiter_82599(hw, refill, max,
 						  bwg_id, prio_type, prio_tc);
 		ixgbe_dcb_config_tx_desc_arbiter_82599(hw, refill, max,
@@ -385,6 +400,11 @@ void ixgbe_dcb_read_rtrup2tc(struct ixgbe_hw *hw, u8 *map)
 	switch (hw->mac.type) {
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ixgbe_dcb_read_rtrup2tc_82599(hw, map);
 		break;
 	default:

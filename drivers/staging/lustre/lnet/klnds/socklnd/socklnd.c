@@ -2643,8 +2643,13 @@ ksocknal_enumerate_interfaces(ksock_net_t *net)
 
 		net->ksnn_interfaces[j].ksni_ipaddr = ip;
 		net->ksnn_interfaces[j].ksni_netmask = mask;
+<<<<<<< HEAD
 		strncpy(&net->ksnn_interfaces[j].ksni_name[0],
 			names[i], IFNAMSIZ);
+=======
+		strlcpy(net->ksnn_interfaces[j].ksni_name,
+			names[i], sizeof(net->ksnn_interfaces[j].ksni_name));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		j++;
 	}
 
@@ -2827,8 +2832,14 @@ ksocknal_startup (lnet_ni_t *ni)
 				goto fail_1;
 			}
 
+<<<<<<< HEAD
 			strncpy(&net->ksnn_interfaces[i].ksni_name[0],
 				ni->ni_interfaces[i], IFNAMSIZ);
+=======
+			strlcpy(net->ksnn_interfaces[i].ksni_name,
+				ni->ni_interfaces[i],
+				sizeof(net->ksnn_interfaces[i].ksni_name));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		net->ksnn_ninterfaces = i;
 	}

@@ -2500,7 +2500,11 @@ static inline int security_task_prctl(int option, unsigned long arg2,
 				      unsigned long arg4,
 				      unsigned long arg5)
 {
+<<<<<<< HEAD
 	return cap_task_prctl(option, arg2, arg3, arg3, arg5);
+=======
+	return cap_task_prctl(option, arg2, arg3, arg4, arg5);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void security_task_to_inode(struct task_struct *p, struct inode *inode)

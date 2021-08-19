@@ -113,6 +113,13 @@ void f_setown(struct file *filp, unsigned long arg, int force)
 	int who = arg;
 	type = PIDTYPE_PID;
 	if (who < 0) {
+<<<<<<< HEAD
+=======
+		/* avoid overflow below */
+		if (who == INT_MIN)
+			return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		type = PIDTYPE_PGID;
 		who = -who;
 	}
@@ -740,6 +747,7 @@ static int __init fcntl_init(void)
 	 * Exceptions: O_NONBLOCK is a two bit define on parisc; O_NDELAY
 	 * is defined as O_NONBLOCK on some platforms and not on others.
 	 */
+<<<<<<< HEAD
 	BUILD_BUG_ON(20 - 1 /* for O_RDONLY being 0 */ != HWEIGHT32(
 		O_RDONLY	| O_WRONLY	| O_RDWR	|
 		O_CREAT		| O_EXCL	| O_NOCTTY	|
@@ -749,6 +757,12 @@ static int __init fcntl_init(void)
 		O_NOFOLLOW	| O_NOATIME	| O_CLOEXEC	|
 		__FMODE_EXEC	| O_PATH	| __O_TMPFILE
 		));
+=======
+	BUILD_BUG_ON(21 - 1 /* for O_RDONLY being 0 */ !=
+		HWEIGHT32(
+			(VALID_OPEN_FLAGS & ~(O_NONBLOCK | O_NDELAY)) |
+			__FMODE_EXEC | __FMODE_NONOTIFY));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	fasync_cache = kmem_cache_create("fasync_cache",
 		sizeof(struct fasync_struct), 0, SLAB_PANIC, NULL);

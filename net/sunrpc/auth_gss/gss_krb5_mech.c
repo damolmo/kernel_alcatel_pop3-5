@@ -45,6 +45,11 @@
 #include <linux/crypto.h>
 #include <linux/sunrpc/gss_krb5_enctypes.h>
 
+<<<<<<< HEAD
+=======
+#include "auth_gss_internal.h"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef RPC_DEBUG
 # define RPCDBG_FACILITY	RPCDBG_AUTH
 #endif
@@ -186,6 +191,7 @@ get_gss_krb5_enctype(int etype)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static const void *
 simple_get_bytes(const void *p, const void *end, void *res, int len)
 {
@@ -215,6 +221,8 @@ simple_get_netobj(const void *p, const void *end, struct xdr_netobj *res)
 	return q;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline const void *
 get_key(const void *p, const void *end,
 	struct krb5_ctx *ctx, struct crypto_blkcipher **res)

@@ -799,6 +799,11 @@ int __init hpet_enable(void)
 		return 0;
 
 	hpet_set_mapping();
+<<<<<<< HEAD
+=======
+	if (!hpet_virt_address)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Read the period and check for a sane value:

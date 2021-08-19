@@ -412,7 +412,20 @@ static int cpm_uart_startup(struct uart_port *port)
 			clrbits16(&pinfo->sccp->scc_sccm, UART_SCCM_RX);
 		}
 		cpm_uart_initbd(pinfo);
+<<<<<<< HEAD
 		cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
+=======
+		if (IS_SMC(pinfo)) {
+			out_be32(&pinfo->smcup->smc_rstate, 0);
+			out_be32(&pinfo->smcup->smc_tstate, 0);
+			out_be16(&pinfo->smcup->smc_rbptr,
+				 in_be16(&pinfo->smcup->smc_rbase));
+			out_be16(&pinfo->smcup->smc_tbptr,
+				 in_be16(&pinfo->smcup->smc_tbase));
+		} else {
+			cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	/* Install interrupt handler. */
 	retval = request_irq(port->irq, cpm_uart_int, 0, "cpm_uart", port);
@@ -863,16 +876,24 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
 	         (u8 __iomem *)pinfo->tx_bd_base - DPRAM_BASE);
 
 /*
+<<<<<<< HEAD
  *  In case SMC1 is being relocated...
  */
 #if defined (CONFIG_I2C_SPI_SMC1_UCODE_PATCH)
+=======
+ *  In case SMC is being relocated...
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	out_be16(&up->smc_rbptr, in_be16(&pinfo->smcup->smc_rbase));
 	out_be16(&up->smc_tbptr, in_be16(&pinfo->smcup->smc_tbase));
 	out_be32(&up->smc_rstate, 0);
 	out_be32(&up->smc_tstate, 0);
 	out_be16(&up->smc_brkcr, 1);              /* number of break chars */
 	out_be16(&up->smc_brkec, 0);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Set up the uart parameters in the
 	 * parameter ram.
@@ -886,8 +907,11 @@ static void cpm_uart_init_smc(struct uart_cpm_port *pinfo)
 	out_be16(&up->smc_brkec, 0);
 	out_be16(&up->smc_brkcr, 1);
 
+<<<<<<< HEAD
 	cpm_line_cr_cmd(pinfo, CPM_CR_INIT_TRX);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Set UART mode, 8 bit, no parity, one stop.
 	 * Enable receive and transmit.
 	 */
@@ -1054,8 +1078,13 @@ static int poll_wait_key(char *obuf, struct uart_cpm_port *pinfo)
 	/* Get the address of the host memory buffer.
 	 */
 	bdp = pinfo->rx_cur;
+<<<<<<< HEAD
 	while (bdp->cbd_sc & BD_SC_EMPTY)
 		;
+=======
+	if (bdp->cbd_sc & BD_SC_EMPTY)
+		return NO_POLL_CHAR;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* If the buffer address is in the CPM DPRAM, don't
 	 * convert it.
@@ -1089,7 +1118,15 @@ static int cpm_get_poll_char(struct uart_port *port)
 		poll_chars = 0;
 	}
 	if (poll_chars <= 0) {
+<<<<<<< HEAD
 		poll_chars = poll_wait_key(poll_buf, pinfo);
+=======
+		int ret = poll_wait_key(poll_buf, pinfo);
+
+		if (ret == NO_POLL_CHAR)
+			return ret;
+		poll_chars = ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pollp = poll_buf;
 	}
 	poll_chars--;

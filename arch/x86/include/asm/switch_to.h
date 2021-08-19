@@ -1,6 +1,11 @@
 #ifndef _ASM_X86_SWITCH_TO_H
 #define _ASM_X86_SWITCH_TO_H
 
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct task_struct; /* one of the stranger aspects of C forward declarations */
 __visible struct task_struct *__switch_to(struct task_struct *prev,
 					   struct task_struct *next);
@@ -24,6 +29,26 @@ void __switch_to_xtra(struct task_struct *prev_p, struct task_struct *next_p,
 #define __switch_canary_iparam
 #endif	/* CC_STACKPROTECTOR */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RETPOLINE
+	/*
+	 * When switching from a shallower to a deeper call stack
+	 * the RSB may either underflow or use entries populated
+	 * with userspace addresses. On CPUs where those concerns
+	 * exist, overwrite the RSB with entries which capture
+	 * speculative execution to prevent attack.
+	 */
+#define __retpoline_fill_return_buffer					\
+	ALTERNATIVE("jmp 910f",						\
+		__stringify(__FILL_RETURN_BUFFER(%%ebx, RSB_CLEAR_LOOPS, %%esp)),\
+		X86_FEATURE_RSB_CTXSW)					\
+	"910:\n\t"
+#else
+#define __retpoline_fill_return_buffer
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Saving eflags is important. It switches not only IOPL between tasks,
  * it also protects other tasks from NT leaking through sysenter etc.
@@ -46,6 +71,10 @@ do {									\
 		     "movl $1f,%[prev_ip]\n\t"	/* save    EIP   */	\
 		     "pushl %[next_ip]\n\t"	/* restore EIP   */	\
 		     __switch_canary					\
+<<<<<<< HEAD
+=======
+		     __retpoline_fill_return_buffer			\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		     "jmp __switch_to\n"	/* regparm call  */	\
 		     "1:\t"						\
 		     "popl %%ebp\n\t"		/* restore EBP   */	\
@@ -100,6 +129,26 @@ do {									\
 #define __switch_canary_iparam
 #endif	/* CC_STACKPROTECTOR */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RETPOLINE
+	/*
+	 * When switching from a shallower to a deeper call stack
+	 * the RSB may either underflow or use entries populated
+	 * with userspace addresses. On CPUs where those concerns
+	 * exist, overwrite the RSB with entries which capture
+	 * speculative execution to prevent attack.
+	 */
+#define __retpoline_fill_return_buffer					\
+	ALTERNATIVE("jmp 910f",						\
+		__stringify(__FILL_RETURN_BUFFER(%%r12, RSB_CLEAR_LOOPS, %%rsp)),\
+		X86_FEATURE_RSB_CTXSW)					\
+	"910:\n\t"
+#else
+#define __retpoline_fill_return_buffer
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Save restore flags to clear handle leaking NT */
 #define switch_to(prev, next, last) \
 	asm volatile(SAVE_CONTEXT					  \
@@ -108,6 +157,10 @@ do {									\
 	     "call __switch_to\n\t"					  \
 	     "movq "__percpu_arg([current_task])",%%rsi\n\t"		  \
 	     __switch_canary						  \
+<<<<<<< HEAD
+=======
+	     __retpoline_fill_return_buffer				  \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	     "movq %P[thread_info](%%rsi),%%r8\n\t"			  \
 	     "movq %%rax,%%rdi\n\t" 					  \
 	     "testl  %[_tif_fork],%P[ti_flags](%%r8)\n\t"		  \

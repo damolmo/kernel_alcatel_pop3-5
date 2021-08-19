@@ -290,6 +290,7 @@ placeholder:
 	slot_name = make_slot_name(name);
 	if (!slot_name) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto err;
 	}
 
@@ -300,6 +301,21 @@ placeholder:
 
 	INIT_LIST_HEAD(&slot->list);
 	list_add(&slot->list, &parent->slots);
+=======
+		kfree(slot);
+		goto err;
+	}
+
+	INIT_LIST_HEAD(&slot->list);
+	list_add(&slot->list, &parent->slots);
+
+	err = kobject_init_and_add(&slot->kobj, &pci_slot_ktype, NULL,
+				   "%s", slot_name);
+	if (err) {
+		kobject_put(&slot->kobj);
+		goto err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_for_each_entry(dev, &parent->devices, bus_list)
 		if (PCI_SLOT(dev->devfn) == slot_nr)
@@ -313,7 +329,10 @@ out:
 	up_write(&pci_bus_sem);
 	return slot;
 err:
+<<<<<<< HEAD
 	kfree(slot);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	slot = ERR_PTR(err);
 	goto out;
 }

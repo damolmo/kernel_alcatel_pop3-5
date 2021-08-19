@@ -849,6 +849,10 @@ void rose_link_device_down(struct net_device *dev)
 
 /*
  *	Route a frame to an appropriate AX.25 connection.
+<<<<<<< HEAD
+=======
+ *	A NULL ax25_cb indicates an internally generated frame.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
 {
@@ -866,6 +870,13 @@ int rose_route_frame(struct sk_buff *skb, ax25_cb *ax25)
 
 	if (skb->len < ROSE_MIN_LEN)
 		return res;
+<<<<<<< HEAD
+=======
+
+	if (!ax25)
+		return rose_loopback_queue(skb, NULL);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	frametype = skb->data[2];
 	lci = ((skb->data[0] << 8) & 0xF00) + ((skb->data[1] << 0) & 0x0FF);
 	if (frametype == ROSE_CALL_REQUEST &&

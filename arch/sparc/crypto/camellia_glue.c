@@ -274,6 +274,10 @@ static struct crypto_alg algs[] = { {
 		.blkcipher = {
 			.min_keysize	= CAMELLIA_MIN_KEY_SIZE,
 			.max_keysize	= CAMELLIA_MAX_KEY_SIZE,
+<<<<<<< HEAD
+=======
+			.ivsize		= CAMELLIA_BLOCK_SIZE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			.setkey		= camellia_set_key,
 			.encrypt	= cbc_encrypt,
 			.decrypt	= cbc_decrypt,

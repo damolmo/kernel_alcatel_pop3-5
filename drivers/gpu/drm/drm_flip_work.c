@@ -25,6 +25,7 @@
 #include "drm_flip_work.h"
 
 /**
+<<<<<<< HEAD
  * drm_flip_work_allocate_task - allocate a flip-work task
  * @data: data associated to the task
  * @flags: allocator flags
@@ -63,6 +64,8 @@ void drm_flip_work_queue_task(struct drm_flip_work *work,
 EXPORT_SYMBOL(drm_flip_work_queue_task);
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * drm_flip_work_queue - queue work
  * @work: the flip-work
  * @val: the value to queue
@@ -72,6 +75,7 @@ EXPORT_SYMBOL(drm_flip_work_queue_task);
  */
 void drm_flip_work_queue(struct drm_flip_work *work, void *val)
 {
+<<<<<<< HEAD
 	struct drm_flip_task *task;
 
 	task = drm_flip_work_allocate_task(val,
@@ -80,6 +84,12 @@ void drm_flip_work_queue(struct drm_flip_work *work, void *val)
 		drm_flip_work_queue_task(work, task);
 	} else {
 		DRM_ERROR("%s could not allocate task!\n", work->name);
+=======
+	if (kfifo_put(&work->fifo, val)) {
+		atomic_inc(&work->pending);
+	} else {
+		DRM_ERROR("%s fifo full!\n", work->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		work->func(work, val);
 	}
 }
@@ -98,12 +108,18 @@ EXPORT_SYMBOL(drm_flip_work_queue);
 void drm_flip_work_commit(struct drm_flip_work *work,
 		struct workqueue_struct *wq)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&work->lock, flags);
 	list_splice_tail(&work->queued, &work->commited);
 	INIT_LIST_HEAD(&work->queued);
 	spin_unlock_irqrestore(&work->lock, flags);
+=======
+	uint32_t pending = atomic_read(&work->pending);
+	atomic_add(pending, &work->count);
+	atomic_sub(pending, &work->pending);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	queue_work(wq, &work->worker);
 }
 EXPORT_SYMBOL(drm_flip_work_commit);
@@ -111,6 +127,7 @@ EXPORT_SYMBOL(drm_flip_work_commit);
 static void flip_worker(struct work_struct *w)
 {
 	struct drm_flip_work *work = container_of(w, struct drm_flip_work, worker);
+<<<<<<< HEAD
 	struct list_head tasks;
 	unsigned long flags;
 
@@ -131,15 +148,30 @@ static void flip_worker(struct work_struct *w)
 			kfree(task);
 		}
 	}
+=======
+	uint32_t count = atomic_read(&work->count);
+	void *val = NULL;
+
+	atomic_sub(count, &work->count);
+
+	while(count--)
+		if (!WARN_ON(!kfifo_get(&work->fifo, &val)))
+			work->func(work, val);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
  * drm_flip_work_init - initialize flip-work
  * @work: the flip-work to initialize
+<<<<<<< HEAD
+=======
+ * @size: the max queue depth
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @name: debug name
  * @func: the callback work function
  *
  * Initializes/allocates resources for the flip-work
+<<<<<<< HEAD
  */
 void drm_flip_work_init(struct drm_flip_work *work,
 		const char *name, drm_flip_func_t func)
@@ -151,6 +183,31 @@ void drm_flip_work_init(struct drm_flip_work *work,
 	work->func = func;
 
 	INIT_WORK(&work->worker, flip_worker);
+=======
+ *
+ * RETURNS:
+ * Zero on success, error code on failure.
+ */
+int drm_flip_work_init(struct drm_flip_work *work, int size,
+		const char *name, drm_flip_func_t func)
+{
+	int ret;
+
+	work->name = name;
+	atomic_set(&work->count, 0);
+	atomic_set(&work->pending, 0);
+	work->func = func;
+
+	ret = kfifo_alloc(&work->fifo, size, GFP_KERNEL);
+	if (ret) {
+		DRM_ERROR("could not allocate %s fifo\n", name);
+		return ret;
+	}
+
+	INIT_WORK(&work->worker, flip_worker);
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_flip_work_init);
 
@@ -162,6 +219,11 @@ EXPORT_SYMBOL(drm_flip_work_init);
  */
 void drm_flip_work_cleanup(struct drm_flip_work *work)
 {
+<<<<<<< HEAD
 	WARN_ON(!list_empty(&work->queued) || !list_empty(&work->commited));
+=======
+	WARN_ON(!kfifo_is_empty(&work->fifo));
+	kfifo_free(&work->fifo);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_flip_work_cleanup);

@@ -62,7 +62,11 @@ static int restore_sigcontext(struct sigcontext __user *sc, int *_gr8)
 	unsigned long tbr, psr;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	tbr = user->i.tbr;
 	psr = user->i.psr;

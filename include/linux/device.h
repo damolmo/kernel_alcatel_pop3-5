@@ -635,7 +635,12 @@ extern unsigned long devm_get_free_pages(struct device *dev,
 					 gfp_t gfp_mask, unsigned int order);
 extern void devm_free_pages(struct device *dev, unsigned long addr);
 
+<<<<<<< HEAD
 void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res);
+=======
+void __iomem *devm_ioremap_resource(struct device *dev,
+				    const struct resource *res);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* allows to add/remove a custom action to devres stack */
 int devm_add_action(struct device *dev, void (*action)(void *), void *data);
@@ -1164,8 +1169,16 @@ do {									\
 		dev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
 } while (0)
 #else
+<<<<<<< HEAD
 #define dev_dbg_ratelimited(dev, fmt, ...)			\
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+=======
+#define dev_dbg_ratelimited(dev, fmt, ...)				\
+do {									\
+	if (0)								\
+		dev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
+} while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #ifdef VERBOSE_DEBUG

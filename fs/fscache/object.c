@@ -30,6 +30,10 @@ static const struct fscache_state *fscache_look_up_object(struct fscache_object 
 static const struct fscache_state *fscache_object_available(struct fscache_object *, int);
 static const struct fscache_state *fscache_parent_ready(struct fscache_object *, int);
 static const struct fscache_state *fscache_update_object(struct fscache_object *, int);
+<<<<<<< HEAD
+=======
+static const struct fscache_state *fscache_object_dead(struct fscache_object *, int);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define __STATE_NAME(n) fscache_osm_##n
 #define STATE(n) (&__STATE_NAME(n))
@@ -91,7 +95,11 @@ static WORK_STATE(LOOKUP_FAILURE,	"LCFL", fscache_lookup_failure);
 static WORK_STATE(KILL_OBJECT,		"KILL", fscache_kill_object);
 static WORK_STATE(KILL_DEPENDENTS,	"KDEP", fscache_kill_dependents);
 static WORK_STATE(DROP_OBJECT,		"DROP", fscache_drop_object);
+<<<<<<< HEAD
 static WORK_STATE(OBJECT_DEAD,		"DEAD", (void*)2UL);
+=======
+static WORK_STATE(OBJECT_DEAD,		"DEAD", fscache_object_dead);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static WAIT_STATE(WAIT_FOR_INIT,	"?INI",
 		  TRANSIT_TO(INIT_OBJECT,	1 << FSCACHE_OBJECT_EV_NEW_CHILD));
@@ -229,6 +237,13 @@ execute_work_state:
 	event = -1;
 	if (new_state == NO_TRANSIT) {
 		_debug("{OBJ%x} %s notrans", object->debug_id, state->name);
+<<<<<<< HEAD
+=======
+		if (unlikely(state == STATE(OBJECT_DEAD))) {
+			_leave(" [dead]");
+			return;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fscache_enqueue_object(object);
 		event_mask = object->oob_event_mask;
 		goto unmask_events;
@@ -239,7 +254,11 @@ execute_work_state:
 	object->state = state = new_state;
 
 	if (state->work) {
+<<<<<<< HEAD
 		if (unlikely(state->work == ((void *)2UL))) {
+=======
+		if (unlikely(state == STATE(OBJECT_DEAD))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			_leave(" [dead]");
 			return;
 		}
@@ -632,6 +651,15 @@ static const struct fscache_state *fscache_kill_object(struct fscache_object *ob
 	clear_bit(FSCACHE_OBJECT_IS_LIVE, &object->flags);
 	object->oob_event_mask = 0;
 
+<<<<<<< HEAD
+=======
+	if (test_bit(FSCACHE_OBJECT_RETIRED, &object->flags)) {
+		/* Reject any new read/write ops and abort any that are pending. */
+		clear_bit(FSCACHE_OBJECT_PENDING_WRITE, &object->flags);
+		fscache_cancel_all_ops(object);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (list_empty(&object->dependents) &&
 	    object->n_ops == 0 &&
 	    object->n_children == 0)
@@ -691,6 +719,12 @@ static const struct fscache_state *fscache_drop_object(struct fscache_object *ob
 
 	if (awaken)
 		wake_up_bit(&cookie->flags, FSCACHE_COOKIE_INVALIDATING);
+<<<<<<< HEAD
+=======
+	if (test_and_clear_bit(FSCACHE_COOKIE_LOOKING_UP, &cookie->flags))
+		wake_up_bit(&cookie->flags, FSCACHE_COOKIE_LOOKING_UP);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Prevent a race with our last child, which has to signal EV_CLEARED
 	 * before dropping our spinlock.
@@ -1016,3 +1050,23 @@ static const struct fscache_state *fscache_update_object(struct fscache_object *
 	_leave("");
 	return transit_to(WAIT_FOR_CMD);
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * The object is dead.  We can get here if an object gets queued by an event
+ * that would lead to its death (such as EV_KILL) when the dispatcher is
+ * already running (and so can be requeued) but hasn't yet cleared the event
+ * mask.
+ */
+static const struct fscache_state *fscache_object_dead(struct fscache_object *object,
+						       int event)
+{
+	if (!test_and_set_bit(FSCACHE_OBJECT_RUN_AFTER_DEAD,
+			      &object->flags))
+		return NO_TRANSIT;
+
+	WARN(true, "FS-Cache object redispatched after death");
+	return NO_TRANSIT;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

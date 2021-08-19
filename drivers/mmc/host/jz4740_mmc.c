@@ -368,9 +368,15 @@ static void jz4740_mmc_set_irq_enabled(struct jz4740_mmc_host *host,
 		host->irq_mask &= ~irq;
 	else
 		host->irq_mask |= irq;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	writew(host->irq_mask, host->base + JZ_REG_MMC_IMASK);
+=======
+
+	writew(host->irq_mask, host->base + JZ_REG_MMC_IMASK);
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void jz4740_mmc_clock_enable(struct jz4740_mmc_host *host,

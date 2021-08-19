@@ -115,6 +115,10 @@ unsigned long alpha_agpgart_size = DEFAULT_AGP_APER_SIZE;
 
 #ifdef CONFIG_ALPHA_GENERIC
 struct alpha_machine_vector alpha_mv;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(alpha_mv);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #ifndef alpha_using_srm

@@ -36,7 +36,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
 				  SKB_GSO_TCP_ECN |
 				  SKB_GSO_GRE |
 				  SKB_GSO_GRE_CSUM |
+<<<<<<< HEAD
 				  SKB_GSO_IPIP)))
+=======
+				  SKB_GSO_IPIP |
+				  SKB_GSO_SIT)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	if (!skb->encapsulation)
@@ -127,6 +132,14 @@ static struct sk_buff **gre_gro_receive(struct sk_buff **head,
 	struct packet_offload *ptype;
 	__be16 type;
 
+<<<<<<< HEAD
+=======
+	if (NAPI_GRO_CB(skb)->encap_mark)
+		goto out;
+
+	NAPI_GRO_CB(skb)->encap_mark = 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	off = skb_gro_offset(skb);
 	hlen = off + sizeof(*greh);
 	greh = skb_gro_header_fast(skb, off);
@@ -145,6 +158,17 @@ static struct sk_buff **gre_gro_receive(struct sk_buff **head,
 	if ((greh->flags & ~(GRE_KEY|GRE_CSUM)) != 0)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	/* We can only support GRE_CSUM if we can track the location of
+	 * the GRE header.  In the case of FOU/GUE we cannot because the
+	 * outer UDP header displaces the GRE header leaving us in a state
+	 * of limbo.
+	 */
+	if ((greh->flags & GRE_CSUM) && NAPI_GRO_CB(skb)->is_fou)
+		goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	type = greh->protocol;
 
 	rcu_read_lock();

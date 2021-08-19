@@ -50,6 +50,7 @@ config MMC_BLOCK_BOUNCE
 
 	  If unsure, say Y here.
 
+<<<<<<< HEAD
 config MMC_BLOCK_DEFERRED_RESUME
 	bool "Deferr MMC layer resume until I/O is requested"
 	depends on MMC_BLOCK
@@ -59,6 +60,8 @@ config MMC_BLOCK_DEFERRED_RESUME
 	  is requested. This will reduce overall resume latency and
 	  save power when theres an SD card inserted but not being used.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config SDIO_UART
 	tristate "SDIO UART/GPS class support"
 	depends on TTY
@@ -78,6 +81,7 @@ config MMC_TEST
 	  This driver is only of interest to those developing or
 	  testing a host driver. Most people should say N here.
 
+<<<<<<< HEAD
 config MMC_FFU
 	bool "FFU SUPPORT"
 	depends on MMC != n
@@ -85,3 +89,16 @@ config MMC_FFU
 	  This is an option to run firmware update on eMMC 5.0.
 	  Field firmware updates (FFU) enables features enhancment
 	  in the field.
+=======
+config MMC_SIMULATE_MAX_SPEED
+	bool "Turn on maximum speed control per block device"
+	depends on MMC_BLOCK
+	help
+	  Say Y here to enable MMC device speed limiting. Used to test and
+	  simulate the behavior of the system when confronted with a slow MMC.
+
+	  Enables max_read_speed, max_write_speed and cache_size attributes to
+	  control the write or read maximum KB/second speed behaviors.
+
+	  If unsure, say N here.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

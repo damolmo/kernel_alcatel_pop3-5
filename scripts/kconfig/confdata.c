@@ -261,11 +261,16 @@ int conf_read_simple(const char *name, int def)
 		if (in)
 			goto load;
 		sym_add_change_count(1);
+<<<<<<< HEAD
 		if (!sym_defconfig_list) {
 			if (modules_sym)
 				sym_calc_value(modules_sym);
 			return 1;
 		}
+=======
+		if (!sym_defconfig_list)
+			return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		for_all_defaults(sym_defconfig_list, prop) {
 			if (expr_calc_value(prop->visible.expr) == no ||
@@ -398,9 +403,12 @@ setsym:
 	}
 	free(line);
 	fclose(in);
+<<<<<<< HEAD
 
 	if (modules_sym)
 		sym_calc_value(modules_sym);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -411,8 +419,17 @@ int conf_read(const char *name)
 
 	sym_set_change_count(0);
 
+<<<<<<< HEAD
 	if (conf_read_simple(name, S_DEF_USER))
 		return 1;
+=======
+	if (conf_read_simple(name, S_DEF_USER)) {
+		sym_calc_value(modules_sym);
+		return 1;
+	}
+
+	sym_calc_value(modules_sym);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
@@ -739,7 +756,11 @@ int conf_write(const char *name)
 	struct menu *menu;
 	const char *basename;
 	const char *str;
+<<<<<<< HEAD
 	char dirname[PATH_MAX+1], tmpname[PATH_MAX+1], newname[PATH_MAX+1];
+=======
+	char dirname[PATH_MAX+1], tmpname[PATH_MAX+22], newname[PATH_MAX+8];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char *env;
 
 	dirname[0] = 0;
@@ -843,6 +864,10 @@ static int conf_split_config(void)
 
 	name = conf_get_autoconfig_name();
 	conf_read_simple(name, S_DEF_AUTO);
+<<<<<<< HEAD
+=======
+	sym_calc_value(modules_sym);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (chdir("include/config"))
 		return 1;
@@ -1231,7 +1256,11 @@ bool conf_set_all_new_symbols(enum conf_def_mode mode)
 
 		sym_calc_value(csym);
 		if (mode == def_random)
+<<<<<<< HEAD
 			has_changed = randomize_choice_values(csym);
+=======
+			has_changed |= randomize_choice_values(csym);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else {
 			set_all_choice_values(csym);
 			has_changed = true;

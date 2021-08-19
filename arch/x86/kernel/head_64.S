@@ -73,9 +73,13 @@ startup_64:
 	subq	$_text - __START_KERNEL_map, %rbp
 
 	/* Is the address not 2M aligned? */
+<<<<<<< HEAD
 	movq	%rbp, %rax
 	andl	$~PMD_PAGE_MASK, %eax
 	testl	%eax, %eax
+=======
+	testl	$~PMD_PAGE_MASK, %ebp
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jnz	bad_address
 
 	/*

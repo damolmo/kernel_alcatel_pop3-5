@@ -23,7 +23,12 @@ void die(const char *str, struct pt_regs *regs, unsigned long address);
 
 #define BUG()	do {								\
 	pr_warn("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
+<<<<<<< HEAD
 	dump_stack();								\
+=======
+	barrier_before_unreachable();						\
+	__builtin_trap();							\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } while (0)
 
 #define HAVE_ARCH_BUG

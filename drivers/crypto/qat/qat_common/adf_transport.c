@@ -198,6 +198,10 @@ static int adf_init_ring(struct adf_etr_ring_data *ring)
 		pr_err("QAT: Ring address not aligned\n");
 		dma_free_coherent(&GET_DEV(accel_dev), ring_size_bytes,
 				  ring->base_addr, ring->dma_addr);
+<<<<<<< HEAD
+=======
+		ring->base_addr = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EFAULT;
 	}
 

@@ -26,6 +26,11 @@
 #include <asm/virt.h>
 
 	.text
+<<<<<<< HEAD
+=======
+	.pushsection	.hyp.text, "ax"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.align 11
 
 ENTRY(__hyp_stub_vectors)

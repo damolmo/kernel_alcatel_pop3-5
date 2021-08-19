@@ -110,10 +110,19 @@ struct ipv6_txoptions *ipv6_update_options(struct sock *sk,
 			icsk->icsk_ext_hdr_len = opt->opt_flen + opt->opt_nflen;
 			icsk->icsk_sync_mss(sk, icsk->icsk_pmtu_cookie);
 		}
+<<<<<<< HEAD
 		opt = xchg(&inet6_sk(sk)->opt, opt);
 	} else {
 		spin_lock(&sk->sk_dst_lock);
 		opt = xchg(&inet6_sk(sk)->opt, opt);
+=======
+		opt = xchg((__force struct ipv6_txoptions **)&inet6_sk(sk)->opt,
+			   opt);
+	} else {
+		spin_lock(&sk->sk_dst_lock);
+		opt = xchg((__force struct ipv6_txoptions **)&inet6_sk(sk)->opt,
+			   opt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock(&sk->sk_dst_lock);
 	}
 	sk_dst_reset(sk);
@@ -165,8 +174,19 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
 					retv = -EBUSY;
 					break;
 				}
+<<<<<<< HEAD
 			} else if (sk->sk_protocol != IPPROTO_TCP)
 				break;
+=======
+			} else if (sk->sk_protocol == IPPROTO_TCP) {
+				if (sk->sk_prot != &tcpv6_prot) {
+					retv = -EBUSY;
+					break;
+				}
+			} else {
+				break;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			if (sk->sk_state != TCP_ESTABLISHED) {
 				retv = -ENOTCONN;
@@ -181,6 +201,10 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
 
 			fl6_free_socklist(sk);
 			ipv6_sock_mc_close(sk);
+<<<<<<< HEAD
+=======
+			__ipv6_sock_ac_close(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/*
 			 * Sock is moving from IPv6 to IPv4 (sk_prot), so
@@ -213,9 +237,18 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
 				sk->sk_socket->ops = &inet_dgram_ops;
 				sk->sk_family = PF_INET;
 			}
+<<<<<<< HEAD
 			opt = xchg(&np->opt, NULL);
 			if (opt)
 				sock_kfree_s(sk, opt, opt->tot_len);
+=======
+			opt = xchg((__force struct ipv6_txoptions **)&np->opt,
+				   NULL);
+			if (opt) {
+				atomic_sub(opt->tot_len, &sk->sk_omem_alloc);
+				txopt_put(opt);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pktopt = xchg(&np->pktoptions, NULL);
 			kfree_skb(pktopt);
 
@@ -385,7 +418,12 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
 		if (optname != IPV6_RTHDR && !ns_capable(net->user_ns, CAP_NET_RAW))
 			break;
 
+<<<<<<< HEAD
 		opt = ipv6_renew_options(sk, np->opt, optname,
+=======
+		opt = rcu_dereference_protected(np->opt, sock_owned_by_user(sk));
+		opt = ipv6_renew_options(sk, opt, optname,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					 (struct ipv6_opt_hdr __user *)optval,
 					 optlen);
 		if (IS_ERR(opt)) {
@@ -414,8 +452,15 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
 		retv = 0;
 		opt = ipv6_update_options(sk, opt);
 sticky_done:
+<<<<<<< HEAD
 		if (opt)
 			sock_kfree_s(sk, opt, opt->tot_len);
+=======
+		if (opt) {
+			atomic_sub(opt->tot_len, &sk->sk_omem_alloc);
+			txopt_put(opt);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 
@@ -468,6 +513,10 @@ sticky_done:
 			break;
 
 		memset(opt, 0, sizeof(*opt));
+<<<<<<< HEAD
+=======
+		atomic_set(&opt->refcnt, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		opt->tot_len = sizeof(*opt) + optlen;
 		retv = -EFAULT;
 		if (copy_from_user(opt+1, optval, optlen))
@@ -484,8 +533,15 @@ update:
 		retv = 0;
 		opt = ipv6_update_options(sk, opt);
 done:
+<<<<<<< HEAD
 		if (opt)
 			sock_kfree_s(sk, opt, opt->tot_len);
+=======
+		if (opt) {
+			atomic_sub(opt->tot_len, &sk->sk_omem_alloc);
+			txopt_put(opt);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 	case IPV6_UNICAST_HOPS:
@@ -864,12 +920,17 @@ int ipv6_setsockopt(struct sock *sk, int level, int optname,
 #ifdef CONFIG_NETFILTER
 	/* we need to exclude all possible ENOPROTOOPTs except default case */
 	if (err == -ENOPROTOOPT && optname != IPV6_IPSEC_POLICY &&
+<<<<<<< HEAD
 			optname != IPV6_XFRM_POLICY) {
 		lock_sock(sk);
 		err = nf_setsockopt(sk, PF_INET6, optname, optval,
 				optlen);
 		release_sock(sk);
 	}
+=======
+			optname != IPV6_XFRM_POLICY)
+		err = nf_setsockopt(sk, PF_INET6, optname, optval, optlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	return err;
 }
@@ -899,12 +960,18 @@ int compat_ipv6_setsockopt(struct sock *sk, int level, int optname,
 #ifdef CONFIG_NETFILTER
 	/* we need to exclude all possible ENOPROTOOPTs except default case */
 	if (err == -ENOPROTOOPT && optname != IPV6_IPSEC_POLICY &&
+<<<<<<< HEAD
 	    optname != IPV6_XFRM_POLICY) {
 		lock_sock(sk);
 		err = compat_nf_setsockopt(sk, PF_INET6, optname,
 					   optval, optlen);
 		release_sock(sk);
 	}
+=======
+	    optname != IPV6_XFRM_POLICY)
+		err = compat_nf_setsockopt(sk, PF_INET6, optname, optval,
+					   optlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	return err;
 }
@@ -1092,10 +1159,18 @@ static int do_ipv6_getsockopt(struct sock *sk, int level, int optname,
 	case IPV6_RTHDR:
 	case IPV6_DSTOPTS:
 	{
+<<<<<<< HEAD
 
 		lock_sock(sk);
 		len = ipv6_getsockopt_sticky(sk, np->opt,
 					     optname, optval, len);
+=======
+		struct ipv6_txoptions *opt;
+
+		lock_sock(sk);
+		opt = rcu_dereference_protected(np->opt, sock_owned_by_user(sk));
+		len = ipv6_getsockopt_sticky(sk, opt, optname, optval, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		release_sock(sk);
 		/* check if ipv6_getsockopt_sticky() returns err code */
 		if (len < 0)
@@ -1309,10 +1384,14 @@ int ipv6_getsockopt(struct sock *sk, int level, int optname,
 		if (get_user(len, optlen))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		lock_sock(sk);
 		err = nf_getsockopt(sk, PF_INET6, optname, optval,
 				&len);
 		release_sock(sk);
+=======
+		err = nf_getsockopt(sk, PF_INET6, optname, optval, &len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err >= 0)
 			err = put_user(len, optlen);
 	}
@@ -1351,10 +1430,14 @@ int compat_ipv6_getsockopt(struct sock *sk, int level, int optname,
 		if (get_user(len, optlen))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		lock_sock(sk);
 		err = compat_nf_getsockopt(sk, PF_INET6,
 					   optname, optval, &len);
 		release_sock(sk);
+=======
+		err = compat_nf_getsockopt(sk, PF_INET6, optname, optval, &len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err >= 0)
 			err = put_user(len, optlen);
 	}

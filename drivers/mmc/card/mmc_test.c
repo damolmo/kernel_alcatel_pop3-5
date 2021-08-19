@@ -795,7 +795,11 @@ static int mmc_test_nonblock_transfer(struct mmc_test_card *test,
 	struct mmc_async_req *cur_areq = &test_areq[0].areq;
 	struct mmc_async_req *other_areq = &test_areq[1].areq;
 	int i;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = RESULT_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	test_areq[0].test = test;
 	test_areq[1].test = test;
@@ -2339,6 +2343,7 @@ static int mmc_test_hw_reset(struct mmc_test_card *test)
 	struct mmc_host *host = card->host;
 	int err;
 
+<<<<<<< HEAD
 	if (!mmc_card_mmc(card) || !mmc_can_reset(card))
 		return RESULT_UNSUP_CARD;
 
@@ -2349,6 +2354,22 @@ static int mmc_test_hw_reset(struct mmc_test_card *test)
 		return RESULT_UNSUP_HOST;
 
 	return RESULT_FAIL;
+=======
+	err = mmc_hw_reset_check(host);
+	if (!err)
+		return RESULT_OK;
+
+	if (err == -ENOSYS)
+		return RESULT_FAIL;
+
+	if (err != -EOPNOTSUPP)
+		return err;
+
+	if (!mmc_can_reset(card))
+		return RESULT_UNSUP_CARD;
+
+	return RESULT_UNSUP_HOST;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct mmc_test_case mmc_test_cases[] = {

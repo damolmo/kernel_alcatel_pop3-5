@@ -298,6 +298,20 @@ static void otg_timer(unsigned long _musb)
 	spin_unlock_irqrestore(&musb->lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+void dsps_musb_clear_ep_rxintr(struct musb *musb, int epnum)
+{
+	u32 epintr;
+	struct dsps_glue *glue = dev_get_drvdata(musb->controller->parent);
+	const struct dsps_musb_wrapper *wrp = glue->wrp;
+
+	/* musb->lock might already been held */
+	epintr = (1 << epnum) << wrp->rxep_shift;
+	musb_writel(musb->ctrl_base, wrp->epintr_status, epintr);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static irqreturn_t dsps_interrupt(int irq, void *hci)
 {
 	struct musb  *musb = hci;
@@ -645,6 +659,10 @@ static struct musb_platform_ops dsps_ops = {
 	.try_idle	= dsps_musb_try_idle,
 	.set_mode	= dsps_musb_set_mode,
 	.reset		= dsps_musb_reset,
+<<<<<<< HEAD
+=======
+	.clear_ep_rxintr = dsps_musb_clear_ep_rxintr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static u64 musb_dmamask = DMA_BIT_MASK(32);

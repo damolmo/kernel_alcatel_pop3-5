@@ -392,7 +392,11 @@ static unsigned char parport_uss720_frob_control(struct parport *pp, unsigned ch
 	mask &= 0x0f;
 	val &= 0x0f;
 	d = (priv->reg[1] & (~mask)) ^ val;
+<<<<<<< HEAD
 	if (set_1284_register(pp, 2, d, GFP_KERNEL))
+=======
+	if (set_1284_register(pp, 2, d, GFP_ATOMIC))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	priv->reg[1] = d;
 	return d & 0xf;
@@ -402,7 +406,11 @@ static unsigned char parport_uss720_read_status(struct parport *pp)
 {
 	unsigned char ret;
 
+<<<<<<< HEAD
 	if (get_1284_register(pp, 1, &ret, GFP_KERNEL))
+=======
+	if (get_1284_register(pp, 1, &ret, GFP_ATOMIC))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	return ret & 0xf8;
 }
@@ -715,6 +723,14 @@ static int uss720_probe(struct usb_interface *intf,
 
 	interface = intf->cur_altsetting;
 
+<<<<<<< HEAD
+=======
+	if (interface->desc.bNumEndpoints < 3) {
+		usb_put_dev(usbdev);
+		return -ENODEV;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Allocate parport interface 
 	 */
@@ -752,6 +768,10 @@ static int uss720_probe(struct usb_interface *intf,
 	parport_announce_port(pp);
 
 	usb_set_intfdata(intf, pp);
+<<<<<<< HEAD
+=======
+	usb_put_dev(usbdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 probe_abort:

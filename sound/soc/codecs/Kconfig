@@ -805,17 +805,23 @@ config SND_SOC_MC13783
 config SND_SOC_ML26124
 	tristate
 
+<<<<<<< HEAD
 config SND_SOC_MT6391
 	tristate
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config SND_SOC_TPA6130A2
 	tristate "Texas Instruments TPA6130A2 headphone amplifier"
 	depends on I2C
 
 endmenu
+<<<<<<< HEAD
 
 config SND_SOC_MAX98926
   bool "SND_SOC_MAX98926"
   default n
   help
       for max98926 codec
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

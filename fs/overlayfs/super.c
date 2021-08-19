@@ -269,6 +269,10 @@ static void ovl_dentry_release(struct dentry *dentry)
 
 static const struct dentry_operations ovl_dentry_operations = {
 	.d_release = ovl_dentry_release,
+<<<<<<< HEAD
+=======
+	.d_select_inode = ovl_d_select_inode,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static struct ovl_entry *ovl_alloc_entry(void)
@@ -544,6 +548,13 @@ retry:
 		struct kstat stat = {
 			.mode = S_IFDIR | 0,
 		};
+<<<<<<< HEAD
+=======
+		struct iattr attr = {
+			.ia_valid = ATTR_MODE,
+			.ia_mode = stat.mode,
+		};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (work->d_inode) {
 			err = -EEXIST;
@@ -559,6 +570,24 @@ retry:
 		err = ovl_create_real(dir, work, &stat, NULL, NULL, true);
 		if (err)
 			goto out_dput;
+<<<<<<< HEAD
+=======
+
+		err = vfs_removexattr(work, XATTR_NAME_POSIX_ACL_DEFAULT);
+		if (err && err != -ENODATA && err != -EOPNOTSUPP)
+			goto out_dput;
+
+		err = vfs_removexattr(work, XATTR_NAME_POSIX_ACL_ACCESS);
+		if (err && err != -ENODATA && err != -EOPNOTSUPP)
+			goto out_dput;
+
+		/* Clear any inherited mode bits */
+		mutex_lock(&work->d_inode->i_mutex);
+		err = notify_change(work, &attr, NULL);
+		mutex_unlock(&work->d_inode->i_mutex);
+		if (err)
+			goto out_dput;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out_unlock:
 	mutex_unlock(&dir->i_mutex);
@@ -775,6 +804,12 @@ static int ovl_fill_super(struct super_block *sb, void *data, int silent)
 
 	root_dentry->d_fsdata = oe;
 
+<<<<<<< HEAD
+=======
+	ovl_copyattr(ovl_dentry_real(root_dentry)->d_inode,
+		     root_dentry->d_inode);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sb->s_magic = OVERLAYFS_SUPER_MAGIC;
 	sb->s_op = &ovl_super_operations;
 	sb->s_root = root_dentry;

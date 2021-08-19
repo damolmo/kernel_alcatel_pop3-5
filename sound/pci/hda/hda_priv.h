@@ -15,7 +15,11 @@
 #ifndef __SOUND_HDA_PRIV_H
 #define __SOUND_HDA_PRIV_H
 
+<<<<<<< HEAD
 #include <linux/clocksource.h>
+=======
+#include <linux/timecounter.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <sound/core.h>
 #include <sound/pcm.h>
 
@@ -171,6 +175,10 @@ enum { SDI0, SDI1, SDI2, SDI3, SDO0, SDO1, SDO2, SDO3 };
 #define AZX_DCAPS_I915_POWERWELL (1 << 27)	/* HSW i915 powerwell support */
 #define AZX_DCAPS_CORBRP_SELF_CLEAR (1 << 28)	/* CORBRP clears itself after reset */
 #define AZX_DCAPS_NO_MSI64      (1 << 29)	/* Stick to 32-bit MSIs */
+<<<<<<< HEAD
+=======
+#define AZX_DCAPS_SEPARATE_STREAM_TAG	(1 << 30) /* capture and playback use separate stream tag */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 enum {
 	AZX_SNOOP_TYPE_NONE ,

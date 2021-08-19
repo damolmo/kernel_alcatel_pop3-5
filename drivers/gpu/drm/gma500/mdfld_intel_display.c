@@ -99,7 +99,11 @@ void mdfldWaitForPipeEnable(struct drm_device *dev, int pipe)
 	/* Wait for for the pipe enable to take effect. */
 	for (count = 0; count < COUNT_MAX; count++) {
 		temp = REG_READ(map->conf);
+<<<<<<< HEAD
 		if ((temp & PIPEACONF_PIPE_STATE) == 1)
+=======
+		if (temp & PIPEACONF_PIPE_STATE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 	}
 }

@@ -427,6 +427,13 @@ skip:
 	if (new_node) {
 		__be32 cnid;
 
+<<<<<<< HEAD
+=======
+		if (!new_node->parent) {
+			hfs_btree_inc_height(tree);
+			new_node->parent = tree->root;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fd->bnode = hfs_bnode_find(tree, new_node->parent);
 		/* create index key and entry */
 		hfs_bnode_read_key(new_node, fd->search_key, 14);
@@ -443,6 +450,10 @@ skip:
 			/* restore search_key */
 			hfs_bnode_read_key(node, fd->search_key, 14);
 		}
+<<<<<<< HEAD
+=======
+		new_node = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (!rec && node->parent)

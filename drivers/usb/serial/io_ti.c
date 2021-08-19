@@ -1367,8 +1367,12 @@ static int download_fw(struct edgeport_serial *serial)
 
 		dev_dbg(dev, "%s - Download successful -- Device rebooting...\n", __func__);
 
+<<<<<<< HEAD
 		/* return an error on purpose */
 		return -ENODEV;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 stayinbootmode:
@@ -1546,6 +1550,15 @@ static void edge_interrupt_callback(struct urb *urb)
 	function    = TIUMP_GET_FUNC_FROM_CODE(data[0]);
 	dev_dbg(dev, "%s - port_number %d, function %d, info 0x%x\n", __func__,
 		port_number, function, data[1]);
+<<<<<<< HEAD
+=======
+
+	if (port_number >= edge_serial->serial->num_ports) {
+		dev_err(dev, "bad port number %d\n", port_number);
+		goto exit;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	port = edge_serial->serial->port[port_number];
 	edge_port = usb_get_serial_port_data(port);
 	if (!edge_port) {
@@ -1626,7 +1639,11 @@ static void edge_bulk_in_callback(struct urb *urb)
 
 	port_number = edge_port->port->port_number;
 
+<<<<<<< HEAD
 	if (edge_port->lsr_event) {
+=======
+	if (urb->actual_length > 0 && edge_port->lsr_event) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		edge_port->lsr_event = 0;
 		dev_dbg(dev, "%s ===== Port %u LSR Status = %02x, Data = %02x ======\n",
 			__func__, port_number, edge_port->lsr_mask, *data);
@@ -2204,8 +2221,16 @@ static void change_port_settings(struct tty_struct *tty,
 	if (!baud) {
 		/* pick a default, any default... */
 		baud = 9600;
+<<<<<<< HEAD
 	} else
 		tty_encode_baud_rate(tty, baud, baud);
+=======
+	} else {
+		/* Avoid a zero divisor. */
+		baud = min(baud, 461550);
+		tty_encode_baud_rate(tty, baud, baud);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	edge_port->baud_rate = baud;
 	config->wBaudRate = (__u16)((461550L + baud/2) / baud);
@@ -2378,6 +2403,16 @@ static int edge_startup(struct usb_serial *serial)
 	struct edgeport_serial *edge_serial;
 	int status;
 
+<<<<<<< HEAD
+=======
+	/* Make sure we have the required endpoints when in download mode. */
+	if (serial->interface->cur_altsetting->desc.bNumEndpoints > 1) {
+		if (serial->num_bulk_in < serial->num_ports ||
+				serial->num_bulk_out < serial->num_ports)
+			return -ENODEV;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* create our private serial structure */
 	edge_serial = kzalloc(sizeof(struct edgeport_serial), GFP_KERNEL);
 	if (!edge_serial)

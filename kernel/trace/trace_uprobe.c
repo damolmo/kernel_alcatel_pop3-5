@@ -149,6 +149,18 @@ static void FETCH_FUNC_NAME(memory, string)(struct pt_regs *regs,
 		return;
 
 	ret = strncpy_from_user(dst, src, maxlen);
+<<<<<<< HEAD
+=======
+	if (ret == maxlen)
+		dst[ret - 1] = '\0';
+	else if (ret >= 0)
+		/*
+		 * Include the terminating null byte. In this case it
+		 * was copied by strncpy_from_user but not accounted
+		 * for in ret.
+		 */
+		ret++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ret < 0) {	/* Failed to fetch string */
 		((u8 *)get_rloc_data(dest))[0] = '\0';
@@ -955,7 +967,11 @@ probe_event_disable(struct trace_uprobe *tu, struct ftrace_event_file *file)
 
 		list_del_rcu(&link->list);
 		/* synchronize with u{,ret}probe_trace_func */
+<<<<<<< HEAD
 		synchronize_sched();
+=======
+		synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(link);
 
 		if (!list_empty(&tu->tp.files))
@@ -1115,7 +1131,11 @@ static void __uprobe_perf_func(struct trace_uprobe *tu,
 	if (hlist_empty(head))
 		goto out;
 
+<<<<<<< HEAD
 	entry = perf_trace_buf_prepare(size, call->event.type, regs, &rctx);
+=======
+	entry = perf_trace_buf_prepare(size, call->event.type, NULL, &rctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!entry)
 		goto out;
 
@@ -1325,7 +1345,11 @@ static __init int init_uprobe_trace(void)
 	struct dentry *d_tracer;
 
 	d_tracer = tracing_init_dentry();
+<<<<<<< HEAD
 	if (!d_tracer)
+=======
+	if (IS_ERR(d_tracer))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	trace_create_file("uprobe_events", 0644, d_tracer,

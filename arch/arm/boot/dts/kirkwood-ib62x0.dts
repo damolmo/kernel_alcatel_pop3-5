@@ -113,7 +113,11 @@
 
 	partition@e0000 {
 		label = "u-boot environment";
+<<<<<<< HEAD
 		reg = <0xe0000 0x100000>;
+=======
+		reg = <0xe0000 0x20000>;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	};
 
 	partition@100000 {

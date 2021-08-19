@@ -81,6 +81,10 @@ struct pf_desc {
 	u32	service;
 	char	*name;
 	char	*auth_domain_name;
+<<<<<<< HEAD
+=======
+	struct auth_domain *domain;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* Different mechanisms (e.g., krb5 or spkm3) may implement gss-api, and

@@ -12,4 +12,8 @@
 
 LC_ALL=C
 sed -n -e 's/^00*/0/' -e \
+<<<<<<< HEAD
 's/^\([0-9a-fA-F]*\) . VDSO_\([a-zA-Z0-9_]*\)$/\#define vdso_offset_\2 0x\1/p'
+=======
+'s/^\([0-9a-fA-F]*\) . VDSO_\([a-zA-Z0-9_]*\)$/\#define vdso_offset_\2\t0x\1/p'
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

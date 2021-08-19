@@ -270,9 +270,15 @@ unsigned int speedstep_detect_processor(void)
 		ebx = cpuid_ebx(0x00000001);
 		ebx &= 0x000000FF;
 
+<<<<<<< HEAD
 		pr_debug("ebx value is %x, x86_mask is %x\n", ebx, c->x86_mask);
 
 		switch (c->x86_mask) {
+=======
+		pr_debug("ebx value is %x, x86_stepping is %x\n", ebx, c->x86_stepping);
+
+		switch (c->x86_stepping) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case 4:
 			/*
 			 * B-stepping [M-P4-M]
@@ -359,7 +365,11 @@ unsigned int speedstep_detect_processor(void)
 				msr_lo, msr_hi);
 		if ((msr_hi & (1<<18)) &&
 		    (relaxed_check ? 1 : (msr_hi & (3<<24)))) {
+<<<<<<< HEAD
 			if (c->x86_mask == 0x01) {
+=======
+			if (c->x86_stepping == 0x01) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				pr_debug("early PIII version\n");
 				return SPEEDSTEP_CPU_PIII_C_EARLY;
 			} else

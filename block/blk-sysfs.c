@@ -178,6 +178,10 @@ queue_max_sectors_store(struct request_queue *q, const char *page, size_t count)
 
 	spin_lock_irq(q->queue_lock);
 	q->limits.max_sectors = max_sectors_kb << 1;
+<<<<<<< HEAD
+=======
+	q->backing_dev_info.io_pages = max_sectors_kb >> (PAGE_SHIFT - 10);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irq(q->queue_lock);
 
 	return ret;

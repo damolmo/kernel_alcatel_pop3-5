@@ -232,13 +232,17 @@ static int pxa_ssp_probe(struct platform_device *pdev)
 
 static int pxa_ssp_remove(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ssp_device *ssp;
 
 	ssp = platform_get_drvdata(pdev);
 	if (ssp == NULL)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	iounmap(ssp->mmio_base);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -246,11 +250,16 @@ static int pxa_ssp_remove(struct platform_device *pdev)
 
 	clk_put(ssp->clk);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&ssp_lock);
 	list_del(&ssp->node);
 	mutex_unlock(&ssp_lock);
 
+<<<<<<< HEAD
 	kfree(ssp);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

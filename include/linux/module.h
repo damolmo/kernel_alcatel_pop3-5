@@ -135,7 +135,11 @@ void trim_init_extable(struct module *m);
 #ifdef MODULE
 /* Creates an alias so file2alias.c can find device table. */
 #define MODULE_DEVICE_TABLE(type, name)					\
+<<<<<<< HEAD
   extern const struct type##_device_id __mod_##type##__##name##_device_table \
+=======
+extern const typeof(name) __mod_##type##__##name##_device_table		\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
   __attribute__ ((unused, alias(__stringify(name))))
 #else  /* !MODULE */
 #define MODULE_DEVICE_TABLE(type, name)
@@ -224,6 +228,15 @@ struct module_ref {
 	unsigned long decs;
 } __attribute((aligned(2 * sizeof(unsigned long))));
 
+<<<<<<< HEAD
+=======
+struct mod_kallsyms {
+	Elf_Sym *symtab;
+	unsigned int num_symtab;
+	char *strtab;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct module {
 	enum module_state state;
 
@@ -311,6 +324,7 @@ struct module {
 #endif
 
 #ifdef CONFIG_KALLSYMS
+<<<<<<< HEAD
 	/*
 	 * We keep the symbol and string tables for kallsyms.
 	 * The core_* fields below are temporary, loader-only (they
@@ -319,6 +333,11 @@ struct module {
 	Elf_Sym *symtab, *core_symtab;
 	unsigned int num_symtab, core_num_syms;
 	char *strtab, *core_strtab;
+=======
+	/* Protected by RCU and/or module_mutex: use rcu_dereference() */
+	struct mod_kallsyms *kallsyms;
+	struct mod_kallsyms core_kallsyms;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Section attributes */
 	struct module_sect_attrs *sect_attrs;
@@ -663,4 +682,15 @@ static inline void module_bug_finalize(const Elf_Ehdr *hdr,
 static inline void module_bug_cleanup(struct module *mod) {}
 #endif	/* CONFIG_GENERIC_BUG */
 
+<<<<<<< HEAD
+=======
+#ifdef RETPOLINE
+extern bool retpoline_module_ok(bool has_retpoline);
+#else
+static inline bool retpoline_module_ok(bool has_retpoline)
+{
+	return true;
+}
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _LINUX_MODULE_H */

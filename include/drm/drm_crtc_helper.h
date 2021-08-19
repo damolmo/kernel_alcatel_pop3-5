@@ -48,6 +48,7 @@ enum mode_set_atomic {
  * drm_crtc_helper_funcs - helper operations for CRTCs
  * @mode_fixup: try to fixup proposed mode for this connector
  * @mode_set: set this mode
+<<<<<<< HEAD
  * @mode_set_nofb: set mode only (no scanout buffer attached)
  * @mode_set_base: update the scanout buffer
  * @mode_set_base_atomic: non-blocking mode set (used for kgdb support)
@@ -66,6 +67,10 @@ enum mode_set_atomic {
  * With legacy crtc helpers there's a big semantic difference between @disable
  * and the other hooks: @disable also needs to release any resources acquired in
  * @mode_set (like shared PLLs).
+=======
+ *
+ * The helper operations are called by the mid-layer CRTC helper.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct drm_crtc_helper_funcs {
 	/*
@@ -84,8 +89,11 @@ struct drm_crtc_helper_funcs {
 	int (*mode_set)(struct drm_crtc *crtc, struct drm_display_mode *mode,
 			struct drm_display_mode *adjusted_mode, int x, int y,
 			struct drm_framebuffer *old_fb);
+<<<<<<< HEAD
 	/* Actually set the mode for atomic helpers, optional */
 	void (*mode_set_nofb)(struct drm_crtc *crtc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Move the crtc on the current fb to the given position *optional* */
 	int (*mode_set_base)(struct drm_crtc *crtc, int x, int y,
@@ -97,6 +105,7 @@ struct drm_crtc_helper_funcs {
 	/* reload the current crtc LUT */
 	void (*load_lut)(struct drm_crtc *crtc);
 
+<<<<<<< HEAD
 	void (*disable)(struct drm_crtc *crtc);
 	void (*enable)(struct drm_crtc *crtc);
 
@@ -105,11 +114,16 @@ struct drm_crtc_helper_funcs {
 			    struct drm_crtc_state *state);
 	void (*atomic_begin)(struct drm_crtc *crtc);
 	void (*atomic_flush)(struct drm_crtc *crtc);
+=======
+	/* disable crtc when not in use - more explicit than dpms off */
+	void (*disable)(struct drm_crtc *crtc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
  * drm_encoder_helper_funcs - helper operations for encoders
  * @mode_fixup: try to fixup proposed mode for this connector
+<<<<<<< HEAD
  * @mode_set: set this mode, optional for atomic helpers
  * @get_crtc: return CRTC that the encoder is currently attached to
  * @detect: connection status detection
@@ -125,6 +139,11 @@ struct drm_crtc_helper_funcs {
  * With legacy crtc helpers there's a big semantic difference between @disable
  * and the other hooks: @disable also needs to release any resources acquired in
  * @mode_set (like shared PLLs).
+=======
+ * @mode_set: set this mode
+ *
+ * The helper operations are called by the mid-layer CRTC helper.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct drm_encoder_helper_funcs {
 	void (*dpms)(struct drm_encoder *encoder, int mode);
@@ -143,6 +162,7 @@ struct drm_encoder_helper_funcs {
 	/* detect for DAC style encoders */
 	enum drm_connector_status (*detect)(struct drm_encoder *encoder,
 					    struct drm_connector *connector);
+<<<<<<< HEAD
 	void (*disable)(struct drm_encoder *encoder);
 
 	void (*enable)(struct drm_encoder *encoder);
@@ -151,6 +171,10 @@ struct drm_encoder_helper_funcs {
 	int (*atomic_check)(struct drm_encoder *encoder,
 			    struct drm_crtc_state *crtc_state,
 			    struct drm_connector_state *conn_state);
+=======
+	/* disable encoder when not in use - more explicit than dpms off */
+	void (*disable)(struct drm_encoder *encoder);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -203,12 +227,15 @@ static inline void drm_connector_helper_add(struct drm_connector *connector,
 
 extern void drm_helper_resume_force_mode(struct drm_device *dev);
 
+<<<<<<< HEAD
 int drm_helper_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode,
 			     struct drm_display_mode *adjusted_mode, int x, int y,
 			     struct drm_framebuffer *old_fb);
 int drm_helper_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
 				  struct drm_framebuffer *old_fb);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* drm_probe_helper.c */
 extern int drm_helper_probe_single_connector_modes(struct drm_connector
 						   *connector, uint32_t maxX,

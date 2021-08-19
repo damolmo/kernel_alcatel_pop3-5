@@ -257,7 +257,11 @@ static int FNAME(update_accessed_dirty_bits)(struct kvm_vcpu *vcpu,
 			return ret;
 
 		mark_page_dirty(vcpu->kvm, table_gfn);
+<<<<<<< HEAD
 		walker->ptes[level] = pte;
+=======
+		walker->ptes[level - 1] = pte;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return 0;
 }

@@ -39,7 +39,11 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 		return rc;
 
 	mutex_lock(&inode->i_mutex);
+<<<<<<< HEAD
 	if (!(inode->i_state & I_DIRTY) ||
+=======
+	if (!(inode->i_state & I_DIRTY_ALL) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
 		/* Make sure committed changes hit the disk */
 		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);

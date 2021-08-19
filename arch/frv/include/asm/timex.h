@@ -16,5 +16,14 @@ static inline cycles_t get_cycles(void)
 #define vxtime_lock()		do {} while (0)
 #define vxtime_unlock()		do {} while (0)
 
+<<<<<<< HEAD
+=======
+/* This attribute is used in include/linux/jiffies.h alongside with
+ * __cacheline_aligned_in_smp. It is assumed that __cacheline_aligned_in_smp
+ * for frv does not contain another section specification.
+ */
+#define __jiffy_arch_data	__attribute__((__section__(".data")))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 

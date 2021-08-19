@@ -35,6 +35,11 @@
 #include "wl12xx_80211.h"
 #include "io.h"
 
+<<<<<<< HEAD
+=======
+#define SZ_4K                         0x00001000
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define WSPI_CMD_READ                 0x40000000
 #define WSPI_CMD_WRITE                0x00000000
 #define WSPI_CMD_FIXED                0x20000000
@@ -71,9 +76,18 @@
  * only support SPI for 12xx - this code should be reworked when 18xx
  * support is introduced
  */
+<<<<<<< HEAD
 #define SPI_AGGR_BUFFER_SIZE (4 * PAGE_SIZE)
 
 #define WSPI_MAX_NUM_OF_CHUNKS (SPI_AGGR_BUFFER_SIZE / WSPI_MAX_CHUNK_SIZE)
+=======
+#define SPI_AGGR_BUFFER_SIZE (4 * SZ_4K)
+
+/* Maximum number of SPI write chunks */
+#define WSPI_MAX_NUM_OF_CHUNKS \
+	((SPI_AGGR_BUFFER_SIZE / WSPI_MAX_CHUNK_SIZE) + 1)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct wl12xx_spi_glue {
 	struct device *dev;
@@ -268,9 +282,16 @@ static int __must_check wl12xx_spi_raw_write(struct device *child, int addr,
 					     void *buf, size_t len, bool fixed)
 {
 	struct wl12xx_spi_glue *glue = dev_get_drvdata(child->parent);
+<<<<<<< HEAD
 	struct spi_transfer t[2 * (WSPI_MAX_NUM_OF_CHUNKS + 1)];
 	struct spi_message m;
 	u32 commands[WSPI_MAX_NUM_OF_CHUNKS];
+=======
+	/* SPI write buffers - 2 for each chunk */
+	struct spi_transfer t[2 * WSPI_MAX_NUM_OF_CHUNKS];
+	struct spi_message m;
+	u32 commands[WSPI_MAX_NUM_OF_CHUNKS]; /* 1 command per chunk */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 *cmd;
 	u32 chunk_len;
 	int i;
@@ -331,11 +352,15 @@ static int wl1271_probe(struct spi_device *spi)
 
 	memset(&pdev_data, 0x00, sizeof(pdev_data));
 
+<<<<<<< HEAD
 	pdev_data.pdata = dev_get_platdata(&spi->dev);
 	if (!pdev_data.pdata) {
 		dev_err(&spi->dev, "no platform data\n");
 		return -ENODEV;
 	}
+=======
+	/* TODO: add DT parsing when needed */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pdev_data.if_ops = &spi_ops;
 

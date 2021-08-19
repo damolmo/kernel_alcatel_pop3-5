@@ -959,8 +959,12 @@ static int srpt_init_ch_qp(struct srpt_rdma_ch *ch, struct ib_qp *qp)
 		return -ENOMEM;
 
 	attr->qp_state = IB_QPS_INIT;
+<<<<<<< HEAD
 	attr->qp_access_flags = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_READ |
 	    IB_ACCESS_REMOTE_WRITE;
+=======
+	attr->qp_access_flags = IB_ACCESS_LOCAL_WRITE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	attr->port_num = ch->sport->port;
 	attr->pkey_index = 0;
 
@@ -1335,7 +1339,11 @@ static int srpt_abort_cmd(struct srpt_send_ioctx *ioctx)
 
 		BUG_ON(ch->sess == NULL);
 
+<<<<<<< HEAD
 		target_put_sess_cmd(ch->sess, &ioctx->cmd);
+=======
+		target_put_sess_cmd(&ioctx->cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -1366,11 +1374,19 @@ static int srpt_abort_cmd(struct srpt_send_ioctx *ioctx)
 		 * not been received in time.
 		 */
 		srpt_unmap_sg_to_ib_sge(ioctx->ch, ioctx);
+<<<<<<< HEAD
 		target_put_sess_cmd(ioctx->ch->sess, &ioctx->cmd);
 		break;
 	case SRPT_STATE_MGMT_RSP_SENT:
 		srpt_set_cmd_state(ioctx, SRPT_STATE_DONE);
 		target_put_sess_cmd(ioctx->ch->sess, &ioctx->cmd);
+=======
+		target_put_sess_cmd(&ioctx->cmd);
+		break;
+	case SRPT_STATE_MGMT_RSP_SENT:
+		srpt_set_cmd_state(ioctx, SRPT_STATE_DONE);
+		target_put_sess_cmd(&ioctx->cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		WARN(1, "Unexpected command state (%d)", state);
@@ -1521,9 +1537,17 @@ static int srpt_build_cmd_rsp(struct srpt_rdma_ch *ch,
 			      struct srpt_send_ioctx *ioctx, u64 tag,
 			      int status)
 {
+<<<<<<< HEAD
 	struct srp_rsp *srp_rsp;
 	const u8 *sense_data;
 	int sense_data_len, max_sense_len;
+=======
+	struct se_cmd *cmd = &ioctx->cmd;
+	struct srp_rsp *srp_rsp;
+	const u8 *sense_data;
+	int sense_data_len, max_sense_len;
+	u32 resid = cmd->residual_count;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * The lowest bit of all SAM-3 status codes is zero (see also
@@ -1545,6 +1569,31 @@ static int srpt_build_cmd_rsp(struct srpt_rdma_ch *ch,
 	srp_rsp->tag = tag;
 	srp_rsp->status = status;
 
+<<<<<<< HEAD
+=======
+	if (cmd->se_cmd_flags & SCF_UNDERFLOW_BIT) {
+		if (cmd->data_direction == DMA_TO_DEVICE) {
+			/* residual data from an underflow write */
+			srp_rsp->flags = SRP_RSP_FLAG_DOUNDER;
+			srp_rsp->data_out_res_cnt = cpu_to_be32(resid);
+		} else if (cmd->data_direction == DMA_FROM_DEVICE) {
+			/* residual data from an underflow read */
+			srp_rsp->flags = SRP_RSP_FLAG_DIUNDER;
+			srp_rsp->data_in_res_cnt = cpu_to_be32(resid);
+		}
+	} else if (cmd->se_cmd_flags & SCF_OVERFLOW_BIT) {
+		if (cmd->data_direction == DMA_TO_DEVICE) {
+			/* residual data from an overflow write */
+			srp_rsp->flags = SRP_RSP_FLAG_DOOVER;
+			srp_rsp->data_out_res_cnt = cpu_to_be32(resid);
+		} else if (cmd->data_direction == DMA_FROM_DEVICE) {
+			/* residual data from an overflow read */
+			srp_rsp->flags = SRP_RSP_FLAG_DIOVER;
+			srp_rsp->data_in_res_cnt = cpu_to_be32(resid);
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sense_data_len) {
 		BUILD_BUG_ON(MIN_MAX_RSP_SIZE <= sizeof(*srp_rsp));
 		max_sense_len = ch->max_ti_iu_len - sizeof(*srp_rsp);
@@ -1682,7 +1731,11 @@ static int srpt_check_stop_free(struct se_cmd *cmd)
 	struct srpt_send_ioctx *ioctx = container_of(cmd,
 				struct srpt_send_ioctx, cmd);
 
+<<<<<<< HEAD
 	return target_put_sess_cmd(ioctx->ch->sess, &ioctx->cmd);
+=======
+	return target_put_sess_cmd(&ioctx->cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1745,6 +1798,7 @@ send_sense:
 	return -1;
 }
 
+<<<<<<< HEAD
 /**
  * srpt_rx_mgmt_fn_tag() - Process a task management function by tag.
  * @ch: RDMA channel of the task management request.
@@ -1786,6 +1840,8 @@ static int srpt_rx_mgmt_fn_tag(struct srpt_send_ioctx *ioctx, u64 tag)
 	return ret;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int srp_tmr_to_tcm(int fn)
 {
 	switch (fn) {
@@ -1820,7 +1876,10 @@ static void srpt_handle_tsk_mgmt(struct srpt_rdma_ch *ch,
 	struct se_cmd *cmd;
 	struct se_session *sess = ch->sess;
 	uint64_t unpacked_lun;
+<<<<<<< HEAD
 	uint32_t tag = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int tcm_tmr;
 	int rc;
 
@@ -1836,6 +1895,7 @@ static void srpt_handle_tsk_mgmt(struct srpt_rdma_ch *ch,
 	srpt_set_cmd_state(send_ioctx, SRPT_STATE_MGMT);
 	send_ioctx->tag = srp_tsk->tag;
 	tcm_tmr = srp_tmr_to_tcm(srp_tsk->tsk_mgmt_func);
+<<<<<<< HEAD
 	if (tcm_tmr < 0) {
 		send_ioctx->cmd.se_tmr_req->response =
 			TMR_TASK_MGMT_FUNCTION_NOT_SUPPORTED;
@@ -1855,6 +1915,12 @@ static void srpt_handle_tsk_mgmt(struct srpt_rdma_ch *ch,
 	}
 	rc = target_submit_tmr(&send_ioctx->cmd, sess, NULL, unpacked_lun,
 				srp_tsk, tcm_tmr, GFP_KERNEL, tag,
+=======
+	unpacked_lun = srpt_unpack_lun((uint8_t *)&srp_tsk->lun,
+				       sizeof(srp_tsk->lun));
+	rc = target_submit_tmr(&send_ioctx->cmd, sess, NULL, unpacked_lun,
+				srp_tsk, tcm_tmr, GFP_KERNEL, srp_tsk->task_tag,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				TARGET_SCF_ACK_KREF);
 	if (rc != 0) {
 		send_ioctx->cmd.se_tmr_req->response = TMR_FUNCTION_REJECTED;
@@ -3044,12 +3110,17 @@ static void srpt_queue_response(struct se_cmd *cmd)
 	}
 	spin_unlock_irqrestore(&ioctx->spinlock, flags);
 
+<<<<<<< HEAD
 	if (unlikely(transport_check_aborted_status(&ioctx->cmd, false)
 		     || WARN_ON_ONCE(state == SRPT_STATE_CMD_RSP_SENT))) {
 		atomic_inc(&ch->req_lim_delta);
 		srpt_abort_cmd(ioctx);
 		return;
 	}
+=======
+	if (unlikely(WARN_ON_ONCE(state == SRPT_STATE_CMD_RSP_SENT)))
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dir = ioctx->cmd.data_direction;
 
@@ -3079,7 +3150,11 @@ static void srpt_queue_response(struct se_cmd *cmd)
 		       ioctx->tag);
 		srpt_unmap_sg_to_ib_sge(ch, ioctx);
 		srpt_set_cmd_state(ioctx, SRPT_STATE_DONE);
+<<<<<<< HEAD
 		target_put_sess_cmd(ioctx->ch->sess, &ioctx->cmd);
+=======
+		target_put_sess_cmd(&ioctx->cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -3579,7 +3654,11 @@ static int srpt_parse_i_port_id(u8 i_port_id[16], const char *name)
 {
 	const char *p;
 	unsigned len, count, leading_zero_bytes;
+<<<<<<< HEAD
 	int ret, rc;
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	p = name;
 	if (strncasecmp(p, "0x", 2) == 0)
@@ -3591,10 +3670,16 @@ static int srpt_parse_i_port_id(u8 i_port_id[16], const char *name)
 	count = min(len / 2, 16U);
 	leading_zero_bytes = 16 - count;
 	memset(i_port_id, 0, leading_zero_bytes);
+<<<<<<< HEAD
 	rc = hex2bin(i_port_id + leading_zero_bytes, p, count);
 	if (rc < 0)
 		pr_debug("hex2bin failed for srpt_parse_i_port_id: %d\n", rc);
 	ret = 0;
+=======
+	ret = hex2bin(i_port_id + leading_zero_bytes, p, count);
+	if (ret < 0)
+		pr_debug("hex2bin failed for srpt_parse_i_port_id: %d\n", ret);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	return ret;
 }

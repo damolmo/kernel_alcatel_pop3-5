@@ -486,7 +486,11 @@ static const struct snd_soc_component_driver s3c_pcm_component = {
 static int s3c_pcm_dev_probe(struct platform_device *pdev)
 {
 	struct s3c_pcm_info *pcm;
+<<<<<<< HEAD
 	struct resource *mem_res, *dmatx_res, *dmarx_res;
+=======
+	struct resource *mem_res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct s3c_audio_pdata *pcm_pdata;
 	int ret;
 
@@ -499,6 +503,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	pcm_pdata = pdev->dev.platform_data;
 
 	/* Check for availability of necessary resource */
+<<<<<<< HEAD
 	dmatx_res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dmatx_res) {
 		dev_err(&pdev->dev, "Unable to get PCM-TX dma resource\n");
@@ -511,6 +516,8 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem_res) {
 		dev_err(&pdev->dev, "Unable to get register resource\n");
@@ -568,8 +575,15 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	s3c_pcm_stereo_out[pdev->id].dma_addr = mem_res->start
 							+ S3C_PCM_TXFIFO;
 
+<<<<<<< HEAD
 	s3c_pcm_stereo_in[pdev->id].channel = dmarx_res->start;
 	s3c_pcm_stereo_out[pdev->id].channel = dmatx_res->start;
+=======
+	if (pcm_pdata) {
+		s3c_pcm_stereo_in[pdev->id].slave = pcm_pdata->dma_capture;
+		s3c_pcm_stereo_out[pdev->id].slave = pcm_pdata->dma_playback;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pcm->dma_capture = &s3c_pcm_stereo_in[pdev->id];
 	pcm->dma_playback = &s3c_pcm_stereo_out[pdev->id];

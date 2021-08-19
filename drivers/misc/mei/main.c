@@ -556,7 +556,10 @@ static long mei_ioctl(struct file *file, unsigned int cmd, unsigned long data)
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(dev->dev, ": unsupported ioctl %d.\n", cmd);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rets = -ENOIOCTLCMD;
 	}
 

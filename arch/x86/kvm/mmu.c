@@ -372,12 +372,15 @@ static u64 __get_spte_lockless(u64 *sptep)
 {
 	return ACCESS_ONCE(*sptep);
 }
+<<<<<<< HEAD
 
 static bool __check_direct_spte_mmio_pf(u64 spte)
 {
 	/* It is valid if the spte is zapped. */
 	return spte == 0ull;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 union split_spte {
 	struct {
@@ -493,6 +496,7 @@ retry:
 
 	return spte.spte;
 }
+<<<<<<< HEAD
 
 static bool __check_direct_spte_mmio_pf(u64 spte)
 {
@@ -510,6 +514,8 @@ static bool __check_direct_spte_mmio_pf(u64 spte)
 
 	return false;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 static bool spte_is_locklessly_modifiable(u64 spte)
@@ -3230,6 +3236,7 @@ static bool quickly_check_mmio_pf(struct kvm_vcpu *vcpu, u64 addr, bool direct)
 	return vcpu_match_mmio_gva(vcpu, addr);
 }
 
+<<<<<<< HEAD
 
 /*
  * On direct hosts, the last spte is only allows two states
@@ -3245,6 +3252,8 @@ static bool check_direct_spte_mmio_pf(u64 spte)
 	return __check_direct_spte_mmio_pf(spte);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static u64 walk_shadow_page_get_mmio_spte(struct kvm_vcpu *vcpu, u64 addr)
 {
 	struct kvm_shadow_walk_iterator iterator;
@@ -3287,6 +3296,7 @@ int handle_mmio_page_fault_common(struct kvm_vcpu *vcpu, u64 addr, bool direct)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * It's ok if the gva is remapped by other cpus on shadow guest,
 	 * it's a BUG if the gfn is not a mmio page.
 	 */
@@ -3294,6 +3304,8 @@ int handle_mmio_page_fault_common(struct kvm_vcpu *vcpu, u64 addr, bool direct)
 		return RET_MMIO_PF_BUG;
 
 	/*
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * If the page table is zapped by other cpus, let CPU fault again on
 	 * the address.
 	 */
@@ -3351,12 +3363,22 @@ static int kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gva_t gva, gfn_t gfn)
 	return kvm_setup_async_pf(vcpu, gva, gfn_to_hva(vcpu->kvm, gfn), &arch);
 }
 
+<<<<<<< HEAD
 static bool can_do_async_pf(struct kvm_vcpu *vcpu)
+=======
+bool kvm_can_do_async_pf(struct kvm_vcpu *vcpu)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (unlikely(!irqchip_in_kernel(vcpu->kvm) ||
 		     kvm_event_needs_reinjection(vcpu)))
 		return false;
 
+<<<<<<< HEAD
+=======
+	if (is_guest_mode(vcpu))
+		return false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return kvm_x86_ops->interrupt_allowed(vcpu);
 }
 
@@ -3370,7 +3392,11 @@ static bool try_async_pf(struct kvm_vcpu *vcpu, bool prefault, gfn_t gfn,
 	if (!async)
 		return false; /* *pfn has correct page already */
 
+<<<<<<< HEAD
 	if (!prefault && can_do_async_pf(vcpu)) {
+=======
+	if (!prefault && kvm_can_do_async_pf(vcpu)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		trace_kvm_try_async_get_page(gva, gfn);
 		if (kvm_find_async_pf_gfn(vcpu, gfn)) {
 			trace_kvm_async_pf_doublefault(gva, gfn);
@@ -3576,7 +3602,11 @@ static void reset_rsvds_bits_mask(struct kvm_vcpu *vcpu,
 		context->rsvd_bits_mask[0][3] = exb_bit_rsvd |
 			nonleaf_bit8_rsvd | rsvd_bits(7, 7) | rsvd_bits(maxphyaddr, 51);
 		context->rsvd_bits_mask[0][2] = exb_bit_rsvd |
+<<<<<<< HEAD
 			nonleaf_bit8_rsvd | gbpages_bit_rsvd | rsvd_bits(maxphyaddr, 51);
+=======
+			gbpages_bit_rsvd | rsvd_bits(maxphyaddr, 51);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		context->rsvd_bits_mask[0][1] = exb_bit_rsvd |
 			rsvd_bits(maxphyaddr, 51);
 		context->rsvd_bits_mask[0][0] = exb_bit_rsvd |
@@ -3984,9 +4014,15 @@ static void mmu_pte_write_flush_tlb(struct kvm_vcpu *vcpu, bool zap_page,
 }
 
 static u64 mmu_pte_write_fetch_gpte(struct kvm_vcpu *vcpu, gpa_t *gpa,
+<<<<<<< HEAD
 				    const u8 *new, int *bytes)
 {
 	u64 gentry;
+=======
+				    int *bytes)
+{
+	u64 gentry = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int r;
 
 	/*
@@ -3998,6 +4034,7 @@ static u64 mmu_pte_write_fetch_gpte(struct kvm_vcpu *vcpu, gpa_t *gpa,
 		/* Handle a 32-bit guest writing two halves of a 64-bit gpte */
 		*gpa &= ~(gpa_t)7;
 		*bytes = 8;
+<<<<<<< HEAD
 		r = kvm_read_guest(vcpu->kvm, *gpa, &gentry, 8);
 		if (r)
 			gentry = 0;
@@ -4014,6 +4051,14 @@ static u64 mmu_pte_write_fetch_gpte(struct kvm_vcpu *vcpu, gpa_t *gpa,
 	default:
 		gentry = 0;
 		break;
+=======
+	}
+
+	if (*bytes == 4 || *bytes == 8) {
+		r = kvm_vcpu_read_guest_atomic(vcpu, *gpa, &gentry, *bytes);
+		if (r)
+			gentry = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return gentry;
@@ -4122,8 +4167,11 @@ void kvm_mmu_pte_write(struct kvm_vcpu *vcpu, gpa_t gpa,
 
 	pgprintk("%s: gpa %llx bytes %d\n", __func__, gpa, bytes);
 
+<<<<<<< HEAD
 	gentry = mmu_pte_write_fetch_gpte(vcpu, &gpa, new, &bytes);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * No need to care whether allocation memory is successful
 	 * or not since pte prefetch is skiped if it does not have
@@ -4132,6 +4180,12 @@ void kvm_mmu_pte_write(struct kvm_vcpu *vcpu, gpa_t gpa,
 	mmu_topup_memory_caches(vcpu);
 
 	spin_lock(&vcpu->kvm->mmu_lock);
+<<<<<<< HEAD
+=======
+
+	gentry = mmu_pte_write_fetch_gpte(vcpu, &gpa, &bytes);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	++vcpu->kvm->stat.mmu_pte_write;
 	kvm_mmu_audit(vcpu, AUDIT_PRE_PTE_WRITE);
 

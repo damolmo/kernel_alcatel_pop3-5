@@ -219,17 +219,21 @@ static int fat_write_begin(struct file *file, struct address_space *mapping,
 			struct page **pagep, void **fsdata)
 {
 	int err;
+<<<<<<< HEAD
 #if defined(FEATURE_STORAGE_PID_LOGGER)
 	struct page_pid_logger *tmp_logger;
 	unsigned long page_index;
 	/*extern spinlock_t g_locker;*/
 	unsigned long g_flags;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	*pagep = NULL;
 	err = cont_write_begin(file, mapping, pos, len, flags,
 				pagep, fsdata, fat_get_block,
 				&MSDOS_I(mapping->host)->mmu_private);
+<<<<<<< HEAD
 #if defined(FEATURE_STORAGE_PID_LOGGER)
 	if (page_logger && (*pagep)) {
 		page_index = (unsigned long)(__page_to_pfn(*pagep)) - PHYS_PFN_OFFSET;
@@ -244,6 +248,8 @@ static int fat_write_begin(struct file *file, struct address_space *mapping,
 		spin_unlock_irqrestore(&g_locker, g_flags);
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0)
 		fat_write_failed(mapping, pos + len);
 	return err;
@@ -630,13 +636,29 @@ static void fat_set_state(struct super_block *sb,
 	brelse(bh);
 }
 
+<<<<<<< HEAD
+=======
+static void fat_reset_iocharset(struct fat_mount_options *opts)
+{
+	if (opts->iocharset != fat_default_iocharset) {
+		/* Note: opts->iocharset can be NULL here */
+		kfree(opts->iocharset);
+		opts->iocharset = fat_default_iocharset;
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void delayed_free(struct rcu_head *p)
 {
 	struct msdos_sb_info *sbi = container_of(p, struct msdos_sb_info, rcu);
 	unload_nls(sbi->nls_disk);
 	unload_nls(sbi->nls_io);
+<<<<<<< HEAD
 	if (sbi->options.iocharset != fat_default_iocharset)
 		kfree(sbi->options.iocharset);
+=======
+	fat_reset_iocharset(&sbi->options);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(sbi);
 }
 
@@ -662,6 +684,16 @@ static struct inode *fat_alloc_inode(struct super_block *sb)
 		return NULL;
 
 	init_rwsem(&ei->truncate_lock);
+<<<<<<< HEAD
+=======
+	/* Zeroing to allow iput() even if partial initialized inode. */
+	ei->mmu_private = 0;
+	ei->i_start = 0;
+	ei->i_logstart = 0;
+	ei->i_attrs = 0;
+	ei->i_pos = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return &ei->vfs_inode;
 }
 
@@ -1051,7 +1083,11 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 	opts->fs_fmask = opts->fs_dmask = current_umask();
 	opts->allow_utime = -1;
 	opts->codepage = fat_default_codepage;
+<<<<<<< HEAD
 	opts->iocharset = fat_default_iocharset;
+=======
+	fat_reset_iocharset(opts);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (is_vfat) {
 		opts->shortname = VFAT_SFN_DISPLAY_WINNT|VFAT_SFN_CREATE_WIN95;
 		opts->rodir = 0;
@@ -1201,8 +1237,12 @@ static int parse_options(struct super_block *sb, char *options, int is_vfat,
 
 		/* vfat specific */
 		case Opt_charset:
+<<<<<<< HEAD
 			if (opts->iocharset != fat_default_iocharset)
 				kfree(opts->iocharset);
+=======
+			fat_reset_iocharset(opts);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			iocharset = match_strdup(&args[0]);
 			if (!iocharset)
 				return -ENOMEM;
@@ -1426,6 +1466,15 @@ static int fat_read_bpb(struct super_block *sb, struct fat_boot_sector *b,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	if (bpb->fat_fat_length == 0 && bpb->fat32_length == 0) {
+		if (!silent)
+			fat_msg(sb, KERN_ERR, "bogus number of FAT sectors");
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	error = 0;
 
 out:
@@ -1731,7 +1780,10 @@ int fat_fill_super(struct super_block *sb, void *data, int silent, int isvfat,
 	fat_inode = new_inode(sb);
 	if (!fat_inode)
 		goto out_fail;
+<<<<<<< HEAD
 	MSDOS_I(fat_inode)->i_pos = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sbi->fat_inode = fat_inode;
 
 	fsinfo_inode = new_inode(sb);
@@ -1783,8 +1835,12 @@ out_fail:
 		iput(fat_inode);
 	unload_nls(sbi->nls_io);
 	unload_nls(sbi->nls_disk);
+<<<<<<< HEAD
 	if (sbi->options.iocharset != fat_default_iocharset)
 		kfree(sbi->options.iocharset);
+=======
+	fat_reset_iocharset(&sbi->options);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sb->s_fs_info = NULL;
 	kfree(sbi);
 	return error;

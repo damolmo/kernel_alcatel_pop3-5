@@ -141,7 +141,11 @@ static void show_backtrace(struct task_struct *task, const struct pt_regs *regs)
 	if (!task)
 		task = current;
 
+<<<<<<< HEAD
 	if (raw_show_trace || !__kernel_text_address(pc)) {
+=======
+	if (raw_show_trace || user_mode(regs) || !__kernel_text_address(pc)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		show_raw_backtrace(sp);
 		return;
 	}
@@ -190,6 +194,12 @@ static void show_stacktrace(struct task_struct *task,
 void show_stack(struct task_struct *task, unsigned long *sp)
 {
 	struct pt_regs regs;
+<<<<<<< HEAD
+=======
+	mm_segment_t old_fs = get_fs();
+
+	regs.cp0_status = KSU_KERNEL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sp) {
 		regs.regs[29] = (unsigned long)sp;
 		regs.regs[31] = 0;
@@ -208,7 +218,17 @@ void show_stack(struct task_struct *task, unsigned long *sp)
 			prepare_frametrace(&regs);
 		}
 	}
+<<<<<<< HEAD
 	show_stacktrace(task, &regs);
+=======
+	/*
+	 * show_stack() deals exclusively with kernel mode, so be sure to access
+	 * the stack in the kernel (not user) address space.
+	 */
+	set_fs(KERNEL_DS);
+	show_stacktrace(task, &regs);
+	set_fs(old_fs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void show_code(unsigned int __user *pc)
@@ -685,15 +705,26 @@ static int simulate_sync(struct pt_regs *regs, unsigned int opcode)
 asmlinkage void do_ov(struct pt_regs *regs)
 {
 	enum ctx_state prev_state;
+<<<<<<< HEAD
 	siginfo_t info;
+=======
+	siginfo_t info = {
+		.si_signo = SIGFPE,
+		.si_code = FPE_INTOVF,
+		.si_addr = (void __user *)regs->cp0_epc,
+	};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	prev_state = exception_enter();
 	die_if_kernel("Integer overflow", regs);
 
+<<<<<<< HEAD
 	info.si_code = FPE_INTOVF;
 	info.si_signo = SIGFPE;
 	info.si_errno = 0;
 	info.si_addr = (void __user *) regs->cp0_epc;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	force_sig_info(SIGFPE, &info, current);
 	exception_exit(prev_state);
 }
@@ -796,7 +827,11 @@ out:
 static void do_trap_or_bp(struct pt_regs *regs, unsigned int code,
 	const char *str)
 {
+<<<<<<< HEAD
 	siginfo_t info;
+=======
+	siginfo_t info = { 0 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char b[40];
 
 #ifdef CONFIG_KGDB_LOW_LEVEL_TRAP
@@ -824,7 +859,10 @@ static void do_trap_or_bp(struct pt_regs *regs, unsigned int code,
 		else
 			info.si_code = FPE_INTOVF;
 		info.si_signo = SIGFPE;
+<<<<<<< HEAD
 		info.si_errno = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		info.si_addr = (void __user *) regs->cp0_epc;
 		force_sig_info(SIGFPE, &info, current);
 		break;
@@ -1097,7 +1135,11 @@ static int enable_restore_fp_context(int msa)
 		err = init_fpu();
 		if (msa && !err) {
 			enable_msa();
+<<<<<<< HEAD
 			_init_msa_upper();
+=======
+			init_msa_upper();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			set_thread_flag(TIF_USEDMSA);
 			set_thread_flag(TIF_MSA_CTX_LIVE);
 		}
@@ -1160,7 +1202,11 @@ static int enable_restore_fp_context(int msa)
 	 */
 	prior_msa = test_and_set_thread_flag(TIF_MSA_CTX_LIVE);
 	if (!prior_msa && was_fpu_owner) {
+<<<<<<< HEAD
 		_init_msa_upper();
+=======
+		init_msa_upper();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		goto out;
 	}
@@ -1177,7 +1223,11 @@ static int enable_restore_fp_context(int msa)
 		 * of each vector register such that it cannot see data left
 		 * behind by another task.
 		 */
+<<<<<<< HEAD
 		_init_msa_upper();
+=======
+		init_msa_upper();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		/* We need to restore the vector context. */
 		restore_msa(current);
@@ -1376,6 +1426,10 @@ asmlinkage void do_mcheck(struct pt_regs *regs)
 	const int field = 2 * sizeof(unsigned long);
 	int multi_match = regs->cp0_status & ST0_TS;
 	enum ctx_state prev_state;
+<<<<<<< HEAD
+=======
+	mm_segment_t old_fs = get_fs();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	prev_state = exception_enter();
 	show_regs(regs);
@@ -1390,8 +1444,18 @@ asmlinkage void do_mcheck(struct pt_regs *regs)
 		dump_tlb_all();
 	}
 
+<<<<<<< HEAD
 	show_code((unsigned int __user *) regs->cp0_epc);
 
+=======
+	if (!user_mode(regs))
+		set_fs(KERNEL_DS);
+
+	show_code((unsigned int __user *) regs->cp0_epc);
+
+	set_fs(old_fs);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Some chips may have other causes of machine check (e.g. SB1
 	 * graduation timer)

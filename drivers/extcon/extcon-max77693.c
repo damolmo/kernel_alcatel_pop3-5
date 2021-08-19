@@ -1312,4 +1312,8 @@ module_platform_driver(max77693_muic_driver);
 MODULE_DESCRIPTION("Maxim MAX77693 Extcon driver");
 MODULE_AUTHOR("Chanwoo Choi <cw00.choi@samsung.com>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("platform:extcon-max77693");
+=======
+MODULE_ALIAS("platform:max77693-muic");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -390,7 +390,11 @@ static int ssd1307fb_ssd1306_init(struct ssd1307fb_par *par)
 		return ret;
 
 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_PAGE_RANGE);
+<<<<<<< HEAD
 	ret = ret & ssd1307fb_write_cmd(par->client, 0x0);
+=======
+	ret = ret & ssd1307fb_write_cmd(par->client, par->page_offset);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = ret & ssd1307fb_write_cmd(par->client,
 					par->page_offset + (par->height / 8) - 1);
 	if (ret < 0)

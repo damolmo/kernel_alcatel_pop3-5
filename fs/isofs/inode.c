@@ -394,7 +394,14 @@ static int parse_options(char *options, struct iso9660_options *popt)
 			break;
 #ifdef CONFIG_JOLIET
 		case Opt_iocharset:
+<<<<<<< HEAD
 			popt->iocharset = match_strdup(&args[0]);
+=======
+			kfree(popt->iocharset);
+			popt->iocharset = match_strdup(&args[0]);
+			if (!popt->iocharset)
+				return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 #endif
 		case Opt_map_a:
@@ -690,6 +697,14 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 	pri_bh = NULL;
 
 root_found:
+<<<<<<< HEAD
+=======
+	/* We don't support read-write mounts */
+	if (!(s->s_flags & MS_RDONLY)) {
+		error = -EACCES;
+		goto out_freebh;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (joliet_level && (pri == NULL || !opt.rock)) {
 		/* This is the case of Joliet with the norock mount flag.
@@ -1503,9 +1518,12 @@ struct inode *__isofs_iget(struct super_block *sb,
 static struct dentry *isofs_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
+<<<<<<< HEAD
 	/* We don't support read-write mounts */
 	if (!(flags & MS_RDONLY))
 		return ERR_PTR(-EACCES);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return mount_bdev(fs_type, flags, dev_name, data, isofs_fill_super);
 }
 

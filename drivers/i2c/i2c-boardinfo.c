@@ -56,9 +56,13 @@ EXPORT_SYMBOL_GPL(__i2c_first_dynamic_bus_num);
  * The board info passed can safely be __initdata, but be careful of embedded
  * pointers (for platform_data, functions, etc) since that won't be copied.
  */
+<<<<<<< HEAD
 int __init
 i2c_register_board_info(int busnum,
 	struct i2c_board_info const *info, unsigned len)
+=======
+int i2c_register_board_info(int busnum, struct i2c_board_info const *info, unsigned len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int status;
 

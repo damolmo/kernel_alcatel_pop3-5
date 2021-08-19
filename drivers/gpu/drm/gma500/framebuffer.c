@@ -544,6 +544,10 @@ static int psbfb_probe(struct drm_fb_helper *helper,
 		container_of(helper, struct psb_fbdev, psb_fb_helper);
 	struct drm_device *dev = psb_fbdev->psb_fb_helper.dev;
 	struct drm_psb_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
+=======
+	unsigned int fb_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int bytespp;
 
 	bytespp = sizes->surface_bpp / 8;
@@ -553,8 +557,16 @@ static int psbfb_probe(struct drm_fb_helper *helper,
 	/* If the mode will not fit in 32bit then switch to 16bit to get
 	   a console on full resolution. The X mode setting server will
 	   allocate its own 32bit GEM framebuffer */
+<<<<<<< HEAD
 	if (ALIGN(sizes->fb_width * bytespp, 64) * sizes->fb_height >
 	                dev_priv->vram_stolen_size) {
+=======
+	fb_size = ALIGN(sizes->surface_width * bytespp, 64) *
+		  sizes->surface_height;
+	fb_size = ALIGN(fb_size, PAGE_SIZE);
+
+	if (fb_size > dev_priv->vram_stolen_size) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
                 sizes->surface_bpp = 16;
                 sizes->surface_depth = 16;
         }
@@ -593,6 +605,10 @@ int psb_fbdev_init(struct drm_device *dev)
 {
 	struct psb_fbdev *fbdev;
 	struct drm_psb_private *dev_priv = dev->dev_private;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	fbdev = kzalloc(sizeof(struct psb_fbdev), GFP_KERNEL);
 	if (!fbdev) {
@@ -604,16 +620,41 @@ int psb_fbdev_init(struct drm_device *dev)
 
 	drm_fb_helper_prepare(dev, &fbdev->psb_fb_helper, &psb_fb_helper_funcs);
 
+<<<<<<< HEAD
 	drm_fb_helper_init(dev, &fbdev->psb_fb_helper, dev_priv->ops->crtcs,
 							INTELFB_CONN_LIMIT);
 
 	drm_fb_helper_single_add_all_connectors(&fbdev->psb_fb_helper);
+=======
+	ret = drm_fb_helper_init(dev, &fbdev->psb_fb_helper,
+				 dev_priv->ops->crtcs, INTELFB_CONN_LIMIT);
+	if (ret)
+		goto free;
+
+	ret = drm_fb_helper_single_add_all_connectors(&fbdev->psb_fb_helper);
+	if (ret)
+		goto fini;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+<<<<<<< HEAD
 	drm_fb_helper_initial_config(&fbdev->psb_fb_helper, 32);
 	return 0;
+=======
+	ret = drm_fb_helper_initial_config(&fbdev->psb_fb_helper, 32);
+	if (ret)
+		goto fini;
+
+	return 0;
+
+fini:
+	drm_fb_helper_fini(&fbdev->psb_fb_helper);
+free:
+	kfree(fbdev);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void psb_fbdev_fini(struct drm_device *dev)

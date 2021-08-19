@@ -10,6 +10,12 @@
 
 asflags-y += $(LINUXINCLUDE)
 ccflags-y += -O2 $(LINUXINCLUDE)
+<<<<<<< HEAD
+=======
+
+ifdef CONFIG_ETRAX_AXISFLASHMAP
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 arch-$(CONFIG_ETRAX_ARCH_V10) = v10
 arch-$(CONFIG_ETRAX_ARCH_V32) = v32
 
@@ -28,6 +34,14 @@ $(obj)/rescue.bin: $(obj)/rescue.o FORCE
 	$(call if_changed,objcopy)
 	cp -p $(obj)/rescue.bin $(objtree)
 
+<<<<<<< HEAD
+=======
+else
+$(obj)/rescue.bin:
+
+endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 $(obj)/testrescue.bin: $(obj)/testrescue.o
 	$(OBJCOPY) $(OBJCOPYFLAGS) $(obj)/testrescue.o tr.bin
 # Pad it to 784 bytes

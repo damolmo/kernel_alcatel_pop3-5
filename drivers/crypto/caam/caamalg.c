@@ -414,6 +414,12 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 	if (!ctx->authsize)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (!ctx->authsize)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* NULL encryption / decryption */
 	if (!ctx->enckeylen)
 		return aead_null_set_sh_desc(aead);
@@ -597,7 +603,13 @@ static int aead_set_sh_desc(struct crypto_aead *aead)
 
 	/* Will read cryptlen */
 	append_math_add(desc, VARSEQINLEN, SEQINLEN, REG0, CAAM_CMD_SZ);
+<<<<<<< HEAD
 	aead_append_src_dst(desc, FIFOLD_TYPE_MSG1OUT2);
+=======
+	append_seq_fifo_load(desc, 0, FIFOLD_CLASS_BOTH | KEY_VLF |
+			     FIFOLD_TYPE_MSG1OUT2 | FIFOLD_TYPE_LASTBOTH);
+	append_seq_fifo_store(desc, 0, FIFOST_TYPE_MESSAGE_DATA | KEY_VLF);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Write ICV */
 	append_seq_store(desc, ctx->authsize, LDST_CLASS_2_CCB |
@@ -1133,6 +1145,10 @@ static void init_aead_job(u32 *sh_desc, dma_addr_t ptr,
 	} else {
 		if (!edesc->dst_nents) {
 			dst_dma = sg_dma_address(req->dst);
+<<<<<<< HEAD
+=======
+			out_options = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			dst_dma = edesc->sec4_sg_dma +
 				  sec4_sg_index *

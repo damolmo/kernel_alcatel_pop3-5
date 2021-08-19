@@ -792,7 +792,18 @@ void __init r8a7740_init_irq_of(void)
 	void __iomem *intc_msk_base = ioremap_nocache(0xe6900040, 0x10);
 	void __iomem *pfc_inta_ctrl = ioremap_nocache(0xe605807c, 0x4);
 
+<<<<<<< HEAD
 	irqchip_init();
+=======
+#ifdef CONFIG_ARCH_SHMOBILE_LEGACY
+	void __iomem *gic_dist_base = ioremap_nocache(0xc2800000, 0x1000);
+	void __iomem *gic_cpu_base = ioremap_nocache(0xc2000000, 0x1000);
+
+	gic_init(0, 29, gic_dist_base, gic_cpu_base);
+#else
+	irqchip_init();
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* route signals to GIC */
 	iowrite32(0x0, pfc_inta_ctrl);

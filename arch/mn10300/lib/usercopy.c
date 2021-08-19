@@ -9,7 +9,11 @@
  * as published by the Free Software Foundation; either version
  * 2 of the Licence, or (at your option) any later version.
  */
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 unsigned long
 __generic_copy_to_user(void *to, const void *from, unsigned long n)
@@ -24,6 +28,11 @@ __generic_copy_from_user(void *to, const void *from, unsigned long n)
 {
 	if (access_ok(VERIFY_READ, from, n))
 		__copy_user_zeroing(to, from, n);
+<<<<<<< HEAD
+=======
+	else
+		memset(to, 0, n);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return n;
 }
 

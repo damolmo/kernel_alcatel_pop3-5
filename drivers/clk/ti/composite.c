@@ -188,6 +188,10 @@ cleanup:
 		if (!cclk->comp_clks[i])
 			continue;
 		list_del(&cclk->comp_clks[i]->link);
+<<<<<<< HEAD
+=======
+		kfree(cclk->comp_clks[i]->parent_names);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(cclk->comp_clks[i]);
 	}
 

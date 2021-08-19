@@ -90,6 +90,11 @@ int udp_tunnel_xmit_skb(struct socket *sock, struct rtable *rt,
 	uh->source = src_port;
 	uh->len = htons(skb->len);
 
+<<<<<<< HEAD
+=======
+	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	udp_set_csum(sock->sk->sk_no_check_tx, skb, src, dst, skb->len);
 
 	return iptunnel_xmit(sock->sk, rt, skb, src, dst, IPPROTO_UDP,

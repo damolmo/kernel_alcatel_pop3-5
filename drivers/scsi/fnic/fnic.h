@@ -248,6 +248,10 @@ struct fnic {
 	struct completion *remove_wait; /* device remove thread blocks */
 
 	atomic_t in_flight;		/* io counter */
+<<<<<<< HEAD
+=======
+	bool internal_reset_inprogress;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 _reserved;			/* fill hole */
 	unsigned long state_flags;	/* protected by host lock */
 	enum fnic_state state;

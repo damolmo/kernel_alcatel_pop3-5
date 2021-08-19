@@ -704,14 +704,24 @@ static int rcar_pcie_enable_msi(struct rcar_pcie *pcie)
 
 	/* Two irqs are for MSI, but they are also used for non-MSI irqs */
 	err = devm_request_irq(&pdev->dev, msi->irq1, rcar_pcie_msi_irq,
+<<<<<<< HEAD
 			       IRQF_SHARED, rcar_msi_irq_chip.name, pcie);
+=======
+			       IRQF_SHARED | IRQF_NO_THREAD,
+			       rcar_msi_irq_chip.name, pcie);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to request IRQ: %d\n", err);
 		goto err;
 	}
 
 	err = devm_request_irq(&pdev->dev, msi->irq2, rcar_pcie_msi_irq,
+<<<<<<< HEAD
 			       IRQF_SHARED, rcar_msi_irq_chip.name, pcie);
+=======
+			       IRQF_SHARED | IRQF_NO_THREAD,
+			       rcar_msi_irq_chip.name, pcie);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to request IRQ: %d\n", err);
 		goto err;
@@ -719,6 +729,13 @@ static int rcar_pcie_enable_msi(struct rcar_pcie *pcie)
 
 	/* setup MSI data target */
 	msi->pages = __get_free_pages(GFP_KERNEL, 0);
+<<<<<<< HEAD
+=======
+	if (!msi->pages) {
+		err = -ENOMEM;
+		goto err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	base = virt_to_phys((void *)msi->pages);
 
 	rcar_pci_write_reg(pcie, base | MSIFE, PCIEMSIALR);

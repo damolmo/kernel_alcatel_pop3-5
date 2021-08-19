@@ -156,3 +156,7 @@ module_platform_driver(pxa_pcm_driver);
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel PXA2xx PCM DMA module");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-pcm-audio");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -188,7 +188,12 @@ struct ath_frame_info {
 	enum ath9k_key_type keytype;
 	u8 keyix;
 	u8 rtscts_rate;
+<<<<<<< HEAD
 	u8 retries : 7;
+=======
+	u8 retries : 6;
+	u8 dyn_smps : 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 baw_tracked : 1;
 };
 
@@ -954,6 +959,10 @@ struct ath_softc {
 	struct survey_info *cur_survey;
 	struct survey_info survey[ATH9K_NUM_CHANNELS];
 
+<<<<<<< HEAD
+=======
+	spinlock_t intr_lock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct tasklet_struct intr_tq;
 	struct tasklet_struct bcon_tasklet;
 	struct ath_hw *sc_ah;

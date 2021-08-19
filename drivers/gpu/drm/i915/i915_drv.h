@@ -2899,6 +2899,7 @@ int vlv_freq_opcode(struct drm_i915_private *dev_priv, int val);
 #define I915_READ64(reg)	dev_priv->uncore.funcs.mmio_readq(dev_priv, (reg), true)
 
 #define I915_READ64_2x32(lower_reg, upper_reg) ({			\
+<<<<<<< HEAD
 		u32 upper = I915_READ(upper_reg);			\
 		u32 lower = I915_READ(lower_reg);			\
 		u32 tmp = I915_READ(upper_reg);				\
@@ -2908,6 +2909,16 @@ int vlv_freq_opcode(struct drm_i915_private *dev_priv, int val);
 			WARN_ON(I915_READ(upper_reg) != upper);		\
 		}							\
 		(u64)upper << 32 | lower; })
+=======
+	u32 upper, lower, tmp;						\
+	tmp = I915_READ(upper_reg);					\
+	do {								\
+		upper = tmp;						\
+		lower = I915_READ(lower_reg);				\
+		tmp = I915_READ(upper_reg);				\
+	} while (upper != tmp);						\
+	(u64)upper << 32 | lower; })
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define POSTING_READ(reg)	(void)I915_READ_NOTRACE(reg)
 #define POSTING_READ16(reg)	(void)I915_READ16_NOTRACE(reg)

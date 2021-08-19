@@ -56,6 +56,7 @@ static u16 range_n_bytes(const struct sw_flow_key_range *range)
 }
 
 void ovs_flow_mask_key(struct sw_flow_key *dst, const struct sw_flow_key *src,
+<<<<<<< HEAD
 		       const struct sw_flow_mask *mask)
 {
 	const long *m = (const long *)((const u8 *)&mask->key +
@@ -70,6 +71,23 @@ void ovs_flow_mask_key(struct sw_flow_key *dst, const struct sw_flow_key *src,
 	 * 'mask->range'.
 	 */
 	for (i = 0; i < range_n_bytes(&mask->range); i += sizeof(long))
+=======
+		       bool full, const struct sw_flow_mask *mask)
+{
+	int start = full ? 0 : mask->range.start;
+	int len = full ? sizeof *dst : range_n_bytes(&mask->range);
+	const long *m = (const long *)((const u8 *)&mask->key + start);
+	const long *s = (const long *)((const u8 *)src + start);
+	long *d = (long *)((u8 *)dst + start);
+	int i;
+
+	/* If 'full' is true then all of 'dst' is fully initialized. Otherwise,
+	 * if 'full' is false the memory outside of the 'mask->range' is left
+	 * uninitialized. This can be used as an optimization when further
+	 * operations on 'dst' only use contents within 'mask->range'.
+	 */
+	for (i = 0; i < len; i += sizeof(long))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*d++ = *s++ & *m++;
 }
 
@@ -418,7 +436,11 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
 	u32 hash;
 	struct sw_flow_key masked_key;
 
+<<<<<<< HEAD
 	ovs_flow_mask_key(&masked_key, unmasked, mask);
+=======
+	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hash = flow_hash(&masked_key, key_start, key_end);
 	head = find_bucket(ti, hash);
 	hlist_for_each_entry_rcu(flow, head, hash_node[ti->node_ver]) {

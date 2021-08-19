@@ -11,6 +11,10 @@
 
 #include <linux/compiler.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/fs.h>
 #include <linux/pagemap.h>
 #include <linux/skbuff.h>
@@ -247,7 +251,11 @@ struct afs_cache_vhash {
  */
 struct afs_vlocation {
 	atomic_t		usage;
+<<<<<<< HEAD
 	time_t			time_of_death;	/* time at which put reduced usage to 0 */
+=======
+	time64_t		time_of_death;	/* time at which put reduced usage to 0 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct list_head	link;		/* link in cell volume location list */
 	struct list_head	grave;		/* link in master graveyard list */
 	struct list_head	update;		/* link in master update list */
@@ -258,7 +266,11 @@ struct afs_vlocation {
 	struct afs_cache_vlocation vldb;	/* volume information DB record */
 	struct afs_volume	*vols[3];	/* volume access record pointer (index by type) */
 	wait_queue_head_t	waitq;		/* status change waitqueue */
+<<<<<<< HEAD
 	time_t			update_at;	/* time at which record should be updated */
+=======
+	time64_t		update_at;	/* time at which record should be updated */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spinlock_t		lock;		/* access lock */
 	afs_vlocation_state_t	state;		/* volume location state */
 	unsigned short		upd_rej_cnt;	/* ENOMEDIUM count during update */
@@ -271,7 +283,11 @@ struct afs_vlocation {
  */
 struct afs_server {
 	atomic_t		usage;
+<<<<<<< HEAD
 	time_t			time_of_death;	/* time at which put reduced usage to 0 */
+=======
+	time64_t		time_of_death;	/* time at which put reduced usage to 0 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct in_addr		addr;		/* server address */
 	struct afs_cell		*cell;		/* cell in which server resides */
 	struct list_head	link;		/* link in cell's server list */
@@ -374,8 +390,13 @@ struct afs_vnode {
 	struct rb_node		server_rb;	/* link in server->fs_vnodes */
 	struct rb_node		cb_promise;	/* link in server->cb_promises */
 	struct work_struct	cb_broken_work;	/* work to be done on callback break */
+<<<<<<< HEAD
 	time_t			cb_expires;	/* time at which callback expires */
 	time_t			cb_expires_at;	/* time used to order cb_promise */
+=======
+	time64_t		cb_expires;	/* time at which callback expires */
+	time64_t		cb_expires_at;	/* time used to order cb_promise */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned		cb_version;	/* callback version */
 	unsigned		cb_expiry;	/* callback expiry time */
 	afs_callback_type_t	cb_type;	/* type of callback */
@@ -749,6 +770,10 @@ extern int afs_writepages(struct address_space *, struct writeback_control *);
 extern void afs_pages_written_back(struct afs_vnode *, struct afs_call *);
 extern ssize_t afs_file_write(struct kiocb *, struct iov_iter *);
 extern int afs_writeback_all(struct afs_vnode *);
+<<<<<<< HEAD
+=======
+extern int afs_flush(struct file *, fl_owner_t);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int afs_fsync(struct file *, loff_t, loff_t, int);
 
 

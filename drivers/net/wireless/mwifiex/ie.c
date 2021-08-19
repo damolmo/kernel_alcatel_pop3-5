@@ -240,6 +240,12 @@ static int mwifiex_update_vs_ie(const u8 *ies, int ies_len,
 		}
 
 		vs_ie = (struct ieee_types_header *)vendor_ie;
+<<<<<<< HEAD
+=======
+		if (le16_to_cpu(ie->ie_length) + vs_ie->len + 2 >
+			IEEE_MAX_IE_SIZE)
+			return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(ie->ie_buffer + le16_to_cpu(ie->ie_length),
 		       vs_ie, vs_ie->len + 2);
 		le16_add_cpu(&ie->ie_length, vs_ie->len + 2);

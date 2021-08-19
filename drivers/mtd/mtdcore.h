@@ -17,6 +17,7 @@ int parse_mtd_partitions(struct mtd_info *master, const char * const *types,
 int __init init_mtdchar(void);
 void __exit cleanup_mtdchar(void);
 
+<<<<<<< HEAD
 #define DYNAMIC_CHANGE_MTD_WRITEABLE
 #ifdef DYNAMIC_CHANGE_MTD_WRITEABLE	/* tonykuo 2013-11-05 */
 #include <linux/proc_fs.h>
@@ -36,6 +37,8 @@ struct mtd_change {
 	uint64_t offset;
 };
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define mtd_for_each_device(mtd)			\
 	for ((mtd) = __mtd_next_device(0);		\
 	     (mtd) != NULL;				\

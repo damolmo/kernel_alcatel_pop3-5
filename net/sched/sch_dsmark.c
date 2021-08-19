@@ -67,6 +67,7 @@ static int dsmark_graft(struct Qdisc *sch, unsigned long arg,
 			new = &noop_qdisc;
 	}
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = p->q;
 	p->q = new;
@@ -74,6 +75,9 @@ static int dsmark_graft(struct Qdisc *sch, unsigned long arg,
 	qdisc_reset(*old);
 	sch_tree_unlock(sch);
 
+=======
+	*old = qdisc_replace(sch, new, &p->q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -203,9 +207,19 @@ static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	pr_debug("%s(skb %p,sch %p,[qdisc %p])\n", __func__, skb, sch, p);
 
 	if (p->set_tc_index) {
+<<<<<<< HEAD
 		switch (skb->protocol) {
 		case htons(ETH_P_IP):
 			if (skb_cow_head(skb, sizeof(struct iphdr)))
+=======
+		int wlen = skb_network_offset(skb);
+
+		switch (skb->protocol) {
+		case htons(ETH_P_IP):
+			wlen += sizeof(struct iphdr);
+			if (!pskb_may_pull(skb, wlen) ||
+			    skb_try_make_writable(skb, wlen))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto drop;
 
 			skb->tc_index = ipv4_get_dsfield(ip_hdr(skb))
@@ -213,7 +227,13 @@ static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 			break;
 
 		case htons(ETH_P_IPV6):
+<<<<<<< HEAD
 			if (skb_cow_head(skb, sizeof(struct ipv6hdr)))
+=======
+			wlen += sizeof(struct ipv6hdr);
+			if (!pskb_may_pull(skb, wlen) ||
+			    skb_try_make_writable(skb, wlen))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto drop;
 
 			skb->tc_index = ipv6_get_dsfield(ipv6_hdr(skb))
@@ -262,6 +282,10 @@ static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return err;
 	}
 
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_inc(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen++;
 
 	return NET_XMIT_SUCCESS;
@@ -284,6 +308,10 @@ static struct sk_buff *dsmark_dequeue(struct Qdisc *sch)
 		return NULL;
 
 	qdisc_bstats_update(sch, skb);
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_dec(sch, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen--;
 
 	index = skb->tc_index & (p->indices - 1);
@@ -358,6 +386,11 @@ static int dsmark_init(struct Qdisc *sch, struct nlattr *opt)
 		goto errout;
 
 	err = -EINVAL;
+<<<<<<< HEAD
+=======
+	if (!tb[TCA_DSMARK_INDICES])
+		goto errout;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	indices = nla_get_u16(tb[TCA_DSMARK_INDICES]);
 
 	if (hweight32(indices) != 1)
@@ -398,7 +431,13 @@ static void dsmark_reset(struct Qdisc *sch)
 	struct dsmark_qdisc_data *p = qdisc_priv(sch);
 
 	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
+<<<<<<< HEAD
 	qdisc_reset(p->q);
+=======
+	if (p->q)
+		qdisc_reset(p->q);
+	sch->qstats.backlog = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->q.qlen = 0;
 }
 

@@ -614,6 +614,7 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
 				     struct ethtool_eee *edata)
 {
 	struct stmmac_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	priv->eee_enabled = edata->eee_enabled;
 
@@ -633,6 +634,22 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
 	}
 
 	return phy_ethtool_set_eee(priv->phydev, edata);
+=======
+	int ret;
+
+	if (!priv->dma_cap.eee)
+		return -EOPNOTSUPP;
+
+	if (!edata->eee_enabled)
+		stmmac_disable_eee_mode(priv);
+
+	ret = phy_ethtool_set_eee(dev->phydev, edata);
+	if (ret)
+		return ret;
+
+	priv->tx_lpi_timer = edata->tx_lpi_timer;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static u32 stmmac_usec2riwt(u32 usec, struct stmmac_priv *priv)
@@ -721,10 +738,20 @@ static int stmmac_get_ts_info(struct net_device *dev,
 {
 	struct stmmac_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if ((priv->hwts_tx_en) && (priv->hwts_rx_en)) {
 
 		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
 					SOF_TIMESTAMPING_RX_HARDWARE |
+=======
+	if ((priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp)) {
+
+		info->so_timestamping = SOF_TIMESTAMPING_TX_SOFTWARE |
+					SOF_TIMESTAMPING_TX_HARDWARE |
+					SOF_TIMESTAMPING_RX_SOFTWARE |
+					SOF_TIMESTAMPING_RX_HARDWARE |
+					SOF_TIMESTAMPING_SOFTWARE |
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					SOF_TIMESTAMPING_RAW_HARDWARE;
 
 		if (priv->ptp_clock)

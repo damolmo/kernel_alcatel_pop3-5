@@ -169,7 +169,11 @@ drop:
 	return NET_RX_DROP;
 }
 
+<<<<<<< HEAD
 static void pppopns_recv(struct sock *sk_raw, int length)
+=======
+static void pppopns_recv(struct sock *sk_raw)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct sk_buff *skb;
 	while ((skb = skb_dequeue(&sk_raw->sk_receive_queue))) {

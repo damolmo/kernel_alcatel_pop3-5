@@ -61,7 +61,12 @@ GLOBAL(ftrace_graph_call)
 	jmp ftrace_stub
 #endif
 
+<<<<<<< HEAD
 GLOBAL(ftrace_stub)
+=======
+/* This is weak to keep gas from relaxing the jumps */
+WEAK(ftrace_stub)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	retq
 END(ftrace_caller)
 

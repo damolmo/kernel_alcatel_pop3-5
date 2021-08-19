@@ -448,12 +448,23 @@ mesh_sta_info_alloc(struct ieee80211_sub_if_data *sdata, u8 *addr,
 
 	/* Userspace handles station allocation */
 	if (sdata->u.mesh.user_mpm ||
+<<<<<<< HEAD
 	    sdata->u.mesh.security & IEEE80211_MESH_SEC_AUTHED)
 		cfg80211_notify_new_peer_candidate(sdata->dev, addr,
 						   elems->ie_start,
 						   elems->total_len,
 						   GFP_KERNEL);
 	else
+=======
+	    sdata->u.mesh.security & IEEE80211_MESH_SEC_AUTHED) {
+		if (mesh_peer_accepts_plinks(elems) &&
+		    mesh_plink_availables(sdata))
+			cfg80211_notify_new_peer_candidate(sdata->dev, addr,
+							   elems->ie_start,
+							   elems->total_len,
+							   GFP_KERNEL);
+	} else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sta = __mesh_sta_info_alloc(sdata, addr);
 
 	return sta;

@@ -126,7 +126,11 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	int data, n, ret;
 	if (!np)
 		return -ENODEV;
+<<<<<<< HEAD
 	np = of_find_node_by_name(np, "touch");
+=======
+	np = of_get_child_by_name(np, "touch");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!np) {
 		dev_err(&pdev->dev, "Can't find touch node\n");
 		return -EINVAL;
@@ -144,13 +148,21 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	if (data) {
 		ret = pm860x_reg_write(i2c, PM8607_GPADC_MISC1, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
+=======
+			goto err_put_node;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	/* set tsi prebias time */
 	if (!of_property_read_u32(np, "marvell,88pm860x-tsi-prebias", &data)) {
 		ret = pm860x_reg_write(i2c, PM8607_TSI_PREBIAS, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
+=======
+			goto err_put_node;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	/* set prebias & prechg time of pen detect */
 	data = 0;
@@ -161,10 +173,25 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 	if (data) {
 		ret = pm860x_reg_write(i2c, PM8607_PD_PREBIAS, data);
 		if (ret < 0)
+<<<<<<< HEAD
 			return -EINVAL;
 	}
 	of_property_read_u32(np, "marvell,88pm860x-resistor-X", res_x);
 	return 0;
+=======
+			goto err_put_node;
+	}
+	of_property_read_u32(np, "marvell,88pm860x-resistor-X", res_x);
+
+	of_node_put(np);
+
+	return 0;
+
+err_put_node:
+	of_node_put(np);
+
+	return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #else
 #define pm860x_touch_dt_init(x, y, z)	(-1)

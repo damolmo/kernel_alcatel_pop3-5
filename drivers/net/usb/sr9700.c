@@ -456,6 +456,7 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 
 	len = skb->len;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < SR_TX_OVERHEAD) {
 		struct sk_buff *skb2;
 
@@ -464,6 +465,11 @@ static struct sk_buff *sr9700_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 		skb = skb2;
 		if (!skb)
 			return NULL;
+=======
+	if (skb_cow_head(skb, SR_TX_OVERHEAD)) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	__skb_push(skb, SR_TX_OVERHEAD);

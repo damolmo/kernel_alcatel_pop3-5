@@ -4361,8 +4361,14 @@ il4965_synchronize_irq(struct il_priv *il)
 }
 
 static void
+<<<<<<< HEAD
 il4965_irq_tasklet(struct il_priv *il)
 {
+=======
+il4965_irq_tasklet(unsigned long data)
+{
+	struct il_priv *il = (struct il_priv *)data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 inta, handled = 0;
 	u32 inta_fh;
 	unsigned long flags;
@@ -6256,7 +6262,11 @@ il4965_setup_deferred_work(struct il_priv *il)
 	il->watchdog.function = il_bg_watchdog;
 
 	tasklet_init(&il->irq_tasklet,
+<<<<<<< HEAD
 		     (void (*)(unsigned long))il4965_irq_tasklet,
+=======
+		     il4965_irq_tasklet,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		     (unsigned long)il);
 }
 

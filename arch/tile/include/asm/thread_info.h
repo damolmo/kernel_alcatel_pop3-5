@@ -36,7 +36,10 @@ struct thread_info {
 
 	mm_segment_t		addr_limit;	/* thread address space
 						   (KERNEL_DS or USER_DS) */
+<<<<<<< HEAD
 	struct restart_block	restart_block;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct single_step_state *step_state;	/* single step state
 						   (if non-zero) */
 	int			align_ctl;	/* controls unaligned access */
@@ -57,9 +60,12 @@ struct thread_info {
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 	.addr_limit	= KERNEL_DS,		\
+<<<<<<< HEAD
 	.restart_block	= {			\
 		.fn = do_no_restart_syscall,	\
 	},					\
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.step_state	= NULL,			\
 	.align_ctl	= 0,			\
 }

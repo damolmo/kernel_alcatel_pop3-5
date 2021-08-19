@@ -315,6 +315,7 @@ static void __init armada_370_coherency_init(struct device_node *np)
 }
 
 /*
+<<<<<<< HEAD
  * This ioremap hook is used on Armada 375/38x to ensure that PCIe
  * memory areas are mapped as MT_UNCACHED instead of MT_DEVICE. This
  * is needed as a workaround for a deadlock issue between the PCIe
@@ -331,6 +332,18 @@ armada_pcie_wa_ioremap_caller(phys_addr_t phys_addr, size_t size,
 	if (pcie_mem.start <= phys_addr && (phys_addr + size) <= pcie_mem.end)
 		mtype = MT_UNCACHED;
 
+=======
+ * This ioremap hook is used on Armada 375/38x to ensure that all MMIO
+ * areas are mapped as MT_UNCACHED instead of MT_DEVICE. This is
+ * needed for the HW I/O coherency mechanism to work properly without
+ * deadlock.
+ */
+static void __iomem *
+armada_wa_ioremap_caller(phys_addr_t phys_addr, size_t size,
+			 unsigned int mtype, void *caller)
+{
+	mtype = MT_UNCACHED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return __arm_ioremap_caller(phys_addr, size, mtype, caller);
 }
 
@@ -339,7 +352,11 @@ static void __init armada_375_380_coherency_init(struct device_node *np)
 	struct device_node *cache_dn;
 
 	coherency_cpu_base = of_iomap(np, 0);
+<<<<<<< HEAD
 	arch_ioremap_caller = armada_pcie_wa_ioremap_caller;
+=======
+	arch_ioremap_caller = armada_wa_ioremap_caller;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * We should switch the PL310 to I/O coherency mode only if

@@ -1072,7 +1072,11 @@ static int airspy_probe(struct usb_interface *intf,
 	if (ret) {
 		dev_err(s->dev, "Failed to register as video device (%d)\n",
 				ret);
+<<<<<<< HEAD
 		goto err_unregister_v4l2_dev;
+=======
+		goto err_free_controls;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	dev_info(s->dev, "Registered as %s\n",
 			video_device_node_name(&s->vdev));
@@ -1081,7 +1085,10 @@ static int airspy_probe(struct usb_interface *intf,
 
 err_free_controls:
 	v4l2_ctrl_handler_free(&s->hdl);
+<<<<<<< HEAD
 err_unregister_v4l2_dev:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	v4l2_device_unregister(&s->v4l2_dev);
 err_free_mem:
 	kfree(s);

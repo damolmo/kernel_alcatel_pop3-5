@@ -490,7 +490,11 @@ static int hash_digest_key(struct caam_hash_ctx *ctx, const u8 *key_in,
 	ret = caam_jr_enqueue(jrdev, desc, split_key_done, &result);
 	if (!ret) {
 		/* in progress */
+<<<<<<< HEAD
 		wait_for_completion_interruptible(&result.completion);
+=======
+		wait_for_completion(&result.completion);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = result.err;
 #ifdef DEBUG
 		print_hex_dump(KERN_ERR,
@@ -909,13 +913,22 @@ static int ahash_final_ctx(struct ahash_request *req)
 			  state->buflen_1;
 	u32 *sh_desc = ctx->sh_desc_fin, *desc;
 	dma_addr_t ptr = ctx->sh_desc_fin_dma;
+<<<<<<< HEAD
 	int sec4_sg_bytes;
+=======
+	int sec4_sg_bytes, sec4_sg_src_index;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int digestsize = crypto_ahash_digestsize(ahash);
 	struct ahash_edesc *edesc;
 	int ret = 0;
 	int sh_len;
 
+<<<<<<< HEAD
 	sec4_sg_bytes = (1 + (buflen ? 1 : 0)) * sizeof(struct sec4_sg_entry);
+=======
+	sec4_sg_src_index = 1 + (buflen ? 1 : 0);
+	sec4_sg_bytes = sec4_sg_src_index * sizeof(struct sec4_sg_entry);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* allocate space for base edesc and hw desc commands, link tables */
 	edesc = kmalloc(sizeof(struct ahash_edesc) + DESC_JOB_IO_LEN +
@@ -942,7 +955,11 @@ static int ahash_final_ctx(struct ahash_request *req)
 	state->buf_dma = try_buf_map_to_sec4_sg(jrdev, edesc->sec4_sg + 1,
 						buf, state->buf_dma, buflen,
 						last_buflen);
+<<<<<<< HEAD
 	(edesc->sec4_sg + sec4_sg_bytes - 1)->len |= SEC4_SG_LEN_FIN;
+=======
+	(edesc->sec4_sg + sec4_sg_src_index - 1)->len |= SEC4_SG_LEN_FIN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	edesc->sec4_sg_dma = dma_map_single(jrdev, edesc->sec4_sg,
 					    sec4_sg_bytes, DMA_TO_DEVICE);
@@ -1860,6 +1877,10 @@ caam_hash_alloc(struct caam_hash_template *template,
 			 template->name);
 		snprintf(alg->cra_driver_name, CRYPTO_MAX_ALG_NAME, "%s",
 			 template->driver_name);
+<<<<<<< HEAD
+=======
+		t_alg->ahash_alg.setkey = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	alg->cra_module = THIS_MODULE;
 	alg->cra_init = caam_hash_cra_init;

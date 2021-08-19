@@ -19,6 +19,10 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/capability.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/if.h>
 #include <linux/inetdevice.h>
 #include <linux/ip.h>
@@ -69,6 +73,12 @@ static int xt_osf_add_callback(struct sock *ctnl, struct sk_buff *skb,
 	struct xt_osf_finger *kf = NULL, *sf;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!osf_attrs[OSF_ATTR_FINGER])
 		return -EINVAL;
 
@@ -112,6 +122,12 @@ static int xt_osf_remove_callback(struct sock *ctnl, struct sk_buff *skb,
 	struct xt_osf_finger *sf;
 	int err = -ENOENT;
 
+<<<<<<< HEAD
+=======
+	if (!capable(CAP_NET_ADMIN))
+		return -EPERM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!osf_attrs[OSF_ATTR_FINGER])
 		return -EINVAL;
 

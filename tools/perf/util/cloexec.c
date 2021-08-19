@@ -7,11 +7,21 @@
 
 static unsigned long flag = PERF_FLAG_FD_CLOEXEC;
 
+<<<<<<< HEAD
+=======
+#ifdef __GLIBC_PREREQ
+#if !__GLIBC_PREREQ(2, 6)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int __weak sched_getcpu(void)
 {
 	errno = ENOSYS;
 	return -1;
 }
+<<<<<<< HEAD
+=======
+#endif
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int perf_flag_probe(void)
 {

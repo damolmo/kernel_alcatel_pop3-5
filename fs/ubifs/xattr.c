@@ -167,6 +167,10 @@ out_cancel:
 	host_ui->xattr_cnt -= 1;
 	host_ui->xattr_size -= CALC_DENT_SIZE(nm->len);
 	host_ui->xattr_size -= CALC_XATTR_BYTES(size);
+<<<<<<< HEAD
+=======
+	host_ui->xattr_names -= nm->len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&host_ui->ui_mutex);
 out_free:
 	make_bad_inode(inode);
@@ -293,16 +297,28 @@ static struct inode *iget_xattr(struct ubifs_info *c, ino_t inum)
 	return ERR_PTR(-EINVAL);
 }
 
+<<<<<<< HEAD
 static int setxattr(struct inode *host, const char *name, const void *value,
 		    size_t size, int flags)
 {
 	struct inode *inode;
+=======
+int ubifs_setxattr(struct dentry *dentry, const char *name,
+		   const void *value, size_t size, int flags)
+{
+	struct inode *inode, *host = dentry->d_inode;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ubifs_info *c = host->i_sb->s_fs_info;
 	struct qstr nm = QSTR_INIT(name, strlen(name));
 	struct ubifs_dent_node *xent;
 	union ubifs_key key;
 	int err, type;
 
+<<<<<<< HEAD
+=======
+	dbg_gen("xattr '%s', host ino %lu ('%pd'), size %zd", name,
+		host->i_ino, dentry, size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubifs_assert(mutex_is_locked(&host->i_mutex));
 
 	if (size > UBIFS_MAX_INO_DATA)
@@ -354,6 +370,7 @@ out_free:
 	return err;
 }
 
+<<<<<<< HEAD
 int ubifs_setxattr(struct dentry *dentry, const char *name,
 			const void *value, size_t size, int flags)
 {
@@ -365,6 +382,8 @@ int ubifs_setxattr(struct dentry *dentry, const char *name,
 	return setxattr(dentry->d_inode, name, value, size, flags);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 		       size_t size)
 {
@@ -492,12 +511,17 @@ ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size)
 static int remove_xattr(struct ubifs_info *c, struct inode *host,
 			struct inode *inode, const struct qstr *nm)
 {
+<<<<<<< HEAD
 	int err, budgeted = 1;
+=======
+	int err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ubifs_inode *host_ui = ubifs_inode(host);
 	struct ubifs_inode *ui = ubifs_inode(inode);
 	struct ubifs_budget_req req = { .dirtied_ino = 2, .mod_dent = 1,
 				.dirtied_ino_d = ALIGN(host_ui->data_len, 8) };
 
+<<<<<<< HEAD
 	/*
 	 * Budget request settings: deletion direntry, deletion inode and
 	 * changing the parent inode. If budgeting fails, go ahead anyway
@@ -512,6 +536,13 @@ static int remove_xattr(struct ubifs_info *c, struct inode *host,
 			return err;
 		budgeted = 0;
 	}
+=======
+	ubifs_assert(ui->data_len == inode->i_size);
+
+	err = ubifs_budget_space(c, &req);
+	if (err)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&host_ui->ui_mutex);
 	host->i_ctime = ubifs_current_time(host);
@@ -525,6 +556,7 @@ static int remove_xattr(struct ubifs_info *c, struct inode *host,
 		goto out_cancel;
 	mutex_unlock(&host_ui->ui_mutex);
 
+<<<<<<< HEAD
 	if (budgeted)
 		ubifs_release_budget(c, &req);
 	else {
@@ -532,15 +564,24 @@ static int remove_xattr(struct ubifs_info *c, struct inode *host,
 		c->bi.nospace = c->bi.nospace_rp = 0;
 		smp_wmb();
 	}
+=======
+	ubifs_release_budget(c, &req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_cancel:
 	host_ui->xattr_cnt += 1;
 	host_ui->xattr_size += CALC_DENT_SIZE(nm->len);
 	host_ui->xattr_size += CALC_XATTR_BYTES(ui->data_len);
+<<<<<<< HEAD
 	mutex_unlock(&host_ui->ui_mutex);
 	if (budgeted)
 		ubifs_release_budget(c, &req);
+=======
+	host_ui->xattr_names += nm->len;
+	mutex_unlock(&host_ui->ui_mutex);
+	ubifs_release_budget(c, &req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	make_bad_inode(inode);
 	return err;
 }
@@ -593,6 +634,7 @@ out_free:
 	kfree(xent);
 	return err;
 }
+<<<<<<< HEAD
 
 static size_t security_listxattr(struct dentry *d, char *list, size_t list_size,
 		const char *name, size_t name_len, int flags)
@@ -677,3 +719,5 @@ int ubifs_init_security(struct inode *dentry, struct inode *inode,
 			  inode->i_ino, err);
 	return err;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

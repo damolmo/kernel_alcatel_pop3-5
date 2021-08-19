@@ -48,7 +48,17 @@ static struct file_system_type test_type = {
 
 struct inode *btrfs_new_test_inode(void)
 {
+<<<<<<< HEAD
 	return new_inode(test_mnt->mnt_sb);
+=======
+	struct inode *inode;
+
+	inode = new_inode(test_mnt->mnt_sb);
+	if (inode)
+		inode_init_owner(inode, NULL, S_IFREG);
+
+	return inode;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int btrfs_init_test_fs(void)

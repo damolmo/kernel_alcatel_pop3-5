@@ -1629,7 +1629,11 @@ static void imon_incoming_packet(struct imon_context *ictx,
 	if (kc == KEY_KEYBOARD && !ictx->release_code) {
 		ictx->last_keycode = kc;
 		if (!nomouse) {
+<<<<<<< HEAD
 			ictx->pad_mouse = ~(ictx->pad_mouse) & 0x1;
+=======
+			ictx->pad_mouse = !ictx->pad_mouse;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev_dbg(dev, "toggling to %s mode\n",
 				ictx->pad_mouse ? "mouse" : "keyboard");
 			spin_unlock_irqrestore(&ictx->kc_lock, flags);
@@ -1644,8 +1648,12 @@ static void imon_incoming_packet(struct imon_context *ictx,
 	spin_unlock_irqrestore(&ictx->kc_lock, flags);
 
 	/* send touchscreen events through input subsystem if touchpad data */
+<<<<<<< HEAD
 	if (ictx->display_type == IMON_DISPLAY_TYPE_VGA && len == 8 &&
 	    buf[7] == 0x86) {
+=======
+	if (ictx->touch && len == 8 && buf[7] == 0x86) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		imon_touch_event(ictx, buf);
 		return;
 
@@ -2419,6 +2427,14 @@ static int imon_probe(struct usb_interface *interface,
 	mutex_lock(&driver_lock);
 
 	first_if = usb_ifnum_to_if(usbdev, 0);
+<<<<<<< HEAD
+=======
+	if (!first_if) {
+		ret = -ENODEV;
+		goto fail;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	first_if_ctx = usb_get_intfdata(first_if);
 
 	if (ifnum == 0) {

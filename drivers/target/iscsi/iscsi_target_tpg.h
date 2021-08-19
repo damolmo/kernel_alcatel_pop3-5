@@ -22,7 +22,11 @@ extern struct iscsi_node_attrib *iscsit_tpg_get_node_attrib(struct iscsi_session
 extern void iscsit_tpg_del_external_nps(struct iscsi_tpg_np *);
 extern struct iscsi_tpg_np *iscsit_tpg_locate_child_np(struct iscsi_tpg_np *, int);
 extern struct iscsi_tpg_np *iscsit_tpg_add_network_portal(struct iscsi_portal_group *,
+<<<<<<< HEAD
 			struct __kernel_sockaddr_storage *, char *, struct iscsi_tpg_np *,
+=======
+			struct __kernel_sockaddr_storage *, struct iscsi_tpg_np *,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			int);
 extern int iscsit_tpg_del_network_portal(struct iscsi_portal_group *,
 			struct iscsi_tpg_np *);

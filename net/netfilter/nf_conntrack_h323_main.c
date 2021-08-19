@@ -1223,6 +1223,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_q931[] __read_mostly = {
 	{
 		.name			= "Q.931",
 		.me			= THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.data_len		= sizeof(struct nf_ct_h323_master),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.tuple.src.l3num	= AF_INET6,
 		.tuple.src.u.tcp.port	= cpu_to_be16(Q931_PORT),
 		.tuple.dst.protonum	= IPPROTO_TCP,

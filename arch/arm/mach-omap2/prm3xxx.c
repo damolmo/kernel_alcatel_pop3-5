@@ -433,7 +433,11 @@ void omap3xxx_prm_reconfigure_io_chain(void)
  * registers, and omap3xxx_prm_reconfigure_io_chain() must be called.
  * No return value.
  */
+<<<<<<< HEAD
 static void __init omap3xxx_prm_enable_io_wakeup(void)
+=======
+static void omap3xxx_prm_enable_io_wakeup(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (prm_features & PRM_HAS_IO_WAKEUP)
 		omap2_prm_set_mod_reg_bits(OMAP3430_EN_IO_MASK, WKUP_MOD,

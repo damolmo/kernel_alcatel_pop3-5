@@ -78,16 +78,22 @@
 #include <linux/context_tracking.h>
 #include <linux/random.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/suspend.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/io.h>
 #include <asm/bugs.h>
 #include <asm/setup.h>
 #include <asm/sections.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #include "bootprof.h"
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_X86_LOCAL_APIC
 #include <asm/smp.h>
@@ -98,9 +104,12 @@ static int kernel_init(void *);
 extern void init_IRQ(void);
 extern void fork_init(unsigned long);
 extern void radix_tree_init(void);
+<<<<<<< HEAD
 #ifndef CONFIG_DEBUG_RODATA
 static inline void mark_rodata_ro(void) { }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Debug helper: via this flag we know that we are in 'early bootup code'
@@ -128,7 +137,10 @@ void (*__initdata late_time_init)(void);
 char __initdata boot_command_line[COMMAND_LINE_SIZE];
 /* Untouched saved command line (eg. for /proc) */
 char *saved_command_line;
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(saved_command_line);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Command line for parameter parsing */
 static char *static_command_line;
 /* Command line for per-initcall parameter parsing */
@@ -400,7 +412,10 @@ static noinline void __init_refok rest_init(void)
 	int pid;
 
 	rcu_scheduler_starting();
+<<<<<<< HEAD
 	smpboot_thread_init();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * We need to spawn init first so that it obtains pid 1, however
 	 * the init task will end up wanting to create kthreads, which, if
@@ -545,6 +560,11 @@ asmlinkage __visible void __init start_kernel(void)
 	page_alloc_init();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
+<<<<<<< HEAD
+=======
+	/* parameters may set static keys */
+	jump_label_init();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	parse_early_param();
 	after_dashes = parse_args("Booting kernel",
 				  static_command_line, __start___param,
@@ -554,8 +574,11 @@ asmlinkage __visible void __init start_kernel(void)
 		parse_args("Setting init args", after_dashes, NULL, 0, -1, -1,
 			   set_init_arg);
 
+<<<<<<< HEAD
 	jump_label_init();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * These use large bootmem allocations and must precede
 	 * kmem_cache_init()
@@ -583,6 +606,13 @@ asmlinkage __visible void __init start_kernel(void)
 		local_irq_disable();
 	idr_init_cache();
 	rcu_init();
+<<<<<<< HEAD
+=======
+
+	/* trace_printk() and trace points may be used after this */
+	trace_init();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	context_tracking_init();
 	radix_tree_init();
 	/* init some links before init_ISA_irqs() */
@@ -673,6 +703,10 @@ asmlinkage __visible void __init start_kernel(void)
 
 	check_bugs();
 
+<<<<<<< HEAD
+=======
+	acpi_subsystem_init();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sfi_init_late();
 
 	if (efi_enabled(EFI_RUNTIME_SERVICES)) {
@@ -684,6 +718,11 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Do the rest non-__init'ed, we're now alive */
 	rest_init();
+<<<<<<< HEAD
+=======
+
+	prevent_tail_call_optimization();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Call all constructor functions linked into the kernel. */
@@ -776,7 +815,11 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
 	rettime = ktime_get();
 	delta = ktime_sub(rettime, calltime);
 	duration = (unsigned long long) ktime_to_ns(delta) >> 10;
+<<<<<<< HEAD
 	pr_notice("initcall %pF returned %d after %lld usecs\n",
+=======
+	printk(KERN_DEBUG "initcall %pF returned %d after %lld usecs\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 fn, ret, duration);
 
 	return ret;
@@ -784,23 +827,34 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
 
 int __init_or_module do_one_initcall(initcall_t fn)
 {
+<<<<<<< HEAD
 	unsigned long long ts = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int count = preempt_count();
 	int ret;
 	char msgbuf[64];
 
 	if (initcall_blacklisted(fn))
 		return -EPERM;
+<<<<<<< HEAD
 	ts = sched_clock();
 #if defined(CONFIG_MT_ENG_BUILD)
 	ret = do_one_initcall_debug(fn);
 #else
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (initcall_debug)
 		ret = do_one_initcall_debug(fn);
 	else
 		ret = fn();
+<<<<<<< HEAD
 #endif
 	ts = sched_clock() - ts;
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	msgbuf[0] = 0;
 
 	if (preempt_count() != count) {
@@ -812,6 +866,7 @@ int __init_or_module do_one_initcall(initcall_t fn)
 		local_irq_enable();
 	}
 	WARN(msgbuf[0], "initcall %pF returned with %s\n", fn, msgbuf);
+<<<<<<< HEAD
 	if (ts > 15000000) {
 		/* log more than 15ms initcalls */
 		snprintf(msgbuf, 64, "%pf %10llu ns", fn, ts);
@@ -819,6 +874,8 @@ int __init_or_module do_one_initcall(initcall_t fn)
 		log_boot(msgbuf);
 #endif
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -945,6 +1002,31 @@ static int try_to_run_init_process(const char *init_filename)
 
 static noinline void __init kernel_init_freeable(void);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DEBUG_RODATA
+static bool rodata_enabled = true;
+static int __init set_debug_rodata(char *str)
+{
+	return strtobool(str, &rodata_enabled);
+}
+__setup("rodata=", set_debug_rodata);
+
+static void mark_readonly(void)
+{
+	if (rodata_enabled)
+		mark_rodata_ro();
+	else
+		pr_info("Kernel memory protection disabled.\n");
+}
+#else
+static inline void mark_readonly(void)
+{
+	pr_warn("This architecture does not have kernel memory protection.\n");
+}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __ref kernel_init(void *unused)
 {
 	int ret;
@@ -953,16 +1035,23 @@ static int __ref kernel_init(void *unused)
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
 	free_initmem();
+<<<<<<< HEAD
 	mark_rodata_ro();
+=======
+	mark_readonly();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	system_state = SYSTEM_RUNNING;
 	numa_default_policy();
 
 	flush_delayed_fput();
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 	log_boot("Kernel_init_done");
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ramdisk_execute_command) {
 		ret = run_init_process(ramdisk_execute_command);
 		if (!ret)
@@ -1013,7 +1102,11 @@ static noinline void __init kernel_init_freeable(void)
 	 */
 	set_cpus_allowed_ptr(current, cpu_all_mask);
 
+<<<<<<< HEAD
 	cad_pid = task_pid(current);
+=======
+	cad_pid = get_pid(task_pid(current));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	smp_prepare_cpus(setup_max_cpus);
 
@@ -1031,11 +1124,14 @@ static noinline void __init kernel_init_freeable(void)
 
 	(void) sys_dup(0);
 	(void) sys_dup(0);
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTK_HIBERNATION
 	/* IPO-H, move here for console ok after hibernaton resume */
 	software_resume();
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * check if there is an early userspace init.  If yes, let it do all
 	 * the work

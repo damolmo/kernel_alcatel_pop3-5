@@ -200,7 +200,13 @@ ENDPROC(__memcpy)
 	 */
 	.section .altinstructions, "a"
 	altinstruction_entry memcpy,.Lmemcpy_c,X86_FEATURE_REP_GOOD,\
+<<<<<<< HEAD
 			     .Lmemcpy_e-.Lmemcpy_c,.Lmemcpy_e-.Lmemcpy_c
 	altinstruction_entry memcpy,.Lmemcpy_c_e,X86_FEATURE_ERMS, \
 			     .Lmemcpy_e_e-.Lmemcpy_c_e,.Lmemcpy_e_e-.Lmemcpy_c_e
+=======
+			     .Lmemcpy_e-.Lmemcpy_c,.Lmemcpy_e-.Lmemcpy_c,0
+	altinstruction_entry memcpy,.Lmemcpy_c_e,X86_FEATURE_ERMS, \
+			     .Lmemcpy_e_e-.Lmemcpy_c_e,.Lmemcpy_e_e-.Lmemcpy_c_e,0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.previous

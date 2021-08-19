@@ -643,18 +643,26 @@ static size_t nilfs_lookup_dirty_data_buffers(struct inode *inode,
 	pagevec_init(&pvec, 0);
  repeat:
 	if (unlikely(index > last) ||
+<<<<<<< HEAD
 	    !pagevec_lookup_tag(&pvec, mapping, &index, PAGECACHE_TAG_DIRTY,
 				min_t(pgoff_t, last - index,
 				      PAGEVEC_SIZE - 1) + 1))
+=======
+	    !pagevec_lookup_range_tag(&pvec, mapping, &index, last,
+				PAGECACHE_TAG_DIRTY))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ndirties;
 
 	for (i = 0; i < pagevec_count(&pvec); i++) {
 		struct buffer_head *bh, *head;
 		struct page *page = pvec.pages[i];
 
+<<<<<<< HEAD
 		if (unlikely(page->index > last))
 			break;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		lock_page(page);
 		if (!page_has_buffers(page))
 			create_empty_buffers(page, 1 << inode->i_blkbits, 0);
@@ -691,8 +699,13 @@ static void nilfs_lookup_dirty_node_buffers(struct inode *inode,
 
 	pagevec_init(&pvec, 0);
 
+<<<<<<< HEAD
 	while (pagevec_lookup_tag(&pvec, mapping, &index, PAGECACHE_TAG_DIRTY,
 				  PAGEVEC_SIZE)) {
+=======
+	while (pagevec_lookup_tag(&pvec, mapping, &index,
+					PAGECACHE_TAG_DIRTY)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < pagevec_count(&pvec); i++) {
 			bh = head = page_buffers(pvec.pages[i]);
 			do {
@@ -1884,8 +1897,11 @@ static int nilfs_segctor_collect_dirty_files(struct nilfs_sc_info *sci,
 					      "failed to get inode block.\n");
 				return err;
 			}
+<<<<<<< HEAD
 			mark_buffer_dirty(ibh);
 			nilfs_mdt_mark_dirty(ifile);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			spin_lock(&nilfs->ns_inode_lock);
 			if (likely(!ii->i_bh))
 				ii->i_bh = ibh;
@@ -1894,6 +1910,13 @@ static int nilfs_segctor_collect_dirty_files(struct nilfs_sc_info *sci,
 			goto retry;
 		}
 
+<<<<<<< HEAD
+=======
+		// Always redirty the buffer to avoid race condition
+		mark_buffer_dirty(ii->i_bh);
+		nilfs_mdt_mark_dirty(ifile);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clear_bit(NILFS_I_QUEUED, &ii->i_state);
 		set_bit(NILFS_I_BUSY, &ii->i_state);
 		list_move_tail(&ii->i_dirty, &sci->sc_dirty_files);

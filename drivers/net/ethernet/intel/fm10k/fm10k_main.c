@@ -1218,7 +1218,11 @@ static bool fm10k_clean_tx_irq(struct fm10k_q_vector *q_vector,
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* if DD is not set pending work has not been completed */
 		if (!(eop_desc->flags & FM10K_TXD_FLAG_DONE))
@@ -1420,6 +1424,13 @@ static int fm10k_poll(struct napi_struct *napi, int budget)
 	fm10k_for_each_ring(ring, q_vector->tx)
 		clean_complete &= fm10k_clean_tx_irq(q_vector, ring);
 
+<<<<<<< HEAD
+=======
+	/* Handle case where we are called by netpoll with a budget of 0 */
+	if (budget <= 0)
+		return budget;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* attempt to distribute budget to each queue fairly, but don't
 	 * allow the budget to go below 1 because we'll exit polling
 	 */
@@ -1955,8 +1966,15 @@ int fm10k_init_queueing_scheme(struct fm10k_intfc *interface)
 
 	/* Allocate memory for queues */
 	err = fm10k_alloc_q_vectors(interface);
+<<<<<<< HEAD
 	if (err)
 		return err;
+=======
+	if (err) {
+		fm10k_reset_msix_capability(interface);
+		return err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Map rings to devices, and map devices to physical queues */
 	fm10k_assign_rings(interface);

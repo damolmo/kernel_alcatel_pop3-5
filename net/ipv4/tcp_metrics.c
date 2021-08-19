@@ -550,7 +550,11 @@ reset:
 	 */
 	if (crtt > tp->srtt_us) {
 		/* Set RTO like tcp_rtt_estimator(), but from cached RTT. */
+<<<<<<< HEAD
 		crtt /= 8 * USEC_PER_MSEC;
+=======
+		crtt /= 8 * USEC_PER_SEC / HZ;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		inet_csk(sk)->icsk_rto = crtt + max(2 * crtt, tcp_rto_min(sk));
 	} else if (tp->srtt_us == 0) {
 		/* RFC6298: 5.7 We've failed to get a valid RTT sample from

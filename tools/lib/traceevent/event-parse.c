@@ -264,10 +264,17 @@ static int add_new_comm(struct pevent *pevent, const char *comm, int pid)
 		errno = ENOMEM;
 		return -1;
 	}
+<<<<<<< HEAD
 
 	cmdlines[pevent->cmdline_count].comm = strdup(comm);
 	if (!cmdlines[pevent->cmdline_count].comm) {
 		free(cmdlines);
+=======
+	pevent->cmdlines = cmdlines;
+
+	cmdlines[pevent->cmdline_count].comm = strdup(comm);
+	if (!cmdlines[pevent->cmdline_count].comm) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		errno = ENOMEM;
 		return -1;
 	}
@@ -278,7 +285,10 @@ static int add_new_comm(struct pevent *pevent, const char *comm, int pid)
 		pevent->cmdline_count++;
 
 	qsort(cmdlines, pevent->cmdline_count, sizeof(*cmdlines), cmdline_cmp);
+<<<<<<< HEAD
 	pevent->cmdlines = cmdlines;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -2065,7 +2075,11 @@ eval_type_str(unsigned long long val, const char *type, int pointer)
 		return val & 0xffffffff;
 
 	if (strcmp(type, "u64") == 0 ||
+<<<<<<< HEAD
 	    strcmp(type, "s64"))
+=======
+	    strcmp(type, "s64") == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return val;
 
 	if (strcmp(type, "s8") == 0)
@@ -2283,7 +2297,11 @@ static int arg_num_eval(struct print_arg *arg, long long *val)
 static char *arg_eval (struct print_arg *arg)
 {
 	long long val;
+<<<<<<< HEAD
 	static char buf[20];
+=======
+	static char buf[24];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (arg->type) {
 	case PRINT_ATOM:
@@ -3658,7 +3676,11 @@ static void print_str_arg(struct trace_seq *s, void *data, int size,
 	struct format_field *field;
 	struct printk_map *printk;
 	unsigned long long val, fval;
+<<<<<<< HEAD
 	unsigned long addr;
+=======
+	unsigned long long addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char *str;
 	unsigned char *hex;
 	int print;
@@ -3691,13 +3713,38 @@ static void print_str_arg(struct trace_seq *s, void *data, int size,
 		 */
 		if (!(field->flags & FIELD_IS_ARRAY) &&
 		    field->size == pevent->long_size) {
+<<<<<<< HEAD
 			addr = *(unsigned long *)(data + field->offset);
+=======
+
+			/* Handle heterogeneous recording and processing
+			 * architectures
+			 *
+			 * CASE I:
+			 * Traces recorded on 32-bit devices (32-bit
+			 * addressing) and processed on 64-bit devices:
+			 * In this case, only 32 bits should be read.
+			 *
+			 * CASE II:
+			 * Traces recorded on 64 bit devices and processed
+			 * on 32-bit devices:
+			 * In this case, 64 bits must be read.
+			 */
+			addr = (pevent->long_size == 8) ?
+				*(unsigned long long *)(data + field->offset) :
+				(unsigned long long)*(unsigned int *)(data + field->offset);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* Check if it matches a print format */
 			printk = find_printk(pevent, addr);
 			if (printk)
 				trace_seq_puts(s, printk->printk);
 			else
+<<<<<<< HEAD
 				trace_seq_printf(s, "%lx", addr);
+=======
+				trace_seq_printf(s, "%llx", addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 		str = malloc(len + 1);
@@ -4328,6 +4375,7 @@ static void pretty_print(struct trace_seq *s, void *data, int size, struct event
 				else
 					ls = 2;
 
+<<<<<<< HEAD
 				if (*(ptr+1) == 'F' ||
 				    *(ptr+1) == 'f') {
 					ptr++;
@@ -4335,6 +4383,16 @@ static void pretty_print(struct trace_seq *s, void *data, int size, struct event
 				} else if (*(ptr+1) == 'M' || *(ptr+1) == 'm') {
 					print_mac_arg(s, *(ptr+1), data, size, event, arg);
 					ptr++;
+=======
+				if (isalnum(ptr[1]))
+					ptr++;
+
+				if (*ptr == 'F' || *ptr == 'f' ||
+				    *ptr == 'S' || *ptr == 's') {
+					show_func = *ptr;
+				} else if (*ptr == 'M' || *ptr == 'm') {
+					print_mac_arg(s, *ptr, data, size, event, arg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					arg = arg->next;
 					break;
 				}
@@ -4382,6 +4440,7 @@ static void pretty_print(struct trace_seq *s, void *data, int size, struct event
 				    sizeof(long) != 8) {
 					char *p;
 
+<<<<<<< HEAD
 					ls = 2;
 					/* make %l into %ll */
 					p = strchr(format, 'l');
@@ -4389,6 +4448,14 @@ static void pretty_print(struct trace_seq *s, void *data, int size, struct event
 						memmove(p+1, p, strlen(p)+1);
 					else if (strcmp(format, "%p") == 0)
 						strcpy(format, "0x%llx");
+=======
+					/* make %l into %ll */
+					if (ls == 1 && (p = strchr(format, 'l')))
+						memmove(p+1, p, strlen(p)+1);
+					else if (strcmp(format, "%p") == 0)
+						strcpy(format, "0x%llx");
+					ls = 2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				}
 				switch (ls) {
 				case -2:

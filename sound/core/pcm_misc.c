@@ -23,7 +23,10 @@
 #include <linux/export.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
+<<<<<<< HEAD
 #include <linux/io.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SND_PCM_FORMAT_UNKNOWN (-1)
 
 /* NOTE: "signed" prefix must be given below since the default char is
@@ -418,7 +421,11 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
 	/* signed or 1 byte data */
 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
 		unsigned int bytes = samples * width / 8;
+<<<<<<< HEAD
 		memset_io(data, *pat, bytes);
+=======
+		memset(data, *pat, bytes);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 	/* non-zero samples, fill using a loop */

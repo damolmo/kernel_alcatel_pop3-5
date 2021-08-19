@@ -620,6 +620,12 @@ void cdv_intel_lvds_init(struct drm_device *dev,
 	int pipe;
 	u8 pin;
 
+<<<<<<< HEAD
+=======
+	if (!dev_priv->lvds_enabled_in_vbt)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pin = GMBUS_PORT_PANEL;
 	if (!lvds_is_present_in_vbt(dev, &pin)) {
 		DRM_DEBUG_KMS("LVDS is not present in VBT\n");

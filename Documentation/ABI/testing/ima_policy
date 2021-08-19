@@ -20,17 +20,30 @@ Description:
 		action: measure | dont_measure | appraise | dont_appraise | audit
 		condition:= base | lsm  [option]
 			base:	[[func=] [mask=] [fsmagic=] [fsuuid=] [uid=]
+<<<<<<< HEAD
 				 [fowner]]
+=======
+				[euid=] [fowner=]]
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			lsm:	[[subj_user=] [subj_role=] [subj_type=]
 				 [obj_user=] [obj_role=] [obj_type=]]
 			option:	[[appraise_type=]] [permit_directio]
 
 		base: 	func:= [BPRM_CHECK][MMAP_CHECK][FILE_CHECK][MODULE_CHECK]
 				[FIRMWARE_CHECK]
+<<<<<<< HEAD
 			mask:= [MAY_READ] [MAY_WRITE] [MAY_APPEND] [MAY_EXEC]
 			fsmagic:= hex value
 			fsuuid:= file system UUID (e.g 8bcbe394-4f13-4144-be8e-5aa9ea2ce2f6)
 			uid:= decimal value
+=======
+			mask:= [[^]MAY_READ] [[^]MAY_WRITE] [[^]MAY_APPEND]
+			       [[^]MAY_EXEC]
+			fsmagic:= hex value
+			fsuuid:= file system UUID (e.g 8bcbe394-4f13-4144-be8e-5aa9ea2ce2f6)
+			uid:= decimal value
+			euid:= decimal value
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			fowner:=decimal value
 		lsm:  	are LSM specific
 		option:	appraise_type:= [imasig]

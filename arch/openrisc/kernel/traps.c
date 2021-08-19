@@ -302,12 +302,21 @@ asmlinkage void do_unaligned_access(struct pt_regs *regs, unsigned long address)
 	siginfo_t info;
 
 	if (user_mode(regs)) {
+<<<<<<< HEAD
 		/* Send a SIGSEGV */
 		info.si_signo = SIGSEGV;
 		info.si_errno = 0;
 		/* info.si_code has been set above */
 		info.si_addr = (void *)address;
 		force_sig_info(SIGSEGV, &info, current);
+=======
+		/* Send a SIGBUS */
+		info.si_signo = SIGBUS;
+		info.si_errno = 0;
+		info.si_code = BUS_ADRALN;
+		info.si_addr = (void __user *)address;
+		force_sig_info(SIGBUS, &info, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		printk("KERNEL: Unaligned Access 0x%.8lx\n", address);
 		show_registers(regs);

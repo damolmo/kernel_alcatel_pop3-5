@@ -2590,9 +2590,12 @@ static int __init comedi_init(void)
 
 	comedi_class->dev_groups = comedi_dev_groups;
 
+<<<<<<< HEAD
 	/* XXX requires /proc interface */
 	comedi_proc_init();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* create devices files for legacy/manual use */
 	for (i = 0; i < comedi_num_legacy_minors; i++) {
 		struct comedi_device *dev;
@@ -2600,6 +2603,10 @@ static int __init comedi_init(void)
 		dev = comedi_alloc_board_minor(NULL);
 		if (IS_ERR(dev)) {
 			comedi_cleanup_board_minors();
+<<<<<<< HEAD
+=======
+			class_destroy(comedi_class);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cdev_del(&comedi_cdev);
 			unregister_chrdev_region(MKDEV(COMEDI_MAJOR, 0),
 						 COMEDI_NUM_MINORS);
@@ -2609,6 +2616,12 @@ static int __init comedi_init(void)
 		mutex_unlock(&dev->mutex);
 	}
 
+<<<<<<< HEAD
+=======
+	/* XXX requires /proc interface */
+	comedi_proc_init();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 module_init(comedi_init);

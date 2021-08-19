@@ -160,6 +160,11 @@ struct dentry_operations {
 	char *(*d_dname)(struct dentry *, char *, int);
 	struct vfsmount *(*d_automount)(struct path *);
 	int (*d_manage)(struct dentry *, bool);
+<<<<<<< HEAD
+=======
+	void (*d_canonical_path)(const struct path *, struct path *);
+	struct inode *(*d_select_inode)(struct dentry *, unsigned);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } ____cacheline_aligned;
 
 /*
@@ -222,6 +227,12 @@ struct dentry_operations {
 #define DCACHE_FILE_TYPE		0x00400000 /* Other file type */
 
 #define DCACHE_MAY_FREE			0x00800000
+<<<<<<< HEAD
+=======
+#define DCACHE_OP_SELECT_INODE		0x02000000 /* Unioned entry: dcache op selects inode */
+
+#define DCACHE_ENCRYPTED_WITH_KEY	0x04000000 /* dir is encrypted with a valid key */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern seqlock_t rename_lock;
 
@@ -229,8 +240,14 @@ extern seqlock_t rename_lock;
  * These are the low-level FS interfaces to the dcache..
  */
 extern void d_instantiate(struct dentry *, struct inode *);
+<<<<<<< HEAD
 extern struct dentry * d_instantiate_unique(struct dentry *, struct inode *);
 extern struct dentry * d_materialise_unique(struct dentry *, struct inode *);
+=======
+extern void d_instantiate_new(struct dentry *, struct inode *);
+extern struct dentry * d_instantiate_unique(struct dentry *, struct inode *);
+#define d_materialise_unique(d, i) d_splice_alias(i, d)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int d_instantiate_no_diralias(struct dentry *, struct inode *);
 extern void __d_drop(struct dentry *dentry);
 extern void d_drop(struct dentry *dentry);
@@ -462,10 +479,130 @@ static inline bool d_is_positive(const struct dentry *dentry)
 	return !d_is_negative(dentry);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * d_really_is_negative - Determine if a dentry is really negative (ignoring fallthroughs)
+ * @dentry: The dentry in question
+ *
+ * Returns true if the dentry represents either an absent name or a name that
+ * doesn't map to an inode (ie. ->d_inode is NULL).  The dentry could represent
+ * a true miss, a whiteout that isn't represented by a 0,0 chardev or a
+ * fallthrough marker in an opaque directory.
+ *
+ * Note!  (1) This should be used *only* by a filesystem to examine its own
+ * dentries.  It should not be used to look at some other filesystem's
+ * dentries.  (2) It should also be used in combination with d_inode() to get
+ * the inode.  (3) The dentry may have something attached to ->d_lower and the
+ * type field of the flags may be set to something other than miss or whiteout.
+ */
+static inline bool d_really_is_negative(const struct dentry *dentry)
+{
+	return dentry->d_inode == NULL;
+}
+
+/**
+ * d_really_is_positive - Determine if a dentry is really positive (ignoring fallthroughs)
+ * @dentry: The dentry in question
+ *
+ * Returns true if the dentry represents a name that maps to an inode
+ * (ie. ->d_inode is not NULL).  The dentry might still represent a whiteout if
+ * that is represented on medium as a 0,0 chardev.
+ *
+ * Note!  (1) This should be used *only* by a filesystem to examine its own
+ * dentries.  It should not be used to look at some other filesystem's
+ * dentries.  (2) It should also be used in combination with d_inode() to get
+ * the inode.
+ */
+static inline bool d_really_is_positive(const struct dentry *dentry)
+{
+	return dentry->d_inode != NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int sysctl_vfs_cache_pressure;
 
 static inline unsigned long vfs_pressure_ratio(unsigned long val)
 {
 	return mult_frac(val, sysctl_vfs_cache_pressure, 100);
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * d_inode - Get the actual inode of this dentry
+ * @dentry: The dentry to query
+ *
+ * This is the helper normal filesystems should use to get at their own inodes
+ * in their own dentries and ignore the layering superimposed upon them.
+ */
+static inline struct inode *d_inode(const struct dentry *dentry)
+{
+	return dentry->d_inode;
+}
+
+/**
+ * d_inode_rcu - Get the actual inode of this dentry with ACCESS_ONCE()
+ * @dentry: The dentry to query
+ *
+ * This is the helper normal filesystems should use to get at their own inodes
+ * in their own dentries and ignore the layering superimposed upon them.
+ */
+static inline struct inode *d_inode_rcu(const struct dentry *dentry)
+{
+	return ACCESS_ONCE(dentry->d_inode);
+}
+
+/**
+ * d_backing_inode - Get upper or lower inode we should be using
+ * @upper: The upper layer
+ *
+ * This is the helper that should be used to get at the inode that will be used
+ * if this dentry were to be opened as a file.  The inode may be on the upper
+ * dentry or it may be on a lower dentry pinned by the upper.
+ *
+ * Normal filesystems should not use this to access their own inodes.
+ */
+static inline struct inode *d_backing_inode(const struct dentry *upper)
+{
+	struct inode *inode = upper->d_inode;
+
+	return inode;
+}
+
+/**
+ * d_backing_dentry - Get upper or lower dentry we should be using
+ * @upper: The upper layer
+ *
+ * This is the helper that should be used to get the dentry of the inode that
+ * will be used if this dentry were opened as a file.  It may be the upper
+ * dentry or it may be a lower dentry pinned by the upper.
+ *
+ * Normal filesystems should not use this to access their own dentries.
+ */
+static inline struct dentry *d_backing_dentry(struct dentry *upper)
+{
+	return upper;
+}
+
+struct name_snapshot {
+	const char *name;
+	char inline_name[DNAME_INLINE_LEN];
+};
+void take_dentry_name_snapshot(struct name_snapshot *, struct dentry *);
+void release_dentry_name_snapshot(struct name_snapshot *);
+
+static inline struct inode *vfs_select_inode(struct dentry *dentry,
+					     unsigned open_flags)
+{
+	struct inode *inode = d_inode(dentry);
+
+	if (inode && unlikely(dentry->d_flags & DCACHE_OP_SELECT_INODE))
+		inode = dentry->d_op->d_select_inode(dentry, open_flags);
+
+	return inode;
+}
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif	/* __LINUX_DCACHE_H */

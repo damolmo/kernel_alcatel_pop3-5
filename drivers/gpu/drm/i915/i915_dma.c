@@ -1349,6 +1349,11 @@ static int i915_load_modeset_init(struct drm_device *dev)
 	if (ret)
 		goto cleanup_gem_stolen;
 
+<<<<<<< HEAD
+=======
+	intel_setup_gmbus(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Important: The output setup functions called by modeset_init need
 	 * working irqs for e.g. gmbus and dp aux transfers. */
 	intel_modeset_init(dev);
@@ -1395,6 +1400,10 @@ cleanup_gem:
 	mutex_unlock(&dev->struct_mutex);
 cleanup_irq:
 	drm_irq_uninstall(dev);
+<<<<<<< HEAD
+=======
+	intel_teardown_gmbus(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cleanup_gem_stolen:
 	i915_gem_cleanup_stolen(dev);
 cleanup_vga_switcheroo:
@@ -1747,7 +1756,10 @@ int i915_driver_load(struct drm_device *dev, unsigned long flags)
 
 	/* Try to make sure MCHBAR is enabled before poking at it */
 	intel_setup_mchbar(dev);
+<<<<<<< HEAD
 	intel_setup_gmbus(dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	intel_opregion_setup(dev);
 
 	intel_setup_bios(dev);
@@ -1814,7 +1826,10 @@ out_gem_unload:
 	if (dev->pdev->msi_enabled)
 		pci_disable_msi(dev->pdev);
 
+<<<<<<< HEAD
 	intel_teardown_gmbus(dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	intel_teardown_mchbar(dev);
 	pm_qos_remove_request(&dev_priv->pm_qos);
 	destroy_workqueue(dev_priv->dp_wq);
@@ -1912,7 +1927,10 @@ int i915_driver_unload(struct drm_device *dev)
 
 	drm_vblank_cleanup(dev);
 
+<<<<<<< HEAD
 	intel_teardown_gmbus(dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	intel_teardown_mchbar(dev);
 
 	destroy_workqueue(dev_priv->dp_wq);

@@ -907,7 +907,11 @@ static struct eisa_device_id vortex_eisa_ids[] = {
 };
 MODULE_DEVICE_TABLE(eisa, vortex_eisa_ids);
 
+<<<<<<< HEAD
 static int __init vortex_eisa_probe(struct device *device)
+=======
+static int vortex_eisa_probe(struct device *device)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	void __iomem *ioaddr;
 	struct eisa_device *edev;

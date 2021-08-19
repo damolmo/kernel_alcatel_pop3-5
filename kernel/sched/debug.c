@@ -9,13 +9,18 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+<<<<<<< HEAD
 #define DEBUG
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/proc_fs.h>
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 #include <linux/kallsyms.h>
 #include <linux/utsname.h>
 #include <linux/mempolicy.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #ifdef CONFIG_KGDB_KDB
 #include <linux/kdb.h>
@@ -39,16 +44,27 @@ DECLARE_PER_CPU(u64, exec_delta_time);
 DECLARE_PER_CPU(u64, clock_task);
 DECLARE_PER_CPU(u64, exec_start);
 DECLARE_PER_CPU(struct task_struct, exec_task);
+=======
+
+#include "sched.h"
+
+static DEFINE_SPINLOCK(sched_debug_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * This allows printing both to /proc/sched_debug and
  * to the console
  */
+<<<<<<< HEAD
 #ifndef CONFIG_KGDB_KDB
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SEQ_printf(m, x...)			\
  do {						\
 	if (m)					\
 		seq_printf(m, x);		\
 	else					\
+<<<<<<< HEAD
 		pr_debug(x);			\
  } while (0)
 #else
@@ -62,6 +78,10 @@ do {						\
 		pr_debug(x);				\
 } while (0)
 #endif
+=======
+		printk(x);			\
+ } while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Ease the printing of nsec fields:
@@ -98,6 +118,7 @@ static void print_cfs_group_stats(struct seq_file *m, int cpu, struct task_group
 #define PN(F) \
 	SEQ_printf(m, "  .%-30s: %lld.%06ld\n", #F, SPLIT_NS((long long)F))
 
+<<<<<<< HEAD
 	if (!se) {
 		struct sched_avg *avg = &cpu_rq(cpu)->avg;
 		P(avg->runnable_avg_sum);
@@ -108,6 +129,10 @@ static void print_cfs_group_stats(struct seq_file *m, int cpu, struct task_group
 		return;
 	}
 
+=======
+	if (!se)
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	PN(se->exec_start);
 	PN(se->vruntime);
@@ -126,12 +151,17 @@ static void print_cfs_group_stats(struct seq_file *m, int cpu, struct task_group
 #endif
 	P(se->load.weight);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	P(se->avg.runnable_avg_sum);
 	P(se->avg.running_avg_sum);
 	P(se->avg.avg_period);
 	P(se->avg.load_avg_contrib);
 	P(se->avg.utilization_avg_contrib);
 	P(se->avg.decay_count);
+=======
+	P(se->avg.load_avg);
+	P(se->avg.util_avg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 #undef PN
 #undef P
@@ -151,6 +181,7 @@ static char *task_group_path(struct task_group *tg)
 #endif
 
 static void
+<<<<<<< HEAD
 print_task_at_AEE(struct seq_file *m, struct rq *rq, struct task_struct *p)
 {
 #ifdef CONFIG_SCHEDSTATS
@@ -208,6 +239,8 @@ print_task_at_AEE(struct seq_file *m, struct rq *rq, struct task_struct *p)
 }
 
 static void
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 print_task(struct seq_file *m, struct rq *rq, struct task_struct *p)
 {
 	if (rq->curr == p)
@@ -220,7 +253,10 @@ print_task(struct seq_file *m, struct rq *rq, struct task_struct *p)
 		SPLIT_NS(p->se.vruntime),
 		(long long)(p->nvcsw + p->nivcsw),
 		p->prio);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_SCHEDSTATS
 	SEQ_printf(m, "%9Ld.%06ld %9Ld.%06ld %9Ld.%06ld",
 		SPLIT_NS(p->se.vruntime),
@@ -230,13 +266,20 @@ print_task(struct seq_file *m, struct rq *rq, struct task_struct *p)
 	SEQ_printf(m, "%15Ld %15Ld %15Ld.%06ld %15Ld.%06ld %15Ld.%06ld",
 		0LL, 0LL, 0LL, 0L, 0LL, 0L, 0LL, 0L);
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_NUMA_BALANCING
 	SEQ_printf(m, " %d", task_node(p));
 #endif
 #ifdef CONFIG_CGROUP_SCHED
 	SEQ_printf(m, " %s", task_group_path(task_group(p)));
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SEQ_printf(m, "\n");
 }
 
@@ -303,6 +346,7 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 	SEQ_printf(m, "  .%-30s: %d\n", "nr_running", cfs_rq->nr_running);
 	SEQ_printf(m, "  .%-30s: %ld\n", "load", cfs_rq->load.weight);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	SEQ_printf(m, "  .%-30s: %ld\n", "runnable_load_avg",
 			cfs_rq->runnable_load_avg);
 	SEQ_printf(m, "  .%-30s: %ld\n", "blocked_load_avg",
@@ -318,6 +362,23 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 			atomic_long_read(&cfs_rq->tg->load_avg));
 	SEQ_printf(m, "  .%-30s: %d\n", "tg->runnable_avg",
 			atomic_read(&cfs_rq->tg->runnable_avg));
+=======
+	SEQ_printf(m, "  .%-30s: %lu\n", "load_avg",
+			cfs_rq->avg.load_avg);
+	SEQ_printf(m, "  .%-30s: %lu\n", "runnable_load_avg",
+			cfs_rq->runnable_load_avg);
+	SEQ_printf(m, "  .%-30s: %lu\n", "util_avg",
+			cfs_rq->avg.util_avg);
+	SEQ_printf(m, "  .%-30s: %ld\n", "removed_load_avg",
+			atomic_long_read(&cfs_rq->removed_load_avg));
+	SEQ_printf(m, "  .%-30s: %ld\n", "removed_util_avg",
+			atomic_long_read(&cfs_rq->removed_util_avg));
+#ifdef CONFIG_FAIR_GROUP_SCHED
+	SEQ_printf(m, "  .%-30s: %lu\n", "tg_load_avg_contrib",
+			cfs_rq->tg_load_avg_contrib);
+	SEQ_printf(m, "  .%-30s: %ld\n", "tg_load_avg",
+			atomic_long_read(&cfs_rq->tg->load_avg));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 #endif
 #ifdef CONFIG_CFS_BANDWIDTH
@@ -371,8 +432,12 @@ static void print_cpu(struct seq_file *m, int cpu)
 			   cpu, freq / 1000, (freq % 1000));
 	}
 #else
+<<<<<<< HEAD
 	/* sched: add cpu info */
 	SEQ_printf(m, "cpu#%d: %s\n", cpu, cpu_is_offline(cpu)?"Offline":"Online");
+=======
+	SEQ_printf(m, "cpu#%d\n", cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #define P(x)								\
@@ -442,6 +507,7 @@ static void sched_debug_header(struct seq_file *m)
 	u64 ktime, sched_clk, cpu_clk;
 	unsigned long flags;
 
+<<<<<<< HEAD
 #ifdef TEST_SCHED_DEBUG_ENHANCEMENT
 	static int i;
 
@@ -456,6 +522,8 @@ static void sched_debug_header(struct seq_file *m)
 	}
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_irq_save(flags);
 	ktime = ktime_to_ns(ktime_get());
 	sched_clk = sched_clock();
@@ -506,6 +574,7 @@ static void sched_debug_header(struct seq_file *m)
 static int sched_debug_show(struct seq_file *m, void *v)
 {
 	int cpu = (unsigned long)(v - 2);
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (cpu != -1) {
@@ -515,6 +584,12 @@ static int sched_debug_show(struct seq_file *m, void *v)
 		read_unlock_irqrestore(&tasklist_lock, flags);
 		SEQ_printf(m, "\n");
 	} else
+=======
+
+	if (cpu != -1)
+		print_cpu(m, cpu);
+	else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sched_debug_header(m);
 
 	return 0;
@@ -523,6 +598,7 @@ static int sched_debug_show(struct seq_file *m, void *v)
 void sysrq_sched_debug_show(void)
 {
 	int cpu;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	sched_debug_header(NULL);
@@ -532,6 +608,13 @@ void sysrq_sched_debug_show(void)
 	for_each_possible_cpu(cpu)
 		print_cpu(NULL, cpu);
 	read_unlock_irqrestore(&tasklist_lock, flags);
+=======
+
+	sched_debug_header(NULL);
+	for_each_online_cpu(cpu)
+		print_cpu(NULL, cpu);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -746,12 +829,20 @@ void proc_sched_show_task(struct task_struct *p, struct seq_file *m)
 
 	P(se.load.weight);
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 	P(se.avg.runnable_avg_sum);
 	P(se.avg.running_avg_sum);
 	P(se.avg.avg_period);
 	P(se.avg.load_avg_contrib);
 	P(se.avg.utilization_avg_contrib);
 	P(se.avg.decay_count);
+=======
+	P(se.avg.load_sum);
+	P(se.avg.util_sum);
+	P(se.avg.load_avg);
+	P(se.avg.util_avg);
+	P(se.avg.last_update_time);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	P(policy);
 	P(prio);
@@ -779,6 +870,7 @@ void proc_sched_set_task(struct task_struct *p)
 	memset(&p->se.statistics, 0, sizeof(p->se.statistics));
 #endif
 }
+<<<<<<< HEAD
 /* sched: add ke log */
 #define read_trylock_irqsave(lock, flags)		\
 	({						\
@@ -1327,3 +1419,5 @@ void sysrq_sched_debug_show_at_AEE(void)
 #endif
 }
 /* sched: add ke log */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

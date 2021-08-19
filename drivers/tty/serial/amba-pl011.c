@@ -164,6 +164,10 @@ struct uart_amba_port {
 	bool			using_rx_dma;
 	struct pl011_dmarx_data dmarx;
 	struct pl011_dmatx_data	dmatx;
+<<<<<<< HEAD
+=======
+	bool			dma_probed;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 };
 
@@ -260,10 +264,18 @@ static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
 	}
 }
 
+<<<<<<< HEAD
 static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *uap)
 {
 	/* DMA is the sole user of the platform data right now */
 	struct amba_pl011_data *plat = dev_get_platdata(uap->port.dev);
+=======
+static void pl011_dma_probe(struct uart_amba_port *uap)
+{
+	/* DMA is the sole user of the platform data right now */
+	struct amba_pl011_data *plat = dev_get_platdata(uap->port.dev);
+	struct device *dev = uap->port.dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct dma_slave_config tx_conf = {
 		.dst_addr = uap->port.mapbase + UART01x_DR,
 		.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE,
@@ -274,9 +286,21 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
 	struct dma_chan *chan;
 	dma_cap_mask_t mask;
 
+<<<<<<< HEAD
 	chan = dma_request_slave_channel(dev, "tx");
 
 	if (!chan) {
+=======
+	uap->dma_probed = true;
+	chan = dma_request_slave_channel_reason(dev, "tx");
+	if (IS_ERR(chan)) {
+		if (PTR_ERR(chan) == -EPROBE_DEFER) {
+			dev_info(uap->port.dev, "DMA driver not ready\n");
+			uap->dma_probed = false;
+			return;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* We need platform data */
 		if (!plat || !plat->dma_filter) {
 			dev_info(uap->port.dev, "no DMA platform data\n");
@@ -353,6 +377,7 @@ static void pl011_dma_probe_initcall(struct device *dev, struct uart_amba_port *
 	}
 }
 
+<<<<<<< HEAD
 #ifndef MODULE
 /*
  * Stack up the UARTs and let the above initcall be done at device
@@ -402,6 +427,10 @@ static void pl011_dma_probe(struct device *dev, struct uart_amba_port *uap)
 static void pl011_dma_remove(struct uart_amba_port *uap)
 {
 	/* TODO: remove the initcall if it has not yet executed */
+=======
+static void pl011_dma_remove(struct uart_amba_port *uap)
+{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (uap->dmatx.chan)
 		dma_release_channel(uap->dmatx.chan);
 	if (uap->dmarx.chan)
@@ -985,6 +1014,12 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!uap->dma_probed)
+		pl011_dma_probe(uap);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!uap->dmatx.chan)
 		return;
 
@@ -1106,7 +1141,11 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
 
 #else
 /* Blank functions if the DMA engine is not available */
+<<<<<<< HEAD
 static inline void pl011_dma_probe(struct device *dev, struct uart_amba_port *uap)
+=======
+static inline void pl011_dma_probe(struct uart_amba_port *uap)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 }
 
@@ -2141,7 +2180,11 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
 	struct uart_amba_port *uap;
 	struct vendor_data *vendor = id->data;
 	void __iomem *base;
+<<<<<<< HEAD
 	int i, ret;
+=======
+	int i, j, ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < ARRAY_SIZE(amba_ports); i++)
 		if (amba_ports[i] == NULL)
@@ -2180,7 +2223,11 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
 	uap->port.ops = &amba_pl011_pops;
 	uap->port.flags = UPF_BOOT_AUTOCONF;
 	uap->port.line = i;
+<<<<<<< HEAD
 	pl011_dma_probe(&dev->dev, uap);
+=======
+	spin_lock_init(&uap->port.lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Ensure interrupts from this UART are masked and cleared */
 	writew(0, uap->port.membase + UART011_IMSC);
@@ -2195,7 +2242,15 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
 	if (!amba_reg.state) {
 		ret = uart_register_driver(&amba_reg);
 		if (ret < 0) {
+<<<<<<< HEAD
 			pr_err("Failed to register AMBA-PL011 driver\n");
+=======
+			dev_err(&dev->dev,
+				"Failed to register AMBA-PL011 driver\n");
+			for (j = 0; j < ARRAY_SIZE(amba_ports); j++)
+				if (amba_ports[j] == uap)
+					amba_ports[j] = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 		}
 	}
@@ -2204,7 +2259,10 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
 	if (ret) {
 		amba_ports[i] = NULL;
 		uart_unregister_driver(&amba_reg);
+<<<<<<< HEAD
 		pl011_dma_remove(uap);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return ret;

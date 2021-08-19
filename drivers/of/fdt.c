@@ -25,7 +25,10 @@
 
 #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <mt-plat/mtk_memcfg.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * of_fdt_limit_memory - limit the number of regions in the /memory node
@@ -381,6 +384,12 @@ static void __unflatten_device_tree(void *blob,
 
 	/* Allocate memory for the expanded device tree */
 	mem = dt_alloc(size + 4, __alignof__(struct device_node));
+<<<<<<< HEAD
+=======
+	if (!mem)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memset(mem, 0, size);
 
 	*(__be32 *)(mem + size) = cpu_to_be32(0xdeadbeef);
@@ -455,6 +464,7 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
 		size = dt_mem_next_cell(dt_root_size_cells, &prop);
 
 		if (size &&
+<<<<<<< HEAD
 		    early_init_dt_reserve_memory_arch(base, size, nomap) == 0) {
 			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %ld MiB\n",
 				uname, &base, (unsigned long)size / SZ_1M);
@@ -466,6 +476,12 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
 					(unsigned long long)base + size - 1,
 					(unsigned long long)size);
 		} else
+=======
+		    early_init_dt_reserve_memory_arch(base, size, nomap) == 0)
+			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %ld MiB\n",
+				uname, &base, (unsigned long)size / SZ_1M);
+		else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pr_info("Reserved memory: failed to reserve memory for node '%s': base %pa, size %ld MiB\n",
 				uname, &base, (unsigned long)size / SZ_1M);
 
@@ -590,9 +606,18 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
 	const char *pathp;
 	int offset, rc = 0, depth = -1;
 
+<<<<<<< HEAD
         for (offset = fdt_next_node(blob, -1, &depth);
              offset >= 0 && depth >= 0 && !rc;
              offset = fdt_next_node(blob, offset, &depth)) {
+=======
+	if (!blob)
+		return 0;
+
+	for (offset = fdt_next_node(blob, -1, &depth);
+	     offset >= 0 && depth >= 0 && !rc;
+	     offset = fdt_next_node(blob, offset, &depth)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		pathp = fdt_get_name(blob, offset, NULL);
 		if (*pathp == '/')

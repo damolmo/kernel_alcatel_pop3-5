@@ -186,6 +186,10 @@ config NET_IPGRE_DEMUX
 
 config NET_IP_TUNNEL
 	tristate
+<<<<<<< HEAD
+=======
+	select DST_CACHE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default n
 
 config NET_IPGRE
@@ -297,6 +301,10 @@ config SYN_COOKIES
 
 config NET_IPVTI
 	tristate "Virtual (secure) IP: tunneling"
+<<<<<<< HEAD
+=======
+	depends on IPV6 || IPV6=n
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select INET_TUNNEL
 	select NET_IP_TUNNEL
 	depends on INET_XFRM_MODE_TUNNEL
@@ -358,6 +366,10 @@ config INET_ESP
 	select CRYPTO_CBC
 	select CRYPTO_SHA1
 	select CRYPTO_DES
+<<<<<<< HEAD
+=======
+	select CRYPTO_ECHAINIV
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	---help---
 	  Support for IPsec ESP.
 
@@ -441,6 +453,22 @@ config INET_UDP_DIAG
 	  Support for UDP socket monitoring interface used by the ss tool.
 	  If unsure, say Y.
 
+<<<<<<< HEAD
+=======
+config INET_DIAG_DESTROY
+	bool "INET: allow privileged process to administratively close sockets"
+	depends on INET_DIAG
+	default n
+	---help---
+	  Provides a SOCK_DESTROY operation that allows privileged processes
+	  (e.g., a connection manager or a network administration tool such as
+	  ss) to close sockets opened by other processes. Closing a socket in
+	  this way interrupts any blocking read/write/connect operations on
+	  the socket and causes future socket calls to behave as if the socket
+	  had been disconnected.
+	  If unsure, say N.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 menuconfig TCP_CONG_ADVANCED
 	bool "TCP: advanced congestion control"
 	---help---

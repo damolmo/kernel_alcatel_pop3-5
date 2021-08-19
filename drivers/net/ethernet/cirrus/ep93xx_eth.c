@@ -468,6 +468,12 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 	struct device *dev = ep->dev->dev.parent;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (!ep->descs)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < RX_QUEUE_ENTRIES; i++) {
 		dma_addr_t d;
 
@@ -492,6 +498,10 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 
 	dma_free_coherent(dev, sizeof(struct ep93xx_descs), ep->descs,
 							ep->descs_dma_addr);
+<<<<<<< HEAD
+=======
+	ep->descs = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int ep93xx_alloc_buffers(struct ep93xx_priv *ep)
@@ -778,6 +788,10 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 {
 	struct net_device *dev;
 	struct ep93xx_priv *ep;
+<<<<<<< HEAD
+=======
+	struct resource *mem;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev = platform_get_drvdata(pdev);
 	if (dev == NULL)
@@ -793,8 +807,13 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 		iounmap(ep->base_addr);
 
 	if (ep->res != NULL) {
+<<<<<<< HEAD
 		release_resource(ep->res);
 		kfree(ep->res);
+=======
+		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		release_mem_region(mem->start, resource_size(mem));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	free_netdev(dev);

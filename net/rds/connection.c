@@ -183,6 +183,15 @@ static struct rds_connection *__rds_conn_create(__be32 laddr, __be32 faddr,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (trans == NULL) {
+		kmem_cache_free(rds_conn_slab, conn);
+		conn = ERR_PTR(-ENODEV);
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	conn->c_trans = trans;
 
 	ret = trans->conn_alloc(conn, gfp);

@@ -32,6 +32,10 @@
 #include <linux/wait.h>
 #include <linux/init.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/io.h>
 #include <asm/uaccess.h>
@@ -386,7 +390,15 @@ static ssize_t ac_write(struct file *file, const char __user *buf, size_t count,
 	TicCard = st_loc.tic_des_from_pc;	/* tic number to send            */
 	IndexCard = NumCard - 1;
 
+<<<<<<< HEAD
 	if((NumCard < 1) || (NumCard > MAX_BOARD) || !apbs[IndexCard].RamIO)
+=======
+	if (IndexCard >= MAX_BOARD)
+		return -EINVAL;
+	IndexCard = array_index_nospec(IndexCard, MAX_BOARD);
+
+	if (!apbs[IndexCard].RamIO)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 #ifdef DEBUG
@@ -697,6 +709,10 @@ static long ac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	unsigned char IndexCard;
 	void __iomem *pmem;
 	int ret = 0;
+<<<<<<< HEAD
+=======
+	static int warncount = 10;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	volatile unsigned char byte_reset_it;
 	struct st_ram_io *adgl;
 	void __user *argp = (void __user *)arg;
@@ -711,6 +727,7 @@ static long ac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	mutex_lock(&ac_mutex);	
 	IndexCard = adgl->num_card-1;
 	 
+<<<<<<< HEAD
 	if(cmd != 6 && ((IndexCard >= MAX_BOARD) || !apbs[IndexCard].RamIO)) {
 		static int warncount = 10;
 		if (warncount) {
@@ -721,6 +738,14 @@ static long ac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		mutex_unlock(&ac_mutex);
 		return -EINVAL;
 	}
+=======
+	if (cmd != 6 && IndexCard >= MAX_BOARD)
+		goto err;
+	IndexCard = array_index_nospec(IndexCard, MAX_BOARD);
+
+	if (cmd != 6 && !apbs[IndexCard].RamIO)
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (cmd) {
 		
@@ -838,5 +863,19 @@ static long ac_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	kfree(adgl);
 	mutex_unlock(&ac_mutex);
 	return 0;
+<<<<<<< HEAD
+=======
+
+err:
+	if (warncount) {
+		pr_warn("APPLICOM driver IOCTL, bad board number %d\n",
+			(int)IndexCard + 1);
+		warncount--;
+	}
+	kfree(adgl);
+	mutex_unlock(&ac_mutex);
+	return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 

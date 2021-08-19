@@ -27,12 +27,21 @@ struct mmc_bus_ops {
 	int (*power_restore)(struct mmc_host *);
 	int (*alive)(struct mmc_host *);
 	int (*shutdown)(struct mmc_host *);
+<<<<<<< HEAD
 	int (*reset)(struct mmc_host *);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 void mmc_attach_bus(struct mmc_host *host, const struct mmc_bus_ops *ops);
 void mmc_detach_bus(struct mmc_host *host);
 
+<<<<<<< HEAD
+=======
+struct device_node *mmc_of_find_child_device(struct mmc_host *host,
+		unsigned func_num);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void mmc_init_erase(struct mmc_card *card);
 
 void mmc_set_chip_select(struct mmc_host *host, int mode);
@@ -50,7 +59,10 @@ void mmc_set_driver_type(struct mmc_host *host, unsigned int drv_type);
 void mmc_power_up(struct mmc_host *host, u32 ocr);
 void mmc_power_off(struct mmc_host *host);
 void mmc_power_cycle(struct mmc_host *host, u32 ocr);
+<<<<<<< HEAD
 void mmc_set_initial_state(struct mmc_host *host);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline void mmc_delay(unsigned int ms)
 {
@@ -83,5 +95,11 @@ void mmc_add_card_debugfs(struct mmc_card *card);
 void mmc_remove_card_debugfs(struct mmc_card *card);
 
 void mmc_init_context_info(struct mmc_host *host);
+<<<<<<< HEAD
+=======
+
+int mmc_execute_tuning(struct mmc_card *card);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 

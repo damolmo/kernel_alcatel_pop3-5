@@ -117,7 +117,11 @@ static inline dma_addr_t virt_to_dma(struct device *dev, void *addr)
 /* The ARM override for dma_max_pfn() */
 static inline unsigned long dma_max_pfn(struct device *dev)
 {
+<<<<<<< HEAD
 	return PHYS_PFN_OFFSET + dma_to_pfn(dev, *dev->dma_mask);
+=======
+	return dma_to_pfn(dev, *dev->dma_mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #define dma_max_pfn(dev) dma_max_pfn(dev)
 

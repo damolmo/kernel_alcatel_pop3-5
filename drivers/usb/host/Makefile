@@ -23,10 +23,14 @@ endif
 ifneq ($(CONFIG_USB_XHCI_RCAR), )
 	xhci-plat-hcd-y		+= xhci-rcar.o
 endif
+<<<<<<< HEAD
 ifneq ($(CONFIG_USB_XHCI_MTK), )
 	xhci-plat-hcd-y		+= xhci-mtk.o
 endif
 	xhci-hcd-$(CONFIG_SSUSB_MTK_XHCI)		+= xhci-ssusb-mtk.o xhci-plat.o
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_USB_WHCI_HCD)	+= whci/
 
 obj-$(CONFIG_PCI)		+= pci-quirks.o

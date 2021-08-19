@@ -48,7 +48,10 @@ static int write_mmp_block(struct super_block *sb, struct buffer_head *bh)
 	 */
 	sb_start_write(sb);
 	ext4_mmp_csum_set(sb, mmp);
+<<<<<<< HEAD
 	mark_buffer_dirty(bh);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lock_buffer(bh);
 	bh->b_end_io = end_buffer_write_sync;
 	get_bh(bh);

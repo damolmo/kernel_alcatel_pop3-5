@@ -219,7 +219,12 @@ static inline int expect_clash(const struct nf_conntrack_expect *a,
 			a->mask.src.u3.all[count] & b->mask.src.u3.all[count];
 	}
 
+<<<<<<< HEAD
 	return nf_ct_tuple_mask_cmp(&a->tuple, &b->tuple, &intersect_mask);
+=======
+	return nf_ct_tuple_mask_cmp(&a->tuple, &b->tuple, &intersect_mask) &&
+	       nf_ct_zone(a->master) == nf_ct_zone(b->master);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int expect_matches(const struct nf_conntrack_expect *a,
@@ -391,7 +396,11 @@ static inline int __nf_ct_expect_check(struct nf_conntrack_expect *expect)
 	struct net *net = nf_ct_exp_net(expect);
 	struct hlist_node *next;
 	unsigned int h;
+<<<<<<< HEAD
 	int ret = 1;
+=======
+	int ret = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!master_help) {
 		ret = -ESHUTDOWN;
@@ -441,7 +450,11 @@ int nf_ct_expect_related_report(struct nf_conntrack_expect *expect,
 
 	spin_lock_bh(&nf_conntrack_expect_lock);
 	ret = __nf_ct_expect_check(expect);
+<<<<<<< HEAD
 	if (ret <= 0)
+=======
+	if (ret < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	ret = nf_ct_expect_insert(expect);
@@ -556,7 +569,11 @@ static int exp_seq_show(struct seq_file *s, void *v)
 	helper = rcu_dereference(nfct_help(expect->master)->helper);
 	if (helper) {
 		seq_printf(s, "%s%s", expect->flags ? " " : "", helper->name);
+<<<<<<< HEAD
 		if (helper->expect_policy[expect->class].name)
+=======
+		if (helper->expect_policy[expect->class].name[0])
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			seq_printf(s, "/%s",
 				   helper->expect_policy[expect->class].name);
 	}

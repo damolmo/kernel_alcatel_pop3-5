@@ -270,11 +270,24 @@ jme_reset_mac_processor(struct jme_adapter *jme)
 }
 
 static inline void
+<<<<<<< HEAD
 jme_clear_pm(struct jme_adapter *jme)
+=======
+jme_clear_pm_enable_wol(struct jme_adapter *jme)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	jwrite32(jme, JME_PMCS, PMCS_STMASK | jme->reg_pmcs);
 }
 
+<<<<<<< HEAD
+=======
+static inline void
+jme_clear_pm_disable_wol(struct jme_adapter *jme)
+{
+	jwrite32(jme, JME_PMCS, PMCS_STMASK);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int
 jme_reload_eeprom(struct jme_adapter *jme)
 {
@@ -1857,7 +1870,11 @@ jme_open(struct net_device *netdev)
 	struct jme_adapter *jme = netdev_priv(netdev);
 	int rc;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
+=======
+	jme_clear_pm_disable_wol(jme);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	JME_NAPI_ENABLE(jme);
 
 	tasklet_init(&jme->linkch_task, jme_link_change_tasklet,
@@ -1929,11 +1946,19 @@ jme_wait_link(struct jme_adapter *jme)
 static void
 jme_powersave_phy(struct jme_adapter *jme)
 {
+<<<<<<< HEAD
 	if (jme->reg_pmcs) {
 		jme_set_100m_half(jme);
 		if (jme->reg_pmcs & (PMCS_LFEN | PMCS_LREN))
 			jme_wait_link(jme);
 		jme_clear_pm(jme);
+=======
+	if (jme->reg_pmcs && device_may_wakeup(&jme->pdev->dev)) {
+		jme_set_100m_half(jme);
+		if (jme->reg_pmcs & (PMCS_LFEN | PMCS_LREN))
+			jme_wait_link(jme);
+		jme_clear_pm_enable_wol(jme);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		jme_phy_off(jme);
 	}
@@ -2650,9 +2675,12 @@ jme_set_wol(struct net_device *netdev,
 	if (wol->wolopts & WAKE_MAGIC)
 		jme->reg_pmcs |= PMCS_MFEN;
 
+<<<<<<< HEAD
 	jwrite32(jme, JME_PMCS, jme->reg_pmcs);
 	device_set_wakeup_enable(&jme->pdev->dev, !!(jme->reg_pmcs));
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -3176,8 +3204,13 @@ jme_init_one(struct pci_dev *pdev,
 	jme->mii_if.mdio_read = jme_mdio_read;
 	jme->mii_if.mdio_write = jme_mdio_write;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
 	device_set_wakeup_enable(&pdev->dev, true);
+=======
+	jme_clear_pm_disable_wol(jme);
+	device_init_wakeup(&pdev->dev, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	jme_set_phyfifo_5level(jme);
 	jme->pcirev = pdev->revision;
@@ -3308,7 +3341,11 @@ jme_resume(struct device *dev)
 	if (!netif_running(netdev))
 		return 0;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
+=======
+	jme_clear_pm_disable_wol(jme);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jme_phy_on(jme);
 	if (test_bit(JME_FLAG_SSET, &jme->flags))
 		jme_set_settings(netdev, &jme->old_ecmd);
@@ -3316,13 +3353,21 @@ jme_resume(struct device *dev)
 		jme_reset_phy_processor(jme);
 	jme_phy_calibration(jme);
 	jme_phy_setEA(jme);
+<<<<<<< HEAD
 	jme_start_irq(jme);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_device_attach(netdev);
 
 	atomic_inc(&jme->link_changing);
 
 	jme_reset_link(jme);
 
+<<<<<<< HEAD
+=======
+	jme_start_irq(jme);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

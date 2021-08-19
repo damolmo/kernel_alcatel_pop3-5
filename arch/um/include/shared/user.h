@@ -17,7 +17,11 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 /* This is to get size_t */
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+#ifndef __UM_HOST__
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/types.h>
 #else
 #include <stddef.h>

@@ -1260,6 +1260,7 @@ static const struct nf_conntrack_expect_policy snmp_exp_policy = {
 	.timeout	= 180,
 };
 
+<<<<<<< HEAD
 static struct nf_conntrack_helper snmp_helper __read_mostly = {
 	.me			= THIS_MODULE,
 	.help			= help,
@@ -1270,6 +1271,8 @@ static struct nf_conntrack_helper snmp_helper __read_mostly = {
 	.tuple.dst.protonum	= IPPROTO_UDP,
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct nf_conntrack_helper snmp_trap_helper __read_mostly = {
 	.me			= THIS_MODULE,
 	.help			= help,
@@ -1288,6 +1291,7 @@ static struct nf_conntrack_helper snmp_trap_helper __read_mostly = {
 
 static int __init nf_nat_snmp_basic_init(void)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	BUG_ON(nf_nat_snmp_hook != NULL);
@@ -1299,11 +1303,21 @@ static int __init nf_nat_snmp_basic_init(void)
 		return ret;
 	}
 	return ret;
+=======
+	BUG_ON(nf_nat_snmp_hook != NULL);
+	RCU_INIT_POINTER(nf_nat_snmp_hook, help);
+
+	return nf_conntrack_helper_register(&snmp_trap_helper);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __exit nf_nat_snmp_basic_fini(void)
 {
 	RCU_INIT_POINTER(nf_nat_snmp_hook, NULL);
+<<<<<<< HEAD
+=======
+	synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	nf_conntrack_helper_unregister(&snmp_trap_helper);
 }
 

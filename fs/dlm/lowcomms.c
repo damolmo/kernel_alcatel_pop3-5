@@ -1750,16 +1750,24 @@ void dlm_lowcomms_stop(void)
 	mutex_lock(&connections_lock);
 	dlm_allow_conn = 0;
 	foreach_conn(stop_conn);
+<<<<<<< HEAD
+=======
+	clean_writequeues();
+	foreach_conn(free_conn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&connections_lock);
 
 	work_stop();
 
+<<<<<<< HEAD
 	mutex_lock(&connections_lock);
 	clean_writequeues();
 
 	foreach_conn(free_conn);
 
 	mutex_unlock(&connections_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kmem_cache_destroy(con_cache);
 }
 

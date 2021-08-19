@@ -1553,11 +1553,15 @@ void reiserfs_read_locked_inode(struct inode *inode,
 	 * set version 1, version 2 could be used too, because stat data
 	 * key is the same in both versions
 	 */
+<<<<<<< HEAD
 	key.version = KEY_FORMAT_3_5;
 	key.on_disk_key.k_dir_id = dirino;
 	key.on_disk_key.k_objectid = inode->i_ino;
 	key.on_disk_key.k_offset = 0;
 	key.on_disk_key.k_type = 0;
+=======
+	_make_cpu_key(&key, KEY_FORMAT_3_5, dirino, inode->i_ino, 0, 0, 3);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* look for the object's stat data */
 	retval = search_item(inode->i_sb, &key, &path_to_sd);
@@ -2161,7 +2165,12 @@ out_end_trans:
 out_inserted_sd:
 	clear_nlink(inode);
 	th->t_trans_id = 0;	/* so the caller can't use this handle later */
+<<<<<<< HEAD
 	unlock_new_inode(inode); /* OK to do even if we hadn't locked it */
+=======
+	if (inode->i_state & I_NEW)
+		unlock_new_inode(inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(inode);
 	return err;
 }

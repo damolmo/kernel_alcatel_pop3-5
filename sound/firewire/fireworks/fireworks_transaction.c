@@ -121,11 +121,19 @@ copy_resp_to_buf(struct snd_efw *efw, void *data, size_t length, int *rcode)
 	size_t capacity, till_end;
 	struct snd_efw_transaction *t;
 
+<<<<<<< HEAD
 	spin_lock_irq(&efw->lock);
 
 	t = (struct snd_efw_transaction *)data;
 	length = min_t(size_t, be32_to_cpu(t->length) * sizeof(u32), length);
 
+=======
+	t = (struct snd_efw_transaction *)data;
+	length = min_t(size_t, be32_to_cpu(t->length) * sizeof(u32), length);
+
+	spin_lock_irq(&efw->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (efw->push_ptr < efw->pull_ptr)
 		capacity = (unsigned int)(efw->pull_ptr - efw->push_ptr);
 	else
@@ -155,7 +163,10 @@ copy_resp_to_buf(struct snd_efw *efw, void *data, size_t length, int *rcode)
 	}
 
 	/* for hwdep */
+<<<<<<< HEAD
 	efw->resp_queues++;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wake_up(&efw->hwdep_wait);
 
 	*rcode = RCODE_COMPLETE;

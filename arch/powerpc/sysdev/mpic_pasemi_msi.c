@@ -66,6 +66,10 @@ static struct irq_chip mpic_pasemi_msi_chip = {
 static void pasemi_msi_teardown_msi_irqs(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
+<<<<<<< HEAD
+=======
+	irq_hw_number_t hwirq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_debug("pasemi_msi_teardown_msi_irqs, pdev %p\n", pdev);
 
@@ -73,10 +77,18 @@ static void pasemi_msi_teardown_msi_irqs(struct pci_dev *pdev)
 		if (entry->irq == NO_IRQ)
 			continue;
 
+<<<<<<< HEAD
 		irq_set_msi_desc(entry->irq, NULL);
 		msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap,
 				       virq_to_hw(entry->irq), ALLOC_CHUNK);
 		irq_dispose_mapping(entry->irq);
+=======
+		hwirq = virq_to_hw(entry->irq);
+		irq_set_msi_desc(entry->irq, NULL);
+		irq_dispose_mapping(entry->irq);
+		msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap,
+				       hwirq, ALLOC_CHUNK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return;

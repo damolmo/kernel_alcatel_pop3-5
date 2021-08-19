@@ -213,4 +213,8 @@ ENTRY(memset)
 	ands	count, count, zva_bits_x
 	b.ne	.Ltail_maybe_long
 	ret
+<<<<<<< HEAD
 ENDPROC(memset)
+=======
+ENDPIPROC(memset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

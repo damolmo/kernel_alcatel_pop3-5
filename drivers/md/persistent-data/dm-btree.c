@@ -255,7 +255,11 @@ int dm_btree_del(struct dm_btree_info *info, dm_block_t root)
 	int r;
 	struct del_stack *s;
 
+<<<<<<< HEAD
 	s = kmalloc(sizeof(*s), GFP_KERNEL);
+=======
+	s = kmalloc(sizeof(*s), GFP_NOIO);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!s)
 		return -ENOMEM;
 	s->info = info;
@@ -517,10 +521,19 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 
 	new_parent = shadow_current(s);
 
+<<<<<<< HEAD
+=======
+	pn = dm_block_data(new_parent);
+	size = le32_to_cpu(pn->header.flags) & INTERNAL_NODE ?
+		sizeof(__le64) : s->info->value_type.size;
+
+	/* create & init the left block */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = new_block(s->info, &left);
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	r = new_block(s->info, &right);
 	if (r < 0) {
 		/* FIXME: put left */
@@ -533,16 +546,36 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 
 	nr_left = le32_to_cpu(pn->header.nr_entries) / 2;
 	nr_right = le32_to_cpu(pn->header.nr_entries) - nr_left;
+=======
+	ln = dm_block_data(left);
+	nr_left = le32_to_cpu(pn->header.nr_entries) / 2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ln->header.flags = pn->header.flags;
 	ln->header.nr_entries = cpu_to_le32(nr_left);
 	ln->header.max_entries = pn->header.max_entries;
 	ln->header.value_size = pn->header.value_size;
+<<<<<<< HEAD
+=======
+	memcpy(ln->keys, pn->keys, nr_left * sizeof(pn->keys[0]));
+	memcpy(value_ptr(ln, 0), value_ptr(pn, 0), nr_left * size);
+
+	/* create & init the right block */
+	r = new_block(s->info, &right);
+	if (r < 0) {
+		unlock_block(s->info, left);
+		return r;
+	}
+
+	rn = dm_block_data(right);
+	nr_right = le32_to_cpu(pn->header.nr_entries) - nr_left;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rn->header.flags = pn->header.flags;
 	rn->header.nr_entries = cpu_to_le32(nr_right);
 	rn->header.max_entries = pn->header.max_entries;
 	rn->header.value_size = pn->header.value_size;
+<<<<<<< HEAD
 
 	memcpy(ln->keys, pn->keys, nr_left * sizeof(pn->keys[0]));
 	memcpy(rn->keys, pn->keys + nr_left, nr_right * sizeof(pn->keys[0]));
@@ -550,6 +583,9 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	size = le32_to_cpu(pn->header.flags) & INTERNAL_NODE ?
 		sizeof(__le64) : s->info->value_type.size;
 	memcpy(value_ptr(ln, 0), value_ptr(pn, 0), nr_left * size);
+=======
+	memcpy(rn->keys, pn->keys + nr_left, nr_right * sizeof(pn->keys[0]));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(value_ptr(rn, 0), value_ptr(pn, nr_left),
 	       nr_right * size);
 
@@ -572,6 +608,7 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	pn->keys[1] = rn->keys[0];
 	memcpy_disk(value_ptr(pn, 1), &val, sizeof(__le64));
 
+<<<<<<< HEAD
 	/*
 	 * rejig the spine.  This is ugly, since it knows too
 	 * much about the spine
@@ -589,6 +626,10 @@ static int btree_split_beneath(struct shadow_spine *s, uint64_t key)
 	}
 	s->count = 2;
 
+=======
+	unlock_block(s->info, left);
+	unlock_block(s->info, right);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -667,12 +708,16 @@ static int insert(struct dm_btree_info *info, dm_block_t root,
 	struct btree_node *n;
 	struct dm_btree_value_type le64_type;
 
+<<<<<<< HEAD
 	le64_type.context = NULL;
 	le64_type.size = sizeof(__le64);
 	le64_type.inc = NULL;
 	le64_type.dec = NULL;
 	le64_type.equal = NULL;
 
+=======
+	init_le64_type(info->tm, &le64_type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	init_shadow_spine(&spine, info);
 
 	for (level = 0; level < (info->levels - 1); level++) {
@@ -793,8 +838,17 @@ static int find_key(struct ro_spine *s, dm_block_t block, bool find_highest,
 		else
 			*result_key = le64_to_cpu(ro_node(s)->keys[0]);
 
+<<<<<<< HEAD
 		if (next_block || flags & INTERNAL_NODE)
 			block = value64(ro_node(s), i);
+=======
+		if (next_block || flags & INTERNAL_NODE) {
+			if (find_highest)
+				block = value64(ro_node(s), i);
+			else
+				block = value64(ro_node(s), 0);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	} while (flags & INTERNAL_NODE);
 

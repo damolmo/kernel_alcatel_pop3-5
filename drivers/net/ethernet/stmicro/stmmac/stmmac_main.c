@@ -53,7 +53,11 @@
 #include "stmmac.h"
 #include <linux/reset.h>
 
+<<<<<<< HEAD
 #define STMMAC_ALIGN(x)	L1_CACHE_ALIGN(x)
+=======
+#define	STMMAC_ALIGN(x)		__ALIGN_KERNEL(x, SMP_CACHE_BYTES)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Module parameters */
 #define TX_TIMEO	5000
@@ -277,8 +281,19 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
 {
 	char *phy_bus_name = priv->plat->phy_bus_name;
 	unsigned long flags;
+<<<<<<< HEAD
 	bool ret = false;
 
+=======
+	int interface = priv->plat->interface;
+	bool ret = false;
+
+	if ((interface != PHY_INTERFACE_MODE_MII) &&
+	    (interface != PHY_INTERFACE_MODE_GMII) &&
+	    !phy_interface_mode_is_rgmii(interface))
+		goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Using PCS we cannot dial with the phy registers at this stage
 	 * so we do not support extra feature like EEE.
 	 */
@@ -918,7 +933,13 @@ static int stmmac_set_bfsize(int mtu, int bufsize)
 {
 	int ret = bufsize;
 
+<<<<<<< HEAD
 	if (mtu >= BUF_SIZE_4KiB)
+=======
+	if (mtu >= BUF_SIZE_8KiB)
+		ret = BUF_SIZE_16KiB;
+	else if (mtu >= BUF_SIZE_4KiB)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = BUF_SIZE_8KiB;
 	else if (mtu >= BUF_SIZE_2KiB)
 		ret = BUF_SIZE_4KiB;
@@ -947,11 +968,19 @@ static void stmmac_clear_descriptors(struct stmmac_priv *priv)
 		if (priv->extend_desc)
 			priv->hw->desc->init_rx_desc(&priv->dma_erx[i].basic,
 						     priv->use_riwt, priv->mode,
+<<<<<<< HEAD
 						     (i == rxsize - 1));
 		else
 			priv->hw->desc->init_rx_desc(&priv->dma_rx[i],
 						     priv->use_riwt, priv->mode,
 						     (i == rxsize - 1));
+=======
+						     (i == rxsize - 1), priv->dma_buf_sz);
+		else
+			priv->hw->desc->init_rx_desc(&priv->dma_rx[i],
+						     priv->use_riwt, priv->mode,
+						     (i == rxsize - 1), priv->dma_buf_sz);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < txsize; i++)
 		if (priv->extend_desc)
 			priv->hw->desc->init_tx_desc(&priv->dma_etx[i].basic,
@@ -1730,8 +1759,11 @@ static int stmmac_open(struct net_device *dev)
 	struct stmmac_priv *priv = netdev_priv(dev);
 	int ret;
 
+<<<<<<< HEAD
 	stmmac_check_ether_addr(priv);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (priv->pcs != STMMAC_PCS_RGMII && priv->pcs != STMMAC_PCS_TBI &&
 	    priv->pcs != STMMAC_PCS_RTBI) {
 		ret = stmmac_init_phy(dev);
@@ -1835,9 +1867,12 @@ static int stmmac_release(struct net_device *dev)
 {
 	struct stmmac_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (priv->eee_enabled)
 		del_timer_sync(&priv->eee_ctrl_timer);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Stop and disconnect the PHY */
 	if (priv->phydev) {
 		phy_stop(priv->phydev);
@@ -1858,6 +1893,14 @@ static int stmmac_release(struct net_device *dev)
 	if (priv->lpi_irq > 0)
 		free_irq(priv->lpi_irq, dev);
 
+<<<<<<< HEAD
+=======
+	if (priv->eee_enabled) {
+		priv->tx_path_in_lpi_mode = false;
+		del_timer_sync(&priv->eee_ctrl_timer);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Stop TX/RX DMA and clear the descriptors */
 	priv->hw->dma->stop_tx(priv->ioaddr);
 	priv->hw->dma->stop_rx(priv->ioaddr);
@@ -2115,8 +2158,12 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv)
 static int stmmac_rx(struct stmmac_priv *priv, int limit)
 {
 	unsigned int rxsize = priv->dma_rx_size;
+<<<<<<< HEAD
 	unsigned int entry = priv->cur_rx % rxsize;
 	unsigned int next_entry;
+=======
+	unsigned int next_entry = priv->cur_rx % rxsize;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int count = 0;
 	int coe = priv->hw->rx_csum;
 
@@ -2128,9 +2175,17 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit)
 			stmmac_display_ring((void *)priv->dma_rx, rxsize, 0);
 	}
 	while (count < limit) {
+<<<<<<< HEAD
 		int status;
 		struct dma_desc *p;
 
+=======
+		int status, entry;
+		struct dma_desc *p;
+
+		entry = next_entry;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (priv->extend_desc)
 			p = (struct dma_desc *)(priv->dma_erx + entry);
 		else
@@ -2193,7 +2248,11 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit)
 				pr_err("%s: Inconsistent Rx descriptor chain\n",
 				       priv->dev->name);
 				priv->dev->stats.rx_dropped++;
+<<<<<<< HEAD
 				break;
+=======
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			prefetch(skb->data - NET_IP_ALIGN);
 			priv->rx_skbuff[entry] = NULL;
@@ -2224,7 +2283,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit)
 			priv->dev->stats.rx_packets++;
 			priv->dev->stats.rx_bytes += frame_len;
 		}
+<<<<<<< HEAD
 		entry = next_entry;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	stmmac_rx_refill(priv);
@@ -2457,6 +2519,23 @@ static int stmmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int stmmac_set_mac_address(struct net_device *ndev, void *addr)
+{
+	struct stmmac_priv *priv = netdev_priv(ndev);
+	int ret = 0;
+
+	ret = eth_mac_addr(ndev, addr);
+	if (ret)
+		return ret;
+
+	priv->hw->mac->set_umac_addr(priv->hw, ndev->dev_addr, 0);
+
+	return ret;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_STMMAC_DEBUG_FS
 static struct dentry *stmmac_fs_dir;
 static struct dentry *stmmac_rings_status;
@@ -2657,7 +2736,11 @@ static const struct net_device_ops stmmac_netdev_ops = {
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = stmmac_poll_controller,
 #endif
+<<<<<<< HEAD
 	.ndo_set_mac_address = eth_mac_addr,
+=======
+	.ndo_set_mac_address = stmmac_set_mac_address,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -2818,6 +2901,11 @@ struct stmmac_priv *stmmac_dvr_probe(struct device *device,
 	if (ret)
 		goto error_hw_init;
 
+<<<<<<< HEAD
+=======
+	stmmac_check_ether_addr(priv);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ndev->netdev_ops = &stmmac_netdev_ops;
 
 	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
@@ -2848,12 +2936,15 @@ struct stmmac_priv *stmmac_dvr_probe(struct device *device,
 	spin_lock_init(&priv->lock);
 	spin_lock_init(&priv->tx_lock);
 
+<<<<<<< HEAD
 	ret = register_netdev(ndev);
 	if (ret) {
 		pr_err("%s: ERROR %i registering the device\n", __func__, ret);
 		goto error_netdev_register;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* If a specific clk_csr value is passed from the platform
 	 * this means that the CSR Clock Range selection cannot be
 	 * changed at run-time and it is fixed. Viceversa the driver'll try to
@@ -2878,11 +2969,29 @@ struct stmmac_priv *stmmac_dvr_probe(struct device *device,
 		}
 	}
 
+<<<<<<< HEAD
 	return priv;
 
 error_mdio_register:
 	unregister_netdev(ndev);
 error_netdev_register:
+=======
+	ret = register_netdev(ndev);
+	if (ret) {
+		netdev_err(priv->dev, "%s: ERROR %i registering the device\n",
+			   __func__, ret);
+		goto error_netdev_register;
+	}
+
+	return priv;
+
+error_netdev_register:
+	if (priv->pcs != STMMAC_PCS_RGMII &&
+	    priv->pcs != STMMAC_PCS_TBI &&
+	    priv->pcs != STMMAC_PCS_RTBI)
+		stmmac_mdio_unregister(ndev);
+error_mdio_register:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_napi_del(&priv->napi);
 error_hw_init:
 	clk_disable_unprepare(priv->stmmac_clk);
@@ -2940,6 +3049,14 @@ int stmmac_suspend(struct net_device *ndev)
 
 	napi_disable(&priv->napi);
 
+<<<<<<< HEAD
+=======
+	if (priv->eee_enabled) {
+		priv->tx_path_in_lpi_mode = false;
+		del_timer_sync(&priv->eee_ctrl_timer);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Stop TX/RX DMA */
 	priv->hw->dma->stop_tx(priv->ioaddr);
 	priv->hw->dma->stop_rx(priv->ioaddr);

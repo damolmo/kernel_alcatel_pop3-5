@@ -18,7 +18,11 @@
 #include <linux/kallsyms.h>
 #include <linux/seq_file.h>
 #include <linux/suspend.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+#include <linux/tracefs.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/hardirq.h>
 #include <linux/kthread.h>
 #include <linux/uaccess.h>
@@ -32,6 +36,10 @@
 #include <linux/list.h>
 #include <linux/hash.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
+=======
+#include <linux/kprobes.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <trace/events/sched.h>
 
@@ -1002,7 +1010,11 @@ static struct tracer_stat function_stats __initdata = {
 	.stat_show	= function_stat_show
 };
 
+<<<<<<< HEAD
 static __init void ftrace_profile_debugfs(struct dentry *d_tracer)
+=======
+static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ftrace_profile_stat *stat;
 	struct dentry *entry;
@@ -1038,15 +1050,26 @@ static __init void ftrace_profile_debugfs(struct dentry *d_tracer)
 		}
 	}
 
+<<<<<<< HEAD
 	entry = debugfs_create_file("function_profile_enabled", 0644,
 				    d_tracer, NULL, &ftrace_profile_fops);
 	if (!entry)
 		pr_warning("Could not create debugfs "
+=======
+	entry = tracefs_create_file("function_profile_enabled", 0644,
+				    d_tracer, NULL, &ftrace_profile_fops);
+	if (!entry)
+		pr_warning("Could not create tracefs "
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			   "'function_profile_enabled' entry\n");
 }
 
 #else /* CONFIG_FUNCTION_PROFILER */
+<<<<<<< HEAD
 static __init void ftrace_profile_debugfs(struct dentry *d_tracer)
+=======
+static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 }
 #endif /* CONFIG_FUNCTION_PROFILER */
@@ -1732,12 +1755,27 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
 
 static void print_ip_ins(const char *fmt, unsigned char *p)
 {
+<<<<<<< HEAD
 	int i;
 
 	printk(KERN_CONT "%s", fmt);
 
 	for (i = 0; i < MCOUNT_INSN_SIZE; i++)
 		printk(KERN_CONT "%s%02x", i ? ":" : "", p[i]);
+=======
+	char ins[MCOUNT_INSN_SIZE];
+	int i;
+
+	if (probe_kernel_read(ins, p, MCOUNT_INSN_SIZE)) {
+		printk(KERN_CONT "%s[FAULT] %px\n", fmt, p);
+		return;
+	}
+
+	printk(KERN_CONT "%s", fmt);
+
+	for (i = 0; i < MCOUNT_INSN_SIZE; i++)
+		printk(KERN_CONT "%s%02x", i ? ":" : "", ins[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -2422,6 +2460,7 @@ static int ftrace_shutdown(struct ftrace_ops *ops, int command)
 
 	if (!command || !ftrace_enabled) {
 		/*
+<<<<<<< HEAD
 		 * If these are control ops, they still need their
 		 * per_cpu field freed. Since, function tracing is
 		 * not currently active, we can just free them
@@ -2429,6 +2468,16 @@ static int ftrace_shutdown(struct ftrace_ops *ops, int command)
 		 */
 		if (ops->flags & FTRACE_OPS_FL_CONTROL)
 			control_ops_free(ops);
+=======
+		 * If these are dynamic or control ops, they still
+		 * need their data freed. Since, function tracing is
+		 * not currently active, we can just free them
+		 * without synchronizing all CPUs.
+		 */
+		if (ops->flags & (FTRACE_OPS_FL_DYNAMIC | FTRACE_OPS_FL_CONTROL))
+			goto free_ops;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 
@@ -2483,6 +2532,11 @@ static int ftrace_shutdown(struct ftrace_ops *ops, int command)
 	if (ops->flags & (FTRACE_OPS_FL_DYNAMIC | FTRACE_OPS_FL_CONTROL)) {
 		schedule_on_each_cpu(ftrace_sync);
 
+<<<<<<< HEAD
+=======
+ free_ops:
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ops->flags & FTRACE_OPS_FL_CONTROL)
 			control_ops_free(ops);
 	}
@@ -2573,8 +2627,16 @@ static int referenced_filters(struct dyn_ftrace *rec)
 	int cnt = 0;
 
 	for (ops = ftrace_ops_list; ops != &ftrace_list_end; ops = ops->next) {
+<<<<<<< HEAD
 		if (ops_references_rec(ops, rec))
 		    cnt++;
+=======
+		if (ops_references_rec(ops, rec)) {
+			cnt++;
+			if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
+				rec->flags |= FTRACE_FL_REGS;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return cnt;
@@ -2624,7 +2686,11 @@ static int ftrace_update_code(struct module *mod, struct ftrace_page *new_pgs)
 			p = &pg->records[i];
 			if (test)
 				cnt += referenced_filters(p);
+<<<<<<< HEAD
 			p->flags = cnt;
+=======
+			p->flags += cnt;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/*
 			 * Do the initial record conversion from mcount jump
@@ -3408,23 +3474,39 @@ static void __enable_ftrace_function_probe(struct ftrace_ops_hash *old_hash)
 	ftrace_probe_registered = 1;
 }
 
+<<<<<<< HEAD
 static void __disable_ftrace_function_probe(void)
+=======
+static bool __disable_ftrace_function_probe(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int i;
 
 	if (!ftrace_probe_registered)
+<<<<<<< HEAD
 		return;
+=======
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < FTRACE_FUNC_HASHSIZE; i++) {
 		struct hlist_head *hhd = &ftrace_func_hash[i];
 		if (hhd->first)
+<<<<<<< HEAD
 			return;
+=======
+			return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* no more funcs left */
 	ftrace_shutdown(&trace_probe_ops, 0);
 
 	ftrace_probe_registered = 0;
+<<<<<<< HEAD
+=======
+	return true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -3550,6 +3632,10 @@ static void
 __unregister_ftrace_function_probe(char *glob, struct ftrace_probe_ops *ops,
 				  void *data, int flags)
 {
+<<<<<<< HEAD
+=======
+	struct ftrace_ops_hash old_hash_ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ftrace_func_entry *rec_entry;
 	struct ftrace_func_probe *entry;
 	struct ftrace_func_probe *p;
@@ -3563,6 +3649,10 @@ __unregister_ftrace_function_probe(char *glob, struct ftrace_probe_ops *ops,
 	int i, len = 0;
 	char *search;
 	int ret;
+<<<<<<< HEAD
+=======
+	bool disabled;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (glob && (strcmp(glob, "*") == 0 || !strlen(glob)))
 		glob = NULL;
@@ -3579,6 +3669,13 @@ __unregister_ftrace_function_probe(char *glob, struct ftrace_probe_ops *ops,
 
 	mutex_lock(&trace_probe_ops.func_hash->regex_lock);
 
+<<<<<<< HEAD
+=======
+	old_hash_ops.filter_hash = old_hash;
+	/* Probes only have filters */
+	old_hash_ops.notrace_hash = NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hash = alloc_and_copy_ftrace_hash(FTRACE_HASH_DEFAULT_BITS, *orig_hash);
 	if (!hash)
 		/* Hmm, should report this somehow */
@@ -3616,12 +3713,24 @@ __unregister_ftrace_function_probe(char *glob, struct ftrace_probe_ops *ops,
 		}
 	}
 	mutex_lock(&ftrace_lock);
+<<<<<<< HEAD
 	__disable_ftrace_function_probe();
+=======
+	disabled = __disable_ftrace_function_probe();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Remove after the disable is called. Otherwise, if the last
 	 * probe is removed, a null hash means *all enabled*.
 	 */
 	ret = ftrace_hash_move(&trace_probe_ops, 1, orig_hash, hash);
+<<<<<<< HEAD
+=======
+
+	/* still need to update the function call sites */
+	if (ftrace_enabled && !disabled)
+		ftrace_run_modify_code(&trace_probe_ops, FTRACE_UPDATE_CALLS,
+				       &old_hash_ops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	synchronize_sched();
 	if (!ret)
 		free_ftrace_hash_rcu(old_hash);
@@ -4114,8 +4223,16 @@ int ftrace_regex_release(struct inode *inode, struct file *file)
 
 	parser = &iter->parser;
 	if (trace_parser_loaded(parser)) {
+<<<<<<< HEAD
 		parser->buffer[parser->idx] = 0;
 		ftrace_match_records(iter->hash, parser->buffer, parser->idx);
+=======
+		int enable = !(iter->flags & FTRACE_ITER_NOTRACE);
+
+		parser->buffer[parser->idx] = 0;
+		ftrace_process_regex(iter->hash, parser->buffer,
+				     parser->idx, enable);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	trace_parser_put(parser);
@@ -4484,10 +4601,18 @@ void ftrace_destroy_filter_files(struct ftrace_ops *ops)
 	if (ops->flags & FTRACE_OPS_FL_ENABLED)
 		ftrace_shutdown(ops, 0);
 	ops->flags |= FTRACE_OPS_FL_DELETED;
+<<<<<<< HEAD
 	mutex_unlock(&ftrace_lock);
 }
 
 static __init int ftrace_init_dyn_debugfs(struct dentry *d_tracer)
+=======
+	ftrace_free_filter(ops);
+	mutex_unlock(&ftrace_lock);
+}
+
+static __init int ftrace_init_dyn_tracefs(struct dentry *d_tracer)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 
 	trace_create_file("available_filter_functions", 0444,
@@ -4769,7 +4894,11 @@ static int __init ftrace_nodyn_init(void)
 }
 core_initcall(ftrace_nodyn_init);
 
+<<<<<<< HEAD
 static inline int ftrace_init_dyn_debugfs(struct dentry *d_tracer) { return 0; }
+=======
+static inline int ftrace_init_dyn_tracefs(struct dentry *d_tracer) { return 0; }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void ftrace_startup_enable(int command) { }
 static inline void ftrace_startup_all(int command) { }
 /* Keep as macros so we do not need to define the commands */
@@ -4865,7 +4994,11 @@ static struct ftrace_ops control_ops = {
 	INIT_OPS_HASH(control_ops)
 };
 
+<<<<<<< HEAD
 static inline void
+=======
+static nokprobe_inline void
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 __ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
 		       struct ftrace_ops *ignored, struct pt_regs *regs)
 {
@@ -4914,11 +5047,19 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
 {
 	__ftrace_ops_list_func(ip, parent_ip, NULL, regs);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(ftrace_ops_list_func);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 static void ftrace_ops_no_ops(unsigned long ip, unsigned long parent_ip)
 {
 	__ftrace_ops_list_func(ip, parent_ip, NULL, NULL);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(ftrace_ops_no_ops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*
@@ -4939,6 +5080,10 @@ static void ftrace_ops_recurs_func(unsigned long ip, unsigned long parent_ip,
 
 	trace_clear_recursion(bit);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(ftrace_ops_recurs_func);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * ftrace_ops_get_func - get the function a trampoline should call
@@ -5218,24 +5363,43 @@ static const struct file_operations ftrace_pid_fops = {
 	.release	= ftrace_pid_release,
 };
 
+<<<<<<< HEAD
 static __init int ftrace_init_debugfs(void)
+=======
+static __init int ftrace_init_tracefs(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dentry *d_tracer;
 
 	d_tracer = tracing_init_dentry();
+<<<<<<< HEAD
 	if (!d_tracer)
 		return 0;
 
 	ftrace_init_dyn_debugfs(d_tracer);
+=======
+	if (IS_ERR(d_tracer))
+		return 0;
+
+	ftrace_init_dyn_tracefs(d_tracer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	trace_create_file("set_ftrace_pid", 0644, d_tracer,
 			    NULL, &ftrace_pid_fops);
 
+<<<<<<< HEAD
 	ftrace_profile_debugfs(d_tracer);
 
 	return 0;
 }
 fs_initcall(ftrace_init_debugfs);
+=======
+	ftrace_profile_tracefs(d_tracer);
+
+	return 0;
+}
+fs_initcall(ftrace_init_tracefs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * ftrace_kill - kill ftrace
@@ -5396,7 +5560,10 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
 		}
 
 		if (t->ret_stack == NULL) {
+<<<<<<< HEAD
 			atomic_set(&t->tracing_graph_pause, 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			atomic_set(&t->trace_overrun, 0);
 			t->curr_ret_stack = -1;
 			/* Make sure the tasks see the -1 first: */
@@ -5609,7 +5776,10 @@ static DEFINE_PER_CPU(struct ftrace_ret_stack *, idle_ret_stack);
 static void
 graph_init_task(struct task_struct *t, struct ftrace_ret_stack *ret_stack)
 {
+<<<<<<< HEAD
 	atomic_set(&t->tracing_graph_pause, 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	atomic_set(&t->trace_overrun, 0);
 	t->ftrace_timestamp = 0;
 	/* make curr_ret_stack visible before we add the ret_stack */

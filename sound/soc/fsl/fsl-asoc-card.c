@@ -544,6 +544,10 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 
 asrc_fail:
 	of_node_put(asrc_np);
+<<<<<<< HEAD
+=======
+	put_device(&cpu_pdev->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 fail:
 	of_node_put(codec_np);
 	of_node_put(cpu_np);

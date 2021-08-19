@@ -382,6 +382,7 @@ static int mdfld_dsi_connector_mode_valid(struct drm_connector *connector,
 	return MODE_OK;
 }
 
+<<<<<<< HEAD
 static void mdfld_dsi_connector_dpms(struct drm_connector *connector, int mode)
 {
 	if (mode == connector->dpms)
@@ -392,6 +393,8 @@ static void mdfld_dsi_connector_dpms(struct drm_connector *connector, int mode)
 	drm_helper_connector_dpms(connector, mode);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct drm_encoder *mdfld_dsi_connector_best_encoder(
 				struct drm_connector *connector)
 {
@@ -404,7 +407,11 @@ static struct drm_encoder *mdfld_dsi_connector_best_encoder(
 
 /*DSI connector funcs*/
 static const struct drm_connector_funcs mdfld_dsi_connector_funcs = {
+<<<<<<< HEAD
 	.dpms = /*drm_helper_connector_dpms*/mdfld_dsi_connector_dpms,
+=======
+	.dpms = drm_helper_connector_dpms,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.save = mdfld_dsi_connector_save,
 	.restore = mdfld_dsi_connector_restore,
 	.detect = mdfld_dsi_connector_detect,

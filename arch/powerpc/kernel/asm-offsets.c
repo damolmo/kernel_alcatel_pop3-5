@@ -571,6 +571,10 @@ int main(void)
 	DEFINE(VCPU_VRS_TM, offsetof(struct kvm_vcpu, arch.vr_tm.vr));
 	DEFINE(VCPU_VRSAVE_TM, offsetof(struct kvm_vcpu, arch.vrsave_tm));
 	DEFINE(VCPU_CR_TM, offsetof(struct kvm_vcpu, arch.cr_tm));
+<<<<<<< HEAD
+=======
+	DEFINE(VCPU_XER_TM, offsetof(struct kvm_vcpu, arch.xer_tm));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	DEFINE(VCPU_LR_TM, offsetof(struct kvm_vcpu, arch.lr_tm));
 	DEFINE(VCPU_CTR_TM, offsetof(struct kvm_vcpu, arch.ctr_tm));
 	DEFINE(VCPU_AMR_TM, offsetof(struct kvm_vcpu, arch.amr_tm));

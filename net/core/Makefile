@@ -23,3 +23,7 @@ obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += timestamping.o
 obj-$(CONFIG_NET_PTP_CLASSIFY) += ptp_classifier.o
 obj-$(CONFIG_CGROUP_NET_PRIO) += netprio_cgroup.o
 obj-$(CONFIG_CGROUP_NET_CLASSID) += netclassid_cgroup.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_DST_CACHE) += dst_cache.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -472,6 +472,10 @@ static void ceph_i_callback(struct rcu_head *head)
 	struct inode *inode = container_of(head, struct inode, i_rcu);
 	struct ceph_inode_info *ci = ceph_inode(inode);
 
+<<<<<<< HEAD
+=======
+	kfree(ci->i_symlink);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kmem_cache_free(ceph_inode_cachep, ci);
 }
 
@@ -503,7 +507,10 @@ void ceph_destroy_inode(struct inode *inode)
 		ceph_put_snap_realm(mdsc, realm);
 	}
 
+<<<<<<< HEAD
 	kfree(ci->i_symlink);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while ((n = rb_first(&ci->i_fragtree)) != NULL) {
 		frag = rb_entry(n, struct ceph_inode_frag, node);
 		rb_erase(n, &ci->i_fragtree);
@@ -722,7 +729,16 @@ static int fill_inode(struct inode *inode,
 	ci->i_version = le64_to_cpu(info->version);
 	inode->i_version++;
 	inode->i_rdev = le32_to_cpu(info->rdev);
+<<<<<<< HEAD
 	inode->i_blkbits = fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
+=======
+	/* directories have fl_stripe_unit set to zero */
+	if (le32_to_cpu(info->layout.fl_stripe_unit))
+		inode->i_blkbits =
+			fls(le32_to_cpu(info->layout.fl_stripe_unit)) - 1;
+	else
+		inode->i_blkbits = CEPH_BLOCK_SHIFT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((new_version || (new_issued & CEPH_CAP_AUTH_SHARED)) &&
 	    (issued & CEPH_CAP_AUTH_EXCL) == 0) {
@@ -1432,7 +1448,10 @@ retry_lookup:
 			dn = splice_dentry(dn, in, NULL);
 			if (IS_ERR(dn)) {
 				err = PTR_ERR(dn);
+<<<<<<< HEAD
 				dn = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto next_item;
 			}
 		}
@@ -1692,7 +1711,11 @@ static const struct inode_operations ceph_symlink_iops = {
 /*
  * setattr
  */
+<<<<<<< HEAD
 int ceph_setattr(struct dentry *dentry, struct iattr *attr)
+=======
+int __ceph_setattr(struct dentry *dentry, struct iattr *attr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inode *inode = dentry->d_inode;
 	struct ceph_inode_info *ci = ceph_inode(inode);
@@ -1871,11 +1894,14 @@ int ceph_setattr(struct dentry *dentry, struct iattr *attr)
 	if (inode_dirty_flags)
 		__mark_inode_dirty(inode, inode_dirty_flags);
 
+<<<<<<< HEAD
 	if (ia_valid & ATTR_MODE) {
 		err = posix_acl_chmod(inode, attr->ia_mode);
 		if (err)
 			goto out_put;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (mask) {
 		req->r_inode = inode;
@@ -1889,11 +1915,30 @@ int ceph_setattr(struct dentry *dentry, struct iattr *attr)
 	     ceph_cap_string(dirtied), mask);
 
 	ceph_mdsc_put_request(req);
+<<<<<<< HEAD
 	if (mask & CEPH_SETATTR_SIZE)
 		__ceph_do_pending_vmtruncate(inode);
 	return err;
 out_put:
 	ceph_mdsc_put_request(req);
+=======
+
+	if (err >= 0 && (mask & CEPH_SETATTR_SIZE))
+		__ceph_do_pending_vmtruncate(inode);
+
+	return err;
+}
+
+int ceph_setattr(struct dentry *dentry, struct iattr *attr)
+{
+	int err;
+
+	err = __ceph_setattr(dentry, attr);
+
+	if (err >= 0 && (attr->ia_valid & ATTR_MODE))
+		err = posix_acl_chmod(d_inode(dentry), attr->ia_mode);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

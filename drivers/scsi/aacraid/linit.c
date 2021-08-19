@@ -1096,6 +1096,10 @@ static void __aac_shutdown(struct aac_dev * aac)
 				up(&fib->event_wait);
 		}
 		kthread_stop(aac->thread);
+<<<<<<< HEAD
+=======
+		aac->thread = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	aac_send_shutdown(aac);
 	aac_adapter_disable_int(aac);
@@ -1172,8 +1176,15 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	 *	Map in the registers from the adapter.
 	 */
 	aac->base_size = AAC_MIN_FOOTPRINT_SIZE;
+<<<<<<< HEAD
 	if ((*aac_drivers[index].init)(aac))
 		goto out_unmap;
+=======
+	if ((*aac_drivers[index].init)(aac)) {
+		error = -ENODEV;
+		goto out_unmap;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (aac->sync_mode) {
 		if (aac_sync_mode)

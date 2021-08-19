@@ -173,7 +173,11 @@ static int get_timer_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
 	u64 val;
 
 	val = kvm_arm_timer_get_reg(vcpu, reg->id);
+<<<<<<< HEAD
 	return copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id));
+=======
+	return copy_to_user(uaddr, &val, KVM_REG_SIZE(reg->id)) ? -EFAULT : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned long num_core_regs(void)
@@ -276,7 +280,11 @@ int __attribute_const__ kvm_target_cpu(void)
 int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 			const struct kvm_vcpu_init *init)
 {
+<<<<<<< HEAD
 	unsigned int i;
+=======
+	unsigned int i, ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We can only cope with guest==host and only on A15/A7 (for now). */
 	if (init->target != kvm_target_cpu())
@@ -295,7 +303,17 @@ int kvm_vcpu_set_target(struct kvm_vcpu *vcpu,
 	}
 
 	/* Now we know what it is, we can reset it. */
+<<<<<<< HEAD
 	return kvm_reset_vcpu(vcpu);
+=======
+	ret = kvm_reset_vcpu(vcpu);
+	if (ret) {
+		vcpu->arch.target = -1;
+		bitmap_zero(vcpu->arch.features, KVM_VCPU_MAX_FEATURES);
+	}
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int kvm_vcpu_preferred_target(struct kvm_vcpu_init *init)

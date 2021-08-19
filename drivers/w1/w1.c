@@ -727,7 +727,11 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 
 	/* slave modules need to be loaded in a context with unlocked mutex */
 	mutex_unlock(&dev->mutex);
+<<<<<<< HEAD
 	request_module("w1-family-0x%0x", rn->family);
+=======
+	request_module("w1-family-0x%02X", rn->family);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&dev->mutex);
 
 	spin_lock(&w1_flock);
@@ -749,6 +753,10 @@ int w1_attach_slave_device(struct w1_master *dev, struct w1_reg_num *rn)
 		dev_err(&dev->dev, "%s: Attaching %s failed.\n", __func__,
 			 sl->name);
 		w1_family_put(sl->family);
+<<<<<<< HEAD
+=======
+		atomic_dec(&sl->master->refcnt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(sl);
 		return err;
 	}

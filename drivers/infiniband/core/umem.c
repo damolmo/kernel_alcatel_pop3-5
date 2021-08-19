@@ -157,7 +157,11 @@ struct ib_umem *ib_umem_get(struct ib_ucontext *context, unsigned long addr,
 
 	cur_base = addr & PAGE_MASK;
 
+<<<<<<< HEAD
 	if (npages == 0) {
+=======
+	if (npages == 0 || npages > UINT_MAX) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -EINVAL;
 		goto out;
 	}

@@ -78,27 +78,50 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
 	if (req->n_ssids > WSM_SCAN_MAX_NUM_OF_SSIDS)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	frame.skb = ieee80211_probereq_get(hw, priv->vif, NULL, 0,
 		req->ie_len);
 	if (!frame.skb)
 		return -ENOMEM;
-
-	if (req->ie_len)
-		memcpy(skb_put(frame.skb, req->ie_len), req->ie, req->ie_len);
-
+=======
 	/* will be unlocked in cw1200_scan_work() */
 	down(&priv->scan.lock);
 	mutex_lock(&priv->conf_mutex);
 
+	frame.skb = ieee80211_probereq_get(hw, priv->vif, NULL, 0,
+		req->ie_len);
+	if (!frame.skb) {
+		mutex_unlock(&priv->conf_mutex);
+		up(&priv->scan.lock);
+		return -ENOMEM;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
+
+	if (req->ie_len)
+		memcpy(skb_put(frame.skb, req->ie_len), req->ie, req->ie_len);
+
+<<<<<<< HEAD
+	/* will be unlocked in cw1200_scan_work() */
+	down(&priv->scan.lock);
+	mutex_lock(&priv->conf_mutex);
+
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = wsm_set_template_frame(priv, &frame);
 	if (!ret) {
 		/* Host want to be the probe responder. */
 		ret = wsm_set_probe_responder(priv, true);
 	}
 	if (ret) {
+<<<<<<< HEAD
 		mutex_unlock(&priv->conf_mutex);
 		up(&priv->scan.lock);
 		dev_kfree_skb(frame.skb);
+=======
+		dev_kfree_skb(frame.skb);
+		mutex_unlock(&priv->conf_mutex);
+		up(&priv->scan.lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ret;
 	}
 
@@ -120,10 +143,16 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
 		++priv->scan.n_ssids;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&priv->conf_mutex);
 
 	if (frame.skb)
 		dev_kfree_skb(frame.skb);
+=======
+	if (frame.skb)
+		dev_kfree_skb(frame.skb);
+	mutex_unlock(&priv->conf_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	queue_work(priv->workqueue, &priv->scan.work);
 	return 0;
 }

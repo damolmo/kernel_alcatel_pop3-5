@@ -9,7 +9,10 @@
 CCVERSION	:= $(shell $(CC) -v 2>&1 | sed -ne '$$p')
 obj-y := kdb_io.o kdb_main.o kdb_support.o kdb_bt.o gen-kdb_cmds.o kdb_bp.o kdb_debugger.o
 obj-$(CONFIG_KDB_KEYBOARD)    += kdb_keyboard.o
+<<<<<<< HEAD
 obj-$(CONFIG_KGDB_KDB)        += kdb_enhance.o
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 clean-files := gen-kdb_cmds.c
 

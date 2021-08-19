@@ -302,12 +302,40 @@ static inline ktime_t kvm_mips_count_time(struct kvm_vcpu *vcpu)
  */
 static uint32_t kvm_mips_read_count_running(struct kvm_vcpu *vcpu, ktime_t now)
 {
+<<<<<<< HEAD
 	ktime_t expires;
 	int running;
 
 	/* Is the hrtimer pending? */
 	expires = hrtimer_get_expires(&vcpu->arch.comparecount_timer);
 	if (ktime_compare(now, expires) >= 0) {
+=======
+	struct mips_coproc *cop0 = vcpu->arch.cop0;
+	ktime_t expires, threshold;
+	uint32_t count, compare;
+	int running;
+
+	/* Calculate the biased and scaled guest CP0_Count */
+	count = vcpu->arch.count_bias + kvm_mips_ktime_to_count(vcpu, now);
+	compare = kvm_read_c0_guest_compare(cop0);
+
+	/*
+	 * Find whether CP0_Count has reached the closest timer interrupt. If
+	 * not, we shouldn't inject it.
+	 */
+	if ((int32_t)(count - compare) < 0)
+		return count;
+
+	/*
+	 * The CP0_Count we're going to return has already reached the closest
+	 * timer interrupt. Quickly check if it really is a new interrupt by
+	 * looking at whether the interval until the hrtimer expiry time is
+	 * less than 1/4 of the timer period.
+	 */
+	expires = hrtimer_get_expires(&vcpu->arch.comparecount_timer);
+	threshold = ktime_add_ns(now, vcpu->arch.count_period / 4);
+	if (ktime_before(expires, threshold)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * Cancel it while we handle it so there's no chance of
 		 * interference with the timeout handler.
@@ -329,8 +357,12 @@ static uint32_t kvm_mips_read_count_running(struct kvm_vcpu *vcpu, ktime_t now)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Return the biased and scaled guest CP0_Count */
 	return vcpu->arch.count_bias + kvm_mips_ktime_to_count(vcpu, now);
+=======
+	return count;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -420,6 +452,7 @@ static void kvm_mips_resume_hrtimer(struct kvm_vcpu *vcpu,
 }
 
 /**
+<<<<<<< HEAD
  * kvm_mips_update_hrtimer() - Update next expiry time of hrtimer.
  * @vcpu:	Virtual CPU.
  *
@@ -446,6 +479,8 @@ static void kvm_mips_update_hrtimer(struct kvm_vcpu *vcpu)
 }
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * kvm_mips_write_count() - Modify the count and update timer.
  * @vcpu:	Virtual CPU.
  * @count:	Guest CP0_Count value to set.
@@ -540,6 +575,7 @@ int kvm_mips_set_count_hz(struct kvm_vcpu *vcpu, s64 count_hz)
  * kvm_mips_write_compare() - Modify compare and update timer.
  * @vcpu:	Virtual CPU.
  * @compare:	New CP0_Compare value.
+<<<<<<< HEAD
  *
  * Update CP0_Compare to a new value and update the timeout.
  */
@@ -557,6 +593,44 @@ void kvm_mips_write_compare(struct kvm_vcpu *vcpu, uint32_t compare)
 	/* Update timeout if count enabled */
 	if (!kvm_mips_count_disabled(vcpu))
 		kvm_mips_update_hrtimer(vcpu);
+=======
+ * @ack:	Whether to acknowledge timer interrupt.
+ *
+ * Update CP0_Compare to a new value and update the timeout.
+ * If @ack, atomically acknowledge any pending timer interrupt, otherwise ensure
+ * any pending timer interrupt is preserved.
+ */
+void kvm_mips_write_compare(struct kvm_vcpu *vcpu, uint32_t compare, bool ack)
+{
+	struct mips_coproc *cop0 = vcpu->arch.cop0;
+	int dc;
+	u32 old_compare = kvm_read_c0_guest_compare(cop0);
+	ktime_t now;
+	uint32_t count;
+
+	/* if unchanged, must just be an ack */
+	if (old_compare == compare) {
+		if (!ack)
+			return;
+		kvm_mips_callbacks->dequeue_timer_int(vcpu);
+		kvm_write_c0_guest_compare(cop0, compare);
+		return;
+	}
+
+	/* freeze_hrtimer() takes care of timer interrupts <= count */
+	dc = kvm_mips_count_disabled(vcpu);
+	if (!dc)
+		now = kvm_mips_freeze_hrtimer(vcpu, &count);
+
+	if (ack)
+		kvm_mips_callbacks->dequeue_timer_int(vcpu);
+
+	kvm_write_c0_guest_compare(cop0, compare);
+
+	/* resume_hrtimer() takes care of timer interrupts > count */
+	if (!dc)
+		kvm_mips_resume_hrtimer(vcpu, now, count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -741,15 +815,25 @@ enum emulation_result kvm_mips_emul_eret(struct kvm_vcpu *vcpu)
 	struct mips_coproc *cop0 = vcpu->arch.cop0;
 	enum emulation_result er = EMULATE_DONE;
 
+<<<<<<< HEAD
 	if (kvm_read_c0_guest_status(cop0) & ST0_EXL) {
+=======
+	if (kvm_read_c0_guest_status(cop0) & ST0_ERL) {
+		kvm_clear_c0_guest_status(cop0, ST0_ERL);
+		vcpu->arch.pc = kvm_read_c0_guest_errorepc(cop0);
+	} else if (kvm_read_c0_guest_status(cop0) & ST0_EXL) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kvm_debug("[%#lx] ERET to %#lx\n", vcpu->arch.pc,
 			  kvm_read_c0_guest_epc(cop0));
 		kvm_clear_c0_guest_status(cop0, ST0_EXL);
 		vcpu->arch.pc = kvm_read_c0_guest_epc(cop0);
 
+<<<<<<< HEAD
 	} else if (kvm_read_c0_guest_status(cop0) & ST0_ERL) {
 		kvm_clear_c0_guest_status(cop0, ST0_ERL);
 		vcpu->arch.pc = kvm_read_c0_guest_errorepc(cop0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		kvm_err("[%#lx] ERET when MIPS_SR_EXL|MIPS_SR_ERL == 0\n",
 			vcpu->arch.pc);
@@ -1017,9 +1101,15 @@ enum emulation_result kvm_mips_emulate_CP0(uint32_t inst, uint32_t *opc,
 
 				/* If we are writing to COMPARE */
 				/* Clear pending timer interrupt, if any */
+<<<<<<< HEAD
 				kvm_mips_callbacks->dequeue_timer_int(vcpu);
 				kvm_mips_write_compare(vcpu,
 						       vcpu->arch.gprs[rt]);
+=======
+				kvm_mips_write_compare(vcpu,
+						       vcpu->arch.gprs[rt],
+						       true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			} else if ((rd == MIPS_CP0_STATUS) && (sel == 0)) {
 				kvm_write_c0_guest_status(cop0,
 							  vcpu->arch.gprs[rt]);

@@ -15,7 +15,11 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  * Try not to change the actual algorithm if possible for consistency.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -86,3 +90,7 @@ $found:	negq    t0, t1		# E : clear all but least set bit
 	ret			# L0 :
 
 	.end strchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strchr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

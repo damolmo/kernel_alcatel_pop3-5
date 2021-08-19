@@ -65,6 +65,11 @@ ieee80211_ibss_build_presp(struct ieee80211_sub_if_data *sdata,
 		    2 + (IEEE80211_MAX_SUPP_RATES - 8) +
 		    2 + sizeof(struct ieee80211_ht_cap) +
 		    2 + sizeof(struct ieee80211_ht_operation) +
+<<<<<<< HEAD
+=======
+		    2 + sizeof(struct ieee80211_vht_cap) +
+		    2 + sizeof(struct ieee80211_vht_operation) +
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    ifibss->ie_len;
 	presp = kzalloc(sizeof(*presp) + frame_len, GFP_KERNEL);
 	if (!presp)
@@ -944,8 +949,13 @@ static void ieee80211_rx_mgmt_deauth_ibss(struct ieee80211_sub_if_data *sdata,
 	if (len < IEEE80211_DEAUTH_FRAME_LEN)
 		return;
 
+<<<<<<< HEAD
 	ibss_dbg(sdata, "RX DeAuth SA=%pM DA=%pM BSSID=%pM (reason: %d)\n",
 		 mgmt->sa, mgmt->da, mgmt->bssid, reason);
+=======
+	ibss_dbg(sdata, "RX DeAuth SA=%pM DA=%pM\n", mgmt->sa, mgmt->da);
+	ibss_dbg(sdata, "\tBSSID=%pM (reason: %d)\n", mgmt->bssid, reason);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sta_info_destroy_addr(sdata, mgmt->sa);
 }
 
@@ -963,9 +973,15 @@ static void ieee80211_rx_mgmt_auth_ibss(struct ieee80211_sub_if_data *sdata,
 	auth_alg = le16_to_cpu(mgmt->u.auth.auth_alg);
 	auth_transaction = le16_to_cpu(mgmt->u.auth.auth_transaction);
 
+<<<<<<< HEAD
 	ibss_dbg(sdata,
 		 "RX Auth SA=%pM DA=%pM BSSID=%pM (auth_transaction=%d)\n",
 		 mgmt->sa, mgmt->da, mgmt->bssid, auth_transaction);
+=======
+	ibss_dbg(sdata, "RX Auth SA=%pM DA=%pM\n", mgmt->sa, mgmt->da);
+	ibss_dbg(sdata, "\tBSSID=%pM (auth_transaction=%d)\n",
+		 mgmt->bssid, auth_transaction);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (auth_alg != WLAN_AUTH_OPEN || auth_transaction != 1)
 		return;
@@ -1130,10 +1146,17 @@ static void ieee80211_rx_bss_info(struct ieee80211_sub_if_data *sdata,
 		rx_timestamp = drv_get_tsf(local, sdata);
 	}
 
+<<<<<<< HEAD
 	ibss_dbg(sdata,
 		 "RX beacon SA=%pM BSSID=%pM TSF=0x%llx BCN=0x%llx diff=%lld @%lu\n",
 		 mgmt->sa, mgmt->bssid,
 		 (unsigned long long)rx_timestamp,
+=======
+	ibss_dbg(sdata, "RX beacon SA=%pM BSSID=%pM TSF=0x%llx\n",
+		 mgmt->sa, mgmt->bssid,
+		 (unsigned long long)rx_timestamp);
+	ibss_dbg(sdata, "\tBCN=0x%llx diff=%lld @%lu\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 (unsigned long long)beacon_timestamp,
 		 (unsigned long long)(rx_timestamp - beacon_timestamp),
 		 jiffies);
@@ -1414,9 +1437,15 @@ static void ieee80211_rx_mgmt_probe_req(struct ieee80211_sub_if_data *sdata,
 
 	tx_last_beacon = drv_tx_last_beacon(local);
 
+<<<<<<< HEAD
 	ibss_dbg(sdata,
 		 "RX ProbeReq SA=%pM DA=%pM BSSID=%pM (tx_last_beacon=%d)\n",
 		 mgmt->sa, mgmt->da, mgmt->bssid, tx_last_beacon);
+=======
+	ibss_dbg(sdata, "RX ProbeReq SA=%pM DA=%pM\n", mgmt->sa, mgmt->da);
+	ibss_dbg(sdata, "\tBSSID=%pM (tx_last_beacon=%d)\n",
+		 mgmt->bssid, tx_last_beacon);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!tx_last_beacon && is_multicast_ether_addr(mgmt->da))
 		return;
@@ -1620,7 +1649,10 @@ void ieee80211_ibss_notify_scan_completed(struct ieee80211_local *local)
 		if (sdata->vif.type != NL80211_IFTYPE_ADHOC)
 			continue;
 		sdata->u.ibss.last_scan_completed = jiffies;
+<<<<<<< HEAD
 		ieee80211_queue_work(&local->hw, &sdata->work);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	mutex_unlock(&local->iflist_mtx);
 }
@@ -1739,6 +1771,11 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
 
 	/* remove beacon */
 	kfree(sdata->u.ibss.ie);
+<<<<<<< HEAD
+=======
+	sdata->u.ibss.ie = NULL;
+	sdata->u.ibss.ie_len = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* on the next join, re-program HT parameters */
 	memset(&ifibss->ht_capa, 0, sizeof(ifibss->ht_capa));

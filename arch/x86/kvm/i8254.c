@@ -244,7 +244,11 @@ static void kvm_pit_ack_irq(struct kvm_irq_ack_notifier *kian)
 		 * PIC is being reset.  Handle it gracefully here
 		 */
 		atomic_inc(&ps->pending);
+<<<<<<< HEAD
 	else if (value > 0)
+=======
+	else if (value > 0 && ps->reinject)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* in this case, we had multiple outstanding pit interrupts
 		 * that we needed to inject.  Reinject
 		 */
@@ -287,7 +291,13 @@ static void pit_do_work(struct kthread_work *work)
 	 * last one has been acked.
 	 */
 	spin_lock(&ps->inject_lock);
+<<<<<<< HEAD
 	if (ps->irq_ack) {
+=======
+	if (!ps->reinject)
+		inject = 1;
+	else if (ps->irq_ack) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ps->irq_ack = 0;
 		inject = 1;
 	}
@@ -316,10 +326,17 @@ static enum hrtimer_restart pit_timer_fn(struct hrtimer *data)
 	struct kvm_kpit_state *ps = container_of(data, struct kvm_kpit_state, timer);
 	struct kvm_pit *pt = ps->kvm->arch.vpit;
 
+<<<<<<< HEAD
 	if (ps->reinject || !atomic_read(&ps->pending)) {
 		atomic_inc(&ps->pending);
 		queue_kthread_work(&pt->worker, &pt->expired);
 	}
+=======
+	if (ps->reinject)
+		atomic_inc(&ps->pending);
+
+	queue_kthread_work(&pt->worker, &pt->expired);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ps->is_periodic) {
 		hrtimer_add_expires_ns(&ps->timer, ps->period);
@@ -669,7 +686,10 @@ static const struct kvm_io_device_ops speaker_dev_ops = {
 	.write    = speaker_ioport_write,
 };
 
+<<<<<<< HEAD
 /* Caller must hold slots_lock */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 {
 	struct kvm_pit *pit;
@@ -724,6 +744,10 @@ struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 	pit->mask_notifier.func = pit_mask_notifer;
 	kvm_register_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&kvm->slots_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kvm_iodevice_init(&pit->dev, &pit_dev_ops);
 	ret = kvm_io_bus_register_dev(kvm, KVM_PIO_BUS, KVM_PIT_BASE_ADDRESS,
 				      KVM_PIT_MEM_LENGTH, &pit->dev);
@@ -738,13 +762,22 @@ struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 		if (ret < 0)
 			goto fail_unregister;
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&kvm->slots_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return pit;
 
 fail_unregister:
 	kvm_io_bus_unregister_dev(kvm, KVM_PIO_BUS, &pit->dev);
+<<<<<<< HEAD
 
 fail:
+=======
+fail:
+	mutex_unlock(&kvm->slots_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kvm_unregister_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
 	kvm_unregister_irq_ack_notifier(kvm, &pit_state->irq_ack_notifier);
 	kvm_free_irq_source_id(kvm, pit->irq_source_id);

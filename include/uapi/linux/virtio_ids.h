@@ -39,6 +39,9 @@
 #define VIRTIO_ID_9P		9 /* 9p virtio console */
 #define VIRTIO_ID_RPROC_SERIAL 11 /* virtio remoteproc serial link */
 #define VIRTIO_ID_CAIF	       12 /* Virtio caif */
+<<<<<<< HEAD
 #define VIRTIO_ID_TRUSTY_IPC   13 /* virtio trusty ipc */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* _LINUX_VIRTIO_IDS_H */

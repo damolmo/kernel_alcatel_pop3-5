@@ -1136,6 +1136,11 @@ static ssize_t qlcnic_83xx_sysfs_flash_write_handler(struct file *filp,
 		return QL_STATUS_INVALID_PARAM;
 
 	ret = kstrtoul(buf, 16, &data);
+<<<<<<< HEAD
+=======
+	if (ret)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (data) {
 	case QLC_83XX_FLASH_SECTOR_ERASE_CMD:

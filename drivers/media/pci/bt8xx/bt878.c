@@ -425,8 +425,12 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	       bt878_num);
 	if (bt878_num >= BT878_MAX) {
 		printk(KERN_ERR "bt878: Too many devices inserted\n");
+<<<<<<< HEAD
 		result = -ENOMEM;
 		goto fail0;
+=======
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (pci_enable_device(dev))
 		return -EIO;

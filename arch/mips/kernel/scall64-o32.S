@@ -124,7 +124,11 @@ trace_a_syscall:
 	subu	t1, v0,  __NR_O32_Linux
 	move	a1, v0
 	bnez	t1, 1f /* __NR_syscall at offset 0 */
+<<<<<<< HEAD
 	lw	a1, PT_R4(sp) /* Arg1 for __NR_syscall case */
+=======
+	ld	a1, PT_R4(sp) /* Arg1 for __NR_syscall case */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.set	pop
 
 1:	jal	syscall_trace_enter
@@ -358,7 +362,11 @@ EXPORT(sys32_call_table)
 	PTR	compat_sys_writev
 	PTR	sys_cacheflush
 	PTR	sys_cachectl
+<<<<<<< HEAD
 	PTR	sys_sysmips
+=======
+	PTR	__sys_sysmips
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	PTR	sys_ni_syscall			/* 4150 */
 	PTR	sys_getsid
 	PTR	sys_fdatasync
@@ -491,7 +499,11 @@ EXPORT(sys32_call_table)
 	PTR	sys_ni_syscall			/* available, was setaltroot */
 	PTR	sys_add_key			/* 4280 */
 	PTR	sys_request_key
+<<<<<<< HEAD
 	PTR	sys_keyctl
+=======
+	PTR	compat_sys_keyctl
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	PTR	sys_set_thread_area
 	PTR	sys_inotify_init
 	PTR	sys_inotify_add_watch		/* 4285 */

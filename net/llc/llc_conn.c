@@ -55,6 +55,11 @@ int sysctl_llc2_busy_timeout = LLC2_BUSY_TIME * HZ;
  *	(executing it's actions and changing state), upper layer will be
  *	indicated or confirmed, if needed. Returns 0 for success, 1 for
  *	failure. The socket lock has to be held before calling this function.
+<<<<<<< HEAD
+=======
+ *
+ *	This function always consumes a reference to the skb.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 {
@@ -62,12 +67,15 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 	struct llc_sock *llc = llc_sk(skb->sk);
 	struct llc_conn_state_ev *ev = llc_conn_ev(skb);
 
+<<<<<<< HEAD
 	/*
 	 * We have to hold the skb, because llc_conn_service will kfree it in
 	 * the sending path and we need to look at the skb->cb, where we encode
 	 * llc_conn_state_ev.
 	 */
 	skb_get(skb);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ev->ind_prim = ev->cfm_prim = 0;
 	/*
 	 * Send event to state machine
@@ -75,6 +83,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 	rc = llc_conn_service(skb->sk, skb);
 	if (unlikely(rc != 0)) {
 		printk(KERN_ERR "%s: llc_conn_service failed\n", __func__);
+<<<<<<< HEAD
 		goto out_kfree_skb;
 	}
 
@@ -90,6 +99,14 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 
 	switch (ev->ind_prim) {
 	case LLC_DATA_PRIM:
+=======
+		goto out_skb_put;
+	}
+
+	switch (ev->ind_prim) {
+	case LLC_DATA_PRIM:
+		skb_get(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		llc_save_primitive(sk, skb, LLC_DATA_PRIM);
 		if (unlikely(sock_queue_rcv_skb(sk, skb))) {
 			/*
@@ -106,6 +123,10 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 		 * skb->sk pointing to the newly created struct sock in
 		 * llc_conn_handler. -acme
 		 */
+<<<<<<< HEAD
+=======
+		skb_get(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		skb_queue_tail(&sk->sk_receive_queue, skb);
 		sk->sk_state_change(sk);
 		break;
@@ -121,7 +142,10 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 				sk->sk_state_change(sk);
 			}
 		}
+<<<<<<< HEAD
 		kfree_skb(skb);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sock_put(sk);
 		break;
 	case LLC_RESET_PRIM:
@@ -130,6 +154,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 		 * RESET is not being notified to upper layers for now
 		 */
 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
+<<<<<<< HEAD
 		kfree_skb(skb);
 		break;
 	default:
@@ -138,6 +163,13 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 				__func__, ev->ind_prim);
 			kfree_skb(skb);
 		}
+=======
+		break;
+	default:
+		if (ev->ind_prim)
+			printk(KERN_INFO "%s: received unknown %d prim!\n",
+				__func__, ev->ind_prim);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* No indication */
 		break;
 	}
@@ -179,6 +211,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
 		break;
 	default:
+<<<<<<< HEAD
 		if (ev->cfm_prim) {
 			printk(KERN_INFO "%s: received unknown %d prim!\n",
 					__func__, ev->cfm_prim);
@@ -188,6 +221,14 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
 	}
 out_kfree_skb:
 	kfree_skb(skb);
+=======
+		if (ev->cfm_prim)
+			printk(KERN_INFO "%s: received unknown %d prim!\n",
+					__func__, ev->cfm_prim);
+		/* No confirmation */
+		break;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_skb_put:
 	kfree_skb(skb);
 	return rc;
@@ -821,7 +862,14 @@ void llc_conn_handler(struct llc_sap *sap, struct sk_buff *skb)
 		 * another trick required to cope with how the PROCOM state
 		 * machine works. -acme
 		 */
+<<<<<<< HEAD
 		skb->sk = sk;
+=======
+		skb_orphan(skb);
+		sock_hold(sk);
+		skb->sk = sk;
+		skb->destructor = sock_efree;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (!sock_owned_by_user(sk))
 		llc_conn_rcv(sk, skb);
@@ -948,6 +996,29 @@ out:
 	return sk;
 }
 
+<<<<<<< HEAD
+=======
+void llc_sk_stop_all_timers(struct sock *sk, bool sync)
+{
+	struct llc_sock *llc = llc_sk(sk);
+
+	if (sync) {
+		del_timer_sync(&llc->pf_cycle_timer.timer);
+		del_timer_sync(&llc->ack_timer.timer);
+		del_timer_sync(&llc->rej_sent_timer.timer);
+		del_timer_sync(&llc->busy_state_timer.timer);
+	} else {
+		del_timer(&llc->pf_cycle_timer.timer);
+		del_timer(&llc->ack_timer.timer);
+		del_timer(&llc->rej_sent_timer.timer);
+		del_timer(&llc->busy_state_timer.timer);
+	}
+
+	llc->ack_must_be_send = 0;
+	llc->ack_pf = 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	llc_sk_free - Frees a LLC socket
  *	@sk - socket to free
@@ -960,7 +1031,11 @@ void llc_sk_free(struct sock *sk)
 
 	llc->state = LLC_CONN_OUT_OF_SVC;
 	/* Stop all (possibly) running timers */
+<<<<<<< HEAD
 	llc_conn_ac_stop_all_timers(sk, NULL);
+=======
+	llc_sk_stop_all_timers(sk, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef DEBUG_LLC_CONN_ALLOC
 	printk(KERN_INFO "%s: unackq=%d, txq=%d\n", __func__,
 		skb_queue_len(&llc->pdu_unack_q),

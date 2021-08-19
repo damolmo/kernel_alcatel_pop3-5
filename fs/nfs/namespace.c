@@ -30,9 +30,15 @@ int nfs_mountpoint_expiry_timeout = 500 * HZ;
 /*
  * nfs_path - reconstruct the path given an arbitrary dentry
  * @base - used to return pointer to the end of devname part of path
+<<<<<<< HEAD
  * @dentry - pointer to dentry
  * @buffer - result buffer
  * @buflen - length of buffer
+=======
+ * @dentry_in - pointer to dentry
+ * @buffer - result buffer
+ * @buflen_in - length of buffer
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @flags - options (see below)
  *
  * Helper function for constructing the server pathname
@@ -47,15 +53,29 @@ int nfs_mountpoint_expiry_timeout = 500 * HZ;
  *		       the original device (export) name
  *		       (if unset, the original name is returned verbatim)
  */
+<<<<<<< HEAD
 char *nfs_path(char **p, struct dentry *dentry, char *buffer, ssize_t buflen,
 	       unsigned flags)
+=======
+char *nfs_path(char **p, struct dentry *dentry_in, char *buffer,
+	       ssize_t buflen_in, unsigned flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	char *end;
 	int namelen;
 	unsigned seq;
 	const char *base;
+<<<<<<< HEAD
 
 rename_retry:
+=======
+	struct dentry *dentry;
+	ssize_t buflen;
+
+rename_retry:
+	buflen = buflen_in;
+	dentry = dentry_in;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	end = buffer+buflen;
 	*--end = '\0';
 	buflen--;

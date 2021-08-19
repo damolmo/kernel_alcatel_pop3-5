@@ -208,9 +208,12 @@ static int ux500_dma_channel_program(struct dma_channel *channel,
 	BUG_ON(channel->status == MUSB_DMA_STATUS_UNKNOWN ||
 		channel->status == MUSB_DMA_STATUS_BUSY);
 
+<<<<<<< HEAD
 	if (!ux500_dma_is_compatible(channel, packet_sz, (void *)dma_addr, len))
 		return false;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	channel->status = MUSB_DMA_STATUS_BUSY;
 	channel->actual_len = 0;
 	ret = ux500_configure_channel(channel, packet_sz, mode, dma_addr, len);

@@ -452,7 +452,11 @@ static ssize_t set_pwm_enable(struct device *dev, struct device_attribute *da,
 	}
 
 	result = read_u8_from_i2c(client, REG_FAN_CONF1, &conf_reg);
+<<<<<<< HEAD
 	if (result) {
+=======
+	if (result < 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		count = result;
 		goto err;
 	}

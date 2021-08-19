@@ -247,6 +247,11 @@ struct rtl_pci {
 	/* MSI support */
 	bool msi_support;
 	bool using_msi;
+<<<<<<< HEAD
+=======
+	/* interrupt clear before set */
+	bool int_clear;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct mp_adapter {
@@ -273,10 +278,17 @@ struct mp_adapter {
 };
 
 struct rtl_pci_priv {
+<<<<<<< HEAD
 	struct rtl_pci dev;
 	struct mp_adapter ndis_adapter;
 	struct rtl_led_ctl ledctl;
 	struct bt_coexist_info bt_coexist;
+=======
+	struct bt_coexist_info bt_coexist;
+	struct rtl_led_ctl ledctl;
+	struct rtl_pci dev;
+	struct mp_adapter ndis_adapter;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define rtl_pcipriv(hw)		(((struct rtl_pci_priv *)(rtl_priv(hw))->priv))

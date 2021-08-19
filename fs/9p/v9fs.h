@@ -117,6 +117,10 @@ struct v9fs_session_info {
 	struct list_head slist; /* list of sessions registered with v9fs */
 	struct backing_dev_info bdi;
 	struct rw_semaphore rename_sem;
+<<<<<<< HEAD
+=======
+	long session_lock_timeout; /* retry interval for blocking locks */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* cache_validity flags */
@@ -124,7 +128,11 @@ struct v9fs_session_info {
 
 struct v9fs_inode {
 #ifdef CONFIG_9P_FSCACHE
+<<<<<<< HEAD
 	spinlock_t fscache_lock;
+=======
+	struct mutex fscache_lock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct fscache_cookie *fscache;
 #endif
 	struct p9_qid qid;

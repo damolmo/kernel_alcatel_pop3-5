@@ -227,6 +227,13 @@ static enum iommu_init_state init_state = IOMMU_START_STATE;
 static int amd_iommu_enable_interrupts(void);
 static int __init iommu_go_to_state(enum iommu_init_state state);
 
+<<<<<<< HEAD
+=======
+static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+				    u8 bank, u8 cntr, u8 fxn,
+				    u64 *value, bool is_write);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void update_last_devid(u16 devid)
 {
 	if (devid > amd_iommu_last_bdf)
@@ -290,7 +297,11 @@ static void iommu_write_l2(struct amd_iommu *iommu, u8 address, u32 val)
 static void iommu_set_exclusion_range(struct amd_iommu *iommu)
 {
 	u64 start = iommu->exclusion_start & PAGE_MASK;
+<<<<<<< HEAD
 	u64 limit = (start + iommu->exclusion_length) & PAGE_MASK;
+=======
+	u64 limit = (start + iommu->exclusion_length - 1) & PAGE_MASK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u64 entry;
 
 	if (!iommu->exclusion_start)
@@ -355,6 +366,12 @@ static void iommu_enable(struct amd_iommu *iommu)
 
 static void iommu_disable(struct amd_iommu *iommu)
 {
+<<<<<<< HEAD
+=======
+	if (!iommu->mmio_base)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Disable command buffer */
 	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
 
@@ -1066,6 +1083,37 @@ static void amd_iommu_erratum_746_workaround(struct amd_iommu *iommu)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Family15h Model 30h-3fh (IOMMU Mishandles ATS Write Permission)
+ * Workaround:
+ *     BIOS should enable ATS write permission check by setting
+ *     L2_DEBUG_3[AtsIgnoreIWDis](D0F2xF4_x47[0]) = 1b
+ */
+static void amd_iommu_ats_write_check_workaround(struct amd_iommu *iommu)
+{
+	u32 value;
+
+	if ((boot_cpu_data.x86 != 0x15) ||
+	    (boot_cpu_data.x86_model < 0x30) ||
+	    (boot_cpu_data.x86_model > 0x3f))
+		return;
+
+	/* Test L2_DEBUG_3[AtsIgnoreIWDis] == 1 */
+	value = iommu_read_l2(iommu, 0x47);
+
+	if (value & BIT(0))
+		return;
+
+	/* Set L2_DEBUG_3[AtsIgnoreIWDis] = 1 */
+	iommu_write_l2(iommu, 0x47, value | BIT(0));
+
+	pr_info("AMD-Vi: Applying ATS write check workaround for IOMMU at %s\n",
+		dev_name(&iommu->dev->dev));
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * This function clues the initialization function for one IOMMU
  * together and also allocates the command buffer and programs the
  * hardware. It does NOT enable the IOMMU. This is done afterwards.
@@ -1192,8 +1240,13 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
 	amd_iommu_pc_present = true;
 
 	/* Check if the performance counters can be written to */
+<<<<<<< HEAD
 	if ((0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val, true)) ||
 	    (0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val2, false)) ||
+=======
+	if ((0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val, true)) ||
+	    (0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val2, false)) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (val != val2)) {
 		pr_err("AMD-Vi: Unable to write to IOMMU perf counter.\n");
 		amd_iommu_pc_present = false;
@@ -1339,6 +1392,10 @@ static int iommu_init_pci(struct amd_iommu *iommu)
 	}
 
 	amd_iommu_erratum_746_workaround(iommu);
+<<<<<<< HEAD
+=======
+	amd_iommu_ats_write_check_workaround(iommu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	iommu->iommu_dev = iommu_device_create(&iommu->dev->dev, iommu,
 					       amd_iommu_groups, "ivhd%d",
@@ -2363,6 +2420,7 @@ u8 amd_iommu_pc_get_max_counters(u16 devid)
 }
 EXPORT_SYMBOL(amd_iommu_pc_get_max_counters);
 
+<<<<<<< HEAD
 int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
 				    u64 *value, bool is_write)
 {
@@ -2379,6 +2437,17 @@ int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
 
 	/* Check for valid iommu and pc register indexing */
 	if (WARN_ON((iommu == NULL) || (fxn > 0x28) || (fxn & 7)))
+=======
+static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+				    u8 bank, u8 cntr, u8 fxn,
+				    u64 *value, bool is_write)
+{
+	u32 offset;
+	u32 max_offset_lim;
+
+	/* Check for valid iommu and pc register indexing */
+	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENODEV;
 
 	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
@@ -2402,3 +2471,19 @@ int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
 	return 0;
 }
 EXPORT_SYMBOL(amd_iommu_pc_get_set_reg_val);
+<<<<<<< HEAD
+=======
+
+int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
+				    u64 *value, bool is_write)
+{
+	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
+
+	/* Make sure the IOMMU PC resource is available */
+	if (!amd_iommu_pc_present || iommu == NULL)
+		return -ENODEV;
+
+	return iommu_pc_get_set_reg_val(iommu, bank, cntr, fxn,
+					value, is_write);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

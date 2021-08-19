@@ -285,8 +285,15 @@ do {									\
 			break;						\
 									\
 		mutex_unlock(&(ca)->set->bucket_lock);			\
+<<<<<<< HEAD
 		if (kthread_should_stop())				\
 			return 0;					\
+=======
+		if (kthread_should_stop()) {				\
+			set_current_state(TASK_RUNNING);		\
+			return 0;					\
+		}							\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 									\
 		try_to_freeze();					\
 		schedule();						\
@@ -322,10 +329,18 @@ static int bch_allocator_thread(void *arg)
 		 * possibly issue discards to them, then we add the bucket to
 		 * the free list:
 		 */
+<<<<<<< HEAD
 		while (!fifo_empty(&ca->free_inc)) {
 			long bucket;
 
 			fifo_pop(&ca->free_inc, bucket);
+=======
+		while (1) {
+			long bucket;
+
+			if (!fifo_pop(&ca->free_inc, bucket))
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			if (ca->discard) {
 				mutex_unlock(&ca->set->bucket_lock);
@@ -406,7 +421,12 @@ long bch_bucket_alloc(struct cache *ca, unsigned reserve, bool wait)
 
 	finish_wait(&ca->set->bucket_wait, &w);
 out:
+<<<<<<< HEAD
 	wake_up_process(ca->alloc_thread);
+=======
+	if (ca->alloc_thread)
+		wake_up_process(ca->alloc_thread);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	trace_bcache_alloc(ca, reserve);
 
@@ -478,7 +498,11 @@ int __bch_bucket_alloc_set(struct cache_set *c, unsigned reserve,
 		if (b == -1)
 			goto err;
 
+<<<<<<< HEAD
 		k->ptr[i] = PTR(ca->buckets[b].gen,
+=======
+		k->ptr[i] = MAKE_PTR(ca->buckets[b].gen,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				bucket_to_sector(c, b),
 				ca->sb.nr_this_dev);
 
@@ -513,15 +537,31 @@ struct open_bucket {
 
 /*
  * We keep multiple buckets open for writes, and try to segregate different
+<<<<<<< HEAD
  * write streams for better cache utilization: first we look for a bucket where
  * the last write to it was sequential with the current write, and failing that
  * we look for a bucket that was last used by the same task.
+=======
+ * write streams for better cache utilization: first we try to segregate flash
+ * only volume write streams from cached devices, secondly we look for a bucket
+ * where the last write to it was sequential with the current write, and
+ * failing that we look for a bucket that was last used by the same task.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * The ideas is if you've got multiple tasks pulling data into the cache at the
  * same time, you'll get better cache utilization if you try to segregate their
  * data and preserve locality.
  *
+<<<<<<< HEAD
  * For example, say you've starting Firefox at the same time you're copying a
+=======
+ * For example, dirty sectors of flash only volume is not reclaimable, if their
+ * dirty sectors mixed with dirty sectors of cached device, such buckets will
+ * be marked as dirty and won't be reclaimed, though the dirty data of cached
+ * device have been written back to backend device.
+ *
+ * And say you've starting Firefox at the same time you're copying a
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * bunch of files. Firefox will likely end up being fairly hot and stay in the
  * cache awhile, but the data you copied might not be; if you wrote all that
  * data to the same buckets it'd get invalidated at the same time.
@@ -538,7 +578,14 @@ static struct open_bucket *pick_data_bucket(struct cache_set *c,
 	struct open_bucket *ret, *ret_task = NULL;
 
 	list_for_each_entry_reverse(ret, &c->data_buckets, list)
+<<<<<<< HEAD
 		if (!bkey_cmp(&ret->key, search))
+=======
+		if (UUID_FLASH_ONLY(&c->uuids[KEY_INODE(&ret->key)]) !=
+		    UUID_FLASH_ONLY(&c->uuids[KEY_INODE(search)]))
+			continue;
+		else if (!bkey_cmp(&ret->key, search))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto found;
 		else if (ret->last_write_point == write_point)
 			ret_task = ret;

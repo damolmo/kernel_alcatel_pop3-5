@@ -875,6 +875,13 @@ static int usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	int ret, pipe, i;
 
 	interface = intf->cur_altsetting;
+<<<<<<< HEAD
+=======
+
+	if (interface->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	endpoint = &interface->endpoint[0].desc;
 	if (!usb_endpoint_is_int_in(endpoint))
 		return -ENODEV;

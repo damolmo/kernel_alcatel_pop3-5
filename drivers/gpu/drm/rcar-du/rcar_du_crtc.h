@@ -43,8 +43,11 @@ struct rcar_du_crtc {
 
 int rcar_du_crtc_create(struct rcar_du_group *rgrp, unsigned int index);
 void rcar_du_crtc_enable_vblank(struct rcar_du_crtc *rcrtc, bool enable);
+<<<<<<< HEAD
 void rcar_du_crtc_cancel_page_flip(struct rcar_du_crtc *rcrtc,
 				   struct drm_file *file);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void rcar_du_crtc_suspend(struct rcar_du_crtc *rcrtc);
 void rcar_du_crtc_resume(struct rcar_du_crtc *rcrtc);
 

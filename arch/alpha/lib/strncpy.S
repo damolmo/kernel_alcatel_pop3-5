@@ -10,7 +10,11 @@
  * version has cropped that bit o' nastiness as well as assuming that
  * __stxncpy is in range of a branch.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.set noat
 	.set noreorder
 
@@ -79,3 +83,7 @@ $zerolen:
 	ret
 
 	.end	strncpy
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strncpy)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

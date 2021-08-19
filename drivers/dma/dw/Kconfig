@@ -8,6 +8,10 @@ config DW_DMAC_CORE
 
 config DW_DMAC
 	tristate "Synopsys DesignWare AHB DMA platform driver"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOMEM
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select DW_DMAC_CORE
 	select DW_DMAC_BIG_ENDIAN_IO if AVR32
 	default y if CPU_AT32AP7000
@@ -18,6 +22,10 @@ config DW_DMAC
 config DW_DMAC_PCI
 	tristate "Synopsys DesignWare AHB DMA PCI driver"
 	depends on PCI
+<<<<<<< HEAD
+=======
+	depends on HAS_IOMEM
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select DW_DMAC_CORE
 	help
 	  Support the Synopsys DesignWare AHB DMA controller on the

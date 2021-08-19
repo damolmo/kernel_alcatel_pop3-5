@@ -490,9 +490,22 @@ static void __gre_tunnel_init(struct net_device *dev)
 	dev->hw_features	|= GRE_FEATURES;
 
 	if (!(tunnel->parms.o_flags & TUNNEL_SEQ)) {
+<<<<<<< HEAD
 		/* TCP offload with GRE SEQ is not supported. */
 		dev->features    |= NETIF_F_GSO_SOFTWARE;
 		dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+=======
+		/* TCP offload with GRE SEQ is not supported, nor
+		 * can we support 2 levels of outer headers requiring
+		 * an update.
+		 */
+		if (!(tunnel->parms.o_flags & TUNNEL_CSUM) ||
+		    (tunnel->encap.type == TUNNEL_ENCAP_NONE)) {
+			dev->features    |= NETIF_F_GSO_SOFTWARE;
+			dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Can use a lockless transmit, unless we generate
 		 * output sequences
 		 */

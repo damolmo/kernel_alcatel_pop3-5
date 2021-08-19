@@ -166,3 +166,11 @@ int ux500_pcm_unregister_platform(struct platform_device *pdev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(ux500_pcm_unregister_platform);
+<<<<<<< HEAD
+=======
+
+MODULE_AUTHOR("Ola Lilja");
+MODULE_AUTHOR("Roger Nilsson");
+MODULE_DESCRIPTION("ASoC UX500 driver");
+MODULE_LICENSE("GPL v2");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

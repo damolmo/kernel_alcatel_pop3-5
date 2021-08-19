@@ -30,6 +30,10 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 
+<<<<<<< HEAD
+=======
+#define CREATE_TRACE_POINTS
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <trace/events/mmc.h>
 
 #include <linux/mmc/card.h>
@@ -37,10 +41,14 @@
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sd.h>
 #include <linux/mmc/slot-gpio.h>
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #include <linux/workqueue.h>
 #endif
 #include <linux/blkdev.h>
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "core.h"
 #include "bus.h"
 #include "host.h"
@@ -50,6 +58,14 @@
 #include "sd_ops.h"
 #include "sdio_ops.h"
 
+<<<<<<< HEAD
+=======
+EXPORT_TRACEPOINT_SYMBOL_GPL(mmc_blk_erase_start);
+EXPORT_TRACEPOINT_SYMBOL_GPL(mmc_blk_erase_end);
+EXPORT_TRACEPOINT_SYMBOL_GPL(mmc_blk_rw_start);
+EXPORT_TRACEPOINT_SYMBOL_GPL(mmc_blk_rw_end);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* If the device is not responding */
 #define MMC_CORE_TIMEOUT_MS	(10 * 60 * 1000) /* 10 minute timeout */
 
@@ -69,6 +85,7 @@ static const unsigned freqs[] = { 400000, 300000, 200000, 100000 };
  */
 bool use_spi_crc = 1;
 module_param(use_spi_crc, bool, 0);
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #define MMC_UPDATE_BKOPS_STATS_HPI(stats)\
 	do {\
@@ -88,6 +105,9 @@ module_param(use_spi_crc, bool, 0);
 		spin_unlock(&stats.lock);\
 	} while (0)
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Internal function. Schedule delayed work in the MMC work queue.
  */
@@ -181,6 +201,23 @@ void mmc_request_done(struct mmc_host *host, struct mmc_request *mrq)
 			pr_debug("%s:     %d bytes transferred: %d\n",
 				mmc_hostname(host),
 				mrq->data->bytes_xfered, mrq->data->error);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLOCK
+			if (mrq->lat_hist_enabled) {
+				ktime_t completion;
+				u_int64_t delta_us;
+
+				completion = ktime_get();
+				delta_us = ktime_us_delta(completion,
+							  mrq->io_start);
+				blk_update_latency_hist(
+					(mrq->data->flags & MMC_DATA_READ) ?
+					&host->io_lat_read :
+					&host->io_lat_write, delta_us);
+			}
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			trace_mmc_blk_rw_end(cmd->opcode, cmd->arg, mrq->data);
 		}
 
@@ -264,6 +301,7 @@ mmc_start_request(struct mmc_host *host, struct mmc_request *mrq)
 	led_trigger_event(host->led, LED_FULL);
 	host->ops->request(host, mrq);
 }
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 void mmc_blk_init_bkops_statistics(struct mmc_card *card)
 {
@@ -287,6 +325,8 @@ void mmc_blk_init_bkops_statistics(struct mmc_card *card)
 	spin_unlock(&bkops_stats->lock);
 }
 EXPORT_SYMBOL(mmc_blk_init_bkops_statistics);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  *	mmc_start_bkops - start BKOPS for supported cards
@@ -301,6 +341,7 @@ EXPORT_SYMBOL(mmc_blk_init_bkops_statistics);
 void mmc_start_bkops(struct mmc_card *card, bool from_exception)
 {
 	int err;
+<<<<<<< HEAD
 
 	BUG_ON(!card);
 	if (!card->ext_csd.bkops_en)
@@ -446,6 +487,8 @@ EXPORT_SYMBOL(mmc_start_delayed_bkops);
 void mmc_start_bkops(struct mmc_card *card, bool from_exception)
 {
 	int err;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int timeout;
 	bool use_busy_signal;
 
@@ -497,7 +540,11 @@ out:
 	mmc_release_host(card->host);
 }
 EXPORT_SYMBOL(mmc_start_bkops);
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * mmc_wait_data_done() - done callback for data request
  * @mrq: done data request
@@ -506,8 +553,15 @@ EXPORT_SYMBOL(mmc_start_bkops);
  */
 static void mmc_wait_data_done(struct mmc_request *mrq)
 {
+<<<<<<< HEAD
 	mrq->host->context_info.is_done_rcv = true;
 	wake_up_interruptible(&mrq->host->context_info.wait);
+=======
+	struct mmc_context_info *context_info = &mrq->host->context_info;
+
+	context_info->is_done_rcv = true;
+	wake_up_interruptible(&context_info->wait);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void mmc_wait_done(struct mmc_request *mrq)
@@ -707,10 +761,13 @@ struct mmc_async_req *mmc_start_req(struct mmc_host *host,
 {
 	int err = 0;
 	int start_err = 0;
+<<<<<<< HEAD
 #if defined(FEATURE_STORAGE_PERF_INDEX)
 	unsigned long long time1 = 0;
 	unsigned int idx = 0;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mmc_async_req *data = host->areq;
 
 	/* Prepare a new request */
@@ -727,6 +784,7 @@ struct mmc_async_req *mmc_start_req(struct mmc_host *host,
 			 * nothing to return
 			 */
 			return NULL;
+<<<<<<< HEAD
 		} else {
 #if defined(FEATURE_STORAGE_PERF_INDEX)
 			time1 = sched_clock();
@@ -754,6 +812,8 @@ struct mmc_async_req *mmc_start_req(struct mmc_host *host,
 				start_async_req[idx] = 0;
 			}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		/*
 		 * Check BKOPS urgency for each R1 response
@@ -766,15 +826,28 @@ struct mmc_async_req *mmc_start_req(struct mmc_host *host,
 	}
 
 	if (!err && areq) {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLOCK
+		if (host->latency_hist_enabled) {
+			areq->mrq->io_start = ktime_get();
+			areq->mrq->lat_hist_enabled = 1;
+		} else
+			areq->mrq->lat_hist_enabled = 0;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		trace_mmc_blk_rw_start(areq->mrq->cmd->opcode,
 				       areq->mrq->cmd->arg,
 				       areq->mrq->data);
 		start_err = __mmc_start_data_req(host, areq->mrq);
+<<<<<<< HEAD
 #if defined(FEATURE_STORAGE_PERF_INDEX)
 		start_async_req[idx] = 1;
 		start_async_req_time[idx] = sched_clock();
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (host->areq)
@@ -921,6 +994,7 @@ int mmc_stop_bkops(struct mmc_card *card)
 	int err = 0;
 
 	BUG_ON(!card);
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	/*
 	 * Notify the delayed work to be cancelled, in case it was already
@@ -932,6 +1006,8 @@ int mmc_stop_bkops(struct mmc_card *card)
 	if (!mmc_card_doing_bkops(card))
 		goto out;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = mmc_interrupt_hpi(card);
 
 	/*
@@ -942,9 +1018,13 @@ int mmc_stop_bkops(struct mmc_card *card)
 		mmc_card_clr_doing_bkops(card);
 		err = 0;
 	}
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	MMC_UPDATE_BKOPS_STATS_HPI(card->bkops_info.bkops_stats);
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 EXPORT_SYMBOL(mmc_stop_bkops);
@@ -1054,11 +1134,19 @@ void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card)
 	/*
 	 * Some cards require longer data read timeout than indicated in CSD.
 	 * Address this by setting the read timeout to a "reasonably high"
+<<<<<<< HEAD
 	 * value. For the cards tested, 300ms has proven enough. If necessary,
 	 * this value can be increased if other problematic cards require this.
 	 */
 	if (mmc_card_long_read_time(card) && data->flags & MMC_DATA_READ) {
 		data->timeout_ns = 300000000;
+=======
+	 * value. For the cards tested, 600ms has proven enough. If necessary,
+	 * this value can be increased if other problematic cards require this.
+	 */
+	if (mmc_card_long_read_time(card) && data->flags & MMC_DATA_READ) {
+		data->timeout_ns = 600000000;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		data->timeout_clks = 0;
 	}
 
@@ -1216,7 +1304,11 @@ static inline void mmc_set_ios(struct mmc_host *host)
 		"width %u timing %u\n",
 		 mmc_hostname(host), ios->clock, ios->bus_mode,
 		 ios->power_mode, ios->chip_select, ios->vdd,
+<<<<<<< HEAD
 		 ios->bus_width, ios->timing);
+=======
+		 1 << ios->bus_width, ios->timing);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ios->clock > 0)
 		mmc_set_ungated(host);
@@ -1311,6 +1403,33 @@ void mmc_set_ungated(struct mmc_host *host)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+int mmc_execute_tuning(struct mmc_card *card)
+{
+	struct mmc_host *host = card->host;
+	u32 opcode;
+	int err;
+
+	if (!host->ops->execute_tuning)
+		return 0;
+
+	if (mmc_card_mmc(card))
+		opcode = MMC_SEND_TUNING_BLOCK_HS200;
+	else
+		opcode = MMC_SEND_TUNING_BLOCK;
+
+	mmc_host_clk_hold(host);
+	err = host->ops->execute_tuning(host, opcode);
+	mmc_host_clk_release(host);
+
+	if (err)
+		pr_err("%s: tuning execution failed\n", mmc_hostname(host));
+
+	return err;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Change the bus mode (open drain/push-pull) of a host.
  */
@@ -1333,6 +1452,7 @@ void mmc_set_bus_width(struct mmc_host *host, unsigned int width)
 	mmc_host_clk_release(host);
 }
 
+<<<<<<< HEAD
 /*
  * Set initial state after a power cycle or a hw_reset.
  */
@@ -1349,6 +1469,8 @@ void mmc_set_initial_state(struct mmc_host *host)
 	mmc_set_ios(host);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * mmc_vdd_to_ocrbitnum - Convert a voltage to the OCR bit number
  * @vdd:	voltage (mV)
@@ -1440,8 +1562,17 @@ int mmc_of_parse_voltage(struct device_node *np, u32 *mask)
 
 	voltage_ranges = of_get_property(np, "voltage-ranges", &num_ranges);
 	num_ranges = num_ranges / sizeof(*voltage_ranges) / 2;
+<<<<<<< HEAD
 	if (!voltage_ranges || !num_ranges) {
 		pr_info("%s: voltage-ranges unspecified\n", np->full_name);
+=======
+	if (!voltage_ranges) {
+		pr_debug("%s: voltage-ranges unspecified\n", np->full_name);
+		return -EINVAL;
+	}
+	if (!num_ranges) {
+		pr_err("%s: voltage-ranges empty\n", np->full_name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 	}
 
@@ -1466,6 +1597,37 @@ EXPORT_SYMBOL(mmc_of_parse_voltage);
 
 #endif /* CONFIG_OF */
 
+<<<<<<< HEAD
+=======
+static int mmc_of_get_func_num(struct device_node *node)
+{
+	u32 reg;
+	int ret;
+
+	ret = of_property_read_u32(node, "reg", &reg);
+	if (ret < 0)
+		return ret;
+
+	return reg;
+}
+
+struct device_node *mmc_of_find_child_device(struct mmc_host *host,
+		unsigned func_num)
+{
+	struct device_node *node;
+
+	if (!host->parent || !host->parent->of_node)
+		return NULL;
+
+	for_each_child_of_node(host->parent->of_node, node) {
+		if (mmc_of_get_func_num(node) == func_num)
+			return node;
+	}
+
+	return NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_REGULATOR
 
 /**
@@ -1687,7 +1849,11 @@ int mmc_set_signal_voltage(struct mmc_host *host, int signal_voltage, u32 ocr)
 
 	err = mmc_wait_for_cmd(host, &cmd, 0);
 	if (err)
+<<<<<<< HEAD
 		return err;
+=======
+		goto power_cycle;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!mmc_host_is_spi(host) && (cmd.resp[0] & R1_ERROR))
 		return -EIO;
@@ -1787,9 +1953,21 @@ void mmc_power_up(struct mmc_host *host, u32 ocr)
 	mmc_host_clk_hold(host);
 
 	host->ios.vdd = fls(ocr) - 1;
+<<<<<<< HEAD
 	host->ios.power_mode = MMC_POWER_UP;
 	/* Set initial state and call mmc_set_ios */
 	mmc_set_initial_state(host);
+=======
+	if (mmc_host_is_spi(host))
+		host->ios.chip_select = MMC_CS_HIGH;
+	else
+		host->ios.chip_select = MMC_CS_DONTCARE;
+	host->ios.bus_mode = MMC_BUSMODE_PUSHPULL;
+	host->ios.power_mode = MMC_POWER_UP;
+	host->ios.bus_width = MMC_BUS_WIDTH_1;
+	host->ios.timing = MMC_TIMING_LEGACY;
+	mmc_set_ios(host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Try to set signal voltage to 3.3V but fall back to 1.8v or 1.2v */
 	if (__mmc_set_signal_voltage(host, MMC_SIGNAL_VOLTAGE_330) == 0)
@@ -1829,9 +2007,20 @@ void mmc_power_off(struct mmc_host *host)
 	host->ios.clock = 0;
 	host->ios.vdd = 0;
 
+<<<<<<< HEAD
 	host->ios.power_mode = MMC_POWER_OFF;
 	/* Set initial state and call mmc_set_ios */
 	mmc_set_initial_state(host);
+=======
+	if (!mmc_host_is_spi(host)) {
+		host->ios.bus_mode = MMC_BUSMODE_OPENDRAIN;
+		host->ios.chip_select = MMC_CS_DONTCARE;
+	}
+	host->ios.power_mode = MMC_POWER_OFF;
+	host->ios.bus_width = MMC_BUS_WIDTH_1;
+	host->ios.timing = MMC_TIMING_LEGACY;
+	mmc_set_ios(host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Some configurations, such as the 802.11 SDIO card in the OLPC
@@ -2025,7 +2214,11 @@ void mmc_init_erase(struct mmc_card *card)
 }
 
 static unsigned int mmc_mmc_erase_timeout(struct mmc_card *card,
+<<<<<<< HEAD
 				          unsigned int arg, unsigned int qty)
+=======
+					  unsigned int arg, unsigned int qty)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned int erase_timeout;
 
@@ -2483,6 +2676,7 @@ static void mmc_hw_reset_for_init(struct mmc_host *host)
 	mmc_host_clk_release(host);
 }
 
+<<<<<<< HEAD
 int mmc_hw_reset(struct mmc_host *host)
 {
 	int ret;
@@ -2505,6 +2699,83 @@ int mmc_hw_reset(struct mmc_host *host)
 }
 EXPORT_SYMBOL(mmc_hw_reset);
 
+=======
+int mmc_can_reset(struct mmc_card *card)
+{
+	u8 rst_n_function;
+
+	if (!mmc_card_mmc(card))
+		return 0;
+	rst_n_function = card->ext_csd.rst_n_function;
+	if ((rst_n_function & EXT_CSD_RST_N_EN_MASK) != EXT_CSD_RST_N_ENABLED)
+		return 0;
+	return 1;
+}
+EXPORT_SYMBOL(mmc_can_reset);
+
+static int mmc_do_hw_reset(struct mmc_host *host, int check)
+{
+	struct mmc_card *card = host->card;
+
+	if (!(host->caps & MMC_CAP_HW_RESET) || !host->ops->hw_reset)
+		return -EOPNOTSUPP;
+
+	if (!card)
+		return -EINVAL;
+
+	if (!mmc_can_reset(card))
+		return -EOPNOTSUPP;
+
+	mmc_host_clk_hold(host);
+	mmc_set_clock(host, host->f_init);
+
+	host->ops->hw_reset(host);
+
+	/* If the reset has happened, then a status command will fail */
+	if (check) {
+		struct mmc_command cmd = {0};
+		int err;
+
+		cmd.opcode = MMC_SEND_STATUS;
+		if (!mmc_host_is_spi(card->host))
+			cmd.arg = card->rca << 16;
+		cmd.flags = MMC_RSP_SPI_R2 | MMC_RSP_R1 | MMC_CMD_AC;
+		err = mmc_wait_for_cmd(card->host, &cmd, 0);
+		if (!err) {
+			mmc_host_clk_release(host);
+			return -ENOSYS;
+		}
+	}
+
+	if (mmc_host_is_spi(host)) {
+		host->ios.chip_select = MMC_CS_HIGH;
+		host->ios.bus_mode = MMC_BUSMODE_PUSHPULL;
+	} else {
+		host->ios.chip_select = MMC_CS_DONTCARE;
+		host->ios.bus_mode = MMC_BUSMODE_OPENDRAIN;
+	}
+	host->ios.bus_width = MMC_BUS_WIDTH_1;
+	host->ios.timing = MMC_TIMING_LEGACY;
+	mmc_set_ios(host);
+
+	mmc_host_clk_release(host);
+
+	return host->bus_ops->power_restore(host);
+}
+
+int mmc_hw_reset(struct mmc_host *host)
+{
+	return mmc_do_hw_reset(host, 0);
+}
+EXPORT_SYMBOL(mmc_hw_reset);
+
+int mmc_hw_reset_check(struct mmc_host *host)
+{
+	return mmc_do_hw_reset(host, 1);
+}
+EXPORT_SYMBOL(mmc_hw_reset_check);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int mmc_rescan_try_freq(struct mmc_host *host, unsigned freq)
 {
 	host->f_init = freq;
@@ -2820,6 +3091,7 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 	case PM_HIBERNATION_PREPARE:
 	case PM_SUSPEND_PREPARE:
 	case PM_RESTORE_PREPARE:
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 		if (host->card && mmc_card_mmc(host->card)) {
 			mmc_claim_host(host);
@@ -2831,6 +3103,8 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 			}
 		}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock_irqsave(&host->lock, flags);
 		host->rescan_disable = 1;
 		spin_unlock_irqrestore(&host->lock, flags);
@@ -2845,6 +3119,17 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 		if (!err)
 			break;
 
+<<<<<<< HEAD
+=======
+		if (!mmc_card_is_removable(host)) {
+			dev_warn(mmc_dev(host),
+				 "pre_suspend failed for non-removable host: "
+				 "%d\n", err);
+			/* Avoid removing non-removable hosts */
+			break;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Calling bus_ops->remove() with a claimed host can deadlock */
 		host->bus_ops->remove(host);
 		mmc_claim_host(host);
@@ -2910,7 +3195,10 @@ static int __init mmc_init(void)
 	if (!workqueue)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = mmc_register_bus();
 	if (ret)
 		goto destroy_workqueue;
@@ -2943,6 +3231,66 @@ static void __exit mmc_exit(void)
 	destroy_workqueue(workqueue);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLOCK
+static ssize_t
+latency_hist_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	struct mmc_host *host = cls_dev_to_mmc_host(dev);
+	size_t written_bytes;
+
+	written_bytes = blk_latency_hist_show("Read", &host->io_lat_read,
+			buf, PAGE_SIZE);
+	written_bytes += blk_latency_hist_show("Write", &host->io_lat_write,
+			buf + written_bytes, PAGE_SIZE - written_bytes);
+
+	return written_bytes;
+}
+
+/*
+ * Values permitted 0, 1, 2.
+ * 0 -> Disable IO latency histograms (default)
+ * 1 -> Enable IO latency histograms
+ * 2 -> Zero out IO latency histograms
+ */
+static ssize_t
+latency_hist_store(struct device *dev, struct device_attribute *attr,
+		   const char *buf, size_t count)
+{
+	struct mmc_host *host = cls_dev_to_mmc_host(dev);
+	long value;
+
+	if (kstrtol(buf, 0, &value))
+		return -EINVAL;
+	if (value == BLK_IO_LAT_HIST_ZERO) {
+		memset(&host->io_lat_read, 0, sizeof(host->io_lat_read));
+		memset(&host->io_lat_write, 0, sizeof(host->io_lat_write));
+	} else if (value == BLK_IO_LAT_HIST_ENABLE ||
+		 value == BLK_IO_LAT_HIST_DISABLE)
+		host->latency_hist_enabled = value;
+	return count;
+}
+
+static DEVICE_ATTR(latency_hist, S_IRUGO | S_IWUSR,
+		   latency_hist_show, latency_hist_store);
+
+void
+mmc_latency_hist_sysfs_init(struct mmc_host *host)
+{
+	if (device_create_file(&host->class_dev, &dev_attr_latency_hist))
+		dev_err(&host->class_dev,
+			"Failed to create latency_hist sysfs entry\n");
+}
+
+void
+mmc_latency_hist_sysfs_exit(struct mmc_host *host)
+{
+	device_remove_file(&host->class_dev, &dev_attr_latency_hist);
+}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 subsys_initcall(mmc_init);
 module_exit(mmc_exit);
 

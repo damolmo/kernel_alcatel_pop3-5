@@ -25,7 +25,10 @@
 #define DRM_FLIP_WORK_H
 
 #include <linux/kfifo.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/workqueue.h>
 
 /**
@@ -33,9 +36,15 @@
  *
  * Util to queue up work to run from work-queue context after flip/vblank.
  * Typically this can be used to defer unref of framebuffer's, cursor
+<<<<<<< HEAD
  * bo's, etc until after vblank.  The APIs are all thread-safe.
  * Moreover, drm_flip_work_queue_task and drm_flip_work_queue can be called
  * in atomic context.
+=======
+ * bo's, etc until after vblank.  The APIs are all safe (and lockless)
+ * for up to one producer and once consumer at a time.  The single-consumer
+ * aspect is ensured by committing the queued work to a single work-queue.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 
 struct drm_flip_work;
@@ -52,6 +61,7 @@ struct drm_flip_work;
 typedef void (*drm_flip_func_t)(struct drm_flip_work *work, void *val);
 
 /**
+<<<<<<< HEAD
  * struct drm_flip_task - flip work task
  * @node: list entry element
  * @data: data to pass to work->func
@@ -86,6 +96,28 @@ void drm_flip_work_queue(struct drm_flip_work *work, void *val);
 void drm_flip_work_commit(struct drm_flip_work *work,
 		struct workqueue_struct *wq);
 void drm_flip_work_init(struct drm_flip_work *work,
+=======
+ * struct drm_flip_work - flip work queue
+ * @name: debug name
+ * @pending: number of queued but not committed items
+ * @count: number of committed items
+ * @func: callback fxn called for each committed item
+ * @worker: worker which calls @func
+ * @fifo: queue of committed items
+ */
+struct drm_flip_work {
+	const char *name;
+	atomic_t pending, count;
+	drm_flip_func_t func;
+	struct work_struct worker;
+	DECLARE_KFIFO_PTR(fifo, void *);
+};
+
+void drm_flip_work_queue(struct drm_flip_work *work, void *val);
+void drm_flip_work_commit(struct drm_flip_work *work,
+		struct workqueue_struct *wq);
+int drm_flip_work_init(struct drm_flip_work *work, int size,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		const char *name, drm_flip_func_t func);
 void drm_flip_work_cleanup(struct drm_flip_work *work);
 

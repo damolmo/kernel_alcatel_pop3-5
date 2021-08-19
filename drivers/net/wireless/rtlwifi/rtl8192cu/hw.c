@@ -1603,6 +1603,11 @@ bool usb_cmd_send_packet(struct ieee80211_hw *hw, struct sk_buff *skb)
    * This is maybe necessary:
    * rtlpriv->cfg->ops->fill_tx_cmddesc(hw, buffer, 1, 1, skb);
    */
+<<<<<<< HEAD
+=======
+	dev_kfree_skb(skb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return true;
 }
 

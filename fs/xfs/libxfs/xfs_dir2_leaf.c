@@ -244,11 +244,19 @@ xfs_dir3_leafn_write_verify(
 }
 
 const struct xfs_buf_ops xfs_dir3_leaf1_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_dir3_leaf1",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_dir3_leaf1_read_verify,
 	.verify_write = xfs_dir3_leaf1_write_verify,
 };
 
 const struct xfs_buf_ops xfs_dir3_leafn_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_dir3_leafn",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_dir3_leafn_read_verify,
 	.verify_write = xfs_dir3_leafn_write_verify,
 };

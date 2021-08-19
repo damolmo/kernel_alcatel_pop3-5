@@ -37,6 +37,7 @@
 
 #define MTD_FAIL_ADDR_UNKNOWN -1LL
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_MTD_NAND
 #ifndef CONFIG_MTD_DEBUG
 #define CONFIG_MTD_DEBUG 1
@@ -52,6 +53,8 @@
 #define CONFIG_MTK_NSS_CACHEV_MAX_CNT (4)
 
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * If the erase fails, fail_addr might indicate exactly which block failed. If
  * fail_addr = MTD_FAIL_ADDR_UNKNOWN, the failure was not at the device level
@@ -411,9 +414,12 @@ void *mtd_kmalloc_up_to(const struct mtd_info *mtd, size_t *size);
 
 void mtd_erase_callback(struct erase_info *instr);
 
+<<<<<<< HEAD
 extern void nand_release_device(struct mtd_info *mtd);
 extern int nand_get_device(struct mtd_info *mtd, int new_state);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int mtd_is_bitflip(int err) {
 	return err == -EUCLEAN;
 }

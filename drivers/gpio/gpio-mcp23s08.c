@@ -444,7 +444,11 @@ static int mcp23s08_irq_reqres(struct irq_data *data)
 {
 	struct mcp23s08 *mcp = irq_data_get_irq_chip_data(data);
 
+<<<<<<< HEAD
 	if (gpio_lock_as_irq(&mcp->chip, data->hwirq)) {
+=======
+	if (gpiochip_lock_as_irq(&mcp->chip, data->hwirq)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(mcp->chip.dev,
 			"unable to lock HW IRQ %lu for IRQ usage\n",
 			data->hwirq);
@@ -458,7 +462,11 @@ static void mcp23s08_irq_relres(struct irq_data *data)
 {
 	struct mcp23s08 *mcp = irq_data_get_irq_chip_data(data);
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&mcp->chip, data->hwirq);
+=======
+	gpiochip_unlock_as_irq(&mcp->chip, data->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct irq_chip mcp23s08_irq_chip = {

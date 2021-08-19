@@ -1994,6 +1994,10 @@ static struct scsi_host_template mptsas_driver_template = {
 	.cmd_per_lun			= 7,
 	.use_clustering			= ENABLE_CLUSTERING,
 	.shost_attrs			= mptscsih_host_attrs,
+<<<<<<< HEAD
+=======
+	.no_write_same			= 1,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static int mptsas_get_linkerrors(struct sas_phy *phy)

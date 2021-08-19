@@ -176,7 +176,11 @@ static inline void reg_copy(FPU_REG const *x, FPU_REG *y)
 #define setexponentpos(x,y) { (*(short *)&((x)->exp)) = \
   ((y) + EXTENDED_Ebias) & 0x7fff; }
 #define exponent16(x)         (*(short *)&((x)->exp))
+<<<<<<< HEAD
 #define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (y); }
+=======
+#define setexponent16(x,y)  { (*(short *)&((x)->exp)) = (u16)(y); }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define addexponent(x,y)    { (*(short *)&((x)->exp)) += (y); }
 #define stdexp(x)           { (*(short *)&((x)->exp)) += EXTENDED_Ebias; }
 

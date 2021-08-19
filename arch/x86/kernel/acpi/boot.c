@@ -308,6 +308,7 @@ acpi_parse_lapic_nmi(struct acpi_subtable_header * header, const unsigned long e
 #ifdef CONFIG_X86_IO_APIC
 #define MP_ISA_BUS		0
 
+<<<<<<< HEAD
 static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
 					  u32 gsi)
 {
@@ -322,6 +323,21 @@ static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
 	if (ioapic < 0)
 		return;
 	pin = mp_find_ioapic_pin(ioapic, gsi);
+=======
+static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
+						u8 trigger, u32 gsi);
+
+static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
+					  u32 gsi)
+{
+	/*
+	 * Check bus_irq boundary.
+	 */
+	if (bus_irq >= NR_IRQS_LEGACY) {
+		pr_warn("Invalid bus_irq %u for legacy override\n", bus_irq);
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * TBD: This check is for faulty timer entries, where the override
@@ -331,6 +347,7 @@ static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
 	if ((bus_irq == 0) && (trigger == 3))
 		trigger = 1;
 
+<<<<<<< HEAD
 	mp_irq.type = MP_INTSRC;
 	mp_irq.irqtype = mp_INT;
 	mp_irq.irqflag = (trigger << 2) | polarity;
@@ -341,6 +358,10 @@ static void __init mp_override_legacy_irq(u8 bus_irq, u8 polarity, u8 trigger,
 
 	mp_save_irq(&mp_irq);
 
+=======
+	if (mp_register_ioapic_irq(bus_irq, polarity, trigger, gsi) < 0)
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Reset default identity mapping if gsi is also an legacy IRQ,
 	 * otherwise there will be more than one entry with the same GSI
@@ -437,6 +458,37 @@ static struct irq_domain_ops acpi_irqdomain_ops = {
 	.unmap = mp_irqdomain_unmap,
 };
 
+<<<<<<< HEAD
+=======
+static int __init mp_register_ioapic_irq(u8 bus_irq, u8 polarity,
+						u8 trigger, u32 gsi)
+{
+	struct mpc_intsrc mp_irq;
+	int ioapic, pin;
+
+	/* Convert 'gsi' to 'ioapic.pin'(INTIN#) */
+	ioapic = mp_find_ioapic(gsi);
+	if (ioapic < 0) {
+		pr_warn("Failed to find ioapic for gsi : %u\n", gsi);
+		return ioapic;
+	}
+
+	pin = mp_find_ioapic_pin(ioapic, gsi);
+
+	mp_irq.type = MP_INTSRC;
+	mp_irq.irqtype = mp_INT;
+	mp_irq.irqflag = (trigger << 2) | polarity;
+	mp_irq.srcbus = MP_ISA_BUS;
+	mp_irq.srcbusirq = bus_irq;
+	mp_irq.dstapic = mpc_ioapic_id(ioapic);
+	mp_irq.dstirq = pin;
+
+	mp_save_irq(&mp_irq);
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __init
 acpi_parse_ioapic(struct acpi_subtable_header * header, const unsigned long end)
 {
@@ -481,7 +533,14 @@ static void __init acpi_sci_ioapic_setup(u8 bus_irq, u16 polarity, u16 trigger, 
 	if (acpi_sci_flags & ACPI_MADT_POLARITY_MASK)
 		polarity = acpi_sci_flags & ACPI_MADT_POLARITY_MASK;
 
+<<<<<<< HEAD
 	mp_override_legacy_irq(bus_irq, polarity, trigger, gsi);
+=======
+	if (bus_irq < NR_IRQS_LEGACY)
+		mp_override_legacy_irq(bus_irq, polarity, trigger, gsi);
+	else
+		mp_register_ioapic_irq(bus_irq, polarity, trigger, gsi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * stash over-ride to indicate we've been here
@@ -1621,7 +1680,11 @@ int __acpi_acquire_global_lock(unsigned int *lock)
 		new = (((old & ~0x3) + 2) + ((old >> 1) & 0x1));
 		val = cmpxchg(lock, old, new);
 	} while (unlikely (val != old));
+<<<<<<< HEAD
 	return (new < 3) ? -1 : 0;
+=======
+	return ((new & 0x3) < 3) ? -1 : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int __acpi_release_global_lock(unsigned int *lock)

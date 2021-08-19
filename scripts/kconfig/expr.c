@@ -106,7 +106,11 @@ void expr_free(struct expr *e)
 		break;
 	case E_NOT:
 		expr_free(e->left.expr);
+<<<<<<< HEAD
 		return;
+=======
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case E_EQUAL:
 	case E_UNEQUAL:
 		break;
@@ -190,6 +194,16 @@ int expr_eq(struct expr *e1, struct expr *e2)
 {
 	int res, old_count;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * A NULL expr is taken to be yes, but there's also a different way to
+	 * represent yes. expr_is_yes() checks for either representation.
+	 */
+	if (!e1 || !e2)
+		return expr_is_yes(e1) && expr_is_yes(e2);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (e1->type != e2->type)
 		return 0;
 	switch (e1->type) {

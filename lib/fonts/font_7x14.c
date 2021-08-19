@@ -7,8 +7,13 @@
 
 #define FONTDATAMAX 3584
 
+<<<<<<< HEAD
 static const unsigned char fontdata_7x14[FONTDATAMAX] = {
 
+=======
+static const struct font_data fontdata_7x14 = {
+	{ 0, 0, FONTDATAMAX, 0 }, {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* 0 0x00 '^@' */
 	0x00, /* 0000000 */
 	0x00, /* 0000000 */
@@ -4104,8 +4109,12 @@ static const unsigned char fontdata_7x14[FONTDATAMAX] = {
 	0x00, /* 0000000 */
 	0x00, /* 0000000 */
 	0x00, /* 0000000 */
+<<<<<<< HEAD
 
 };
+=======
+} };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 const struct font_desc font_7x14 = {
@@ -4113,6 +4122,10 @@ const struct font_desc font_7x14 = {
 	.name	= "7x14",
 	.width	= 7,
 	.height	= 14,
+<<<<<<< HEAD
 	.data	= fontdata_7x14,
+=======
+	.data	= fontdata_7x14.data,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.pref	= 0,
 };

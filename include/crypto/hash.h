@@ -99,6 +99,10 @@ struct crypto_ahash {
 		      unsigned int keylen);
 
 	unsigned int reqsize;
+<<<<<<< HEAD
+=======
+	bool has_setkey;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct crypto_tfm base;
 };
 
@@ -186,6 +190,15 @@ static inline void *ahash_request_ctx(struct ahash_request *req)
 
 int crypto_ahash_setkey(struct crypto_ahash *tfm, const u8 *key,
 			unsigned int keylen);
+<<<<<<< HEAD
+=======
+
+static inline bool crypto_ahash_has_setkey(struct crypto_ahash *tfm)
+{
+	return tfm->has_setkey;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int crypto_ahash_finup(struct ahash_request *req);
 int crypto_ahash_final(struct ahash_request *req);
 int crypto_ahash_digest(struct ahash_request *req);

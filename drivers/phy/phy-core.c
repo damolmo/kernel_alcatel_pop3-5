@@ -179,6 +179,10 @@ int phy_init(struct phy *phy)
 	ret = phy_pm_runtime_get_sync(phy);
 	if (ret < 0 && ret != -ENOTSUPP)
 		return ret;
+<<<<<<< HEAD
+=======
+	ret = 0; /* Override possible ret == -ENOTSUPP */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&phy->mutex);
 	if (phy->init_count == 0 && phy->ops->init) {
@@ -187,8 +191,11 @@ int phy_init(struct phy *phy)
 			dev_err(&phy->dev, "phy init failed --> %d\n", ret);
 			goto out;
 		}
+<<<<<<< HEAD
 	} else {
 		ret = 0; /* Override possible ret == -ENOTSUPP */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	++phy->init_count;
 
@@ -209,6 +216,10 @@ int phy_exit(struct phy *phy)
 	ret = phy_pm_runtime_get_sync(phy);
 	if (ret < 0 && ret != -ENOTSUPP)
 		return ret;
+<<<<<<< HEAD
+=======
+	ret = 0; /* Override possible ret == -ENOTSUPP */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&phy->mutex);
 	if (phy->init_count == 1 && phy->ops->exit) {
@@ -229,41 +240,73 @@ EXPORT_SYMBOL_GPL(phy_exit);
 
 int phy_power_on(struct phy *phy)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (!phy)
 		return 0;
+=======
+	int ret = 0;
+
+	if (!phy)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (phy->pwr) {
 		ret = regulator_enable(phy->pwr);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = phy_pm_runtime_get_sync(phy);
 	if (ret < 0 && ret != -ENOTSUPP)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_pm_sync;
+
+	ret = 0; /* Override possible ret == -ENOTSUPP */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&phy->mutex);
 	if (phy->power_count == 0 && phy->ops->power_on) {
 		ret = phy->ops->power_on(phy);
 		if (ret < 0) {
 			dev_err(&phy->dev, "phy poweron failed --> %d\n", ret);
+<<<<<<< HEAD
 			goto out;
 		}
 	} else {
 		ret = 0; /* Override possible ret == -ENOTSUPP */
+=======
+			goto err_pwr_on;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	++phy->power_count;
 	mutex_unlock(&phy->mutex);
 	return 0;
 
+<<<<<<< HEAD
 out:
 	mutex_unlock(&phy->mutex);
 	phy_pm_runtime_put_sync(phy);
 	if (phy->pwr)
 		regulator_disable(phy->pwr);
 
+=======
+err_pwr_on:
+	mutex_unlock(&phy->mutex);
+	phy_pm_runtime_put_sync(phy);
+err_pm_sync:
+	if (phy->pwr)
+		regulator_disable(phy->pwr);
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 EXPORT_SYMBOL_GPL(phy_power_on);
@@ -318,6 +361,13 @@ static struct phy *_of_phy_get(struct device_node *np, int index)
 	if (ret)
 		return ERR_PTR(-ENODEV);
 
+<<<<<<< HEAD
+=======
+	/* This phy type handled by the usb-phy subsystem for now */
+	if (of_device_is_compatible(args.np, "usb-nop-xceiv"))
+		return ERR_PTR(-ENODEV);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&phy_provider_mutex);
 	phy_provider = of_phy_provider_lookup(args.np);
 	if (IS_ERR(phy_provider) || !try_module_get(phy_provider->owner)) {

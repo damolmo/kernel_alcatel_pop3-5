@@ -573,6 +573,10 @@ typedef u64 acpi_integer;
 #define ACPI_NO_ACPI_ENABLE             0x10
 #define ACPI_NO_DEVICE_INIT             0x20
 #define ACPI_NO_OBJECT_INIT             0x40
+<<<<<<< HEAD
+=======
+#define ACPI_NO_FACS_INIT               0x80
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Initialization state

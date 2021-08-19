@@ -20,21 +20,55 @@
 #include <linux/platform_device.h>
 #include <linux/pwm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct pwm_beeper {
 	struct input_dev *input;
 	struct pwm_device *pwm;
+<<<<<<< HEAD
+=======
+	struct work_struct work;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long period;
 };
 
 #define HZ_TO_NANOSECONDS(x) (1000000000UL/(x))
 
+<<<<<<< HEAD
 static int pwm_beeper_event(struct input_dev *input,
 			    unsigned int type, unsigned int code, int value)
 {
 	int ret = 0;
 	struct pwm_beeper *beeper = input_get_drvdata(input);
 	unsigned long period;
+=======
+static void __pwm_beeper_set(struct pwm_beeper *beeper)
+{
+	unsigned long period = beeper->period;
+
+	if (period) {
+		pwm_config(beeper->pwm, period / 2, period);
+		pwm_enable(beeper->pwm);
+	} else
+		pwm_disable(beeper->pwm);
+}
+
+static void pwm_beeper_work(struct work_struct *work)
+{
+	struct pwm_beeper *beeper =
+		container_of(work, struct pwm_beeper, work);
+
+	__pwm_beeper_set(beeper);
+}
+
+static int pwm_beeper_event(struct input_dev *input,
+			    unsigned int type, unsigned int code, int value)
+{
+	struct pwm_beeper *beeper = input_get_drvdata(input);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (type != EV_SND || value < 0)
 		return -EINVAL;
@@ -49,6 +83,7 @@ static int pwm_beeper_event(struct input_dev *input,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (value == 0) {
 		pwm_config(beeper->pwm, 0, 0);
 		pwm_disable(beeper->pwm);
@@ -62,10 +97,36 @@ static int pwm_beeper_event(struct input_dev *input,
 			return ret;
 		beeper->period = period;
 	}
+=======
+	if (value == 0)
+		beeper->period = 0;
+	else
+		beeper->period = HZ_TO_NANOSECONDS(value);
+
+	schedule_work(&beeper->work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void pwm_beeper_stop(struct pwm_beeper *beeper)
+{
+	cancel_work_sync(&beeper->work);
+
+	if (beeper->period)
+		pwm_disable(beeper->pwm);
+}
+
+static void pwm_beeper_close(struct input_dev *input)
+{
+	struct pwm_beeper *beeper = input_get_drvdata(input);
+
+	pwm_beeper_stop(beeper);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int pwm_beeper_probe(struct platform_device *pdev)
 {
 	unsigned long pwm_id = (unsigned long)dev_get_platdata(&pdev->dev);
@@ -88,6 +149,11 @@ static int pwm_beeper_probe(struct platform_device *pdev)
 		goto err_free;
 	}
 
+<<<<<<< HEAD
+=======
+	INIT_WORK(&beeper->work, pwm_beeper_work);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	beeper->input = input_allocate_device();
 	if (!beeper->input) {
 		dev_err(&pdev->dev, "Failed to allocate input device\n");
@@ -107,6 +173,10 @@ static int pwm_beeper_probe(struct platform_device *pdev)
 	beeper->input->sndbit[0] = BIT(SND_TONE) | BIT(SND_BELL);
 
 	beeper->input->event = pwm_beeper_event;
+<<<<<<< HEAD
+=======
+	beeper->input->close = pwm_beeper_close;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	input_set_drvdata(beeper->input, beeper);
 
@@ -136,7 +206,10 @@ static int pwm_beeper_remove(struct platform_device *pdev)
 
 	input_unregister_device(beeper->input);
 
+<<<<<<< HEAD
 	pwm_disable(beeper->pwm);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pwm_free(beeper->pwm);
 
 	kfree(beeper);
@@ -149,8 +222,12 @@ static int pwm_beeper_suspend(struct device *dev)
 {
 	struct pwm_beeper *beeper = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	if (beeper->period)
 		pwm_disable(beeper->pwm);
+=======
+	pwm_beeper_stop(beeper);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -159,10 +236,15 @@ static int pwm_beeper_resume(struct device *dev)
 {
 	struct pwm_beeper *beeper = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	if (beeper->period) {
 		pwm_config(beeper->pwm, beeper->period / 2, beeper->period);
 		pwm_enable(beeper->pwm);
 	}
+=======
+	if (beeper->period)
+		__pwm_beeper_set(beeper);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

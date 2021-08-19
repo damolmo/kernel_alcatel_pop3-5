@@ -47,8 +47,13 @@ static u64 get_idle_time(int cpu)
 {
 	u64 idle, idle_time = -1ULL;
 
+<<<<<<< HEAD
 	/*if (cpu_online(cpu))*/
 		idle_time = get_cpu_idle_time_us_wo_cpuoffline(cpu, NULL);
+=======
+	if (cpu_online(cpu))
+		idle_time = get_cpu_idle_time_us(cpu, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (idle_time == -1ULL)
 		/* !NO_HZ or cpu offline so we can rely on cpustat.idle */
@@ -63,8 +68,13 @@ static u64 get_iowait_time(int cpu)
 {
 	u64 iowait, iowait_time = -1ULL;
 
+<<<<<<< HEAD
 	/*if (cpu_online(cpu))*/
 		iowait_time = get_cpu_iowait_time_us_wo_cpuoffline(cpu, NULL);
+=======
+	if (cpu_online(cpu))
+		iowait_time = get_cpu_iowait_time_us(cpu, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (iowait_time == -1ULL)
 		/* !NO_HZ or cpu offline so we can rely on cpustat.iowait */

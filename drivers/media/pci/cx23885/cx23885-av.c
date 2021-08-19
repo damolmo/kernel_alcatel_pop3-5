@@ -24,7 +24,11 @@ void cx23885_av_work_handler(struct work_struct *work)
 {
 	struct cx23885_dev *dev =
 			   container_of(work, struct cx23885_dev, cx25840_work);
+<<<<<<< HEAD
 	bool handled;
+=======
+	bool handled = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	v4l2_subdev_call(dev->sd_cx25840, core, interrupt_service_routine,
 			 PCI_MSK_AV_CORE, &handled);

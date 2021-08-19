@@ -57,7 +57,11 @@ static int drm_get_platform_dev(struct platform_device *platdev,
 	if (ret)
 		goto err_free;
 
+<<<<<<< HEAD
 	DRM_DEBUG("Initialized %s %d.%d.%d %s on minor %d\n",
+=======
+	DRM_INFO("Initialized %s %d.%d.%d %s on minor %d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 driver->name, driver->major, driver->minor, driver->patchlevel,
 		 driver->date, dev->primary->index);
 

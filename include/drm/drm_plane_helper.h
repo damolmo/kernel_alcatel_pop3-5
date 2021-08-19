@@ -25,7 +25,10 @@
 #define DRM_PLANE_HELPER_H
 
 #include <drm/drm_rect.h>
+<<<<<<< HEAD
 #include <drm/drm_crtc.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Drivers that don't allow primary plane scaling may pass this macro in place
@@ -43,6 +46,7 @@
  * planes.
  */
 
+<<<<<<< HEAD
 extern int drm_crtc_init(struct drm_device *dev,
 			 struct drm_crtc *crtc,
 			 const struct drm_crtc_funcs *funcs);
@@ -77,6 +81,8 @@ static inline void drm_plane_helper_add(struct drm_plane *plane,
 	plane->helper_private = (void *)funcs;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int drm_plane_helper_check_update(struct drm_plane *plane,
 					 struct drm_crtc *crtc,
 					 struct drm_framebuffer *fb,
@@ -103,6 +109,7 @@ extern struct drm_plane *drm_primary_helper_create_plane(struct drm_device *dev,
 							 int num_formats);
 
 
+<<<<<<< HEAD
 int drm_plane_helper_update(struct drm_plane *plane, struct drm_crtc *crtc,
 			    struct drm_framebuffer *fb,
 			    int crtc_x, int crtc_y,
@@ -115,4 +122,6 @@ int drm_plane_helper_disable(struct drm_plane *plane);
 int drm_plane_helper_commit(struct drm_plane *plane,
 			    struct drm_plane_state *plane_state,
 			    struct drm_framebuffer *old_fb);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

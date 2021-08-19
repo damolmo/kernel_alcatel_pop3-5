@@ -165,6 +165,7 @@ static int am33xx_pwrdm_read_pwrst(struct powerdomain *pwrdm)
 	return v;
 }
 
+<<<<<<< HEAD
 static int am33xx_pwrdm_read_prev_pwrst(struct powerdomain *pwrdm)
 {
 	u32 v;
@@ -176,6 +177,8 @@ static int am33xx_pwrdm_read_prev_pwrst(struct powerdomain *pwrdm)
 	return v;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int am33xx_pwrdm_set_lowpwrstchange(struct powerdomain *pwrdm)
 {
 	am33xx_prm_rmw_reg_bits(AM33XX_LOWPOWERSTATECHANGE_MASK,
@@ -329,7 +332,10 @@ struct pwrdm_ops am33xx_pwrdm_operations = {
 	.pwrdm_set_next_pwrst		= am33xx_pwrdm_set_next_pwrst,
 	.pwrdm_read_next_pwrst		= am33xx_pwrdm_read_next_pwrst,
 	.pwrdm_read_pwrst		= am33xx_pwrdm_read_pwrst,
+<<<<<<< HEAD
 	.pwrdm_read_prev_pwrst		= am33xx_pwrdm_read_prev_pwrst,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.pwrdm_set_logic_retst		= am33xx_pwrdm_set_logic_retst,
 	.pwrdm_read_logic_pwrst		= am33xx_pwrdm_read_logic_pwrst,
 	.pwrdm_read_logic_retst		= am33xx_pwrdm_read_logic_retst,

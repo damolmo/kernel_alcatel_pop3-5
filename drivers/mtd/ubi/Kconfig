@@ -103,6 +103,7 @@ config MTD_UBI_BLOCK
 
 	   If in doubt, say "N".
 
+<<<<<<< HEAD
 config MTD_UBI_LOWPAGE_BACKUP
 	bool "lowpage backup for MLC nand device"
 	default n
@@ -123,4 +124,6 @@ config MTK_SLC_BUFFER_SUPPORT
 
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif # MTD_UBI

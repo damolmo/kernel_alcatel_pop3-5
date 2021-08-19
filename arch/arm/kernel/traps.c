@@ -19,6 +19,10 @@
 #include <linux/uaccess.h>
 #include <linux/hardirq.h>
 #include <linux/kdebug.h>
+<<<<<<< HEAD
+=======
+#include <linux/kprobes.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/module.h>
 #include <linux/kexec.h>
 #include <linux/bug.h>
@@ -37,7 +41,10 @@
 #include <asm/tls.h>
 #include <asm/system_misc.h>
 #include <asm/opcodes.h>
+<<<<<<< HEAD
 #include <mt-plat/mt_hooks.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 static const char *handler[]= {
@@ -133,30 +140,49 @@ static void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 	set_fs(fs);
 }
 
+<<<<<<< HEAD
 static void dump_instr(const char *lvl, struct pt_regs *regs)
+=======
+static void __dump_instr(const char *lvl, struct pt_regs *regs)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long addr = instruction_pointer(regs);
 	const int thumb = thumb_mode(regs);
 	const int width = thumb ? 4 : 8;
+<<<<<<< HEAD
 	mm_segment_t fs;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char str[sizeof("00000000 ") * 5 + 2 + 1], *p = str;
 	int i;
 
 	/*
+<<<<<<< HEAD
 	 * We need to switch to kernel mode so that we can use __get_user
 	 * to safely read from kernel space.  Note that we now dump the
 	 * code first, just in case the backtrace kills us.
 	 */
 	fs = get_fs();
 	set_fs(KERNEL_DS);
+=======
+	 * Note that we now dump the code first, just in case the backtrace
+	 * kills us.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = -4; i < 1 + !!thumb; i++) {
 		unsigned int val, bad;
 
 		if (thumb)
+<<<<<<< HEAD
 			bad = __get_user(val, &((u16 *)addr)[i]);
 		else
 			bad = __get_user(val, &((u32 *)addr)[i]);
+=======
+			bad = get_user(val, &((u16 *)addr)[i]);
+		else
+			bad = get_user(val, &((u32 *)addr)[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (!bad)
 			p += sprintf(p, i == 0 ? "(%0*x) " : "%0*x ",
@@ -167,8 +193,25 @@ static void dump_instr(const char *lvl, struct pt_regs *regs)
 		}
 	}
 	printk("%sCode: %s\n", lvl, str);
+<<<<<<< HEAD
 
 	set_fs(fs);
+=======
+}
+
+static void dump_instr(const char *lvl, struct pt_regs *regs)
+{
+	mm_segment_t fs;
+
+	if (!user_mode(regs)) {
+		fs = get_fs();
+		set_fs(KERNEL_DS);
+		__dump_instr(lvl, regs);
+		set_fs(fs);
+	} else {
+		__dump_instr(lvl, regs);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_ARM_UNWIND
@@ -303,8 +346,12 @@ static void oops_end(unsigned long flags, struct pt_regs *regs, int signr)
 	if (!die_nest_count)
 		/* Nest count reaches zero, release the lock. */
 		arch_spin_unlock(&die_lock);
+<<<<<<< HEAD
 	/* not enable irq incase softirq many turn off msdc clock */
 	/*raw_local_irq_restore(flags);*/
+=======
+	raw_local_irq_restore(flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	oops_exit();
 
 	if (in_interrupt())
@@ -389,11 +436,20 @@ void unregister_undef_hook(struct undef_hook *hook)
 	raw_spin_unlock_irqrestore(&undef_lock, flags);
 }
 
+<<<<<<< HEAD
 static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
 {
 	struct undef_hook *hook;
 	unsigned long flags;
 	int (*fn)(struct pt_regs *regs, unsigned int instr) = arm_undefinstr_retry;
+=======
+static nokprobe_inline
+int call_undef_hook(struct pt_regs *regs, unsigned int instr)
+{
+	struct undef_hook *hook;
+	unsigned long flags;
+	int (*fn)(struct pt_regs *regs, unsigned int instr) = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	raw_spin_lock_irqsave(&undef_lock, flags);
 	list_for_each_entry(hook, &undef_hook, node)
@@ -462,6 +518,10 @@ die_sig:
 
 	arm_notify_die("Oops - undefined instruction", regs, &info, 0, 6);
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(do_undefinstr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Handle FIQ similarly to NMI on x86 systems.
@@ -882,7 +942,10 @@ void __init early_trap_init(void *vectors_base)
 	kuser_init(vectors_base);
 
 	flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
+<<<<<<< HEAD
 	modify_domain(DOMAIN_USER, DOMAIN_CLIENT);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else /* ifndef CONFIG_CPU_V7M */
 	/*
 	 * on V7-M there is no need to copy the vector table to a dedicated

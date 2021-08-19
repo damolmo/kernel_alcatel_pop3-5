@@ -1,6 +1,10 @@
 config BCM_WIMAX
        tristate "Beceem BCS200/BCS220-3 and BCSM250 wimax support"
        depends on USB && NET
+<<<<<<< HEAD
+=======
+	depends on !64BIT
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
        help
          This is an experimental driver for the Beceem WIMAX chipset used
 	 by Sprint 4G.

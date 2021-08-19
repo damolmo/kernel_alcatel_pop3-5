@@ -215,9 +215,15 @@ static int rionet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 			 * it just report sending a packet to the target
 			 * (without actual packet transfer).
 			 */
+<<<<<<< HEAD
 			dev_kfree_skb_any(skb);
 			ndev->stats.tx_packets++;
 			ndev->stats.tx_bytes += skb->len;
+=======
+			ndev->stats.tx_packets++;
+			ndev->stats.tx_bytes += skb->len;
+			dev_kfree_skb_any(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -280,7 +286,11 @@ static void rionet_outb_msg_event(struct rio_mport *mport, void *dev_id, int mbo
 	struct net_device *ndev = dev_id;
 	struct rionet_private *rnet = netdev_priv(ndev);
 
+<<<<<<< HEAD
 	spin_lock(&rnet->lock);
+=======
+	spin_lock(&rnet->tx_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (netif_msg_intr(rnet))
 		printk(KERN_INFO
@@ -299,7 +309,11 @@ static void rionet_outb_msg_event(struct rio_mport *mport, void *dev_id, int mbo
 	if (rnet->tx_cnt < RIONET_TX_RING_SIZE)
 		netif_wake_queue(ndev);
 
+<<<<<<< HEAD
 	spin_unlock(&rnet->lock);
+=======
+	spin_unlock(&rnet->tx_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int rionet_open(struct net_device *ndev)

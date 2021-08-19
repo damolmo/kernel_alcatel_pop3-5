@@ -91,6 +91,21 @@ void __gcov_merge_time_profile(gcov_type *counters, unsigned int n_counters)
 }
 EXPORT_SYMBOL(__gcov_merge_time_profile);
 
+<<<<<<< HEAD
+=======
+void __gcov_merge_icall_topn(gcov_type *counters, unsigned int n_counters)
+{
+	/* Unused. */
+}
+EXPORT_SYMBOL(__gcov_merge_icall_topn);
+
+void __gcov_exit(void)
+{
+	/* Unused. */
+}
+EXPORT_SYMBOL(__gcov_exit);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * gcov_enable_events - enable event reporting through gcov_event()
  *

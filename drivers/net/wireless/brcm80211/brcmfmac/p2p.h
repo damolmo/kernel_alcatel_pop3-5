@@ -124,6 +124,10 @@ struct afx_hdl {
  * @wait_next_af: thread synchronizing struct.
  * @gon_req_action: about to send go negotiation requets frame.
  * @block_gon_req_tx: drop tx go negotiation requets frame.
+<<<<<<< HEAD
+=======
+ * @wait_for_offchan_complete: wait for off-channel tx completion event.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct brcmf_p2p_info {
 	struct brcmf_cfg80211_info *cfg;
@@ -144,6 +148,10 @@ struct brcmf_p2p_info {
 	struct completion wait_next_af;
 	bool gon_req_action;
 	bool block_gon_req_tx;
+<<<<<<< HEAD
+=======
+	bool wait_for_offchan_complete;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 s32 brcmf_p2p_attach(struct brcmf_cfg80211_info *cfg);

@@ -43,6 +43,7 @@
 #include <linux/slab.h>
 #include <linux/major.h>
 #include "ubi.h"
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_COMBO_NAND_SUPPORT
 #if defined(CONFIG_MTK_MLC_NAND_SUPPORT) || defined(CONFIG_MTK_SLC_BUFFER_SUPPORT)
 #define COMBO_NAND_BLOCK_SIZE (ubi->mtd->erasesize)
@@ -52,6 +53,8 @@
 #define COMBO_NAND_PAGE_SIZE  (4*1024)
 #endif
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Maximum length of the 'mtd=' parameter */
 #define MTD_PARAM_LEN_MAX 64
@@ -68,11 +71,14 @@
 #define ubi_is_module() 0
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBI_SHARE_BUFFER
 void *ubi_peb_buf = NULL;
 DEFINE_MUTEX(ubi_buf_mutex);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * struct mtd_dev_param - MTD device parameter description data structure.
  * @name: MTD character device node path, MTD device name, or MTD device number
@@ -88,6 +94,7 @@ struct mtd_dev_param {
 };
 
 /* Numbers of elements set in the @mtd_dev_param array */
+<<<<<<< HEAD
 static int mtd_devs __initdata;
 
 /* MTD devices specification parameters */
@@ -100,6 +107,16 @@ static bool fm_autoconvert = 1;
 static bool fm_autoconvert;
 #endif
 #endif
+=======
+static int __initdata mtd_devs;
+
+/* MTD devices specification parameters */
+static struct mtd_dev_param __initdata mtd_dev_param[UBI_MAX_DEVICES];
+#ifdef CONFIG_MTD_UBI_FASTMAP
+/* UBI module parameter to enable fastmap automatically on non-fastmap images */
+static bool fm_autoconvert;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Root UBI "class" object (corresponds to '/<sysfs>/class/ubi/') */
 struct class *ubi_class;
 
@@ -135,9 +152,12 @@ static struct class_attribute ubi_version =
 
 static ssize_t dev_attribute_show(struct device *dev,
 				  struct device_attribute *attr, char *buf);
+<<<<<<< HEAD
 /*MTK*/
 static ssize_t dev_attribute_store(struct device *dev, struct device_attribute *attr,
 			 const char *buf, size_t count);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* UBI device attributes (correspond to files in '/<sysfs>/class/ubi/ubiX') */
 static struct device_attribute dev_eraseblock_size =
@@ -150,6 +170,7 @@ static struct device_attribute dev_volumes_count =
 	__ATTR(volumes_count, S_IRUGO, dev_attribute_show, NULL);
 static struct device_attribute dev_max_ec =
 	__ATTR(max_ec, S_IRUGO, dev_attribute_show, NULL);
+<<<<<<< HEAD
 /*MTK start*/
 static struct device_attribute dev_lbb =
 	__ATTR(lbb, S_IRUGO, dev_attribute_show, NULL);
@@ -194,6 +215,8 @@ static struct device_attribute dev_tlc_wl_th =
 static struct device_attribute dev_torture =
 	__ATTR(torture, 00755, dev_attribute_show, NULL);
 /*MTK end*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct device_attribute dev_reserved_for_bad =
 	__ATTR(reserved_for_bad, S_IRUGO, dev_attribute_show, NULL);
 static struct device_attribute dev_bad_peb_count =
@@ -399,6 +422,7 @@ int ubi_major2num(int major)
 	return ubi_num;
 }
 
+<<<<<<< HEAD
 /* MTK: "Store" method for files in '/<sysfs>/class/ubi/ubiX/' */
 static ssize_t dev_attribute_store(struct device *dev, struct device_attribute *attr,
 			 const char *buf, size_t count)
@@ -430,6 +454,8 @@ static ssize_t dev_attribute_store(struct device *dev, struct device_attribute *
 	}
 	return count;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* "Show" method for files in '/<sysfs>/class/ubi/ubiX/' */
 static ssize_t dev_attribute_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
@@ -462,6 +488,7 @@ static ssize_t dev_attribute_show(struct device *dev,
 		ret = sprintf(buf, "%d\n", ubi->vol_count - UBI_INT_VOL_COUNT);
 	else if (attr == &dev_max_ec)
 		ret = sprintf(buf, "%d\n", ubi->max_ec);
+<<<<<<< HEAD
 /*MTK start*/
 	else if (attr == &dev_torture)
 		ret = sprintf(buf, "torture: %d\n", ubi->torture);
@@ -539,6 +566,8 @@ static ssize_t dev_attribute_show(struct device *dev,
 		spin_unlock(&ubi->wl_lock);
 	}
 /*MTK end*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else if (attr == &dev_reserved_for_bad)
 		ret = sprintf(buf, "%d\n", ubi->beb_rsvd_pebs);
 	else if (attr == &dev_bad_peb_count)
@@ -602,6 +631,7 @@ static int ubi_sysfs_init(struct ubi_device *ubi, int *ref)
 	err = device_create_file(&ubi->dev, &dev_max_ec);
 	if (err)
 		return err;
+<<<<<<< HEAD
 /*MTK start*/
 	err = device_create_file(&ubi->dev, &dev_lbb);
 	if (err)
@@ -666,6 +696,8 @@ static int ubi_sysfs_init(struct ubi_device *ubi, int *ref)
 	if (err)
 		return err;
 /*MTK end*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = device_create_file(&ubi->dev, &dev_reserved_for_bad);
 	if (err)
 		return err;
@@ -901,10 +933,13 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 
 	ubi->peb_size   = ubi->mtd->erasesize;
 	ubi->peb_count  = mtd_div_by_eb(ubi->mtd->size, ubi->mtd);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_COMBO_NAND_SUPPORT
 	ubi->peb_size   = COMBO_NAND_BLOCK_SIZE;
 	ubi->peb_count  = (int)div_u64(ubi->mtd->size, ubi->peb_size);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi->flash_size = ubi->mtd->size;
 
 	if (mtd_can_have_bb(ubi->mtd)) {
@@ -919,10 +954,13 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 
 	ubi->min_io_size = ubi->mtd->writesize;
 	ubi->hdrs_min_io_size = ubi->mtd->writesize >> ubi->mtd->subpage_sft;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_COMBO_NAND_SUPPORT
 	ubi->min_io_size = COMBO_NAND_PAGE_SIZE;
 	ubi->hdrs_min_io_size = ubi->min_io_size >> ubi->mtd->subpage_sft;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Make sure minimal I/O unit is power of 2. Note, there is no
@@ -940,6 +978,7 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 	ubi_assert(ubi->min_io_size % ubi->hdrs_min_io_size == 0);
 
 	ubi->max_write_size = ubi->mtd->writebufsize;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_COMBO_NAND_SUPPORT
 	ubi->max_write_size = COMBO_NAND_PAGE_SIZE;
 #endif
@@ -947,6 +986,8 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 	ubi->max_write_size = ubi->mtd->erasesize/4;
 	ubi->max_write_size = roundup_pow_of_two(ubi->max_write_size);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Maximum write size has to be greater or equivalent to min. I/O
 	 * size, and be multiple of min. I/O size.
@@ -1121,7 +1162,10 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 {
 	struct ubi_device *ubi;
 	int i, err, ref = 0;
+<<<<<<< HEAD
 	unsigned long long attach_time = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (max_beb_per1024 < 0 || max_beb_per1024 > MAX_MTD_UBI_BEB_LIMIT)
 		return -EINVAL;
@@ -1158,6 +1202,20 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Both UBI and UBIFS have been designed for SLC NAND and NOR flashes.
+	 * MLC NAND is different and needs special care, otherwise UBI or UBIFS
+	 * will die soon and you will lose all your data.
+	 */
+	if (mtd->type == MTD_MLCNANDFLASH) {
+		pr_err("ubi: refuse attaching mtd%d - MLC NAND is not supported\n",
+			mtd->index);
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ubi_num == UBI_DEV_NUM_AUTO) {
 		/* Search for an empty slot in the @ubi_devices array */
 		for (ubi_num = 0; ubi_num < UBI_MAX_DEVICES; ubi_num++)
@@ -1187,6 +1245,7 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	ubi->ubi_num = ubi_num;
 	ubi->vid_hdr_offset = vid_hdr_offset;
 	ubi->autoresize_vol_id = -1;
+<<<<<<< HEAD
 /*MTK start*/
 	ubi->wl_th = CONFIG_MTD_UBI_WL_THRESHOLD;
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
@@ -1196,6 +1255,8 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	atomic_set(&ubi->ec_count, 0);
 	atomic_set(&ubi->move_retry, 0);
 /*MTK end*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_MTD_UBI_FASTMAP
 	ubi->fm_pool.used = ubi->fm_pool.size = 0;
@@ -1225,17 +1286,25 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 #else
 	ubi->fm_disabled = 1;
 #endif
+<<<<<<< HEAD
 #ifndef CONFIG_UBI_SHARE_BUFFER
 	mutex_init(&ubi->buf_mutex);
 #endif
+=======
+	mutex_init(&ubi->buf_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_init(&ubi->ckvol_mutex);
 	mutex_init(&ubi->device_mutex);
 	spin_lock_init(&ubi->volumes_lock);
 	mutex_init(&ubi->fm_mutex);
 	init_rwsem(&ubi->fm_sem);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	mutex_init(&ubi->mtbl_mutex);
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_msg("attaching mtd%d to ubi%d", mtd->index, ubi_num);
 
 	err = io_init(ubi, max_beb_per1024);
@@ -1243,6 +1312,7 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 		goto out_free;
 
 	err = -ENOMEM;
+<<<<<<< HEAD
 #ifdef CONFIG_UBI_SHARE_BUFFER
 	if (ubi_peb_buf == NULL) {
 		ubi_peb_buf = vmalloc(ubi->peb_size);
@@ -1252,6 +1322,9 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 #else
 	ubi->peb_buf = vmalloc(ubi->peb_size);
 #endif
+=======
+	ubi->peb_buf = vmalloc(ubi->peb_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ubi->peb_buf)
 		goto out_free;
 
@@ -1261,7 +1334,10 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	if (!ubi->fm_buf)
 		goto out_free;
 #endif
+<<<<<<< HEAD
 	attach_time = sched_clock();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = ubi_attach(ubi, 0);
 	if (err) {
 		ubi_err("failed to attach mtd%d, error %d", mtd->index, err);
@@ -1274,6 +1350,12 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 			goto out_detach;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Make device "available" before it becomes accessible via sysfs */
+	ubi_devices[ubi_num] = ubi;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = uif_init(ubi, &ref);
 	if (err)
 		goto out_detach;
@@ -1290,8 +1372,11 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 		goto out_debugfs;
 	}
 
+<<<<<<< HEAD
 	attach_time = sched_clock() - attach_time;
 	do_div(attach_time, 1000000);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_msg("attached mtd%d (name \"%s\", size %llu MiB) to ubi%d",
 		mtd->index, mtd->name, ubi->flash_size >> 20, ubi_num);
 	ubi_msg("PEB size: %d bytes (%d KiB), LEB size: %d bytes",
@@ -1320,7 +1405,10 @@ int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
 	wake_up_process(ubi->bgt_thread);
 	spin_unlock(&ubi->wl_lock);
 
+<<<<<<< HEAD
 	ubi_devices[ubi_num] = ubi;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_notify_all(ubi, UBI_VOLUME_ADDED, NULL);
 	return ubi_num;
 
@@ -1331,10 +1419,15 @@ out_uif:
 	ubi_assert(ref);
 	uif_close(ubi);
 out_detach:
+<<<<<<< HEAD
+=======
+	ubi_devices[ubi_num] = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_wl_close(ubi);
 	ubi_free_internal_volumes(ubi);
 	vfree(ubi->vtbl);
 out_free:
+<<<<<<< HEAD
 #ifndef CONFIG_UBI_SHARE_BUFFER
 	vfree(ubi->peb_buf);
 #endif
@@ -1343,6 +1436,9 @@ out_free:
 	vfree(ubi->mtbl);
 	vfree(ubi->empty_mtbl_record);
 #endif
+=======
+	vfree(ubi->peb_buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vfree(ubi->fm_buf);
 	if (ref)
 		put_device(&ubi->dev);
@@ -1411,12 +1507,19 @@ int ubi_detach_mtd_dev(int ubi_num, int anyway)
 	 */
 	get_device(&ubi->dev);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MTD_UBI_FASTMAP
+	cancel_work_sync(&ubi->fm_work);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubi_debugfs_exit_dev(ubi);
 	uif_close(ubi);
 
 	ubi_wl_close(ubi);
 	ubi_free_internal_volumes(ubi);
 	vfree(ubi->vtbl);
+<<<<<<< HEAD
 	put_mtd_device(ubi->mtd);
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 	vfree(ubi->databuf);
@@ -1433,6 +1536,12 @@ int ubi_detach_mtd_dev(int ubi_num, int anyway)
 #endif
 	vfree(ubi->fm_buf);
 	ubi_msg("mtd%d is detached from ubi%d", ubi->mtd->index, ubi->ubi_num);
+=======
+	vfree(ubi->peb_buf);
+	vfree(ubi->fm_buf);
+	ubi_msg("mtd%d is detached from ubi%d", ubi->mtd->index, ubi->ubi_num);
+	put_mtd_device(ubi->mtd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	put_device(&ubi->dev);
 	return 0;
 }
@@ -1644,9 +1753,12 @@ static void __exit ubi_exit(void)
 	misc_deregister(&ubi_ctrl_cdev);
 	class_remove_file(ubi_class, &ubi_version);
 	class_destroy(ubi_class);
+<<<<<<< HEAD
 #ifdef CONFIG_UBI_SHARE_BUFFER
 	vfree(ubi_peb_buf);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 module_exit(ubi_exit);
 

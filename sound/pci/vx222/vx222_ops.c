@@ -264,13 +264,22 @@ static void vx2_dma_write(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 
 	/* Transfer using pseudo-dma.
 	 */
+<<<<<<< HEAD
 	if (offset + count > pipe->buffer_bytes) {
+=======
+	if (offset + count >= pipe->buffer_bytes) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int length = pipe->buffer_bytes - offset;
 		count -= length;
 		length >>= 2; /* in 32bit words */
 		/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 		while (length-- > 0) {
 			outl(cpu_to_le32(*addr), port);
+=======
+		for (; length > 0; length--) {
+			outl(*addr, port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			addr++;
 		}
 		addr = (u32 *)runtime->dma_area;
@@ -279,8 +288,13 @@ static void vx2_dma_write(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 	pipe->hw_ptr += count;
 	count >>= 2; /* in 32bit words */
 	/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 	while (count-- > 0) {
 		outl(cpu_to_le32(*addr), port);
+=======
+	for (; count > 0; count--) {
+		outl(*addr, port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		addr++;
 	}
 
@@ -302,21 +316,35 @@ static void vx2_dma_read(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 	vx2_setup_pseudo_dma(chip, 0);
 	/* Transfer using pseudo-dma.
 	 */
+<<<<<<< HEAD
 	if (offset + count > pipe->buffer_bytes) {
+=======
+	if (offset + count >= pipe->buffer_bytes) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int length = pipe->buffer_bytes - offset;
 		count -= length;
 		length >>= 2; /* in 32bit words */
 		/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 		while (length-- > 0)
 			*addr++ = le32_to_cpu(inl(port));
+=======
+		for (; length > 0; length--)
+			*addr++ = inl(port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		addr = (u32 *)runtime->dma_area;
 		pipe->hw_ptr = 0;
 	}
 	pipe->hw_ptr += count;
 	count >>= 2; /* in 32bit words */
 	/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 	while (count-- > 0)
 		*addr++ = le32_to_cpu(inl(port));
+=======
+	for (; count > 0; count--)
+		*addr++ = inl(port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vx2_release_pseudo_dma(chip);
 }

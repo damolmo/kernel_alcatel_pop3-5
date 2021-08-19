@@ -210,12 +210,24 @@ static inline pte_t pte_mkold(pte_t pte)
 
 static inline pte_t pte_wrprotect(pte_t pte)
 { 
+<<<<<<< HEAD
 	pte_clear_bits(pte, _PAGE_RW);
+=======
+	if (likely(pte_get_bits(pte, _PAGE_RW)))
+		pte_clear_bits(pte, _PAGE_RW);
+	else
+		return pte;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return(pte_mknewprot(pte)); 
 }
 
 static inline pte_t pte_mkread(pte_t pte)
 { 
+<<<<<<< HEAD
+=======
+	if (unlikely(pte_get_bits(pte, _PAGE_USER)))
+		return pte;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pte_set_bits(pte, _PAGE_USER);
 	return(pte_mknewprot(pte)); 
 }
@@ -234,6 +246,11 @@ static inline pte_t pte_mkyoung(pte_t pte)
 
 static inline pte_t pte_mkwrite(pte_t pte)	
 {
+<<<<<<< HEAD
+=======
+	if (unlikely(pte_get_bits(pte,  _PAGE_RW)))
+		return pte;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pte_set_bits(pte, _PAGE_RW);
 	return(pte_mknewprot(pte)); 
 }

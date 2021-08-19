@@ -252,6 +252,12 @@ static int ieee802154_create(struct net *net, struct socket *sock,
 
 	switch (sock->type) {
 	case SOCK_RAW:
+<<<<<<< HEAD
+=======
+		rc = -EPERM;
+		if (!capable(CAP_NET_RAW))
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		proto = &ieee802154_raw_prot;
 		ops = &ieee802154_raw_ops;
 		break;

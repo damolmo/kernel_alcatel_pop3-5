@@ -518,8 +518,15 @@ static int hfsplus_fill_super(struct super_block *sb, void *data, int silent)
 	hfsplus_cat_build_key(sb, fd.search_key, HFSPLUS_ROOT_CNID, &str);
 	if (!hfs_brec_read(&fd, &entry, sizeof(entry))) {
 		hfs_find_exit(&fd);
+<<<<<<< HEAD
 		if (entry.type != cpu_to_be16(HFSPLUS_FOLDER))
 			goto out_put_root;
+=======
+		if (entry.type != cpu_to_be16(HFSPLUS_FOLDER)) {
+			err = -EINVAL;
+			goto out_put_root;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		inode = hfsplus_iget(sb, be32_to_cpu(entry.folder.id));
 		if (IS_ERR(inode)) {
 			err = PTR_ERR(inode);
@@ -582,6 +589,10 @@ static int hfsplus_fill_super(struct super_block *sb, void *data, int silent)
 	return 0;
 
 out_put_hidden_dir:
+<<<<<<< HEAD
+=======
+	cancel_delayed_work_sync(&sbi->sync_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(sbi->hidden_dir);
 out_put_root:
 	dput(sb->s_root);

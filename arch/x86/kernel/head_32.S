@@ -33,7 +33,11 @@
 #define X86		new_cpu_data+CPUINFO_x86
 #define X86_VENDOR	new_cpu_data+CPUINFO_x86_vendor
 #define X86_MODEL	new_cpu_data+CPUINFO_x86_model
+<<<<<<< HEAD
 #define X86_MASK	new_cpu_data+CPUINFO_x86_mask
+=======
+#define X86_STEPPING	new_cpu_data+CPUINFO_x86_stepping
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define X86_HARD_MATH	new_cpu_data+CPUINFO_hard_math
 #define X86_CPUID	new_cpu_data+CPUINFO_cpuid_level
 #define X86_CAPABILITY	new_cpu_data+CPUINFO_x86_capability
@@ -440,7 +444,11 @@ enable_paging:
 	shrb $4,%al
 	movb %al,X86_MODEL
 	andb $0x0f,%cl		# mask mask revision
+<<<<<<< HEAD
 	movb %cl,X86_MASK
+=======
+	movb %cl,X86_STEPPING
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	movl %edx,X86_CAPABILITY
 
 is486:
@@ -571,7 +579,11 @@ early_idt_handler_common:
 	movl %eax,%ds
 	movl %eax,%es
 
+<<<<<<< HEAD
 	cmpl $(__KERNEL_CS),32(%esp)
+=======
+	cmpw $(__KERNEL_CS),32(%esp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jne 10f
 
 	leal 28(%esp),%eax	# Pointer to %eip
@@ -669,14 +681,27 @@ __PAGE_ALIGNED_BSS
 initial_pg_pmd:
 	.fill 1024*KPMDS,4,0
 #else
+<<<<<<< HEAD
 ENTRY(initial_page_table)
+=======
+.globl initial_page_table
+initial_page_table:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.fill 1024,4,0
 #endif
 initial_pg_fixmap:
 	.fill 1024,4,0
+<<<<<<< HEAD
 ENTRY(empty_zero_page)
 	.fill 4096,1,0
 ENTRY(swapper_pg_dir)
+=======
+.globl empty_zero_page
+empty_zero_page:
+	.fill 4096,1,0
+.globl swapper_pg_dir
+swapper_pg_dir:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.fill 1024,4,0
 
 /*

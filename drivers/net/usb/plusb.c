@@ -102,7 +102,11 @@ static int pl_reset(struct usbnet *dev)
 }
 
 static const struct driver_info	prolific_info = {
+<<<<<<< HEAD
 	.description =	"Prolific PL-2301/PL-2302/PL-25A1",
+=======
+	.description =	"Prolific PL-2301/PL-2302/PL-25A1/PL-27A1",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.flags =	FLAG_POINTTOPOINT | FLAG_NO_SETINT,
 		/* some PL-2302 versions seem to fail usb_set_interface() */
 	.reset =	pl_reset,
@@ -139,6 +143,20 @@ static const struct usb_device_id	products [] = {
 					 * Host-to-Host Cable
 					 */
 	.driver_info =  (unsigned long) &prolific_info,
+<<<<<<< HEAD
+=======
+
+},
+
+/* super speed cables */
+{
+	USB_DEVICE(0x067b, 0x27a1),     /* PL-27A1, no eeprom
+					 * also: goobay Active USB 3.0
+					 * Data Link,
+					 * Unitek Y-3501
+					 */
+	.driver_info =  (unsigned long) &prolific_info,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 },
 
 	{ },		// END
@@ -158,5 +176,9 @@ static struct usb_driver plusb_driver = {
 module_usb_driver(plusb_driver);
 
 MODULE_AUTHOR("David Brownell");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Prolific PL-2301/2302/25A1 USB Host to Host Link Driver");
+=======
+MODULE_DESCRIPTION("Prolific PL-2301/2302/25A1/27A1 USB Host to Host Link Driver");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_LICENSE("GPL");

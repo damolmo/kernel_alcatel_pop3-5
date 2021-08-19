@@ -136,6 +136,10 @@ static struct via_spec *via_new_spec(struct hda_codec *codec)
 	spec->no_pin_power_ctl = 1;
 	spec->gen.indep_hp = 1;
 	spec->gen.keep_eapd_on = 1;
+<<<<<<< HEAD
+=======
+	spec->gen.dac_min_mute = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spec->gen.pcm_playback_hook = via_playback_pcm_hook;
 	spec->gen.add_stereo_mix_input = 1;
 	return spec;

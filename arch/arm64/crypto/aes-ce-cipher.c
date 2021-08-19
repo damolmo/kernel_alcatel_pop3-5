@@ -127,7 +127,11 @@ static void aes_cipher_decrypt(struct crypto_tfm *tfm, u8 dst[], u8 const src[])
 static struct crypto_alg aes_alg = {
 	.cra_name		= "aes",
 	.cra_driver_name	= "aes-ce",
+<<<<<<< HEAD
 	.cra_priority		= 300,
+=======
+	.cra_priority		= 250,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.cra_flags		= CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		= AES_BLOCK_SIZE,
 	.cra_ctxsize		= sizeof(struct crypto_aes_ctx),

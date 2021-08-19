@@ -272,7 +272,10 @@ static const struct dmi_system_id dell_quirks[] __initconst = {
 };
 
 static struct calling_interface_buffer *buffer;
+<<<<<<< HEAD
 static struct page *bufferpage;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static DEFINE_MUTEX(buffer_mutex);
 
 static int hwswitch_state;
@@ -825,12 +828,20 @@ static int __init dell_init(void)
 	 * Allocate buffer below 4GB for SMI data--only 32-bit physical addr
 	 * is passed to SMI handler.
 	 */
+<<<<<<< HEAD
 	bufferpage = alloc_page(GFP_KERNEL | GFP_DMA32);
 	if (!bufferpage) {
 		ret = -ENOMEM;
 		goto fail_buffer;
 	}
 	buffer = page_address(bufferpage);
+=======
+	buffer = (void *)__get_free_page(GFP_KERNEL | GFP_DMA32);
+	if (!buffer) {
+		ret = -ENOMEM;
+		goto fail_buffer;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = dell_setup_rfkill();
 
@@ -892,7 +903,11 @@ fail_backlight:
 	cancel_delayed_work_sync(&dell_rfkill_work);
 	dell_cleanup_rfkill();
 fail_rfkill:
+<<<<<<< HEAD
 	free_page((unsigned long)bufferpage);
+=======
+	free_page((unsigned long)buffer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 fail_buffer:
 	platform_device_del(platform_device);
 fail_platform_device2:

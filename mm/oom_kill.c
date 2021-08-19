@@ -464,10 +464,21 @@ void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 	 * still freeing memory.
 	 */
 	read_lock(&tasklist_lock);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * The task 'p' might have already exited before reaching here. The
+	 * put_task_struct() will free task_struct 'p' while the loop still try
+	 * to access the field of 'p', so, get an extra reference.
+	 */
+	get_task_struct(p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for_each_thread(p, t) {
 		list_for_each_entry(child, &t->children, sibling) {
 			unsigned int child_points;
 
+<<<<<<< HEAD
 			/*M: add for race condition*/
 			if (p->flags & PF_EXITING) {
 				read_unlock(&tasklist_lock);
@@ -480,6 +491,8 @@ void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 				return;
 			}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (child->mm == p->mm)
 				continue;
 			/*
@@ -495,6 +508,10 @@ void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	put_task_struct(p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	read_unlock(&tasklist_lock);
 
 	p = find_lock_task_mm(victim);

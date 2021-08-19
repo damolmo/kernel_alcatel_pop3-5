@@ -10,4 +10,8 @@
 #define XT_QTAGUID_SOCKET XT_OWNER_SOCKET
 #define xt_qtaguid_match_info xt_owner_match_info
 
+<<<<<<< HEAD
+=======
+int qtaguid_untag(struct socket *sock, bool kernel);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _XT_QTAGUID_MATCH_H */

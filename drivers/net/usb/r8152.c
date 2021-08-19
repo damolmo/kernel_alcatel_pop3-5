@@ -24,6 +24,10 @@
 #include <net/ip6_checksum.h>
 #include <uapi/linux/mdio.h>
 #include <linux/mdio.h>
+<<<<<<< HEAD
+=======
+#include <linux/suspend.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Version Information */
 #define DRIVER_VERSION "v1.07.0 (2014/10/09)"
@@ -567,6 +571,12 @@ struct r8152 {
 	struct delayed_work schedule;
 	struct mii_if_info mii;
 	struct mutex control;	/* use for hw setting */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	struct notifier_block pm_notifier;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct rtl_ops {
 		void (*init)(struct r8152 *);
@@ -627,8 +637,16 @@ int get_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
 	ret = usb_control_msg(tp->udev, usb_rcvctrlpipe(tp->udev, 0),
 			      RTL8152_REQ_GET_REGS, RTL8152_REQT_READ,
 			      value, index, tmp, size, 500);
+<<<<<<< HEAD
 
 	memcpy(data, tmp, size);
+=======
+	if (ret < 0)
+		memset(data, 0xff, size);
+	else
+		memcpy(data, tmp, size);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(tmp);
 
 	return ret;
@@ -1183,6 +1201,10 @@ static void intr_callback(struct urb *urb)
 		}
 	} else {
 		if (tp->speed & LINK_STATUS) {
+<<<<<<< HEAD
+=======
+			netif_stop_queue(tp->netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			set_bit(RTL8152_LINK_CHG, &tp->flags);
 			schedule_delayed_work(&tp->schedule, 0);
 		}
@@ -1252,6 +1274,10 @@ static int alloc_all_mem(struct r8152 *tp)
 	spin_lock_init(&tp->tx_lock);
 	INIT_LIST_HEAD(&tp->rx_done);
 	INIT_LIST_HEAD(&tp->tx_free);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&tp->rx_done);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	skb_queue_head_init(&tp->tx_queue);
 
 	for (i = 0; i < RTL8152_MAX_RX; i++) {
@@ -1589,7 +1615,11 @@ static int r8152_tx_agg_fill(struct r8152 *tp, struct tx_agg *agg)
 
 		tx_data += len;
 		agg->skb_len += len;
+<<<<<<< HEAD
 		agg->skb_num++;
+=======
+		agg->skb_num += skb_shinfo(skb)->gso_segs ?: 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		dev_kfree_skb_any(skb);
 
@@ -1631,7 +1661,11 @@ static u8 r8152_rx_csum(struct r8152 *tp, struct rx_desc *rx_desc)
 	u8 checksum = CHECKSUM_NONE;
 	u32 opts2, opts3;
 
+<<<<<<< HEAD
 	if (tp->version == RTL_VER_01)
+=======
+	if (!(tp->netdev->features & NETIF_F_RXCSUM))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto return_result;
 
 	opts2 = le32_to_cpu(rx_desc->opts2);
@@ -1853,7 +1887,10 @@ static void _rtl8152_set_rx_mode(struct net_device *netdev)
 	__le32 tmp[2];
 	u32 ocp_data;
 
+<<<<<<< HEAD
 	clear_bit(RTL8152_SET_RX_MODE, &tp->flags);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_stop_queue(netdev);
 	ocp_data = ocp_read_dword(tp, MCU_TYPE_PLA, PLA_RCR);
 	ocp_data &= ~RCR_ACPT_ALL;
@@ -2256,8 +2293,11 @@ static void rtl_phy_reset(struct r8152 *tp)
 	u16 data;
 	int i;
 
+<<<<<<< HEAD
 	clear_bit(PHY_RESET, &tp->flags);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	data = r8152_mdio_read(tp, MII_BMCR);
 
 	/* don't reset again before the previous one complete */
@@ -2287,6 +2327,7 @@ static void r8153_teredo_off(struct r8152 *tp)
 	ocp_write_dword(tp, MCU_TYPE_PLA, PLA_TEREDO_TIMER, 0);
 }
 
+<<<<<<< HEAD
 static void r8152b_disable_aldps(struct r8152 *tp)
 {
 	ocp_reg_write(tp, OCP_ALDPS_CONFIG, ENPDNPS | LINKENA | DIS_SDSAVE);
@@ -2297,13 +2338,31 @@ static inline void r8152b_enable_aldps(struct r8152 *tp)
 {
 	ocp_reg_write(tp, OCP_ALDPS_CONFIG, ENPWRSAVE | ENPDNPS |
 					    LINKENA | DIS_SDSAVE);
+=======
+static void r8152_aldps_en(struct r8152 *tp, bool enable)
+{
+	if (enable) {
+		ocp_reg_write(tp, OCP_ALDPS_CONFIG, ENPWRSAVE | ENPDNPS |
+						    LINKENA | DIS_SDSAVE);
+	} else {
+		ocp_reg_write(tp, OCP_ALDPS_CONFIG, ENPDNPS | LINKENA |
+						    DIS_SDSAVE);
+		msleep(20);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8152_disable(struct r8152 *tp)
 {
+<<<<<<< HEAD
 	r8152b_disable_aldps(tp);
 	rtl_disable(tp);
 	r8152b_enable_aldps(tp);
+=======
+	r8152_aldps_en(tp, false);
+	rtl_disable(tp);
+	r8152_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void r8152b_hw_phy_cfg(struct r8152 *tp)
@@ -2658,11 +2717,16 @@ static void r8153_enter_oob(struct r8152 *tp)
 	ocp_write_dword(tp, MCU_TYPE_PLA, PLA_RCR, ocp_data);
 }
 
+<<<<<<< HEAD
 static void r8153_disable_aldps(struct r8152 *tp)
+=======
+static void r8153_aldps_en(struct r8152 *tp, bool enable)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u16 data;
 
 	data = ocp_reg_read(tp, OCP_POWER_CFG);
+<<<<<<< HEAD
 	data &= ~EN_ALDPS;
 	ocp_reg_write(tp, OCP_POWER_CFG, data);
 	msleep(20);
@@ -2675,13 +2739,29 @@ static void r8153_enable_aldps(struct r8152 *tp)
 	data = ocp_reg_read(tp, OCP_POWER_CFG);
 	data |= EN_ALDPS;
 	ocp_reg_write(tp, OCP_POWER_CFG, data);
+=======
+	if (enable) {
+		data |= EN_ALDPS;
+		ocp_reg_write(tp, OCP_POWER_CFG, data);
+	} else {
+		data &= ~EN_ALDPS;
+		ocp_reg_write(tp, OCP_POWER_CFG, data);
+		msleep(20);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8153_disable(struct r8152 *tp)
 {
+<<<<<<< HEAD
 	r8153_disable_aldps(tp);
 	rtl_disable(tp);
 	r8153_enable_aldps(tp);
+=======
+	r8153_aldps_en(tp, false);
+	rtl_disable(tp);
+	r8153_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int rtl8152_set_speed(struct r8152 *tp, u8 autoneg, u16 speed, u8 duplex)
@@ -2758,10 +2838,16 @@ static int rtl8152_set_speed(struct r8152 *tp, u8 autoneg, u16 speed, u8 duplex)
 	r8152_mdio_write(tp, MII_ADVERTISE, anar);
 	r8152_mdio_write(tp, MII_BMCR, bmcr);
 
+<<<<<<< HEAD
 	if (test_bit(PHY_RESET, &tp->flags)) {
 		int i;
 
 		clear_bit(PHY_RESET, &tp->flags);
+=======
+	if (test_and_clear_bit(PHY_RESET, &tp->flags)) {
+		int i;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < 50; i++) {
 			msleep(20);
 			if ((r8152_mdio_read(tp, MII_BMCR) & BMCR_RESET) == 0)
@@ -2770,7 +2856,10 @@ static int rtl8152_set_speed(struct r8152 *tp, u8 autoneg, u16 speed, u8 duplex)
 	}
 
 out:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -2779,9 +2868,15 @@ static void rtl8152_up(struct r8152 *tp)
 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
 		return;
 
+<<<<<<< HEAD
 	r8152b_disable_aldps(tp);
 	r8152b_exit_oob(tp);
 	r8152b_enable_aldps(tp);
+=======
+	r8152_aldps_en(tp, false);
+	r8152b_exit_oob(tp);
+	r8152_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8152_down(struct r8152 *tp)
@@ -2792,9 +2887,15 @@ static void rtl8152_down(struct r8152 *tp)
 	}
 
 	r8152_power_cut_en(tp, false);
+<<<<<<< HEAD
 	r8152b_disable_aldps(tp);
 	r8152b_enter_oob(tp);
 	r8152b_enable_aldps(tp);
+=======
+	r8152_aldps_en(tp, false);
+	r8152b_enter_oob(tp);
+	r8152_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8153_up(struct r8152 *tp)
@@ -2802,9 +2903,15 @@ static void rtl8153_up(struct r8152 *tp)
 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
 		return;
 
+<<<<<<< HEAD
 	r8153_disable_aldps(tp);
 	r8153_first_init(tp);
 	r8153_enable_aldps(tp);
+=======
+	r8153_u1u2en(tp, false);
+	r8153_first_init(tp);
+	r8153_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8153_down(struct r8152 *tp)
@@ -2816,9 +2923,15 @@ static void rtl8153_down(struct r8152 *tp)
 
 	r8153_u1u2en(tp, false);
 	r8153_power_cut_en(tp, false);
+<<<<<<< HEAD
 	r8153_disable_aldps(tp);
 	r8153_enter_oob(tp);
 	r8153_enable_aldps(tp);
+=======
+	r8153_aldps_en(tp, false);
+	r8153_enter_oob(tp);
+	r8153_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void set_carrier(struct r8152 *tp)
@@ -2826,7 +2939,10 @@ static void set_carrier(struct r8152 *tp)
 	struct net_device *netdev = tp->netdev;
 	u8 speed;
 
+<<<<<<< HEAD
 	clear_bit(RTL8152_LINK_CHG, &tp->flags);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	speed = rtl8152_get_speed(tp);
 
 	if (speed & LINK_STATUS) {
@@ -2834,6 +2950,12 @@ static void set_carrier(struct r8152 *tp)
 			tp->rtl_ops.enable(tp);
 			set_bit(RTL8152_SET_RX_MODE, &tp->flags);
 			netif_carrier_on(netdev);
+<<<<<<< HEAD
+=======
+		} else if (netif_queue_stopped(netdev) &&
+			   skb_queue_len(&tp->tx_queue) < tp->tx_qlen) {
+			netif_wake_queue(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	} else {
 		if (tp->speed & LINK_STATUS) {
@@ -2864,6 +2986,7 @@ static void rtl_work_func_t(struct work_struct *work)
 		goto out1;
 	}
 
+<<<<<<< HEAD
 	if (test_bit(RTL8152_LINK_CHG, &tp->flags))
 		set_carrier(tp);
 
@@ -2877,6 +3000,19 @@ static void rtl_work_func_t(struct work_struct *work)
 	}
 
 	if (test_bit(PHY_RESET, &tp->flags))
+=======
+	if (test_and_clear_bit(RTL8152_LINK_CHG, &tp->flags))
+		set_carrier(tp);
+
+	if (test_and_clear_bit(RTL8152_SET_RX_MODE, &tp->flags))
+		_rtl8152_set_rx_mode(tp->netdev);
+
+	if (test_and_clear_bit(SCHEDULE_TASKLET, &tp->flags) &&
+	    (tp->speed & LINK_STATUS))
+		tasklet_schedule(&tp->tl);
+
+	if (test_and_clear_bit(PHY_RESET, &tp->flags))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rtl_phy_reset(tp);
 
 	mutex_unlock(&tp->control);
@@ -2885,6 +3021,36 @@ out1:
 	usb_autopm_put_interface(tp->intf);
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int rtl_notifier(struct notifier_block *nb, unsigned long action,
+			void *data)
+{
+	struct r8152 *tp = container_of(nb, struct r8152, pm_notifier);
+
+	switch (action) {
+	case PM_HIBERNATION_PREPARE:
+	case PM_SUSPEND_PREPARE:
+		usb_autopm_get_interface(tp->intf);
+		break;
+
+	case PM_POST_HIBERNATION:
+	case PM_POST_SUSPEND:
+		usb_autopm_put_interface(tp->intf);
+		break;
+
+	case PM_POST_RESTORE:
+	case PM_RESTORE_PREPARE:
+	default:
+		break;
+	}
+
+	return NOTIFY_DONE;
+}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int rtl8152_open(struct net_device *netdev)
 {
 	struct r8152 *tp = netdev_priv(netdev);
@@ -2938,6 +3104,13 @@ static int rtl8152_open(struct net_device *netdev)
 	mutex_unlock(&tp->control);
 
 	usb_autopm_put_interface(tp->intf);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	tp->pm_notifier.notifier_call = rtl_notifier;
+	register_pm_notifier(&tp->pm_notifier);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	return res;
@@ -2948,6 +3121,12 @@ static int rtl8152_close(struct net_device *netdev)
 	struct r8152 *tp = netdev_priv(netdev);
 	int res = 0;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+	unregister_pm_notifier(&tp->pm_notifier);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	clear_bit(WORK_ENABLE, &tp->flags);
 	usb_kill_urb(tp->intr_urb);
 	cancel_delayed_work_sync(&tp->schedule);
@@ -3092,7 +3271,11 @@ static void r8152b_init(struct r8152 *tp)
 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
 		return;
 
+<<<<<<< HEAD
 	r8152b_disable_aldps(tp);
+=======
+	r8152_aldps_en(tp, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tp->version == RTL_VER_01) {
 		ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_LED_FEATURE);
@@ -3114,7 +3297,11 @@ static void r8152b_init(struct r8152 *tp)
 	ocp_write_word(tp, MCU_TYPE_PLA, PLA_GPHY_INTR_IMR, ocp_data);
 
 	r8152b_enable_eee(tp);
+<<<<<<< HEAD
 	r8152b_enable_aldps(tp);
+=======
+	r8152_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r8152b_enable_fc(tp);
 	rtl_tally_reset(tp);
 
@@ -3132,21 +3319,39 @@ static void r8153_init(struct r8152 *tp)
 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
 		return;
 
+<<<<<<< HEAD
 	r8153_disable_aldps(tp);
+=======
+	r8153_aldps_en(tp, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r8153_u1u2en(tp, false);
 
 	for (i = 0; i < 500; i++) {
 		if (ocp_read_word(tp, MCU_TYPE_PLA, PLA_BOOT_CTRL) &
 		    AUTOLOAD_DONE)
 			break;
+<<<<<<< HEAD
 		msleep(20);
+=======
+
+		msleep(20);
+		if (test_bit(RTL8152_UNPLUG, &tp->flags))
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	for (i = 0; i < 500; i++) {
 		ocp_data = ocp_reg_read(tp, OCP_PHY_STATUS) & PHY_STAT_MASK;
 		if (ocp_data == PHY_STAT_LAN_ON || ocp_data == PHY_STAT_PWRDN)
 			break;
+<<<<<<< HEAD
 		msleep(20);
+=======
+
+		msleep(20);
+		if (test_bit(RTL8152_UNPLUG, &tp->flags))
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	r8153_u2p3en(tp, false);
@@ -3186,7 +3391,11 @@ static void r8153_init(struct r8152 *tp)
 		       EEE_SPDWN_EN);
 
 	r8153_enable_eee(tp);
+<<<<<<< HEAD
 	r8153_enable_aldps(tp);
+=======
+	r8153_aldps_en(tp, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r8152b_enable_fc(tp);
 	rtl_tally_reset(tp);
 }
@@ -3245,8 +3454,22 @@ static int rtl8152_resume(struct usb_interface *intf)
 			rtl_runtime_suspend_enable(tp, false);
 			clear_bit(SELECTIVE_SUSPEND, &tp->flags);
 			set_bit(WORK_ENABLE, &tp->flags);
+<<<<<<< HEAD
 			if (tp->speed & LINK_STATUS)
 				rtl_start_rx(tp);
+=======
+
+			if (netif_carrier_ok(tp->netdev)) {
+				if (rtl8152_get_speed(tp) & LINK_STATUS) {
+					rtl_start_rx(tp);
+				} else {
+					netif_carrier_off(tp->netdev);
+					tp->rtl_ops.disable(tp);
+					netif_info(tp, link, tp->netdev,
+						   "linking down\n");
+				}
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			tp->rtl_ops.up(tp);
 			rtl8152_set_speed(tp, AUTONEG_ENABLE,
@@ -3289,6 +3512,12 @@ static int rtl8152_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	struct r8152 *tp = netdev_priv(dev);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (wol->wolopts & ~WAKE_ANY)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = usb_autopm_get_interface(tp->intf);
 	if (ret < 0)
 		goto out_set_wol;
@@ -3785,6 +4014,12 @@ static int rtl8152_probe(struct usb_interface *intf,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
+=======
+	if (intf->cur_altsetting->desc.bNumEndpoints < 3)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_reset_device(udev);
 	netdev = alloc_etherdev(sizeof(struct r8152));
 	if (!netdev) {
@@ -3824,6 +4059,14 @@ static int rtl8152_probe(struct usb_interface *intf,
 				NETIF_F_HIGHDMA | NETIF_F_FRAGLIST |
 				NETIF_F_IPV6_CSUM | NETIF_F_TSO6;
 
+<<<<<<< HEAD
+=======
+	if (tp->version == RTL_VER_01) {
+		netdev->features &= ~NETIF_F_RXCSUM;
+		netdev->hw_features &= ~NETIF_F_RXCSUM;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netdev->ethtool_ops = &ops;
 	netif_set_gso_max_size(netdev, RTL_LIMITED_TSO_SIZE);
 

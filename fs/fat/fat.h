@@ -347,6 +347,14 @@ static inline void fatent_brelse(struct fat_entry *fatent)
 	fatent->fat_inode = NULL;
 }
 
+<<<<<<< HEAD
+=======
+static inline bool fat_valid_entry(struct msdos_sb_info *sbi, int entry)
+{
+	return FAT_START_ENT <= entry && entry < sbi->max_cluster;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void fat_ent_access_init(struct super_block *sb);
 extern int fat_ent_read(struct inode *inode, struct fat_entry *fatent,
 			int entry);

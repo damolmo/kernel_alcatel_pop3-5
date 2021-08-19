@@ -21,6 +21,10 @@
 #include <asm/setup.h>
 #include <asm/apic.h>
 #include <asm/param.h>
+<<<<<<< HEAD
+=======
+#include <asm/tsc.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* CPU reference clock frequency: in KHz */
 #define FREQ_83		83200
@@ -92,7 +96,11 @@ unsigned long try_msr_calibrate_tsc(void)
 
 	if (freq_desc_tables[cpu_index].msr_plat) {
 		rdmsr(MSR_PLATFORM_INFO, lo, hi);
+<<<<<<< HEAD
 		ratio = (lo >> 8) & 0x1f;
+=======
+		ratio = (lo >> 8) & 0xff;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 		ratio = (hi >> 8) & 0x1f;

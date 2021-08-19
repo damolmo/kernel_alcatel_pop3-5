@@ -275,12 +275,18 @@ static struct sk_buff *cx82310_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 {
 	int len = skb->len;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < 2) {
 		struct sk_buff *skb2 = skb_copy_expand(skb, 2, 0, flags);
 		dev_kfree_skb_any(skb);
 		skb = skb2;
 		if (!skb)
 			return NULL;
+=======
+	if (skb_cow_head(skb, 2)) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	skb_push(skb, 2);
 

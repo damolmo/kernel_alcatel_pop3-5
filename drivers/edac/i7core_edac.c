@@ -1190,15 +1190,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 	rc = device_add(pvt->addrmatch_dev);
 	if (rc < 0)
+<<<<<<< HEAD
 		return rc;
+=======
+		goto err_put_addrmatch;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!pvt->is_registered) {
 		pvt->chancounts_dev = kzalloc(sizeof(*pvt->chancounts_dev),
 					      GFP_KERNEL);
 		if (!pvt->chancounts_dev) {
+<<<<<<< HEAD
 			put_device(pvt->addrmatch_dev);
 			device_del(pvt->addrmatch_dev);
 			return rc;
+=======
+			rc = -ENOMEM;
+			goto err_del_addrmatch;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		pvt->chancounts_dev->type = &all_channel_counts_type;
@@ -1212,9 +1221,24 @@ static int i7core_create_sysfs_devices(struct mem_ctl_info *mci)
 
 		rc = device_add(pvt->chancounts_dev);
 		if (rc < 0)
+<<<<<<< HEAD
 			return rc;
 	}
 	return 0;
+=======
+			goto err_put_chancounts;
+	}
+	return 0;
+
+err_put_chancounts:
+	put_device(pvt->chancounts_dev);
+err_del_addrmatch:
+	device_del(pvt->addrmatch_dev);
+err_put_addrmatch:
+	put_device(pvt->addrmatch_dev);
+
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
@@ -1229,11 +1253,19 @@ static void i7core_delete_sysfs_devices(struct mem_ctl_info *mci)
 	device_remove_file(&mci->dev, &dev_attr_inject_enable);
 
 	if (!pvt->is_registered) {
+<<<<<<< HEAD
 		put_device(pvt->chancounts_dev);
 		device_del(pvt->chancounts_dev);
 	}
 	put_device(pvt->addrmatch_dev);
 	device_del(pvt->addrmatch_dev);
+=======
+		device_del(pvt->chancounts_dev);
+		put_device(pvt->chancounts_dev);
+	}
+	device_del(pvt->addrmatch_dev);
+	put_device(pvt->addrmatch_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /****************************************************************************
@@ -1874,7 +1906,11 @@ static int i7core_mce_check_error(struct notifier_block *nb, unsigned long val,
 
 	i7_dev = get_i7core_dev(mce->socketid);
 	if (!i7_dev)
+<<<<<<< HEAD
 		return NOTIFY_BAD;
+=======
+		return NOTIFY_DONE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mci = i7_dev->mci;
 	pvt = mci->pvt_info;

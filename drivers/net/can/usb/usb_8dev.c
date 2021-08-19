@@ -527,6 +527,11 @@ static void usb_8dev_read_bulk_callback(struct urb *urb)
 		break;
 
 	case -ENOENT:
+<<<<<<< HEAD
+=======
+	case -EPIPE:
+	case -EPROTO:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -ESHUTDOWN:
 		return;
 
@@ -957,8 +962,13 @@ static int usb_8dev_probe(struct usb_interface *intf,
 	for (i = 0; i < MAX_TX_URBS; i++)
 		priv->tx_contexts[i].echo_index = MAX_TX_URBS;
 
+<<<<<<< HEAD
 	priv->cmd_msg_buffer = kzalloc(sizeof(struct usb_8dev_cmd_msg),
 				      GFP_KERNEL);
+=======
+	priv->cmd_msg_buffer = devm_kzalloc(&intf->dev, sizeof(struct usb_8dev_cmd_msg),
+					    GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!priv->cmd_msg_buffer)
 		goto cleanup_candev;
 
@@ -972,7 +982,11 @@ static int usb_8dev_probe(struct usb_interface *intf,
 	if (err) {
 		netdev_err(netdev,
 			"couldn't register CAN device: %d\n", err);
+<<<<<<< HEAD
 		goto cleanup_cmd_msg_buffer;
+=======
+		goto cleanup_candev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	err = usb_8dev_cmd_version(priv, &version);
@@ -993,9 +1007,12 @@ static int usb_8dev_probe(struct usb_interface *intf,
 cleanup_unregister_candev:
 	unregister_netdev(priv->netdev);
 
+<<<<<<< HEAD
 cleanup_cmd_msg_buffer:
 	kfree(priv->cmd_msg_buffer);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cleanup_candev:
 	free_candev(netdev);
 
@@ -1014,9 +1031,14 @@ static void usb_8dev_disconnect(struct usb_interface *intf)
 		netdev_info(priv->netdev, "device disconnected\n");
 
 		unregister_netdev(priv->netdev);
+<<<<<<< HEAD
 		free_candev(priv->netdev);
 
 		unlink_all_urbs(priv);
+=======
+		unlink_all_urbs(priv);
+		free_candev(priv->netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 }

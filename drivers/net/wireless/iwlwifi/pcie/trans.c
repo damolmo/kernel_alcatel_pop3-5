@@ -79,6 +79,13 @@
 #include "iwl-fw-error-dump.h"
 #include "internal.h"
 
+<<<<<<< HEAD
+=======
+/* extended range in FW SRAM */
+#define IWL_FW_MEM_EXTENDED_START	0x40000
+#define IWL_FW_MEM_EXTENDED_END		0x57FFF
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void iwl_pcie_free_fw_monitor(struct iwl_trans *trans)
 {
 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
@@ -625,6 +632,7 @@ static int iwl_pcie_load_section(struct iwl_trans *trans, u8 section_num,
 	}
 
 	for (offset = 0; offset < section->len; offset += chunk_sz) {
+<<<<<<< HEAD
 		u32 copy_size;
 
 		copy_size = min_t(u32, chunk_sz, section->len - offset);
@@ -633,6 +641,30 @@ static int iwl_pcie_load_section(struct iwl_trans *trans, u8 section_num,
 		ret = iwl_pcie_load_firmware_chunk(trans,
 						   section->offset + offset,
 						   p_addr, copy_size);
+=======
+		u32 copy_size, dst_addr;
+		bool extended_addr = false;
+
+		copy_size = min_t(u32, chunk_sz, section->len - offset);
+		dst_addr = section->offset + offset;
+
+		if (dst_addr >= IWL_FW_MEM_EXTENDED_START &&
+		    dst_addr <= IWL_FW_MEM_EXTENDED_END)
+			extended_addr = true;
+
+		if (extended_addr)
+			iwl_set_bits_prph(trans, LMPM_CHICK,
+					  LMPM_CHICK_EXTENDED_ADDR_SPACE);
+
+		memcpy(v_addr, (u8 *)section->data + offset, copy_size);
+		ret = iwl_pcie_load_firmware_chunk(trans, dst_addr, p_addr,
+						   copy_size);
+
+		if (extended_addr)
+			iwl_clear_bits_prph(trans, LMPM_CHICK,
+					    LMPM_CHICK_EXTENDED_ADDR_SPACE);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret) {
 			IWL_ERR(trans,
 				"Could not load the [%d] uCode section\n",

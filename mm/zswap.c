@@ -662,6 +662,18 @@ static int zswap_frontswap_store(unsigned type, pgoff_t offset,
 			ret = -ENOMEM;
 			goto reject;
 		}
+<<<<<<< HEAD
+=======
+
+		/* A second zswap_is_full() check after
+		 * zswap_shrink() to make sure it's now
+		 * under the max_pool_percent
+		 */
+		if (zswap_is_full()) {
+			ret = -ENOMEM;
+			goto reject;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* allocate entry */
@@ -907,11 +919,20 @@ static int __init init_zswap(void)
 
 	pr_info("loading zswap\n");
 
+<<<<<<< HEAD
 	zswap_pool = zpool_create_pool(zswap_zpool_type, gfp, &zswap_zpool_ops);
 	if (!zswap_pool && strcmp(zswap_zpool_type, ZSWAP_ZPOOL_DEFAULT)) {
 		pr_info("%s zpool not available\n", zswap_zpool_type);
 		zswap_zpool_type = ZSWAP_ZPOOL_DEFAULT;
 		zswap_pool = zpool_create_pool(zswap_zpool_type, gfp,
+=======
+	zswap_pool = zpool_create_pool(zswap_zpool_type, "zswap", gfp,
+					&zswap_zpool_ops);
+	if (!zswap_pool && strcmp(zswap_zpool_type, ZSWAP_ZPOOL_DEFAULT)) {
+		pr_info("%s zpool not available\n", zswap_zpool_type);
+		zswap_zpool_type = ZSWAP_ZPOOL_DEFAULT;
+		zswap_pool = zpool_create_pool(zswap_zpool_type, "zswap", gfp,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					&zswap_zpool_ops);
 	}
 	if (!zswap_pool) {

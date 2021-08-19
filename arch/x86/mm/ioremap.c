@@ -296,11 +296,19 @@ void iounmap(volatile void __iomem *addr)
 	    (void __force *)addr < phys_to_virt(ISA_END_ADDRESS))
 		return;
 
+<<<<<<< HEAD
 	addr = (volatile void __iomem *)
 		(PAGE_MASK & (unsigned long __force)addr);
 
 	mmiotrace_iounmap(addr);
 
+=======
+	mmiotrace_iounmap(addr);
+
+	addr = (volatile void __iomem *)
+		(PAGE_MASK & (unsigned long __force)addr);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Use the vm area unlocked, assuming the caller
 	   ensures there isn't another iounmap for the same address
 	   in parallel. Reuse of the virtual address is prevented by

@@ -17,11 +17,27 @@
 #ifndef __LINUX_PSTORE_RAM_H__
 #define __LINUX_PSTORE_RAM_H__
 
+<<<<<<< HEAD
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
 #include <linux/types.h>
 #include <linux/init.h>
+=======
+#include <linux/compiler.h>
+#include <linux/device.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/list.h>
+#include <linux/types.h>
+
+/*
+ * Choose whether access to the RAM zone requires locking or not.  If a zone
+ * can be written to from different CPUs like with ftrace for example, then
+ * PRZ_FLAG_NO_LOCK is used. For all other cases, locking is required.
+ */
+#define PRZ_FLAG_NO_LOCK	BIT(0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct persistent_ram_buffer;
 struct rs_control;
@@ -39,6 +55,11 @@ struct persistent_ram_zone {
 	void *vaddr;
 	struct persistent_ram_buffer *buffer;
 	size_t buffer_size;
+<<<<<<< HEAD
+=======
+	u32 flags;
+	raw_spinlock_t buffer_lock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* ECC correction */
 	char *par_buffer;
@@ -54,12 +75,22 @@ struct persistent_ram_zone {
 
 struct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,
 			u32 sig, struct persistent_ram_ecc_info *ecc_info,
+<<<<<<< HEAD
 			unsigned int memtype);
+=======
+			unsigned int memtype, u32 flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void persistent_ram_free(struct persistent_ram_zone *prz);
 void persistent_ram_zap(struct persistent_ram_zone *prz);
 
 int persistent_ram_write(struct persistent_ram_zone *prz, const void *s,
+<<<<<<< HEAD
 	unsigned int count);
+=======
+			 unsigned int count);
+int persistent_ram_write_user(struct persistent_ram_zone *prz,
+			      const void __user *s, unsigned int count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void persistent_ram_save_old(struct persistent_ram_zone *prz);
 size_t persistent_ram_old_size(struct persistent_ram_zone *prz);

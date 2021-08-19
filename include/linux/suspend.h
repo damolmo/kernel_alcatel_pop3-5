@@ -201,6 +201,24 @@ struct platform_freeze_ops {
  */
 extern void suspend_set_ops(const struct platform_suspend_ops *ops);
 extern int suspend_valid_only_mem(suspend_state_t state);
+<<<<<<< HEAD
+=======
+
+/* Suspend-to-idle state machnine. */
+enum freeze_state {
+	FREEZE_STATE_NONE,      /* Not suspended/suspending. */
+	FREEZE_STATE_ENTER,     /* Enter suspend-to-idle. */
+	FREEZE_STATE_WAKE,      /* Wake up from suspend-to-idle. */
+};
+
+extern enum freeze_state __read_mostly suspend_freeze_state;
+
+static inline bool idle_should_freeze(void)
+{
+	return unlikely(suspend_freeze_state == FREEZE_STATE_ENTER);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void freeze_set_ops(const struct platform_freeze_ops *ops);
 extern void freeze_wake(void);
 
@@ -228,6 +246,10 @@ extern int pm_suspend(suspend_state_t state);
 
 static inline void suspend_set_ops(const struct platform_suspend_ops *ops) {}
 static inline int pm_suspend(suspend_state_t state) { return -ENOSYS; }
+<<<<<<< HEAD
+=======
+static inline bool idle_should_freeze(void) { return false; }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void freeze_set_ops(const struct platform_freeze_ops *ops) {}
 static inline void freeze_wake(void) {}
 #endif /* !CONFIG_SUSPEND */
@@ -325,6 +347,11 @@ extern int swsusp_page_is_forbidden(struct page *);
 extern void swsusp_set_page_free(struct page *);
 extern void swsusp_unset_page_free(struct page *);
 extern unsigned long get_safe_page(gfp_t gfp_mask);
+<<<<<<< HEAD
+=======
+extern asmlinkage int swsusp_arch_suspend(void);
+extern asmlinkage int swsusp_arch_resume(void);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern void hibernation_set_ops(const struct platform_hibernation_ops *ops);
 extern int hibernate(void);
@@ -332,7 +359,10 @@ extern bool system_entering_hibernation(void);
 extern bool hibernation_available(void);
 asmlinkage int swsusp_save(void);
 extern struct pbe *restore_pblist;
+<<<<<<< HEAD
 extern bool system_entering_hibernation(void);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else /* CONFIG_HIBERNATION */
 static inline void register_nosave_region(unsigned long b, unsigned long e) {}
 static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
@@ -438,6 +468,7 @@ extern bool pm_print_times_enabled;
 #define pm_print_times_enabled	(false)
 #endif
 
+<<<<<<< HEAD
 enum {
 	TOI_CAN_HIBERNATE,
 	TOI_CAN_RESUME,
@@ -514,6 +545,8 @@ static inline void check_resume_attempted(void)
 #define resume_attempted (0)
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_PM_AUTOSLEEP
 
 /* kernel/power/autosleep.c */
@@ -559,6 +592,7 @@ static inline void page_key_write(void *address) {}
 
 #endif /* !CONFIG_ARCH_SAVE_PAGE_KEYS */
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 extern int pre_hibernate(void);
 extern int mtk_hibernate(void);
@@ -570,4 +604,6 @@ static inline int hybrid_sleep_mode(void) { return 0; }
 #endif
 #endif /* CONFIG_MTK_HIBERNATION */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _LINUX_SUSPEND_H */

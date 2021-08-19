@@ -117,8 +117,13 @@ void mvebu_pmsu_set_cpu_boot_addr(int hw_cpu, void *boot_addr)
 		PMSU_BOOT_ADDR_REDIRECT_OFFSET(hw_cpu));
 }
 
+<<<<<<< HEAD
 extern unsigned char mvebu_boot_wa_start;
 extern unsigned char mvebu_boot_wa_end;
+=======
+extern unsigned char mvebu_boot_wa_start[];
+extern unsigned char mvebu_boot_wa_end[];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * This function sets up the boot address workaround needed for SMP
@@ -131,7 +136,11 @@ int mvebu_setup_boot_addr_wa(unsigned int crypto_eng_target,
 			     phys_addr_t resume_addr_reg)
 {
 	void __iomem *sram_virt_base;
+<<<<<<< HEAD
 	u32 code_len = &mvebu_boot_wa_end - &mvebu_boot_wa_start;
+=======
+	u32 code_len = mvebu_boot_wa_end - mvebu_boot_wa_start;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mvebu_mbus_del_window(BOOTROM_BASE, BOOTROM_SIZE);
 	mvebu_mbus_add_window_by_id(crypto_eng_target, crypto_eng_attribute,

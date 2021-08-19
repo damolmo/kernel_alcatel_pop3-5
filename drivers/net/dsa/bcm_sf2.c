@@ -684,16 +684,23 @@ static void bcm_sf2_sw_fixed_link_update(struct dsa_switch *ds, int port,
 					 struct fixed_phy_status *status)
 {
 	struct bcm_sf2_priv *priv = ds_to_priv(ds);
+<<<<<<< HEAD
 	u32 link, duplex, pause, speed;
+=======
+	u32 link, duplex, pause;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 reg;
 
 	link = core_readl(priv, CORE_LNKSTS);
 	duplex = core_readl(priv, CORE_DUPSTS);
 	pause = core_readl(priv, CORE_PAUSESTS);
+<<<<<<< HEAD
 	speed = core_readl(priv, CORE_SPDSTS);
 
 	speed >>= (port * SPDSTS_SHIFT);
 	speed &= SPDSTS_MASK;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	status->link = 0;
 
@@ -717,6 +724,7 @@ static void bcm_sf2_sw_fixed_link_update(struct dsa_switch *ds, int port,
 		status->duplex = !!(duplex & (1 << port));
 	}
 
+<<<<<<< HEAD
 	switch (speed) {
 	case SPDSTS_10:
 		status->speed = SPEED_10;
@@ -729,6 +737,8 @@ static void bcm_sf2_sw_fixed_link_update(struct dsa_switch *ds, int port,
 		break;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((pause & (1 << port)) &&
 	    (pause & (1 << (port + PAUSESTS_TX_PAUSE_SHIFT)))) {
 		status->asym_pause = 1;

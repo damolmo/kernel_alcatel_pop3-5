@@ -173,7 +173,11 @@ static int seccomp_check_filter(struct sock_filter *filter, unsigned int flen)
  *
  * Returns valid seccomp BPF response codes.
  */
+<<<<<<< HEAD
 static u32 seccomp_run_filters(struct seccomp_data *sd)
+=======
+static u32 seccomp_run_filters(const struct seccomp_data *sd)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct seccomp_filter *f = ACCESS_ONCE(current->seccomp.filter);
 	struct seccomp_data sd_local;
@@ -317,12 +321,26 @@ static inline void seccomp_sync_threads(void)
 		put_seccomp_filter(thread);
 		smp_store_release(&thread->seccomp.filter,
 				  caller->seccomp.filter);
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Don't let an unprivileged task work around
+		 * the no_new_privs restriction by creating
+		 * a thread that sets it up, enters seccomp,
+		 * then dies.
+		 */
+		if (task_no_new_privs(caller))
+			task_set_no_new_privs(thread);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * Opt the other thread into seccomp if needed.
 		 * As threads are considered to be trust-realm
 		 * equivalent (see ptrace_may_access), it is safe to
 		 * allow one thread to transition the other.
 		 */
+<<<<<<< HEAD
 		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED) {
 			/*
 			 * Don't let an unprivileged task work around
@@ -335,6 +353,10 @@ static inline void seccomp_sync_threads(void)
 
 			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER);
 		}
+=======
+		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED)
+			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -599,6 +621,7 @@ void secure_computing_strict(int this_syscall)
 		BUG();
 }
 #else
+<<<<<<< HEAD
 int __secure_computing(void)
 {
 	u32 phase1_result = seccomp_phase1(NULL);
@@ -613,6 +636,12 @@ int __secure_computing(void)
 
 #ifdef CONFIG_SECCOMP_FILTER
 static u32 __seccomp_phase1_filter(int this_syscall, struct seccomp_data *sd)
+=======
+
+#ifdef CONFIG_SECCOMP_FILTER
+static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
+			    const bool recheck_after_trace)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u32 filter_ret, action;
 	int data;
@@ -629,7 +658,13 @@ static u32 __seccomp_phase1_filter(int this_syscall, struct seccomp_data *sd)
 
 	switch (action) {
 	case SECCOMP_RET_ERRNO:
+<<<<<<< HEAD
 		/* Set the low-order 16-bits as a errno. */
+=======
+		/* Set low-order bits as an errno, capped at MAX_ERRNO. */
+		if (data > MAX_ERRNO)
+			data = MAX_ERRNO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		syscall_set_return_value(current, task_pt_regs(current),
 					 -data, 0);
 		goto skip;
@@ -642,10 +677,57 @@ static u32 __seccomp_phase1_filter(int this_syscall, struct seccomp_data *sd)
 		goto skip;
 
 	case SECCOMP_RET_TRACE:
+<<<<<<< HEAD
 		return filter_ret;  /* Save the rest for phase 2. */
 
 	case SECCOMP_RET_ALLOW:
 		return SECCOMP_PHASE1_OK;
+=======
+		/* We've been put in this state by the ptracer already. */
+		if (recheck_after_trace)
+			return 0;
+
+		/* ENOSYS these calls if there is no tracer attached. */
+		if (!ptrace_event_enabled(current, PTRACE_EVENT_SECCOMP)) {
+			syscall_set_return_value(current,
+						 task_pt_regs(current),
+						 -ENOSYS, 0);
+			goto skip;
+		}
+
+		/* Allow the BPF to provide the event message */
+		ptrace_event(PTRACE_EVENT_SECCOMP, data);
+		/*
+		 * The delivery of a fatal signal during event
+		 * notification may silently skip tracer notification,
+		 * which could leave us with a potentially unmodified
+		 * syscall that the tracer would have liked to have
+		 * changed. Since the process is about to die, we just
+		 * force the syscall to be skipped and let the signal
+		 * kill the process and correctly handle any tracer exit
+		 * notifications.
+		 */
+		if (fatal_signal_pending(current))
+			goto skip;
+		/* Check if the tracer forced the syscall to be skipped. */
+		this_syscall = syscall_get_nr(current, task_pt_regs(current));
+		if (this_syscall < 0)
+			goto skip;
+
+		/*
+		 * Recheck the syscall, since it may have changed. This
+		 * intentionally uses a NULL struct seccomp_data to force
+		 * a reload of all registers. This does not goto skip since
+		 * a skip would have already been reported.
+		 */
+		if (__seccomp_filter(this_syscall, NULL, true))
+			return -1;
+
+		return 0;
+
+	case SECCOMP_RET_ALLOW:
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	case SECCOMP_RET_KILL:
 	default:
@@ -657,6 +739,7 @@ static u32 __seccomp_phase1_filter(int this_syscall, struct seccomp_data *sd)
 
 skip:
 	audit_seccomp(this_syscall, 0, action);
+<<<<<<< HEAD
 	return SECCOMP_PHASE1_SKIP;
 }
 #endif
@@ -688,20 +771,45 @@ u32 seccomp_phase1(struct seccomp_data *sd)
 {
 	int mode = current->seccomp.mode;
 	int this_syscall = sd ? sd->nr :
+=======
+	return -1;
+}
+#else
+static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
+			    const bool recheck_after_trace)
+{
+	BUG();
+}
+#endif
+
+int __secure_computing(const struct seccomp_data *sd)
+{
+	int mode = current->seccomp.mode;
+	int this_syscall;
+
+	this_syscall = sd ? sd->nr :
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		syscall_get_nr(current, task_pt_regs(current));
 
 	switch (mode) {
 	case SECCOMP_MODE_STRICT:
 		__secure_computing_strict(this_syscall);  /* may call do_exit */
+<<<<<<< HEAD
 		return SECCOMP_PHASE1_OK;
 #ifdef CONFIG_SECCOMP_FILTER
 	case SECCOMP_MODE_FILTER:
 		return __seccomp_phase1_filter(this_syscall, sd);
 #endif
+=======
+		return 0;
+	case SECCOMP_MODE_FILTER:
+		return __seccomp_filter(this_syscall, sd, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		BUG();
 	}
 }
+<<<<<<< HEAD
 
 /**
  * seccomp_phase2() - finish slow path seccomp work for the current syscall
@@ -743,6 +851,8 @@ int seccomp_phase2(u32 phase1_result)
 
 	return 0;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_HAVE_ARCH_SECCOMP_FILTER */
 
 long prctl_get_seccomp(void)

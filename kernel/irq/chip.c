@@ -15,7 +15,10 @@
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <trace/events/irq.h>
 
@@ -179,7 +182,10 @@ int irq_startup(struct irq_desc *desc, bool resend)
 	irq_state_clr_disabled(desc);
 	desc->depth = 0;
 
+<<<<<<< HEAD
 	irq_domain_activate_irq(&desc->irq_data);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (desc->irq_data.chip->irq_startup) {
 		ret = desc->irq_data.chip->irq_startup(&desc->irq_data);
 		irq_state_clr_masked(desc);
@@ -201,7 +207,10 @@ void irq_shutdown(struct irq_desc *desc)
 		desc->irq_data.chip->irq_disable(&desc->irq_data);
 	else
 		desc->irq_data.chip->irq_mask(&desc->irq_data);
+<<<<<<< HEAD
 	irq_domain_deactivate_irq(&desc->irq_data);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_state_set_masked(desc);
 }
 
@@ -315,7 +324,10 @@ void handle_nested_irq(unsigned int irq)
 	raw_spin_lock_irq(&desc->lock);
 
 	desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, desc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	action = desc->action;
 	if (unlikely(!action || irqd_irq_disabled(&desc->irq_data))) {
@@ -323,6 +335,10 @@ void handle_nested_irq(unsigned int irq)
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	kstat_incr_irqs_this_cpu(irq, desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);
 	raw_spin_unlock_irq(&desc->lock);
 
@@ -391,13 +407,20 @@ handle_simple_irq(unsigned int irq, struct irq_desc *desc)
 		goto out_unlock;
 
 	desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, desc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(!desc->action || irqd_irq_disabled(&desc->irq_data))) {
 		desc->istate |= IRQS_PENDING;
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	kstat_incr_irqs_this_cpu(irq, desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	handle_irq_event(desc);
 
 out_unlock:
@@ -443,7 +466,10 @@ handle_level_irq(unsigned int irq, struct irq_desc *desc)
 		goto out_unlock;
 
 	desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, desc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If its disabled or no action available
@@ -454,6 +480,10 @@ handle_level_irq(unsigned int irq, struct irq_desc *desc)
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	kstat_incr_irqs_this_cpu(irq, desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	handle_irq_event(desc);
 
 	cond_unmask_irq(desc);
@@ -515,7 +545,10 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
 		goto out;
 
 	desc->istate &= ~(IRQS_REPLAY | IRQS_WAITING);
+<<<<<<< HEAD
 	kstat_incr_irqs_this_cpu(irq, desc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If its disabled or no action available
@@ -527,6 +560,10 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	kstat_incr_irqs_this_cpu(irq, desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (desc->istate & IRQS_ONESHOT)
 		mask_irq(desc);
 
@@ -731,6 +768,7 @@ __irq_set_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
 	if (!handle) {
 		handle = handle_bad_irq;
 	} else {
+<<<<<<< HEAD
 		struct irq_data *irq_data = &desc->irq_data;
 #ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
 		/*
@@ -755,6 +793,9 @@ __irq_set_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
 		}
 #endif
 		if (WARN_ON(!irq_data || irq_data->chip == &no_irq_chip))
+=======
+		if (WARN_ON(desc->irq_data.chip == &no_irq_chip))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 	}
 
@@ -873,6 +914,7 @@ void irq_cpu_offline(void)
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
 }
+<<<<<<< HEAD
 
 #ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
 /**
@@ -975,3 +1017,5 @@ int irq_chip_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 
 	return 0;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

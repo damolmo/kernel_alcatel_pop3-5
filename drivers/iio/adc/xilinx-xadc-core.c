@@ -676,7 +676,11 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
 
 	spin_lock_irqsave(&xadc->lock, flags);
 	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+<<<<<<< HEAD
 	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, val & XADC_AXI_INT_EOS);
+=======
+	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, XADC_AXI_INT_EOS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (state)
 		val |= XADC_AXI_INT_EOS;
 	else
@@ -725,6 +729,7 @@ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
 {
 	uint16_t val;
 
+<<<<<<< HEAD
 	switch (seq_mode) {
 	case XADC_CONF1_SEQ_SIMULTANEOUS:
 	case XADC_CONF1_SEQ_INDEPENDENT:
@@ -732,6 +737,16 @@ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
 		break;
 	default:
 		val = 0;
+=======
+	/* Powerdown the ADC-B when it is not needed. */
+	switch (seq_mode) {
+	case XADC_CONF1_SEQ_SIMULTANEOUS:
+	case XADC_CONF1_SEQ_INDEPENDENT:
+		val = 0;
+		break;
+	default:
+		val = XADC_CONF2_PD_ADC_B;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 
@@ -800,6 +815,19 @@ static int xadc_preenable(struct iio_dev *indio_dev)
 	if (ret)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * In simultaneous mode the upper and lower aux channels are samples at
+	 * the same time. In this mode the upper 8 bits in the sequencer
+	 * register are don't care and the lower 8 bits control two channels
+	 * each. As such we must set the bit if either the channel in the lower
+	 * group or the upper group is enabled.
+	 */
+	if (seq_mode == XADC_CONF1_SEQ_SIMULTANEOUS)
+		scan_mask = ((scan_mask >> 8) | scan_mask) & 0xff0000;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(1), scan_mask >> 16);
 	if (ret)
 		goto err;
@@ -1223,7 +1251,11 @@ static int xadc_probe(struct platform_device *pdev)
 
 	ret = xadc->ops->setup(pdev, indio_dev, irq);
 	if (ret)
+<<<<<<< HEAD
 		goto err_free_samplerate_trigger;
+=======
+		goto err_clk_disable_unprepare;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
 				xadc->ops->threaded_interrupt_handler,
@@ -1284,6 +1316,11 @@ static int xadc_probe(struct platform_device *pdev)
 
 err_free_irq:
 	free_irq(irq, indio_dev);
+<<<<<<< HEAD
+=======
+err_clk_disable_unprepare:
+	clk_disable_unprepare(xadc->clk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_free_samplerate_trigger:
 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
 		iio_trigger_free(xadc->samplerate_trigger);
@@ -1293,8 +1330,11 @@ err_free_convst_trigger:
 err_triggered_buffer_cleanup:
 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
 		iio_triggered_buffer_cleanup(indio_dev);
+<<<<<<< HEAD
 err_clk_disable_unprepare:
 	clk_disable_unprepare(xadc->clk);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_device_free:
 	kfree(indio_dev->channels);
 
@@ -1315,7 +1355,11 @@ static int xadc_remove(struct platform_device *pdev)
 	}
 	free_irq(irq, indio_dev);
 	clk_disable_unprepare(xadc->clk);
+<<<<<<< HEAD
 	cancel_delayed_work(&xadc->zynq_unmask_work);
+=======
+	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(xadc->data);
 	kfree(indio_dev->channels);
 

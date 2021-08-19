@@ -177,7 +177,11 @@ static int rotation_thread_function(void *data)
 	__s32 vflip, hflip;
 
 	set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 	while (!schedule_timeout(100)) {
+=======
+	while (!schedule_timeout(msecs_to_jiffies(100))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (mutex_lock_interruptible(&sd->gspca_dev.usb_lock))
 			break;
 

@@ -17,7 +17,11 @@
 #include <asm/intel-mid.h>
 #include <asm/io_apic.h>
 
+<<<<<<< HEAD
 #define TANGIER_EXT_TIMER0_MSI 15
+=======
+#define TANGIER_EXT_TIMER0_MSI 12
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct platform_device wdt_dev = {
 	.name = "intel_mid_wdt",

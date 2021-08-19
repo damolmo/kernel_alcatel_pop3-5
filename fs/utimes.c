@@ -87,6 +87,7 @@ static int utimes_common(struct path *path, struct timespec *times)
 		 */
 		newattrs.ia_valid |= ATTR_TIMES_SET;
 	} else {
+<<<<<<< HEAD
 		/*
 		 * If times is NULL (or both times are UTIME_NOW),
 		 * then we need to check permissions, because
@@ -105,6 +106,13 @@ static int utimes_common(struct path *path, struct timespec *times)
 retry_deleg:
 	mutex_lock(&inode->i_mutex);
 	error = notify_change(path->dentry, &newattrs, &delegated_inode);
+=======
+		newattrs.ia_valid |= ATTR_TOUCH;
+	}
+retry_deleg:
+	mutex_lock(&inode->i_mutex);
+	error = notify_change2(path->mnt, path->dentry, &newattrs, &delegated_inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&inode->i_mutex);
 	if (delegated_inode) {
 		error = break_deleg_wait(&delegated_inode);
@@ -112,7 +120,10 @@ retry_deleg:
 			goto retry_deleg;
 	}
 
+<<<<<<< HEAD
 mnt_drop_write_and_out:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mnt_drop_write(path->mnt);
 out:
 	return error;

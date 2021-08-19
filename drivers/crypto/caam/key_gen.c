@@ -103,7 +103,11 @@ int gen_split_key(struct device *jrdev, u8 *key_out, int split_key_len,
 	ret = caam_jr_enqueue(jrdev, desc, split_key_done, &result);
 	if (!ret) {
 		/* in progress */
+<<<<<<< HEAD
 		wait_for_completion_interruptible(&result.completion);
+=======
+		wait_for_completion(&result.completion);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = result.err;
 #ifdef DEBUG
 		print_hex_dump(KERN_ERR, "ctx.key@"__stringify(__LINE__)": ",

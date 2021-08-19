@@ -28,17 +28,37 @@
 #include <linux/compat.h>
 
 
+<<<<<<< HEAD
+=======
+void __ptrace_link(struct task_struct *child, struct task_struct *new_parent,
+		   const struct cred *ptracer_cred)
+{
+	BUG_ON(!list_empty(&child->ptrace_entry));
+	list_add(&child->ptrace_entry, &new_parent->ptraced);
+	child->parent = new_parent;
+	child->ptracer_cred = get_cred(ptracer_cred);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * ptrace a task: make the debugger its new parent and
  * move it to the ptrace list.
  *
  * Must be called with the tasklist lock write-held.
  */
+<<<<<<< HEAD
 void __ptrace_link(struct task_struct *child, struct task_struct *new_parent)
 {
 	BUG_ON(!list_empty(&child->ptrace_entry));
 	list_add(&child->ptrace_entry, &new_parent->ptraced);
 	child->parent = new_parent;
+=======
+static void ptrace_link(struct task_struct *child, struct task_struct *new_parent)
+{
+	rcu_read_lock();
+	__ptrace_link(child, new_parent, __task_cred(new_parent));
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -71,11 +91,21 @@ void __ptrace_link(struct task_struct *child, struct task_struct *new_parent)
  */
 void __ptrace_unlink(struct task_struct *child)
 {
+<<<<<<< HEAD
+=======
+	const struct cred *old_cred;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BUG_ON(!child->ptrace);
 
 	child->ptrace = 0;
 	child->parent = child->real_parent;
 	list_del_init(&child->ptrace_entry);
+<<<<<<< HEAD
+=======
+	old_cred = child->ptracer_cred;
+	child->ptracer_cred = NULL;
+	put_cred(old_cred);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock(&child->sighand->siglock);
 
@@ -118,6 +148,24 @@ void __ptrace_unlink(struct task_struct *child)
 	spin_unlock(&child->sighand->siglock);
 }
 
+<<<<<<< HEAD
+=======
+static bool looks_like_a_spurious_pid(struct task_struct *task)
+{
+	if (task->exit_code != ((PTRACE_EVENT_EXEC << 8) | SIGTRAP))
+		return false;
+
+	if (task_pid_vnr(task) == task->ptrace_message)
+		return false;
+	/*
+	 * The tracee changed its pid but the PTRACE_EVENT_EXEC event
+	 * was not wait()'ed, most probably debugger targets the old
+	 * leader which was destroyed in de_thread().
+	 */
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Ensure that nothing can wake it up, even SIGKILL */
 static bool ptrace_freeze_traced(struct task_struct *task)
 {
@@ -128,7 +176,12 @@ static bool ptrace_freeze_traced(struct task_struct *task)
 		return ret;
 
 	spin_lock_irq(&task->sighand->siglock);
+<<<<<<< HEAD
 	if (task_is_traced(task) && !__fatal_signal_pending(task)) {
+=======
+	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
+	    !__fatal_signal_pending(task)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		task->state = __TASK_TRACED;
 		ret = true;
 	}
@@ -144,11 +197,25 @@ static void ptrace_unfreeze_traced(struct task_struct *task)
 
 	WARN_ON(!task->ptrace || task->parent != current);
 
+<<<<<<< HEAD
 	spin_lock_irq(&task->sighand->siglock);
 	if (__fatal_signal_pending(task))
 		wake_up_state(task, __TASK_TRACED);
 	else
 		task->state = TASK_TRACED;
+=======
+	/*
+	 * PTRACE_LISTEN can allow ptrace_trap_notify to wake us up remotely.
+	 * Recheck state under the lock to close this race.
+	 */
+	spin_lock_irq(&task->sighand->siglock);
+	if (task->state == __TASK_TRACED) {
+		if (__fatal_signal_pending(task))
+			wake_up_state(task, __TASK_TRACED);
+		else
+			task->state = TASK_TRACED;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irq(&task->sighand->siglock);
 }
 
@@ -219,6 +286,17 @@ static int ptrace_has_cap(struct user_namespace *ns, unsigned int mode)
 static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 {
 	const struct cred *cred = current_cred(), *tcred;
+<<<<<<< HEAD
+=======
+	struct mm_struct *mm;
+	kuid_t caller_uid;
+	kgid_t caller_gid;
+
+	if (!(mode & PTRACE_MODE_FSCREDS) == !(mode & PTRACE_MODE_REALCREDS)) {
+		WARN(1, "denying ptrace access check without PTRACE_MODE_*CREDS\n");
+		return -EPERM;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* May we inspect the given task?
 	 * This check is used both for attaching with ptrace
@@ -228,11 +306,16 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 	 * because setting up the necessary parent/child relationship
 	 * or halting the specified task is impossible.
 	 */
+<<<<<<< HEAD
 	int dumpable = 0;
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Don't let security modules deny introspection */
 	if (same_thread_group(task, current))
 		return 0;
 	rcu_read_lock();
+<<<<<<< HEAD
 	tcred = __task_cred(task);
 	if (uid_eq(cred->uid, tcred->euid) &&
 	    uid_eq(cred->uid, tcred->suid) &&
@@ -240,6 +323,30 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 	    gid_eq(cred->gid, tcred->egid) &&
 	    gid_eq(cred->gid, tcred->sgid) &&
 	    gid_eq(cred->gid, tcred->gid))
+=======
+	if (mode & PTRACE_MODE_FSCREDS) {
+		caller_uid = cred->fsuid;
+		caller_gid = cred->fsgid;
+	} else {
+		/*
+		 * Using the euid would make more sense here, but something
+		 * in userland might rely on the old behavior, and this
+		 * shouldn't be a security problem since
+		 * PTRACE_MODE_REALCREDS implies that the caller explicitly
+		 * used a syscall that requests access to another process
+		 * (and not a filesystem syscall to procfs).
+		 */
+		caller_uid = cred->uid;
+		caller_gid = cred->gid;
+	}
+	tcred = __task_cred(task);
+	if (uid_eq(caller_uid, tcred->euid) &&
+	    uid_eq(caller_uid, tcred->suid) &&
+	    uid_eq(caller_uid, tcred->uid)  &&
+	    gid_eq(caller_gid, tcred->egid) &&
+	    gid_eq(caller_gid, tcred->sgid) &&
+	    gid_eq(caller_gid, tcred->gid))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto ok;
 	if (ptrace_has_cap(tcred->user_ns, mode))
 		goto ok;
@@ -247,6 +354,7 @@ static int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 	return -EPERM;
 ok:
 	rcu_read_unlock();
+<<<<<<< HEAD
 	smp_rmb();
 	if (task->mm)
 		dumpable = get_dumpable(task->mm);
@@ -257,6 +365,13 @@ ok:
 		return -EPERM;
 	}
 	rcu_read_unlock();
+=======
+	mm = task->mm;
+	if (mm &&
+	    ((get_dumpable(mm) != SUID_DUMP_USER) &&
+	     !ptrace_has_cap(mm->user_ns, mode)))
+	    return -EPERM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return security_ptrace_access_check(task, mode);
 }
@@ -306,7 +421,11 @@ static int ptrace_attach(struct task_struct *task, long request,
 		goto out;
 
 	task_lock(task);
+<<<<<<< HEAD
 	retval = __ptrace_may_access(task, PTRACE_MODE_ATTACH);
+=======
+	retval = __ptrace_may_access(task, PTRACE_MODE_ATTACH_REALCREDS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	task_unlock(task);
 	if (retval)
 		goto unlock_creds;
@@ -320,6 +439,7 @@ static int ptrace_attach(struct task_struct *task, long request,
 
 	if (seize)
 		flags |= PT_SEIZED;
+<<<<<<< HEAD
 	rcu_read_lock();
 	if (ns_capable(__task_cred(task)->user_ns, CAP_SYS_PTRACE))
 		flags |= PT_PTRACE_CAP;
@@ -327,6 +447,11 @@ static int ptrace_attach(struct task_struct *task, long request,
 	task->ptrace = flags;
 
 	__ptrace_link(task, current);
+=======
+	task->ptrace = flags;
+
+	ptrace_link(task, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* SEIZE doesn't trap tracee on attach */
 	if (!seize)
@@ -393,7 +518,11 @@ static int ptrace_traceme(void)
 		 */
 		if (!ret && !(current->real_parent->flags & PF_EXITING)) {
 			current->ptrace = PT_PTRACED;
+<<<<<<< HEAD
 			__ptrace_link(current, current->real_parent);
+=======
+			ptrace_link(current, current->real_parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	write_unlock_irq(&tasklist_lock);
@@ -635,6 +764,13 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 	if (arg.nr < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* Ensure arg.off fits in an unsigned long */
+	if (arg.off > ULONG_MAX)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (arg.flags & PTRACE_PEEKSIGINFO_SHARED)
 		pending = &child->signal->shared_pending;
 	else
@@ -642,7 +778,12 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 
 	for (i = 0; i < arg.nr; ) {
 		siginfo_t info;
+<<<<<<< HEAD
 		s32 off = arg.off + i;
+=======
+		unsigned long off = arg.off + i;
+		bool found = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		spin_lock_irq(&child->sighand->siglock);
 		list_for_each_entry(q, &pending->list, list) {
@@ -653,7 +794,11 @@ static int ptrace_peek_siginfo(struct task_struct *child,
 		}
 		spin_unlock_irq(&child->sighand->siglock);
 
+<<<<<<< HEAD
 		if (off >= 0) /* beyond the end of the list */
+=======
+		if (!found) /* beyond the end of the list */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 
 #ifdef CONFIG_COMPAT

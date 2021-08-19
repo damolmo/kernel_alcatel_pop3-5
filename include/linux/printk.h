@@ -12,6 +12,7 @@ extern const char linux_proc_banner[];
 
 extern char *log_buf_addr_get(void);
 extern u32 log_buf_len_get(void);
+<<<<<<< HEAD
 extern bool printk_disable_uart;
 
 #ifdef CONFIG_MT_PRINTK_UART_CONSOLE
@@ -46,6 +47,8 @@ static inline int get_logtoomuch_enable(void)
 	return 0;
 }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline int printk_get_level(const char *buffer)
 {
@@ -141,6 +144,7 @@ struct va_format {
 
 /*
  * Dummy printk for disabled debugging statements to use whilst maintaining
+<<<<<<< HEAD
  * gcc's format and side-effect checking.
  */
 static inline __printf(1, 2)
@@ -148,6 +152,15 @@ int no_printk(const char *fmt, ...)
 {
 	return 0;
 }
+=======
+ * gcc's format checking.
+ */
+#define no_printk(fmt, ...)			\
+do {						\
+	if (0)					\
+		printk(fmt, ##__VA_ARGS__);	\
+} while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_EARLY_PRINTK
 extern asmlinkage __printf(1, 2)
@@ -264,6 +277,7 @@ extern asmlinkage void dump_stack(void) __cold;
  * and other debug macros are compiled out unless either DEBUG is defined
  * or CONFIG_DYNAMIC_DEBUG is set.
  */
+<<<<<<< HEAD
 #if 0
 #define pr_emerg(fmt, ...) \
 	printk(KERN_EMERG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
@@ -284,14 +298,40 @@ extern asmlinkage void dump_stack(void) __cold;
 	printk(KERN_CONT "[name:"KBUILD_MODNAME"&]"fmt, ##__VA_ARGS__)
 
 #endif
+=======
+#define pr_emerg(fmt, ...) \
+	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_alert(fmt, ...) \
+	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_crit(fmt, ...) \
+	printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_err(fmt, ...) \
+	printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_warning(fmt, ...) \
+	printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_warn pr_warning
+#define pr_notice(fmt, ...) \
+	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_info(fmt, ...) \
+	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_cont(fmt, ...) \
+	printk(KERN_CONT fmt, ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* pr_devel() should produce zero code unless DEBUG is defined */
 #ifdef DEBUG
 #define pr_devel(fmt, ...) \
+<<<<<<< HEAD
 	printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #else
 #define pr_devel(fmt, ...) \
 	no_printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_devel(fmt, ...) \
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #include <linux/dynamic_debug.h>
@@ -300,6 +340,7 @@ extern asmlinkage void dump_stack(void) __cold;
 #if defined(CONFIG_DYNAMIC_DEBUG)
 /* dynamic_pr_debug() uses pr_fmt() internally so we don't need it here */
 #define pr_debug(fmt, ...) \
+<<<<<<< HEAD
 	dynamic_pr_debug("[name:"KBUILD_MODNAME"&]"fmt, ##__VA_ARGS__)
 #elif defined(DEBUG)
 #define pr_debug(fmt, ...) \
@@ -439,6 +480,15 @@ extern asmlinkage void dump_stack(void) __cold;
 #define pr_cont(fmt, ...) \
 	printk(KERN_CONT fmt, ##__VA_ARGS__)
 
+=======
+	dynamic_pr_debug(fmt, ##__VA_ARGS__)
+#elif defined(DEBUG)
+#define pr_debug(fmt, ...) \
+	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_debug(fmt, ...) \
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*
@@ -472,6 +522,7 @@ extern asmlinkage void dump_stack(void) __cold;
 #endif
 
 #define pr_emerg_once(fmt, ...)					\
+<<<<<<< HEAD
 	printk_once(KERN_EMERG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_alert_once(fmt, ...)					\
 	printk_once(KERN_ALERT "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
@@ -494,15 +545,46 @@ extern asmlinkage void dump_stack(void) __cold;
 #else
 #define pr_devel_once(fmt, ...)					\
 	no_printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk_once(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_alert_once(fmt, ...)					\
+	printk_once(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_crit_once(fmt, ...)					\
+	printk_once(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_err_once(fmt, ...)					\
+	printk_once(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_warn_once(fmt, ...)					\
+	printk_once(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_notice_once(fmt, ...)				\
+	printk_once(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_info_once(fmt, ...)					\
+	printk_once(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_cont_once(fmt, ...)					\
+	printk_once(KERN_CONT pr_fmt(fmt), ##__VA_ARGS__)
+
+#if defined(DEBUG)
+#define pr_devel_once(fmt, ...)					\
+	printk_once(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_devel_once(fmt, ...)					\
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /* If you are writing a driver, please use dev_dbg instead */
 #if defined(DEBUG)
 #define pr_debug_once(fmt, ...)					\
+<<<<<<< HEAD
 	printk_once(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #else
 #define pr_debug_once(fmt, ...)					\
 	no_printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk_once(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_debug_once(fmt, ...)					\
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*
@@ -525,6 +607,7 @@ extern asmlinkage void dump_stack(void) __cold;
 #endif
 
 #define pr_emerg_ratelimited(fmt, ...)					\
+<<<<<<< HEAD
 	printk_ratelimited(KERN_EMERG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_alert_ratelimited(fmt, ...)					\
 	printk_ratelimited(KERN_ALERT "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
@@ -538,14 +621,36 @@ extern asmlinkage void dump_stack(void) __cold;
 	printk_ratelimited(KERN_NOTICE "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_info_ratelimited(fmt, ...)					\
 	printk_ratelimited(KERN_INFO "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk_ratelimited(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_alert_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_crit_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_err_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_warn_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_notice_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_info_ratelimited(fmt, ...)					\
+	printk_ratelimited(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* no pr_cont_ratelimited, don't do that... */
 
 #if defined(DEBUG)
 #define pr_devel_ratelimited(fmt, ...)					\
+<<<<<<< HEAD
 	printk_ratelimited(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #else
 #define pr_devel_ratelimited(fmt, ...)					\
 	no_printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk_ratelimited(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_devel_ratelimited(fmt, ...)					\
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /* If you are writing a driver, please use dev_dbg instead */
@@ -563,10 +668,17 @@ do {									\
 } while (0)
 #elif defined(DEBUG)
 #define pr_debug_ratelimited(fmt, ...)					\
+<<<<<<< HEAD
 	printk_ratelimited(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
 #else
 #define pr_debug_ratelimited(fmt, ...) \
 	no_printk(KERN_DEBUG "[name:"KBUILD_MODNAME"&]"pr_fmt(fmt), ##__VA_ARGS__)
+=======
+	printk_ratelimited(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_debug_ratelimited(fmt, ...) \
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 extern const struct file_operations kmsg_fops;

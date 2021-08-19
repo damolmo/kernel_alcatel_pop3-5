@@ -51,7 +51,11 @@ udl_gem_create(struct drm_file *file,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	drm_gem_object_unreference(&obj->base);
+=======
+	drm_gem_object_unreference_unlocked(&obj->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*handle_p = handle;
 	return 0;
 }

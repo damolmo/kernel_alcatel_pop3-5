@@ -423,6 +423,7 @@ static struct string_list *read_node(FILE *f)
 	struct string_list node = {
 		.string = buffer,
 		.tag = SYM_NORMAL };
+<<<<<<< HEAD
 	int c;
 
 	while ((c = fgetc(f)) != EOF) {
@@ -430,6 +431,17 @@ static struct string_list *read_node(FILE *f)
 			if (node.string == buffer)
 				continue;
 			break;
+=======
+	int c, in_string = 0;
+
+	while ((c = fgetc(f)) != EOF) {
+		if (!in_string && c == ' ') {
+			if (node.string == buffer)
+				continue;
+			break;
+		} else if (c == '"') {
+			in_string = !in_string;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else if (c == '\n') {
 			if (node.string == buffer)
 				return NULL;

@@ -212,6 +212,7 @@ m_len_done:
 	*out_len = op - out;
 	return in_end - (ii - ti);
 }
+<<<<<<< HEAD
 lzo1x_1_do_compress_zram(const unsigned char *in, size_t in_len,
 		    unsigned char *out, size_t *out_len,
 		    size_t ti, void *wrkmem, int *tmp_hash)
@@ -420,6 +421,8 @@ m_len_done2:
 		*tmp_hash = t_total;
 	return in_end - (ii - ti);
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int lzo1x_1_compress(const unsigned char *in, size_t in_len,
 		     unsigned char *out, size_t *out_len,
@@ -482,6 +485,7 @@ int lzo1x_1_compress(const unsigned char *in, size_t in_len,
 	return LZO_E_OK;
 }
 EXPORT_SYMBOL_GPL(lzo1x_1_compress);
+<<<<<<< HEAD
 int lzo1x_1_compress_zram(const unsigned char *in, size_t in_len,
 			unsigned char *out, size_t *out_len,
 			void *wrkmem, int *checksum)
@@ -573,5 +577,8 @@ int lzo1x_1_compress_zram(const unsigned char *in, size_t in_len,
 	return LZO_E_OK;
 }
 EXPORT_SYMBOL_GPL(lzo1x_1_compress_zram);
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("LZO1X-1 Compressor");

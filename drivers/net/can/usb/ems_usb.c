@@ -117,6 +117,12 @@ MODULE_LICENSE("GPL v2");
  */
 #define EMS_USB_ARM7_CLOCK 8000000
 
+<<<<<<< HEAD
+=======
+#define CPC_TX_QUEUE_TRIGGER_LOW	25
+#define CPC_TX_QUEUE_TRIGGER_HIGH	35
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * CAN-Message representation in a CPC_MSG. Message object type is
  * CPC_MSG_TYPE_CAN_FRAME or CPC_MSG_TYPE_RTR_FRAME or
@@ -278,10 +284,23 @@ static void ems_usb_read_interrupt_callback(struct urb *urb)
 	switch (urb->status) {
 	case 0:
 		dev->free_slots = dev->intr_in_buffer[1];
+<<<<<<< HEAD
+=======
+		if(dev->free_slots > CPC_TX_QUEUE_TRIGGER_HIGH){
+			if (netif_queue_stopped(netdev)){
+				netif_wake_queue(netdev);
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	case -ECONNRESET: /* unlink */
 	case -ENOENT:
+<<<<<<< HEAD
+=======
+	case -EPIPE:
+	case -EPROTO:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -ESHUTDOWN:
 		return;
 
@@ -528,8 +547,11 @@ static void ems_usb_write_bulk_callback(struct urb *urb)
 	/* Release context */
 	context->echo_index = MAX_TX_URBS;
 
+<<<<<<< HEAD
 	if (netif_queue_stopped(netdev))
 		netif_wake_queue(netdev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -589,7 +611,11 @@ static int ems_usb_start(struct ems_usb *dev)
 	int err, i;
 
 	dev->intr_in_buffer[0] = 0;
+<<<<<<< HEAD
 	dev->free_slots = 15; /* initial size */
+=======
+	dev->free_slots = 50; /* initial size */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < MAX_RX_URBS; i++) {
 		struct urb *urb = NULL;
@@ -840,7 +866,11 @@ static netdev_tx_t ems_usb_start_xmit(struct sk_buff *skb, struct net_device *ne
 
 		/* Slow down tx path */
 		if (atomic_read(&dev->active_tx_urbs) >= MAX_TX_URBS ||
+<<<<<<< HEAD
 		    dev->free_slots < 5) {
+=======
+		    dev->free_slots < CPC_TX_QUEUE_TRIGGER_LOW) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			netif_stop_queue(netdev);
 		}
 	}
@@ -1075,6 +1105,10 @@ static void ems_usb_disconnect(struct usb_interface *intf)
 		usb_free_urb(dev->intr_urb);
 
 		kfree(dev->intr_in_buffer);
+<<<<<<< HEAD
+=======
+		kfree(dev->tx_msg_buffer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

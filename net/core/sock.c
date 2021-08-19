@@ -133,7 +133,10 @@
 #include <net/netprio_cgroup.h>
 
 #include <linux/filter.h>
+<<<<<<< HEAD
 #include <net/af_unix.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <trace/events/sock.h>
 
@@ -250,6 +253,7 @@ EXPORT_SYMBOL(memcg_socket_limit_enabled);
  * locks is fast):
  */
 static const char *const af_family_key_strings[AF_MAX+1] = {
+<<<<<<< HEAD
 	"sk_lock-AF_UNSPEC", "sk_lock-AF_UNIX"     , "sk_lock-AF_INET"     ,
 	"sk_lock-AF_AX25"  , "sk_lock-AF_IPX"      , "sk_lock-AF_APPLETALK",
 	"sk_lock-AF_NETROM", "sk_lock-AF_BRIDGE"   , "sk_lock-AF_ATMPVC"   ,
@@ -298,6 +302,54 @@ static const char *const af_family_clock_key_strings[AF_MAX+1] = {
 	"clock-AF_RXRPC" , "clock-AF_ISDN"     , "clock-AF_PHONET"   ,
 	"clock-AF_IEEE802154", "clock-AF_CAIF" , "clock-AF_ALG"      ,
 	"clock-AF_NFC"   , "clock-AF_VSOCK"    , "clock-AF_MAX"
+=======
+  "sk_lock-AF_UNSPEC", "sk_lock-AF_UNIX"     , "sk_lock-AF_INET"     ,
+  "sk_lock-AF_AX25"  , "sk_lock-AF_IPX"      , "sk_lock-AF_APPLETALK",
+  "sk_lock-AF_NETROM", "sk_lock-AF_BRIDGE"   , "sk_lock-AF_ATMPVC"   ,
+  "sk_lock-AF_X25"   , "sk_lock-AF_INET6"    , "sk_lock-AF_ROSE"     ,
+  "sk_lock-AF_DECnet", "sk_lock-AF_NETBEUI"  , "sk_lock-AF_SECURITY" ,
+  "sk_lock-AF_KEY"   , "sk_lock-AF_NETLINK"  , "sk_lock-AF_PACKET"   ,
+  "sk_lock-AF_ASH"   , "sk_lock-AF_ECONET"   , "sk_lock-AF_ATMSVC"   ,
+  "sk_lock-AF_RDS"   , "sk_lock-AF_SNA"      , "sk_lock-AF_IRDA"     ,
+  "sk_lock-AF_PPPOX" , "sk_lock-AF_WANPIPE"  , "sk_lock-AF_LLC"      ,
+  "sk_lock-27"       , "sk_lock-28"          , "sk_lock-AF_CAN"      ,
+  "sk_lock-AF_TIPC"  , "sk_lock-AF_BLUETOOTH", "sk_lock-IUCV"        ,
+  "sk_lock-AF_RXRPC" , "sk_lock-AF_ISDN"     , "sk_lock-AF_PHONET"   ,
+  "sk_lock-AF_IEEE802154", "sk_lock-AF_CAIF" , "sk_lock-AF_ALG"      ,
+  "sk_lock-AF_NFC"   , "sk_lock-AF_VSOCK"    , "sk_lock-AF_MAX"
+};
+static const char *const af_family_slock_key_strings[AF_MAX+1] = {
+  "slock-AF_UNSPEC", "slock-AF_UNIX"     , "slock-AF_INET"     ,
+  "slock-AF_AX25"  , "slock-AF_IPX"      , "slock-AF_APPLETALK",
+  "slock-AF_NETROM", "slock-AF_BRIDGE"   , "slock-AF_ATMPVC"   ,
+  "slock-AF_X25"   , "slock-AF_INET6"    , "slock-AF_ROSE"     ,
+  "slock-AF_DECnet", "slock-AF_NETBEUI"  , "slock-AF_SECURITY" ,
+  "slock-AF_KEY"   , "slock-AF_NETLINK"  , "slock-AF_PACKET"   ,
+  "slock-AF_ASH"   , "slock-AF_ECONET"   , "slock-AF_ATMSVC"   ,
+  "slock-AF_RDS"   , "slock-AF_SNA"      , "slock-AF_IRDA"     ,
+  "slock-AF_PPPOX" , "slock-AF_WANPIPE"  , "slock-AF_LLC"      ,
+  "slock-27"       , "slock-28"          , "slock-AF_CAN"      ,
+  "slock-AF_TIPC"  , "slock-AF_BLUETOOTH", "slock-AF_IUCV"     ,
+  "slock-AF_RXRPC" , "slock-AF_ISDN"     , "slock-AF_PHONET"   ,
+  "slock-AF_IEEE802154", "slock-AF_CAIF" , "slock-AF_ALG"      ,
+  "slock-AF_NFC"   , "slock-AF_VSOCK"    ,"slock-AF_MAX"
+};
+static const char *const af_family_clock_key_strings[AF_MAX+1] = {
+  "clock-AF_UNSPEC", "clock-AF_UNIX"     , "clock-AF_INET"     ,
+  "clock-AF_AX25"  , "clock-AF_IPX"      , "clock-AF_APPLETALK",
+  "clock-AF_NETROM", "clock-AF_BRIDGE"   , "clock-AF_ATMPVC"   ,
+  "clock-AF_X25"   , "clock-AF_INET6"    , "clock-AF_ROSE"     ,
+  "clock-AF_DECnet", "clock-AF_NETBEUI"  , "clock-AF_SECURITY" ,
+  "clock-AF_KEY"   , "clock-AF_NETLINK"  , "clock-AF_PACKET"   ,
+  "clock-AF_ASH"   , "clock-AF_ECONET"   , "clock-AF_ATMSVC"   ,
+  "clock-AF_RDS"   , "clock-AF_SNA"      , "clock-AF_IRDA"     ,
+  "clock-AF_PPPOX" , "clock-AF_WANPIPE"  , "clock-AF_LLC"      ,
+  "clock-27"       , "clock-28"          , "clock-AF_CAN"      ,
+  "clock-AF_TIPC"  , "clock-AF_BLUETOOTH", "clock-AF_IUCV"     ,
+  "clock-AF_RXRPC" , "clock-AF_ISDN"     , "clock-AF_PHONET"   ,
+  "clock-AF_IEEE802154", "clock-AF_CAIF" , "clock-AF_ALG"      ,
+  "clock-AF_NFC"   , "clock-AF_VSOCK"    , "clock-AF_MAX"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -400,8 +452,13 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
 		*timeo_p = 0;
 		if (warned < 10 && net_ratelimit()) {
 			warned++;
+<<<<<<< HEAD
 			pr_debug("%s: `%s' (pid %d) tries to set negative timeout\n",
 				 __func__, current->comm, task_pid_nr(current));
+=======
+			pr_info("%s: `%s' (pid %d) tries to set negative timeout\n",
+				__func__, current->comm, task_pid_nr(current));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		return 0;
 	}
@@ -419,13 +476,21 @@ static void sock_warn_obsolete_bsdism(const char *name)
 	static char warncomm[TASK_COMM_LEN];
 	if (strcmp(warncomm, current->comm) && warned < 5) {
 		strcpy(warncomm,  current->comm);
+<<<<<<< HEAD
 		pr_debug("process `%s' is using obsolete %s SO_BSDCOMPAT\n", warncomm, name);
+=======
+		pr_warn("process `%s' is using obsolete %s SO_BSDCOMPAT\n",
+			warncomm, name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		warned++;
 	}
 }
 
+<<<<<<< HEAD
 #define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE))
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void sock_disable_timestamp(struct sock *sk, unsigned long flags)
 {
 	if (sk->sk_flags & flags) {
@@ -724,6 +789,10 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
 		break;
 	case SO_DONTROUTE:
 		sock_valbool_flag(sk, SOCK_LOCALROUTE, valbool);
+<<<<<<< HEAD
+=======
+		sk_dst_reset(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case SO_BROADCAST:
 		sock_valbool_flag(sk, SOCK_BROADCAST, valbool);
@@ -863,7 +932,12 @@ set_rcvbuf:
 		}
 		if (val & SOF_TIMESTAMPING_OPT_ID &&
 		    !(sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)) {
+<<<<<<< HEAD
 			if (sk->sk_protocol == IPPROTO_TCP) {
+=======
+			if (sk->sk_protocol == IPPROTO_TCP &&
+			    sk->sk_type == SOCK_STREAM) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (sk->sk_state != TCP_ESTABLISHED) {
 					ret = -EINVAL;
 					break;
@@ -1397,6 +1471,10 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 
 		sock_update_classid(sk);
 		sock_update_netprioidx(sk);
+<<<<<<< HEAD
+=======
+		sk_tx_queue_clear(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return sk;
@@ -1423,6 +1501,14 @@ static void __sk_free(struct sock *sk)
 		pr_debug("%s: optmem leakage (%d bytes) detected\n",
 			 __func__, atomic_read(&sk->sk_omem_alloc));
 
+<<<<<<< HEAD
+=======
+	if (sk->sk_frag.page) {
+		put_page(sk->sk_frag.page);
+		sk->sk_frag.page = NULL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sk->sk_peer_cred)
 		put_cred(sk->sk_peer_cred);
 	put_pid(sk->sk_peer_pid);
@@ -1486,6 +1572,11 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 
 		sock_copy(newsk, sk);
 
+<<<<<<< HEAD
+=======
+		newsk->sk_prot_creator = sk->sk_prot;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* SANITY */
 		get_net(sock_net(newsk));
 		sk_node_init(&newsk->sk_node);
@@ -1527,6 +1618,15 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 			is_charged = sk_filter_charge(newsk, filter);
 
 		if (unlikely(!is_charged || xfrm_sk_clone_policy(newsk))) {
+<<<<<<< HEAD
+=======
+			/* We need to make sure that we don't uncharge the new
+			 * socket if we couldn't charge it in the first place
+			 * as otherwise we uncharge the parent's filter.
+			 */
+			if (!is_charged)
+				RCU_INIT_POINTER(newsk->sk_filter, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* It is still raw copy of parent, so invalidate
 			 * destructor and make plain sk_free() */
 			newsk->sk_destruct = NULL;
@@ -1537,6 +1637,10 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 		}
 
 		newsk->sk_err	   = 0;
+<<<<<<< HEAD
+=======
+		newsk->sk_err_soft = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		newsk->sk_priority = 0;
 		/*
 		 * Before updating sk_refcnt, we must commit prior changes to memory
@@ -1558,6 +1662,10 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 		 */
 		sk_refcnt_debug_inc(newsk);
 		sk_set_socket(newsk, NULL);
+<<<<<<< HEAD
+=======
+		sk_tx_queue_clear(newsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		newsk->sk_wq = NULL;
 
 		sk_update_clone(sk, newsk);
@@ -1625,17 +1733,29 @@ EXPORT_SYMBOL(sock_wfree);
 
 void skb_orphan_partial(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	/* TCP stack sets skb->ooo_okay based on sk_wmem_alloc,
 	 * so we do not completely orphan skb, but transfert all
 	 * accounted bytes but one, to avoid unexpected reorders.
 	 */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (skb->destructor == sock_wfree
 #ifdef CONFIG_INET
 	    || skb->destructor == tcp_wfree
 #endif
 		) {
+<<<<<<< HEAD
 		atomic_sub(skb->truesize - 1, &skb->sk->sk_wmem_alloc);
 		skb->truesize = 1;
+=======
+		struct sock *sk = skb->sk;
+
+		if (atomic_inc_not_zero(&sk->sk_refcnt)) {
+			atomic_sub(skb->truesize, &sk->sk_wmem_alloc);
+			skb->destructor = sock_efree;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		skb_orphan(skb);
 	}
@@ -1668,6 +1788,11 @@ void sock_edemux(struct sk_buff *skb)
 
 	if (sk->sk_state == TCP_TIME_WAIT)
 		inet_twsk_put(inet_twsk(sk));
+<<<<<<< HEAD
+=======
+	else if (sk->sk_state == TCP_NEW_SYN_RECV)
+		reqsk_put(inet_reqsk(sk));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		sock_put(sk);
 }
@@ -1678,12 +1803,15 @@ kuid_t sock_i_uid(struct sock *sk)
 {
 	kuid_t uid;
 
+<<<<<<< HEAD
 	/*mtk_net: fix kernel bug*/
 	if (!sk) {
 		pr_info("sk == NULL for sock_i_uid\n");
 		return GLOBAL_ROOT_UID;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	read_lock_bh(&sk->sk_callback_lock);
 	uid = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_uid : GLOBAL_ROOT_UID;
 	read_unlock_bh(&sk->sk_callback_lock);
@@ -1779,6 +1907,7 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
 	return timeo;
 }
 
+<<<<<<< HEAD
 static int sock_dump_info(struct sock *sk)
 {
 	if (sk->sk_family == AF_UNIX) {
@@ -1835,6 +1964,8 @@ static int sock_dump_info(struct sock *sk)
 	}
 	return 0;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	Generic send/receive buffer handlers
@@ -1868,6 +1999,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 			goto failure;
 		if (signal_pending(current))
 			goto interrupted;
+<<<<<<< HEAD
 	sock_dump_info(sk);
 		#ifdef CONFIG_MTK_NET_LOGGING
 		pr_debug("[mtk_net][sock]sockdbg: wait_for_wmem, timeo =%ld, wmem =%d, snd buf =%d\n",
@@ -1878,6 +2010,9 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
 		pr_debug("[mtk_net][sock]sockdbg: wait_for_wmem done, header_len=0x%lx, data_len=0x%lx,timeo =%ld\n",
 			 header_len, data_len, timeo);
 	    #endif
+=======
+		timeo = sock_wait_for_wmem(sk, timeo);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	skb = alloc_skb_with_frags(header_len, data_len, max_page_order,
 				   errcode, sk->sk_allocation);
@@ -2089,7 +2224,11 @@ int __sk_mem_schedule(struct sock *sk, int size, int kind)
 	}
 
 	if (sk_has_memory_pressure(sk)) {
+<<<<<<< HEAD
 		int alloc;
+=======
+		u64 alloc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (!sk_under_memory_pressure(sk))
 			return 1;
@@ -2239,6 +2378,30 @@ int sock_no_mmap(struct file *file, struct socket *sock, struct vm_area_struct *
 }
 EXPORT_SYMBOL(sock_no_mmap);
 
+<<<<<<< HEAD
+=======
+/*
+ * When a file is received (via SCM_RIGHTS, etc), we must bump the
+ * various sock-based usage counts.
+ */
+void __receive_sock(struct file *file)
+{
+	struct socket *sock;
+	int error;
+
+	/*
+	 * The resulting value of "error" is ignored here since we only
+	 * need to take action when the file is a socket and testing
+	 * "sock" for NULL is sufficient.
+	 */
+	sock = sock_from_file(file, &error);
+	if (sock) {
+		sock_update_netprioidx(sock->sk);
+		sock_update_classid(sock->sk);
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ssize_t sock_no_sendpage(struct socket *sock, struct page *page, int offset, size_t size, int flags)
 {
 	ssize_t res;
@@ -2329,7 +2492,11 @@ void sk_send_sigurg(struct sock *sk)
 }
 EXPORT_SYMBOL(sk_send_sigurg);
 
+<<<<<<< HEAD
 void sk_reset_timer(struct sock *sk, struct timer_list *timer,
+=======
+void sk_reset_timer(struct sock *sk, struct timer_list* timer,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    unsigned long expires)
 {
 	if (!mod_timer(timer, expires))
@@ -2337,7 +2504,11 @@ void sk_reset_timer(struct sock *sk, struct timer_list *timer,
 }
 EXPORT_SYMBOL(sk_reset_timer);
 
+<<<<<<< HEAD
 void sk_stop_timer(struct sock *sk, struct timer_list *timer)
+=======
+void sk_stop_timer(struct sock *sk, struct timer_list* timer)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (del_timer(timer))
 		__sock_put(sk);
@@ -2366,8 +2537,16 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 		sk->sk_type	=	sock->type;
 		sk->sk_wq	=	sock->wq;
 		sock->sk	=	sk;
+<<<<<<< HEAD
 	} else
 		sk->sk_wq	=	NULL;
+=======
+		sk->sk_uid	=	SOCK_INODE(sock)->i_uid;
+	} else {
+		sk->sk_wq	=	NULL;
+		sk->sk_uid	=	make_kuid(sock_net(sk)->user_ns, 0);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_init(&sk->sk_dst_lock);
 	rwlock_init(&sk->sk_callback_lock);
@@ -2393,6 +2572,12 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 	sk->sk_sndtimeo		=	MAX_SCHEDULE_TIMEOUT;
 
 	sk->sk_stamp = ktime_set(-1L, 0);
+<<<<<<< HEAD
+=======
+#if BITS_PER_LONG==32
+	seqlock_init(&sk->sk_stamp_seq);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_NET_RX_BUSY_POLL
 	sk->sk_napi_id		=	0;
@@ -2672,11 +2857,14 @@ void sk_common_release(struct sock *sk)
 
 	sk_refcnt_debug_release(sk);
 
+<<<<<<< HEAD
 	if (sk->sk_frag.page) {
 		put_page(sk->sk_frag.page);
 		sk->sk_frag.page = NULL;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sock_put(sk);
 }
 EXPORT_SYMBOL(sk_common_release);
@@ -2760,7 +2948,11 @@ static void assign_proto_idx(struct proto *prot)
 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
 
 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
+<<<<<<< HEAD
 		pr_debug("PROTO_INUSE_NR exhausted\n");
+=======
+		pr_err("PROTO_INUSE_NR exhausted\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	}
 
@@ -2790,8 +2982,13 @@ int proto_register(struct proto *prot, int alloc_slab)
 					NULL);
 
 		if (prot->slab == NULL) {
+<<<<<<< HEAD
 			pr_debug("%s: Can't create sock SLAB cache!\n",
 				 prot->name);
+=======
+			pr_crit("%s: Can't create sock SLAB cache!\n",
+				prot->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		}
 
@@ -2805,8 +3002,13 @@ int proto_register(struct proto *prot, int alloc_slab)
 								 SLAB_HWCACHE_ALIGN, NULL);
 
 			if (prot->rsk_prot->slab == NULL) {
+<<<<<<< HEAD
 				pr_debug("%s: Can't create request sock SLAB cache!\n",
 					 prot->name);
+=======
+				pr_crit("%s: Can't create request sock SLAB cache!\n",
+					prot->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto out_free_request_sock_slab_name;
 			}
 		}

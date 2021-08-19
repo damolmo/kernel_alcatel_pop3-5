@@ -1205,6 +1205,19 @@ out_unlock:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * FOLL_FORCE can write to even unwritable pmd's, but only
+ * after we've gone through a COW cycle and they are dirty.
+ */
+static inline bool can_follow_write_pmd(pmd_t pmd, unsigned int flags)
+{
+	return pmd_write(pmd) ||
+	       ((flags & FOLL_FORCE) && (flags & FOLL_COW) && pmd_dirty(pmd));
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 				   unsigned long addr,
 				   pmd_t *pmd,
@@ -1215,7 +1228,11 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 
 	assert_spin_locked(pmd_lockptr(mm, pmd));
 
+<<<<<<< HEAD
 	if (flags & FOLL_WRITE && !pmd_write(*pmd))
+=======
+	if (flags & FOLL_WRITE && !can_follow_write_pmd(*pmd, flags))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	/* Avoid dumping huge zero page */
@@ -1230,6 +1247,7 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 	VM_BUG_ON_PAGE(!PageHead(page), page);
 	if (flags & FOLL_TOUCH) {
 		pmd_t _pmd;
+<<<<<<< HEAD
 		/*
 		 * We should set the dirty bit only for FOLL_WRITE but
 		 * for now the dirty bit in the pmd is meaningless.
@@ -1241,6 +1259,13 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
 		_pmd = pmd_mkyoung(pmd_mkdirty(*pmd));
 		if (pmdp_set_access_flags(vma, addr & HPAGE_PMD_MASK,
 					  pmd, _pmd,  1))
+=======
+		_pmd = pmd_mkyoung(*pmd);
+		if (flags & FOLL_WRITE)
+			_pmd = pmd_mkdirty(_pmd);
+		if (pmdp_set_access_flags(vma, addr & HPAGE_PMD_MASK,
+					  pmd, _pmd, flags & FOLL_WRITE))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			update_mmu_cache_pmd(vma, addr, pmd);
 	}
 	if ((flags & FOLL_MLOCK) && (vma->vm_flags & VM_LOCKED)) {
@@ -1284,8 +1309,17 @@ int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 	 * check_same as the page may no longer be mapped.
 	 */
 	if (unlikely(pmd_trans_migrating(*pmdp))) {
+<<<<<<< HEAD
 		spin_unlock(ptl);
 		wait_migrate_huge_page(vma->anon_vma, pmdp);
+=======
+		page = pmd_page(*pmdp);
+		if (!get_page_unless_zero(page))
+			goto out_unlock;
+		spin_unlock(ptl);
+		wait_migrate_huge_page(vma->anon_vma, pmdp);
+		put_page(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -1321,9 +1355,18 @@ int do_huge_pmd_numa_page(struct mm_struct *mm, struct vm_area_struct *vma,
 
 	/* Migration could have started since the pmd_trans_migrating check */
 	if (!page_locked) {
+<<<<<<< HEAD
 		spin_unlock(ptl);
 		wait_on_page_locked(page);
 		page_nid = -1;
+=======
+		page_nid = -1;
+		if (!get_page_unless_zero(page))
+			goto out_unlock;
+		spin_unlock(ptl);
+		wait_on_page_locked(page);
+		put_page(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -1451,7 +1494,11 @@ int move_huge_pmd(struct vm_area_struct *vma, struct vm_area_struct *new_vma,
 	spinlock_t *old_ptl, *new_ptl;
 	int ret = 0;
 	pmd_t pmd;
+<<<<<<< HEAD
 
+=======
+	bool force_flush = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mm_struct *mm = vma->vm_mm;
 
 	if ((old_addr & ~HPAGE_PMD_MASK) ||
@@ -1479,6 +1526,11 @@ int move_huge_pmd(struct vm_area_struct *vma, struct vm_area_struct *new_vma,
 		if (new_ptl != old_ptl)
 			spin_lock_nested(new_ptl, SINGLE_DEPTH_NESTING);
 		pmd = pmdp_get_and_clear(mm, old_addr, old_pmd);
+<<<<<<< HEAD
+=======
+		if (pmd_present(pmd))
+			force_flush = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		VM_BUG_ON(!pmd_none(*new_pmd));
 
 		if (pmd_move_must_withdraw(new_ptl, old_ptl)) {
@@ -1487,6 +1539,11 @@ int move_huge_pmd(struct vm_area_struct *vma, struct vm_area_struct *new_vma,
 			pgtable_trans_huge_deposit(mm, new_pmd, pgtable);
 		}
 		set_pmd_at(mm, new_addr, new_pmd, pmd_mksoft_dirty(pmd));
+<<<<<<< HEAD
+=======
+		if (force_flush)
+			flush_tlb_range(vma, old_addr, old_addr + PMD_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (new_ptl != old_ptl)
 			spin_unlock(new_ptl);
 		spin_unlock(old_ptl);
@@ -2081,10 +2138,16 @@ int khugepaged_enter_vma_merge(struct vm_area_struct *vma,
 		 * page fault if needed.
 		 */
 		return 0;
+<<<<<<< HEAD
 	if (vma->vm_ops)
 		/* khugepaged not yet working on file or special mappings */
 		return 0;
 	VM_BUG_ON_VMA(vm_flags & VM_NO_THP, vma);
+=======
+	if (vma->vm_ops || (vm_flags & VM_NO_THP))
+		/* khugepaged not yet working on file or special mappings */
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hstart = (vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK;
 	hend = vma->vm_end & HPAGE_PMD_MASK;
 	if (hstart < hend)
@@ -2407,8 +2470,12 @@ static bool hugepage_vma_check(struct vm_area_struct *vma)
 		return false;
 	if (is_vma_temporary_stack(vma))
 		return false;
+<<<<<<< HEAD
 	VM_BUG_ON_VMA(vma->vm_flags & VM_NO_THP, vma);
 	return true;
+=======
+	return !(vma->vm_flags & VM_NO_THP);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void collapse_huge_page(struct mm_struct *mm,

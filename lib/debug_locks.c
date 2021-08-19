@@ -37,7 +37,11 @@ EXPORT_SYMBOL_GPL(debug_locks_silent);
  */
 int debug_locks_off(void)
 {
+<<<<<<< HEAD
 	if (__debug_locks_off()) {
+=======
+	if (debug_locks && __debug_locks_off()) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!debug_locks_silent) {
 			console_verbose();
 			return 1;

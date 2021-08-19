@@ -32,6 +32,17 @@
 #include <asm/processor-flags.h>
 #include <asm/asm-offsets.h>
 
+<<<<<<< HEAD
+=======
+/*
+ * Locally defined symbols should be marked hidden:
+ */
+	.hidden _bss
+	.hidden _ebss
+	.hidden _got
+	.hidden _egot
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__HEAD
 	.code32
 ENTRY(startup_32)
@@ -95,7 +106,11 @@ ENTRY(startup_32)
 	notl	%eax
 	andl	%eax, %ebx
 	cmpl	$LOAD_PHYSICAL_ADDR, %ebx
+<<<<<<< HEAD
 	jge	1f
+=======
+	jae	1f
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	movl	$LOAD_PHYSICAL_ADDR, %ebx
 1:
@@ -216,6 +231,14 @@ ENTRY(efi32_stub_entry)
 	leal	efi32_config(%ebp), %eax
 	movl	%eax, efi_config(%ebp)
 
+<<<<<<< HEAD
+=======
+	/* Disable paging */
+	movl	%cr0, %eax
+	btrl	$X86_CR0_PG_BIT, %eax
+	movl	%eax, %cr0
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jmp	startup_32
 ENDPROC(efi32_stub_entry)
 #endif
@@ -323,7 +346,11 @@ preferred_addr:
 	notq	%rax
 	andq	%rax, %rbp
 	cmpq	$LOAD_PHYSICAL_ADDR, %rbp
+<<<<<<< HEAD
 	jge	1f
+=======
+	jae	1f
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	movq	$LOAD_PHYSICAL_ADDR, %rbp
 1:

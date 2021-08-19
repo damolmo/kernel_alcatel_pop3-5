@@ -104,9 +104,12 @@ struct dma_buf_attachment;
  * PRIME: used in the prime code.
  *	  This is the category used by the DRM_DEBUG_PRIME() macro.
  *
+<<<<<<< HEAD
  * ATOMIC: used in the atomic code.
  *	  This is the category used by the DRM_DEBUG_ATOMIC() macro.
  *
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Enabling verbose debug messages is done through the drm.debug parameter,
  * each category being enabled by a bit.
  *
@@ -124,7 +127,10 @@ struct dma_buf_attachment;
 #define DRM_UT_DRIVER		0x02
 #define DRM_UT_KMS		0x04
 #define DRM_UT_PRIME		0x08
+<<<<<<< HEAD
 #define DRM_UT_ATOMIC		0x10
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern __printf(2, 3)
 void drm_ut_debug_printk(const char *function_name,
@@ -147,12 +153,38 @@ void drm_err(const char *func, const char *format, ...);
 #define DRIVER_MODESET     0x2000
 #define DRIVER_PRIME       0x4000
 #define DRIVER_RENDER      0x8000
+<<<<<<< HEAD
 #define DRIVER_ATOMIC      0x10000
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /***********************************************************************/
 /** \name Macros to make printk easier */
 /*@{*/
 
+<<<<<<< HEAD
+=======
+#define _DRM_PRINTK(once, level, fmt, ...)				\
+	do {								\
+		printk##once(KERN_##level "[" DRM_NAME "] " fmt,	\
+			     ##__VA_ARGS__);				\
+	} while (0)
+
+#define DRM_INFO(fmt, ...)						\
+	_DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
+#define DRM_NOTE(fmt, ...)						\
+	_DRM_PRINTK(, NOTICE, fmt, ##__VA_ARGS__)
+#define DRM_WARN(fmt, ...)						\
+	_DRM_PRINTK(, WARNING, fmt, ##__VA_ARGS__)
+
+#define DRM_INFO_ONCE(fmt, ...)						\
+	_DRM_PRINTK(_once, INFO, fmt, ##__VA_ARGS__)
+#define DRM_NOTE_ONCE(fmt, ...)						\
+	_DRM_PRINTK(_once, NOTICE, fmt, ##__VA_ARGS__)
+#define DRM_WARN_ONCE(fmt, ...)						\
+	_DRM_PRINTK(_once, WARNING, fmt, ##__VA_ARGS__)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * Error output.
  *
@@ -178,12 +210,15 @@ void drm_err(const char *func, const char *format, ...);
 		drm_err(__func__, fmt, ##__VA_ARGS__);			\
 })
 
+<<<<<<< HEAD
 #define DRM_INFO(fmt, ...)				\
 	printk(KERN_INFO "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
 
 #define DRM_INFO_ONCE(fmt, ...)				\
 	printk_once(KERN_INFO "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * Debug output.
  *
@@ -211,11 +246,14 @@ void drm_err(const char *func, const char *format, ...);
 		if (unlikely(drm_debug & DRM_UT_PRIME))			\
 			drm_ut_debug_printk(__func__, fmt, ##args);	\
 	} while (0)
+<<<<<<< HEAD
 #define DRM_DEBUG_ATOMIC(fmt, args...)					\
 	do {								\
 		if (unlikely(drm_debug & DRM_UT_ATOMIC))		\
 			drm_ut_debug_printk(__func__, fmt, ##args);	\
 	} while (0)
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*@}*/
 
@@ -293,8 +331,11 @@ struct drm_file {
 	 * in the plane list
 	 */
 	unsigned universal_planes:1;
+<<<<<<< HEAD
 	/* true if client understands atomic properties */
 	unsigned atomic:1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct pid *pid;
 	kuid_t uid;
@@ -322,10 +363,13 @@ struct drm_file {
 	struct list_head fbs;
 	struct mutex fbs_lock;
 
+<<<<<<< HEAD
 	/** User-created blob properties; this retains a reference on the
 	 *  property. */
 	struct list_head blobs;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	wait_queue_head_t event_wait;
 	struct list_head event_list;
 	int event_space;
@@ -917,15 +961,22 @@ extern int drm_vblank_init(struct drm_device *dev, int num_crtcs);
 extern int drm_wait_vblank(struct drm_device *dev, void *data,
 			   struct drm_file *filp);
 extern u32 drm_vblank_count(struct drm_device *dev, int crtc);
+<<<<<<< HEAD
 extern u32 drm_crtc_vblank_count(struct drm_crtc *crtc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern u32 drm_vblank_count_and_time(struct drm_device *dev, int crtc,
 				     struct timeval *vblanktime);
 extern void drm_send_vblank_event(struct drm_device *dev, int crtc,
 				     struct drm_pending_vblank_event *e);
+<<<<<<< HEAD
 extern void drm_crtc_send_vblank_event(struct drm_crtc *crtc,
 				       struct drm_pending_vblank_event *e);
 extern bool drm_handle_vblank(struct drm_device *dev, int crtc);
 extern bool drm_crtc_handle_vblank(struct drm_crtc *crtc);
+=======
+extern bool drm_handle_vblank(struct drm_device *dev, int crtc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int drm_vblank_get(struct drm_device *dev, int crtc);
 extern void drm_vblank_put(struct drm_device *dev, int crtc);
 extern int drm_crtc_vblank_get(struct drm_crtc *crtc);
@@ -970,8 +1021,11 @@ extern void drm_master_put(struct drm_master **master);
 extern void drm_put_dev(struct drm_device *dev);
 extern void drm_unplug_dev(struct drm_device *dev);
 extern unsigned int drm_debug;
+<<<<<<< HEAD
 extern bool drm_atomic;
 extern u32 drm_master_relax;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 				/* Debugfs support */
 #if defined(CONFIG_DEBUG_FS)
@@ -1008,7 +1062,11 @@ extern void drm_gem_dmabuf_release(struct dma_buf *dma_buf);
 
 extern int drm_prime_sg_to_page_addr_arrays(struct sg_table *sgt, struct page **pages,
 					    dma_addr_t *addrs, int max_pages);
+<<<<<<< HEAD
 extern struct sg_table *drm_prime_pages_to_sg(struct page **pages, unsigned int nr_pages);
+=======
+extern struct sg_table *drm_prime_pages_to_sg(struct page **pages, int nr_pages);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void drm_prime_gem_destroy(struct drm_gem_object *obj, struct sg_table *sg);
 
 
@@ -1050,11 +1108,15 @@ void drm_pci_agp_destroy(struct drm_device *dev);
 
 extern int drm_pci_init(struct drm_driver *driver, struct pci_driver *pdriver);
 extern void drm_pci_exit(struct drm_driver *driver, struct pci_driver *pdriver);
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int drm_get_pci_dev(struct pci_dev *pdev,
 			   const struct pci_device_id *ent,
 			   struct drm_driver *driver);
 extern int drm_pci_set_busid(struct drm_device *dev, struct drm_master *master);
+<<<<<<< HEAD
 #else
 static inline int drm_get_pci_dev(struct pci_dev *pdev,
 				  const struct pci_device_id *ent,
@@ -1069,6 +1131,8 @@ static inline int drm_pci_set_busid(struct drm_device *dev,
 	return -ENOSYS;
 }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DRM_PCIE_SPEED_25 1
 #define DRM_PCIE_SPEED_50 2

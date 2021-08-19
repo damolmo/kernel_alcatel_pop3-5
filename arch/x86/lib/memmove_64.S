@@ -218,6 +218,10 @@ ENTRY(memmove)
 	altinstruction_entry .Lmemmove_begin_forward,		\
 		.Lmemmove_begin_forward_efs,X86_FEATURE_ERMS,	\
 		.Lmemmove_end_forward-.Lmemmove_begin_forward,	\
+<<<<<<< HEAD
 		.Lmemmove_end_forward_efs-.Lmemmove_begin_forward_efs
+=======
+		.Lmemmove_end_forward_efs-.Lmemmove_begin_forward_efs,0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.previous
 ENDPROC(memmove)

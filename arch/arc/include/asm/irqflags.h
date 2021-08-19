@@ -159,10 +159,17 @@ static inline int arch_irqs_disabled(void)
 .endm
 
 .macro IRQ_ENABLE  scratch
+<<<<<<< HEAD
 	lr	\scratch, [status32]
 	or	\scratch, \scratch, (STATUS_E1_MASK | STATUS_E2_MASK)
 	flag	\scratch
 	TRACE_ASM_IRQ_ENABLE
+=======
+	TRACE_ASM_IRQ_ENABLE
+	lr	\scratch, [status32]
+	or	\scratch, \scratch, (STATUS_E1_MASK | STATUS_E2_MASK)
+	flag	\scratch
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 .endm
 
 #endif	/* __ASSEMBLY__ */

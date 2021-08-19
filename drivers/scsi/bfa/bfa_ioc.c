@@ -2802,7 +2802,11 @@ void
 bfa_ioc_get_adapter_manufacturer(struct bfa_ioc_s *ioc, char *manufacturer)
 {
 	memset((void *)manufacturer, 0, BFA_ADAPTER_MFG_NAME_LEN);
+<<<<<<< HEAD
 	memcpy(manufacturer, BFA_MFG_NAME, BFA_ADAPTER_MFG_NAME_LEN);
+=======
+	strlcpy(manufacturer, BFA_MFG_NAME, BFA_ADAPTER_MFG_NAME_LEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void
@@ -3665,6 +3669,7 @@ bfa_cb_sfp_state_query(struct bfa_sfp_s *sfp)
 		if (sfp->state_query_cbfn)
 			sfp->state_query_cbfn(sfp->state_query_cbarg,
 					sfp->status);
+<<<<<<< HEAD
 			sfp->media = NULL;
 		}
 
@@ -3678,6 +3683,21 @@ bfa_cb_sfp_state_query(struct bfa_sfp_s *sfp)
 
 		sfp->state_query_lock = 0;
 		sfp->state_query_cbfn = NULL;
+=======
+		sfp->media = NULL;
+	}
+
+	if (sfp->portspeed) {
+		sfp->status = bfa_sfp_speed_valid(sfp, sfp->portspeed);
+		if (sfp->state_query_cbfn)
+			sfp->state_query_cbfn(sfp->state_query_cbarg,
+					sfp->status);
+		sfp->portspeed = BFA_PORT_SPEED_UNKNOWN;
+	}
+
+	sfp->state_query_lock = 0;
+	sfp->state_query_cbfn = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

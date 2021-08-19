@@ -4108,7 +4108,11 @@ static void ar9003_hw_thermometer_apply(struct ath_hw *ah)
 
 static void ar9003_hw_thermo_cal_apply(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	u32 data, ko, kg;
+=======
+	u32 data = 0, ko, kg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!AR_SREV_9462_20_OR_LATER(ah))
 		return;
@@ -4170,7 +4174,11 @@ static void ath9k_hw_ar9300_set_board_values(struct ath_hw *ah,
 	if (!AR_SREV_9330(ah) && !AR_SREV_9340(ah) && !AR_SREV_9531(ah))
 		ar9003_hw_internal_regulator_apply(ah);
 	ar9003_hw_apply_tuning_caps(ah);
+<<<<<<< HEAD
 	ar9003_hw_apply_minccapwr_thresh(ah, chan);
+=======
+	ar9003_hw_apply_minccapwr_thresh(ah, is2ghz);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ar9003_hw_txend_to_xpa_off_apply(ah, is2ghz);
 	ar9003_hw_thermometer_apply(ah);
 	ar9003_hw_thermo_cal_apply(ah);

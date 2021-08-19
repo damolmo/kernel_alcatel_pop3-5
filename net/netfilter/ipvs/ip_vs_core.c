@@ -313,7 +313,17 @@ ip_vs_sched_persist(struct ip_vs_service *svc,
 		 * return *ignored=0 i.e. ICMP and NF_DROP
 		 */
 		sched = rcu_dereference(svc->scheduler);
+<<<<<<< HEAD
 		dest = sched->schedule(svc, skb, iph);
+=======
+		if (sched) {
+			/* read svc->sched_data after svc->scheduler */
+			smp_rmb();
+			dest = sched->schedule(svc, skb, iph);
+		} else {
+			dest = NULL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!dest) {
 			IP_VS_DBG(1, "p-schedule: no dest found.\n");
 			kfree(param.pe_data);
@@ -461,7 +471,17 @@ ip_vs_schedule(struct ip_vs_service *svc, struct sk_buff *skb,
 	}
 
 	sched = rcu_dereference(svc->scheduler);
+<<<<<<< HEAD
 	dest = sched->schedule(svc, skb, iph);
+=======
+	if (sched) {
+		/* read svc->sched_data after svc->scheduler */
+		smp_rmb();
+		dest = sched->schedule(svc, skb, iph);
+	} else {
+		dest = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dest == NULL) {
 		IP_VS_DBG(1, "Schedule: no dest found.\n");
 		return NULL;
@@ -795,10 +815,15 @@ static int handle_response_icmp(int af, struct sk_buff *skb,
 {
 	unsigned int verdict = NF_DROP;
 
+<<<<<<< HEAD
 	if (IP_VS_FWD_METHOD(cp) != 0) {
 		pr_err("shouldn't reach here, because the box is on the "
 		       "half connection in the tun/dr module.\n");
 	}
+=======
+	if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
+		goto ignore_cp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Ensure the checksum is correct */
 	if (!skb_csum_unnecessary(skb) && ip_vs_checksum_complete(skb, ihl)) {
@@ -832,6 +857,11 @@ static int handle_response_icmp(int af, struct sk_buff *skb,
 		ip_vs_notrack(skb);
 	else
 		ip_vs_update_conntrack(skb, cp, 0);
+<<<<<<< HEAD
+=======
+
+ignore_cp:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	verdict = NF_ACCEPT;
 
 out:
@@ -1180,8 +1210,16 @@ ip_vs_out(unsigned int hooknum, struct sk_buff *skb, int af)
 	 */
 	cp = pp->conn_out_get(af, skb, &iph, 0);
 
+<<<<<<< HEAD
 	if (likely(cp))
 		return handle_response(af, skb, pd, cp, &iph);
+=======
+	if (likely(cp)) {
+		if (IP_VS_FWD_METHOD(cp) != IP_VS_CONN_F_MASQ)
+			goto ignore_cp;
+		return handle_response(af, skb, pd, cp, &iph);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sysctl_nat_icmp_send(net) &&
 	    (pp->protocol == IPPROTO_TCP ||
 	     pp->protocol == IPPROTO_UDP ||
@@ -1223,9 +1261,20 @@ ip_vs_out(unsigned int hooknum, struct sk_buff *skb, int af)
 			}
 		}
 	}
+<<<<<<< HEAD
 	IP_VS_DBG_PKT(12, af, pp, skb, 0,
 		      "ip_vs_out: packet continues traversal as normal");
 	return NF_ACCEPT;
+=======
+out:
+	IP_VS_DBG_PKT(12, af, pp, skb, 0,
+		      "ip_vs_out: packet continues traversal as normal");
+	return NF_ACCEPT;
+
+ignore_cp:
+	__ip_vs_conn_put(cp);
+	goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1680,6 +1729,7 @@ ip_vs_in(unsigned int hooknum, struct sk_buff *skb, int af)
 	if (cp->dest && !(cp->dest->flags & IP_VS_DEST_F_AVAILABLE)) {
 		/* the destination server is not available */
 
+<<<<<<< HEAD
 		if (sysctl_expire_nodest_conn(ipvs)) {
 			/* try to expire the connection immediately */
 			ip_vs_conn_expire_now(cp);
@@ -1687,6 +1737,22 @@ ip_vs_in(unsigned int hooknum, struct sk_buff *skb, int af)
 		/* don't restart its timer, and silently
 		   drop the packet. */
 		__ip_vs_conn_put(cp);
+=======
+		__u32 flags = cp->flags;
+
+		/* when timer already started, silently drop the packet.*/
+		if (timer_pending(&cp->timer))
+			__ip_vs_conn_put(cp);
+		else
+			ip_vs_conn_put(cp);
+
+		if (sysctl_expire_nodest_conn(ipvs) &&
+		    !(flags & IP_VS_CONN_F_ONE_PACKET)) {
+			/* try to expire the connection immediately */
+			ip_vs_conn_expire_now(cp);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NF_DROP;
 	}
 

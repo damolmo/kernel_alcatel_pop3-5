@@ -1420,6 +1420,12 @@ static int wlanhdr_to_ethhdr(struct recv_frame *precvframe)
 		ptr = recvframe_pull(precvframe, (rmv_len-sizeof(struct ethhdr) + (bsnaphdr ? 2 : 0)));
 	}
 
+<<<<<<< HEAD
+=======
+	if (!ptr)
+		return _FAIL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(ptr, pattrib->dst, ETH_ALEN);
 	memcpy(ptr+ETH_ALEN, pattrib->src, ETH_ALEN);
 

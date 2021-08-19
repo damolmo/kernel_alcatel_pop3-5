@@ -42,9 +42,13 @@ struct xgene_gpio {
 	struct gpio_chip	chip;
 	void __iomem		*base;
 	spinlock_t		lock;
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	u32			set_dr_val[XGENE_MAX_GPIO_BANKS];
 #endif
+=======
+	u32			set_dr_val[XGENE_MAX_GPIO_BANKS];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static inline struct xgene_gpio *to_xgene_gpio(struct gpio_chip *chip)
@@ -132,8 +136,12 @@ static int xgene_gpio_dir_out(struct gpio_chip *gc,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int xgene_gpio_suspend(struct device *dev)
+=======
+static __maybe_unused int xgene_gpio_suspend(struct device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct xgene_gpio *gpio = dev_get_drvdata(dev);
 	unsigned long bank_offset;
@@ -146,7 +154,11 @@ static int xgene_gpio_suspend(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int xgene_gpio_resume(struct device *dev)
+=======
+static __maybe_unused int xgene_gpio_resume(struct device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct xgene_gpio *gpio = dev_get_drvdata(dev);
 	unsigned long bank_offset;
@@ -160,10 +172,13 @@ static int xgene_gpio_resume(struct device *dev)
 }
 
 static SIMPLE_DEV_PM_OPS(xgene_gpio_pm, xgene_gpio_suspend, xgene_gpio_resume);
+<<<<<<< HEAD
 #define XGENE_GPIO_PM_OPS	(&xgene_gpio_pm)
 #else
 #define XGENE_GPIO_PM_OPS	NULL
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int xgene_gpio_probe(struct platform_device *pdev)
 {
@@ -231,7 +246,11 @@ static struct platform_driver xgene_gpio_driver = {
 		.name = "xgene-gpio",
 		.owner = THIS_MODULE,
 		.of_match_table = xgene_gpio_of_match,
+<<<<<<< HEAD
 		.pm     = XGENE_GPIO_PM_OPS,
+=======
+		.pm     = &xgene_gpio_pm,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	.probe = xgene_gpio_probe,
 	.remove = xgene_gpio_remove,

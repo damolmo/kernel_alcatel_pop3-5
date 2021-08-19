@@ -708,6 +708,10 @@ int blkg_conf_prep(struct blkcg *blkcg, const struct blkcg_policy *pol,
 {
 	struct gendisk *disk;
 	struct blkcg_gq *blkg;
+<<<<<<< HEAD
+=======
+	struct module *owner;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int major, minor;
 	unsigned long long v;
 	int part, ret;
@@ -716,8 +720,19 @@ int blkg_conf_prep(struct blkcg *blkcg, const struct blkcg_policy *pol,
 		return -EINVAL;
 
 	disk = get_gendisk(MKDEV(major, minor), &part);
+<<<<<<< HEAD
 	if (!disk || part)
 		return -EINVAL;
+=======
+	if (!disk)
+		return -EINVAL;
+	if (part) {
+		owner = disk->fops->owner;
+		put_disk(disk);
+		module_put(owner);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_read_lock();
 	spin_lock_irq(disk->queue->queue_lock);
@@ -731,7 +746,13 @@ int blkg_conf_prep(struct blkcg *blkcg, const struct blkcg_policy *pol,
 		ret = PTR_ERR(blkg);
 		rcu_read_unlock();
 		spin_unlock_irq(disk->queue->queue_lock);
+<<<<<<< HEAD
 		put_disk(disk);
+=======
+		owner = disk->fops->owner;
+		put_disk(disk);
+		module_put(owner);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * If queue was bypassing, we should retry.  Do so after a
 		 * short msleep().  It isn't strictly necessary but queue
@@ -762,9 +783,19 @@ EXPORT_SYMBOL_GPL(blkg_conf_prep);
 void blkg_conf_finish(struct blkg_conf_ctx *ctx)
 	__releases(ctx->disk->queue->queue_lock) __releases(rcu)
 {
+<<<<<<< HEAD
 	spin_unlock_irq(ctx->disk->queue->queue_lock);
 	rcu_read_unlock();
 	put_disk(ctx->disk);
+=======
+	struct module *owner;
+
+	spin_unlock_irq(ctx->disk->queue->queue_lock);
+	rcu_read_unlock();
+	owner = ctx->disk->fops->owner;
+	put_disk(ctx->disk);
+	module_put(owner);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(blkg_conf_finish);
 

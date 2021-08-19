@@ -39,6 +39,10 @@ static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
 	cred->cap_inheritable = CAP_EMPTY_SET;
 	cred->cap_permitted = CAP_FULL_SET;
 	cred->cap_effective = CAP_FULL_SET;
+<<<<<<< HEAD
+=======
+	cred->cap_ambient = CAP_EMPTY_SET;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cred->cap_bset = CAP_FULL_SET;
 #ifdef CONFIG_KEYS
 	key_put(cred->request_key_auth);
@@ -600,9 +604,32 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 	struct uid_gid_map new_map;
 	unsigned idx;
 	struct uid_gid_extent *extent = NULL;
+<<<<<<< HEAD
 	unsigned long page = 0;
 	char *kbuf, *pos, *next_line;
 	ssize_t ret = -EINVAL;
+=======
+	unsigned long page;
+	char *kbuf, *pos, *next_line;
+	ssize_t ret;
+
+	/* Only allow < page size writes at the beginning of the file */
+	if ((*ppos != 0) || (count >= PAGE_SIZE))
+		return -EINVAL;
+
+	/* Get a buffer */
+	page = __get_free_page(GFP_TEMPORARY);
+	kbuf = (char *) page;
+	if (!page)
+		return -ENOMEM;
+
+	/* Slurp in the user data */
+	if (copy_from_user(kbuf, buf, count)) {
+		free_page(page);
+		return -EFAULT;
+	}
+	kbuf[count] = '\0';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * The userns_state_mutex serializes all writes to any given map.
@@ -636,6 +663,7 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 	if (cap_valid(cap_setid) && !file_ns_capable(file, ns, CAP_SYS_ADMIN))
 		goto out;
 
+<<<<<<< HEAD
 	/* Get a buffer */
 	ret = -ENOMEM;
 	page = __get_free_page(GFP_TEMPORARY);
@@ -654,6 +682,8 @@ static ssize_t map_write(struct file *file, const char __user *buf,
 		goto out;
 	kbuf[count] = '\0';
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Parse the user data */
 	ret = -EINVAL;
 	pos = kbuf;

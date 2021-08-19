@@ -673,7 +673,11 @@ static void __ui_browser__line_arrow_down(struct ui_browser *browser,
 		ui_browser__gotorc(browser, row, column + 1);
 		SLsmg_draw_hline(2);
 
+<<<<<<< HEAD
 		if (row++ == 0)
+=======
+		if (++row == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 	} else
 		row = 0;

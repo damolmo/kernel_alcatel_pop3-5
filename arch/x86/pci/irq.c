@@ -1116,6 +1116,11 @@ static struct dmi_system_id __initdata pciirq_dmi_table[] = {
 
 void __init pcibios_irq_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct irq_routing_table *rtable = NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	DBG(KERN_DEBUG "PCI: IRQ init\n");
 
 	if (raw_pci_ops == NULL)
@@ -1126,8 +1131,15 @@ void __init pcibios_irq_init(void)
 	pirq_table = pirq_find_routing_table();
 
 #ifdef CONFIG_PCI_BIOS
+<<<<<<< HEAD
 	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN))
 		pirq_table = pcibios_get_irq_routing_table();
+=======
+	if (!pirq_table && (pci_probe & PCI_BIOS_IRQ_SCAN)) {
+		pirq_table = pcibios_get_irq_routing_table();
+		rtable = pirq_table;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	if (pirq_table) {
 		pirq_peer_trick();
@@ -1142,8 +1154,15 @@ void __init pcibios_irq_init(void)
 		 * If we're using the I/O APIC, avoid using the PCI IRQ
 		 * routing table
 		 */
+<<<<<<< HEAD
 		if (io_apic_assign_pci_irqs)
 			pirq_table = NULL;
+=======
+		if (io_apic_assign_pci_irqs) {
+			kfree(rtable);
+			pirq_table = NULL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	x86_init.pci.fixup_irqs();
@@ -1202,6 +1221,12 @@ static int pirq_enable_irq(struct pci_dev *dev)
 			int irq;
 			struct io_apic_irq_attr irq_attr;
 
+<<<<<<< HEAD
+=======
+			if (dev->irq_managed && dev->irq > 0)
+				return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			irq = IO_APIC_get_PCI_irq_vector(dev->bus->number,
 						PCI_SLOT(dev->devfn),
 						pin - 1, &irq_attr);
@@ -1228,6 +1253,10 @@ static int pirq_enable_irq(struct pci_dev *dev)
 			}
 			dev = temp_dev;
 			if (irq >= 0) {
+<<<<<<< HEAD
+=======
+				dev->irq_managed = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				dev->irq = irq;
 				dev_info(&dev->dev, "PCI->APIC IRQ transform: "
 					 "INT %c -> IRQ %d\n", 'A' + pin - 1, irq);
@@ -1257,8 +1286,15 @@ static int pirq_enable_irq(struct pci_dev *dev)
 static void pirq_disable_irq(struct pci_dev *dev)
 {
 	if (io_apic_assign_pci_irqs && !mp_should_keep_irq(&dev->dev) &&
+<<<<<<< HEAD
 	    dev->irq) {
 		mp_unmap_irq(dev->irq);
 		dev->irq = 0;
+=======
+	    dev->irq_managed && dev->irq) {
+		mp_unmap_irq(dev->irq);
+		dev->irq = 0;
+		dev->irq_managed = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }

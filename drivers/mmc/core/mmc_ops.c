@@ -490,7 +490,11 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 		timeout_ms = MMC_OPS_TIMEOUT_MS;
 
 	/* Must check status to be sure of no errors. */
+<<<<<<< HEAD
 	timeout = jiffies + msecs_to_jiffies(timeout_ms);
+=======
+	timeout = jiffies + msecs_to_jiffies(timeout_ms) + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	do {
 		if (send_status) {
 			err = __mmc_send_status(card, &status, ignore_crc);

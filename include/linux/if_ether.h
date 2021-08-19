@@ -28,6 +28,17 @@ static inline struct ethhdr *eth_hdr(const struct sk_buff *skb)
 	return (struct ethhdr *)skb_mac_header(skb);
 }
 
+<<<<<<< HEAD
+=======
+/* Prefer this version in TX path, instead of
+ * skb_reset_mac_header() + eth_hdr()
+ */
+static inline struct ethhdr *skb_eth_hdr(const struct sk_buff *skb)
+{
+	return (struct ethhdr *)skb->data;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int eth_header_parse(const struct sk_buff *skb, unsigned char *haddr);
 
 extern ssize_t sysfs_format_mac(char *buf, const unsigned char *addr, int len);

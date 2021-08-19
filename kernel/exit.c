@@ -53,10 +53,16 @@
 #include <linux/oom.h>
 #include <linux/writeback.h>
 #include <linux/shm.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #include "mt_sched_mon.h"
 #include "mt_cputime.h"
 #endif
+=======
+
+#include "sched/tune.h"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 #include <asm/pgtable.h>
@@ -416,7 +422,11 @@ static void exit_mm(struct task_struct *tsk)
 	struct mm_struct *mm = tsk->mm;
 	struct core_state *core_state;
 
+<<<<<<< HEAD
 	mm_release(tsk, mm);
+=======
+	exit_mm_release(tsk, mm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!mm)
 		return;
 	sync_mm_rss(mm);
@@ -435,7 +445,14 @@ static void exit_mm(struct task_struct *tsk)
 		up_read(&mm->mmap_sem);
 
 		self.task = tsk;
+<<<<<<< HEAD
 		self.next = xchg(&core_state->dumper.next, &self);
+=======
+		if (self.task->flags & PF_SIGNALED)
+			self.next = xchg(&core_state->dumper.next, &self);
+		else
+			self.task = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * Implies mb(), the result of xchg() must be visible
 		 * to core_state->dumper.
@@ -674,6 +691,7 @@ void do_exit(long code)
 	TASKS_RCU(int tasks_rcu_i);
 
 	profile_task_exit(tsk);
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #ifdef CONFIG_MTPROF_CPUTIME
 	/* mt shceduler profiling*/
@@ -682,6 +700,9 @@ void do_exit(long code)
 	/* mt throttle monitor */
 	end_mt_rt_mon_info(tsk);
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	WARN_ON(blk_needs_flush_plug(tsk));
 
 	if (unlikely(in_interrupt()))
@@ -708,6 +729,7 @@ void do_exit(long code)
 	 */
 	if (unlikely(tsk->flags & PF_EXITING)) {
 		pr_alert("Fixing recursive fault but reboot is needed!\n");
+<<<<<<< HEAD
 		/*
 		 * We can do this unlocked here. The futex code uses
 		 * this flag just to verify whether the pi state
@@ -718,17 +740,25 @@ void do_exit(long code)
 		 * task into the wait for ever nirwana as well.
 		 */
 		tsk->flags |= PF_EXITPIDONE;
+=======
+		futex_exit_recursive(tsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_current_state(TASK_UNINTERRUPTIBLE);
 		schedule();
 	}
 
 	exit_signals(tsk);  /* sets PF_EXITING */
+<<<<<<< HEAD
 	/*
 	 * tsk->flags are checked in the futex code to protect against
 	 * an exiting task cleaning up the robust pi futexes.
 	 */
 	smp_mb();
 	raw_spin_unlock_wait(&tsk->pi_lock);
+=======
+
+	schedtune_exit_task(tsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(in_atomic()))
 		pr_info("note: %s[%d] exited with preempt_count %d\n",
@@ -804,12 +834,15 @@ void do_exit(long code)
 	 * Make sure we are holding no locks:
 	 */
 	debug_check_no_locks_held();
+<<<<<<< HEAD
 	/*
 	 * We can do this unlocked here. The futex code uses this flag
 	 * just to verify whether the pi state cleanup has been done
 	 * or not. In the worst case it loops once more.
 	 */
 	tsk->flags |= PF_EXITPIDONE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tsk->io_context)
 		exit_io_context(tsk);
@@ -940,6 +973,7 @@ static int eligible_pid(struct wait_opts *wo, struct task_struct *p)
 		task_pid_type(p, wo->wo_type) == wo->wo_pid;
 }
 
+<<<<<<< HEAD
 static int eligible_child(struct wait_opts *wo, struct task_struct *p)
 {
 	if (!eligible_pid(wo, p))
@@ -951,6 +985,30 @@ static int eligible_child(struct wait_opts *wo, struct task_struct *p)
 	 * using a signal other than SIGCHLD.) */
 	if (((p->exit_signal != SIGCHLD) ^ !!(wo->wo_flags & __WCLONE))
 	    && !(wo->wo_flags & __WALL))
+=======
+static int
+eligible_child(struct wait_opts *wo, bool ptrace, struct task_struct *p)
+{
+	if (!eligible_pid(wo, p))
+		return 0;
+
+	/*
+	 * Wait for all children (clone and not) if __WALL is set or
+	 * if it is traced by us.
+	 */
+	if (ptrace || (wo->wo_flags & __WALL))
+		return 1;
+
+	/*
+	 * Otherwise, wait for clone children *only* if __WCLONE is set;
+	 * otherwise, wait for non-clone children *only*.
+	 *
+	 * Note: a "clone" child here is one that reports to its parent
+	 * using a signal other than SIGCHLD, or a non-leader thread which
+	 * we can only see if it is traced by us.
+	 */
+	if ((p->exit_signal != SIGCHLD) ^ !!(wo->wo_flags & __WCLONE))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	return 1;
@@ -1323,7 +1381,11 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
 	if (unlikely(exit_state == EXIT_DEAD))
 		return 0;
 
+<<<<<<< HEAD
 	ret = eligible_child(wo, p);
+=======
+	ret = eligible_child(wo, ptrace, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ret)
 		return ret;
 
@@ -1619,6 +1681,13 @@ SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 			__WNOTHREAD|__WCLONE|__WALL))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* -INT_MIN is not defined */
+	if (upid == INT_MIN)
+		return -ESRCH;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (upid == -1)
 		type = PIDTYPE_MAX;
 	else if (upid < 0) {

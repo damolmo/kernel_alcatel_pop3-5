@@ -51,7 +51,11 @@ then
 			mkdir $builddir
 		fi
 	else
+<<<<<<< HEAD
 		echo Bad build directory: \"$builddir\"
+=======
+		echo Bad build directory: \"$buildloc\"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		exit 2
 	fi
 fi

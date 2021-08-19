@@ -642,6 +642,14 @@ static u8 ov534_reg_read(struct gspca_dev *gspca_dev, u16 reg)
 	if (ret < 0) {
 		pr_err("read failed %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the result is zeroed to avoid uninitialized
+		 * values.
+		 */
+		gspca_dev->usb_buf[0] = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return gspca_dev->usb_buf[0];
 }
@@ -1490,8 +1498,18 @@ static void sd_set_streamparm(struct gspca_dev *gspca_dev,
 	struct v4l2_fract *tpf = &cp->timeperframe;
 	struct sd *sd = (struct sd *) gspca_dev;
 
+<<<<<<< HEAD
 	/* Set requested framerate */
 	sd->frame_rate = tpf->denominator / tpf->numerator;
+=======
+	if (tpf->numerator == 0 || tpf->denominator == 0)
+		/* Set default framerate */
+		sd->frame_rate = 30;
+	else
+		/* Set requested framerate */
+		sd->frame_rate = tpf->denominator / tpf->numerator;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (gspca_dev->streaming)
 		set_frame_rate(gspca_dev);
 

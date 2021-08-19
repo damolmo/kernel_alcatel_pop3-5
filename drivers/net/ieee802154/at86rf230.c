@@ -1016,7 +1016,11 @@ static int
 at86rf230_ed(struct ieee802154_dev *dev, u8 *level)
 {
 	might_sleep();
+<<<<<<< HEAD
 	BUG_ON(!level);
+=======
+	WARN_ON(!level);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*level = 0xbe;
 	return 0;
 }
@@ -1098,37 +1102,64 @@ at86rf230_set_hw_addr_filt(struct ieee802154_dev *dev,
 {
 	struct at86rf230_local *lp = dev->priv;
 
+<<<<<<< HEAD
 	if (changed & IEEE802515_AFILT_SADDR_CHANGED) {
 		u16 addr = le16_to_cpu(filt->short_addr);
 
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for saddr\n");
+=======
+	if (changed & IEEE802154_AFILT_SADDR_CHANGED) {
+		u16 addr = le16_to_cpu(filt->short_addr);
+
+		dev_vdbg(&lp->spi->dev, "%s called for saddr\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__at86rf230_write(lp, RG_SHORT_ADDR_0, addr);
 		__at86rf230_write(lp, RG_SHORT_ADDR_1, addr >> 8);
 	}
 
+<<<<<<< HEAD
 	if (changed & IEEE802515_AFILT_PANID_CHANGED) {
 		u16 pan = le16_to_cpu(filt->pan_id);
 
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for pan id\n");
+=======
+	if (changed & IEEE802154_AFILT_PANID_CHANGED) {
+		u16 pan = le16_to_cpu(filt->pan_id);
+
+		dev_vdbg(&lp->spi->dev, "%s called for pan id\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__at86rf230_write(lp, RG_PAN_ID_0, pan);
 		__at86rf230_write(lp, RG_PAN_ID_1, pan >> 8);
 	}
 
+<<<<<<< HEAD
 	if (changed & IEEE802515_AFILT_IEEEADDR_CHANGED) {
 		u8 i, addr[8];
 
 		memcpy(addr, &filt->ieee_addr, 8);
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for IEEE addr\n");
+=======
+	if (changed & IEEE802154_AFILT_IEEEADDR_CHANGED) {
+		u8 i, addr[8];
+
+		memcpy(addr, &filt->ieee_addr, 8);
+		dev_vdbg(&lp->spi->dev, "%s called for IEEE addr\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < 8; i++)
 			__at86rf230_write(lp, RG_IEEE_ADDR_0 + i, addr[i]);
 	}
 
+<<<<<<< HEAD
 	if (changed & IEEE802515_AFILT_PANC_CHANGED) {
 		dev_vdbg(&lp->spi->dev,
 			"at86rf230_set_hw_addr_filt called for panc change\n");
+=======
+	if (changed & IEEE802154_AFILT_PANC_CHANGED) {
+		dev_vdbg(&lp->spi->dev, "%s called for panc change\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (filt->pan_coord)
 			at86rf230_write_subreg(lp, SR_AACK_I_AM_COORD, 1);
 		else

@@ -95,7 +95,10 @@ struct acm {
 	struct urb *read_urbs[ACM_NR];
 	struct acm_rb read_buffers[ACM_NR];
 	int rx_buflimit;
+<<<<<<< HEAD
 	int rx_endpoint;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spinlock_t read_lock;
 	int write_used;					/* number of non-empty write buffers */
 	int transmitting;
@@ -135,3 +138,8 @@ struct acm {
 #define IGNORE_DEVICE			BIT(5)
 #define QUIRK_CONTROL_LINE_STATE	BIT(6)
 #define CLEAR_HALT_CONDITIONS		BIT(7)
+<<<<<<< HEAD
+=======
+#define SEND_ZERO_PACKET		BIT(8)
+#define DISABLE_ECHO			BIT(9)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

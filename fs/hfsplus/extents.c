@@ -99,6 +99,13 @@ static int __hfsplus_ext_write_extent(struct inode *inode,
 	if (hip->extent_state & HFSPLUS_EXT_NEW) {
 		if (res != -ENOENT)
 			return res;
+<<<<<<< HEAD
+=======
+		/* Fail early and avoid ENOSPC during the btree operation */
+		res = hfs_bmap_reserve(fd->tree, fd->tree->depth + 1);
+		if (res)
+			return res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hfs_brec_insert(fd, hip->cached_extents,
 				sizeof(hfsplus_extent_rec));
 		hip->extent_state &= ~(HFSPLUS_EXT_DIRTY | HFSPLUS_EXT_NEW);
@@ -232,7 +239,13 @@ int hfsplus_get_block(struct inode *inode, sector_t iblock,
 	ablock = iblock >> sbi->fs_shift;
 
 	if (iblock >= hip->fs_blocks) {
+<<<<<<< HEAD
 		if (iblock > hip->fs_blocks || !create)
+=======
+		if (!create)
+			return 0;
+		if (iblock > hip->fs_blocks)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EIO;
 		if (ablock >= hip->alloc_blocks) {
 			res = hfsplus_file_extend(inode, false);

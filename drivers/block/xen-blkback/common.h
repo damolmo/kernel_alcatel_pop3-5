@@ -70,9 +70,14 @@
 struct blkif_common_request {
 	char dummy;
 };
+<<<<<<< HEAD
 struct blkif_common_response {
 	char dummy;
 };
+=======
+
+/* i386 protocol version */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct blkif_x86_32_request_rw {
 	uint8_t        nr_segments;  /* number of segments                   */
@@ -124,6 +129,7 @@ struct blkif_x86_32_request {
 	} u;
 } __attribute__((__packed__));
 
+<<<<<<< HEAD
 /* i386 protocol version */
 #pragma pack(push, 4)
 struct blkif_x86_32_response {
@@ -132,6 +138,8 @@ struct blkif_x86_32_response {
 	int16_t         status;          /* BLKIF_RSP_???       */
 };
 #pragma pack(pop)
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* x86_64 protocol version */
 
 struct blkif_x86_64_request_rw {
@@ -188,6 +196,7 @@ struct blkif_x86_64_request {
 	} u;
 } __attribute__((__packed__));
 
+<<<<<<< HEAD
 struct blkif_x86_64_response {
 	uint64_t       __attribute__((__aligned__(8))) id;
 	uint8_t         operation;       /* copied from request */
@@ -200,6 +209,14 @@ DEFINE_RING_TYPES(blkif_x86_32, struct blkif_x86_32_request,
 		  struct blkif_x86_32_response);
 DEFINE_RING_TYPES(blkif_x86_64, struct blkif_x86_64_request,
 		  struct blkif_x86_64_response);
+=======
+DEFINE_RING_TYPES(blkif_common, struct blkif_common_request,
+		  struct blkif_response);
+DEFINE_RING_TYPES(blkif_x86_32, struct blkif_x86_32_request,
+		  struct blkif_response __packed);
+DEFINE_RING_TYPES(blkif_x86_64, struct blkif_x86_64_request,
+		  struct blkif_response);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 union blkif_back_rings {
 	struct blkif_back_ring        native;

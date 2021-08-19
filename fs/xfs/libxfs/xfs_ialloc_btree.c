@@ -297,6 +297,10 @@ xfs_inobt_write_verify(
 }
 
 const struct xfs_buf_ops xfs_inobt_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_inobt",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_inobt_read_verify,
 	.verify_write = xfs_inobt_write_verify,
 };

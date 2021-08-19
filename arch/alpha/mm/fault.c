@@ -78,7 +78,11 @@ __load_new_mm_context(struct mm_struct *next_mm)
 /* Macro for exception fixup code to access integer registers.  */
 #define dpf_reg(r)							\
 	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
+<<<<<<< HEAD
 				 (r) <= 18 ? (r)+8 : (r)-10])
+=======
+				 (r) <= 18 ? (r)+10 : (r)-10])
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 asmlinkage void
 do_page_fault(unsigned long address, unsigned long mmcsr,

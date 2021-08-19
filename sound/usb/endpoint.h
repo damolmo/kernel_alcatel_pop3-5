@@ -18,7 +18,11 @@ int snd_usb_endpoint_set_params(struct snd_usb_endpoint *ep,
 				struct audioformat *fmt,
 				struct snd_usb_endpoint *sync_ep);
 
+<<<<<<< HEAD
 int  snd_usb_endpoint_start(struct snd_usb_endpoint *ep, bool can_sleep);
+=======
+int  snd_usb_endpoint_start(struct snd_usb_endpoint *ep);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void snd_usb_endpoint_stop(struct snd_usb_endpoint *ep);
 void snd_usb_endpoint_sync_pending_stop(struct snd_usb_endpoint *ep);
 int  snd_usb_endpoint_activate(struct snd_usb_endpoint *ep);

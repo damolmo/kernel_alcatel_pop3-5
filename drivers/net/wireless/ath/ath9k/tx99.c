@@ -180,6 +180,12 @@ static ssize_t write_file_tx99(struct file *file, const char __user *user_buf,
 	ssize_t len;
 	int r;
 
+<<<<<<< HEAD
+=======
+	if (count < 1)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sc->cur_chan->nvifs > 1)
 		return -EOPNOTSUPP;
 
@@ -187,18 +193,32 @@ static ssize_t write_file_tx99(struct file *file, const char __user *user_buf,
 	if (copy_from_user(buf, user_buf, len))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (strtobool(buf, &start))
 		return -EINVAL;
 
 	if (start == sc->tx99_state) {
 		if (!start)
 			return count;
+=======
+	buf[len] = '\0';
+
+	if (strtobool(buf, &start))
+		return -EINVAL;
+
+	mutex_lock(&sc->mutex);
+
+	if (start == sc->tx99_state) {
+		if (!start)
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ath_dbg(common, XMIT, "Resetting TX99\n");
 		ath9k_tx99_deinit(sc);
 	}
 
 	if (!start) {
 		ath9k_tx99_deinit(sc);
+<<<<<<< HEAD
 		return count;
 	}
 
@@ -206,6 +226,18 @@ static ssize_t write_file_tx99(struct file *file, const char __user *user_buf,
 	if (r)
 		return r;
 
+=======
+		goto out;
+	}
+
+	r = ath9k_tx99_init(sc);
+	if (r) {
+		mutex_unlock(&sc->mutex);
+		return r;
+	}
+out:
+	mutex_unlock(&sc->mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return count;
 }
 

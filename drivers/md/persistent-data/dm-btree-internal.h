@@ -34,12 +34,20 @@ struct node_header {
 	__le32 max_entries;
 	__le32 value_size;
 	__le32 padding;
+<<<<<<< HEAD
 } __packed;
+=======
+} __attribute__((packed, aligned(8)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct btree_node {
 	struct node_header header;
 	__le64 keys[0];
+<<<<<<< HEAD
 } __packed;
+=======
+} __attribute__((packed, aligned(8)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 /*
@@ -138,4 +146,13 @@ int lower_bound(struct btree_node *n, uint64_t key);
 
 extern struct dm_block_validator btree_node_validator;
 
+<<<<<<< HEAD
+=======
+/*
+ * Value type for upper levels of multi-level btrees.
+ */
+extern void init_le64_type(struct dm_transaction_manager *tm,
+			   struct dm_btree_value_type *vt);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif	/* DM_BTREE_INTERNAL_H */

@@ -23,6 +23,7 @@
 
 #define COMMAND_LINE_SIZE	2048
 
+<<<<<<< HEAD
 /* general memory descriptor */
 struct mem_desc {
 	u64 start;
@@ -46,4 +47,6 @@ struct dram_info {
 	struct mem_desc rank_info[4];
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

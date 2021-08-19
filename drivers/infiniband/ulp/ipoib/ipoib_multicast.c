@@ -523,8 +523,16 @@ void ipoib_mcast_join_task(struct work_struct *work)
 	if (!test_bit(IPOIB_MCAST_RUN, &priv->flags))
 		return;
 
+<<<<<<< HEAD
 	if (ib_query_port(priv->ca, priv->port, &port_attr) ||
 	    port_attr.state != IB_PORT_ACTIVE) {
+=======
+	if (ib_query_port(priv->ca, priv->port, &port_attr)) {
+		ipoib_dbg(priv, "ib_query_port() failed\n");
+		return;
+	}
+	if (port_attr.state != IB_PORT_ACTIVE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ipoib_dbg(priv, "port state is not ACTIVE (state = %d) suspending join task\n",
 			  port_attr.state);
 		return;
@@ -717,7 +725,14 @@ out:
 		spin_lock_irqsave(&priv->lock, flags);
 		if (!neigh) {
 			neigh = ipoib_neigh_alloc(daddr, dev);
+<<<<<<< HEAD
 			if (neigh) {
+=======
+			/* Make sure that the neigh will be added only
+			 * once to mcast list.
+			 */
+			if (neigh && list_empty(&neigh->list)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				kref_get(&mcast->ah->ref);
 				neigh->ah	= mcast->ah;
 				list_add_tail(&neigh->list, &mcast->neigh_list);

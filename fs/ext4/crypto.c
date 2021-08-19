@@ -34,6 +34,10 @@
 #include <linux/random.h>
 #include <linux/scatterlist.h>
 #include <linux/spinlock_types.h>
+<<<<<<< HEAD
+=======
+#include <linux/namei.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "ext4_extents.h"
 #include "xattr.h"
@@ -93,7 +97,12 @@ void ext4_release_crypto_ctx(struct ext4_crypto_ctx *ctx)
  * Return: An allocated and initialized encryption context on success; error
  * value or NULL otherwise.
  */
+<<<<<<< HEAD
 struct ext4_crypto_ctx *ext4_get_crypto_ctx(struct inode *inode)
+=======
+struct ext4_crypto_ctx *ext4_get_crypto_ctx(struct inode *inode,
+					    gfp_t gfp_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ext4_crypto_ctx *ctx = NULL;
 	int res = 0;
@@ -120,7 +129,11 @@ struct ext4_crypto_ctx *ext4_get_crypto_ctx(struct inode *inode)
 		list_del(&ctx->free_list);
 	spin_unlock_irqrestore(&ext4_crypto_ctx_lock, flags);
 	if (!ctx) {
+<<<<<<< HEAD
 		ctx = kmem_cache_zalloc(ext4_crypto_ctx_cachep, GFP_NOFS);
+=======
+		ctx = kmem_cache_zalloc(ext4_crypto_ctx_cachep, gfp_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!ctx) {
 			res = -ENOMEM;
 			goto out;
@@ -253,12 +266,21 @@ typedef enum {
 	EXT4_ENCRYPT,
 } ext4_direction_t;
 
+<<<<<<< HEAD
 static int ext4_page_crypto(struct ext4_crypto_ctx *ctx,
 			    struct inode *inode,
 			    ext4_direction_t rw,
 			    pgoff_t index,
 			    struct page *src_page,
 			    struct page *dest_page)
+=======
+static int ext4_page_crypto(struct inode *inode,
+			    ext4_direction_t rw,
+			    pgoff_t index,
+			    struct page *src_page,
+			    struct page *dest_page,
+			    gfp_t gfp_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 {
 	u8 xts_tweak[EXT4_XTS_TWEAK_SIZE];
@@ -269,7 +291,11 @@ static int ext4_page_crypto(struct ext4_crypto_ctx *ctx,
 	struct crypto_ablkcipher *tfm = ci->ci_ctfm;
 	int res = 0;
 
+<<<<<<< HEAD
 	req = ablkcipher_request_alloc(tfm, GFP_NOFS);
+=======
+	req = ablkcipher_request_alloc(tfm, gfp_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!req) {
 		printk_ratelimited(KERN_ERR
 				   "%s: crypto_request_alloc() failed\n",
@@ -296,7 +322,10 @@ static int ext4_page_crypto(struct ext4_crypto_ctx *ctx,
 	else
 		res = crypto_ablkcipher_encrypt(req);
 	if (res == -EINPROGRESS || res == -EBUSY) {
+<<<<<<< HEAD
 		BUG_ON(req->base.data != &ecr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		wait_for_completion(&ecr.completion);
 		res = ecr.res;
 	}
@@ -311,9 +340,16 @@ static int ext4_page_crypto(struct ext4_crypto_ctx *ctx,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct page *alloc_bounce_page(struct ext4_crypto_ctx *ctx)
 {
 	ctx->w.bounce_page = mempool_alloc(ext4_bounce_page_pool, GFP_NOWAIT);
+=======
+static struct page *alloc_bounce_page(struct ext4_crypto_ctx *ctx,
+				      gfp_t gfp_flags)
+{
+	ctx->w.bounce_page = mempool_alloc(ext4_bounce_page_pool, gfp_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ctx->w.bounce_page == NULL)
 		return ERR_PTR(-ENOMEM);
 	ctx->flags |= EXT4_WRITE_PATH_FL;
@@ -336,7 +372,12 @@ static struct page *alloc_bounce_page(struct ext4_crypto_ctx *ctx)
  * error value or NULL.
  */
 struct page *ext4_encrypt(struct inode *inode,
+<<<<<<< HEAD
 			  struct page *plaintext_page)
+=======
+			  struct page *plaintext_page,
+			  gfp_t gfp_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ext4_crypto_ctx *ctx;
 	struct page *ciphertext_page = NULL;
@@ -344,17 +385,30 @@ struct page *ext4_encrypt(struct inode *inode,
 
 	BUG_ON(!PageLocked(plaintext_page));
 
+<<<<<<< HEAD
 	ctx = ext4_get_crypto_ctx(inode);
+=======
+	ctx = ext4_get_crypto_ctx(inode, gfp_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(ctx))
 		return (struct page *) ctx;
 
 	/* The encryption operation will require a bounce page. */
+<<<<<<< HEAD
 	ciphertext_page = alloc_bounce_page(ctx);
 	if (IS_ERR(ciphertext_page))
 		goto errout;
 	ctx->w.control_page = plaintext_page;
 	err = ext4_page_crypto(ctx, inode, EXT4_ENCRYPT, plaintext_page->index,
 			       plaintext_page, ciphertext_page);
+=======
+	ciphertext_page = alloc_bounce_page(ctx, gfp_flags);
+	if (IS_ERR(ciphertext_page))
+		goto errout;
+	ctx->w.control_page = plaintext_page;
+	err = ext4_page_crypto(inode, EXT4_ENCRYPT, plaintext_page->index,
+			       plaintext_page, ciphertext_page, gfp_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		ciphertext_page = ERR_PTR(err);
 	errout:
@@ -378,6 +432,7 @@ struct page *ext4_encrypt(struct inode *inode,
  *
  * Return: Zero on success, non-zero otherwise.
  */
+<<<<<<< HEAD
 int ext4_decrypt(struct ext4_crypto_ctx *ctx, struct page *page)
 {
 	BUG_ON(!PageLocked(page));
@@ -401,6 +456,14 @@ int ext4_decrypt_one(struct inode *inode, struct page *page)
 	ret = ext4_decrypt(ctx, page);
 	ext4_release_crypto_ctx(ctx);
 	return ret;
+=======
+int ext4_decrypt(struct page *page)
+{
+	BUG_ON(!PageLocked(page));
+
+	return ext4_page_crypto(page->mapping->host, EXT4_DECRYPT,
+				page->index, page, page, GFP_NOFS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int ext4_encrypted_zeroout(struct inode *inode, struct ext4_extent *ex)
@@ -411,6 +474,7 @@ int ext4_encrypted_zeroout(struct inode *inode, struct ext4_extent *ex)
 	ext4_lblk_t		lblk = ex->ee_block;
 	ext4_fsblk_t		pblk = ext4_ext_pblock(ex);
 	unsigned int		len = ext4_ext_get_actual_len(ex);
+<<<<<<< HEAD
 	int			err = 0;
 
 	BUG_ON(inode->i_sb->s_blocksize != PAGE_CACHE_SIZE);
@@ -420,23 +484,51 @@ int ext4_encrypted_zeroout(struct inode *inode, struct ext4_extent *ex)
 		return PTR_ERR(ctx);
 
 	ciphertext_page = alloc_bounce_page(ctx);
+=======
+	int			ret, err = 0;
+
+#if 0
+	ext4_msg(inode->i_sb, KERN_CRIT,
+		 "ext4_encrypted_zeroout ino %lu lblk %u len %u",
+		 (unsigned long) inode->i_ino, lblk, len);
+#endif
+
+	BUG_ON(inode->i_sb->s_blocksize != PAGE_CACHE_SIZE);
+
+	ctx = ext4_get_crypto_ctx(inode, GFP_NOFS);
+	if (IS_ERR(ctx))
+		return PTR_ERR(ctx);
+
+	ciphertext_page = alloc_bounce_page(ctx, GFP_NOWAIT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(ciphertext_page)) {
 		err = PTR_ERR(ciphertext_page);
 		goto errout;
 	}
 
 	while (len--) {
+<<<<<<< HEAD
 		err = ext4_page_crypto(ctx, inode, EXT4_ENCRYPT, lblk,
 				       ZERO_PAGE(0), ciphertext_page);
 		if (err)
 			goto errout;
 
 		bio = bio_alloc(GFP_KERNEL, 1);
+=======
+		err = ext4_page_crypto(inode, EXT4_ENCRYPT, lblk,
+				       ZERO_PAGE(0), ciphertext_page,
+				       GFP_NOFS);
+		if (err)
+			goto errout;
+
+		bio = bio_alloc(GFP_NOWAIT, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!bio) {
 			err = -ENOMEM;
 			goto errout;
 		}
 		bio->bi_bdev = inode->i_sb->s_bdev;
+<<<<<<< HEAD
 		bio->bi_iter.bi_sector = pblk;
 		err = bio_add_page(bio, ciphertext_page,
 				   inode->i_sb->s_blocksize, 0);
@@ -448,6 +540,28 @@ int ext4_encrypted_zeroout(struct inode *inode, struct ext4_extent *ex)
 		bio_put(bio);
 		if (err)
 			goto errout;
+=======
+		bio->bi_iter.bi_sector =
+			pblk << (inode->i_sb->s_blocksize_bits - 9);
+		ret = bio_add_page(bio, ciphertext_page,
+				   inode->i_sb->s_blocksize, 0);
+		if (ret != inode->i_sb->s_blocksize) {
+			/* should never happen! */
+			ext4_msg(inode->i_sb, KERN_ERR,
+				 "bio_add_page failed: %d", ret);
+			WARN_ON(1);
+			bio_put(bio);
+			err = -EIO;
+			goto errout;
+		}
+		err = submit_bio_wait(WRITE, bio);
+		if ((err == 0) && !test_bit(BIO_UPTODATE, &bio->bi_flags))
+			err = -EIO;
+		bio_put(bio);
+		if (err)
+			goto errout;
+		lblk++; pblk++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	err = 0;
 errout:
@@ -473,3 +587,64 @@ uint32_t ext4_validate_encryption_key_size(uint32_t mode, uint32_t size)
 		return size;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Validate dentries for encrypted directories to make sure we aren't
+ * potentially caching stale data after a key has been added or
+ * removed.
+ */
+static int ext4_d_revalidate(struct dentry *dentry, unsigned int flags)
+{
+	struct dentry *dir;
+	struct ext4_crypt_info *ci;
+	int dir_has_key, cached_with_key;
+
+	if (flags & LOOKUP_RCU)
+		return -ECHILD;
+
+	dir = dget_parent(dentry);
+	if (!ext4_encrypted_inode(d_inode(dir))) {
+		dput(dir);
+		return 0;
+	}
+	ci = EXT4_I(d_inode(dir))->i_crypt_info;
+
+	/* this should eventually be an flag in d_flags */
+	cached_with_key = dentry->d_fsdata != NULL;
+	dir_has_key = (ci != NULL);
+	dput(dir);
+
+	/*
+	 * If the dentry was cached without the key, and it is a
+	 * negative dentry, it might be a valid name.  We can't check
+	 * if the key has since been made available due to locking
+	 * reasons, so we fail the validation so ext4_lookup() can do
+	 * this check.
+	 *
+	 * We also fail the validation if the dentry was created with
+	 * the key present, but we no longer have the key, or vice versa.
+	 */
+	if ((!cached_with_key && d_is_negative(dentry)) ||
+	    (!cached_with_key && dir_has_key) ||
+	    (cached_with_key && !dir_has_key)) {
+#if 0				/* Revalidation debug */
+		char buf[80];
+		char *cp = simple_dname(dentry, buf, sizeof(buf));
+
+		if (IS_ERR(cp))
+			cp = (char *) "???";
+		pr_err("revalidate: %s %p %d %d %d\n", cp, dentry->d_fsdata,
+		       cached_with_key, d_is_negative(dentry),
+		       dir_has_key);
+#endif
+		return 0;
+	}
+	return 1;
+}
+
+const struct dentry_operations ext4_encrypted_d_ops = {
+	.d_revalidate = ext4_d_revalidate,
+};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

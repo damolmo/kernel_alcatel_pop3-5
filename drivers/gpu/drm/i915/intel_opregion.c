@@ -649,7 +649,11 @@ static void intel_didl_outputs(struct drm_device *dev)
 	}
 
 	if (!acpi_video_bus) {
+<<<<<<< HEAD
 		pr_warn("No ACPI video bus found\n");
+=======
+		DRM_DEBUG_KMS("No ACPI video bus found\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	}
 

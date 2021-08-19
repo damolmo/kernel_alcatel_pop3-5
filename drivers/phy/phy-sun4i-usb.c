@@ -240,7 +240,12 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
 	else
 		data->num_phys = 3;
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(np, "allwinner,sun4i-a10-usb-phy"))
+=======
+	if (of_device_is_compatible(np, "allwinner,sun4i-a10-usb-phy") ||
+	    of_device_is_compatible(np, "allwinner,sun6i-a31-usb-phy"))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		data->disc_thresh = 3;
 	else
 		data->disc_thresh = 2;

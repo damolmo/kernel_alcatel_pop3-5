@@ -64,12 +64,23 @@
 #define FIL1_0		0x1c
 #define FIL1_1		0x1d
 #define FIL1_2		0x1e
+<<<<<<< HEAD
 #define FIL1_3		0x1f
+=======
+#define FIL1_3		0x1f	/* The maximum valid register for ak4642 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define PW_MGMT4	0x20
 #define MD_CTL5		0x21
 #define LO_MS		0x22
 #define HP_MS		0x23
+<<<<<<< HEAD
 #define SPK_MS		0x24
+=======
+#define SPK_MS		0x24	/* The maximum valid register for ak4643 */
+#define EQ_FBEQAB	0x25
+#define EQ_FBEQCD	0x26
+#define EQ_FBEQE	0x27	/* The maximum valid register for ak4648 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* PW_MGMT1*/
 #define PMVCM		(1 << 6) /* VCOM Power Management */
@@ -210,7 +221,11 @@ static const struct snd_soc_dapm_route ak4642_intercon[] = {
 /*
  * ak4642 register cache
  */
+<<<<<<< HEAD
 static const struct reg_default ak4642_reg[] = {
+=======
+static const struct reg_default ak4643_reg[] = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{  0, 0x00 }, {  1, 0x00 }, {  2, 0x01 }, {  3, 0x00 },
 	{  4, 0x02 }, {  5, 0x00 }, {  6, 0x00 }, {  7, 0x00 },
 	{  8, 0xe1 }, {  9, 0xe1 }, { 10, 0x18 }, { 11, 0x00 },
@@ -223,6 +238,17 @@ static const struct reg_default ak4642_reg[] = {
 	{ 36, 0x00 },
 };
 
+<<<<<<< HEAD
+=======
+/* The default settings for 0x0 ~ 0x1f registers are the same for ak4642
+   and ak4643. So we reuse the ak4643 reg_default for ak4642.
+   The valid registers for ak4642 are 0x0 ~ 0x1f which is a subset of ak4643,
+   so define NUM_AK4642_REG_DEFAULTS for ak4642.
+*/
+#define ak4642_reg ak4643_reg
+#define NUM_AK4642_REG_DEFAULTS	(FIL1_3 + 1)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const struct reg_default ak4648_reg[] = {
 	{  0, 0x00 }, {  1, 0x00 }, {  2, 0x01 }, {  3, 0x00 },
 	{  4, 0x02 }, {  5, 0x00 }, {  6, 0x00 }, {  7, 0x00 },
@@ -521,17 +547,40 @@ static struct snd_soc_codec_driver soc_codec_dev_ak4642 = {
 static const struct regmap_config ak4642_regmap = {
 	.reg_bits		= 8,
 	.val_bits		= 8,
+<<<<<<< HEAD
 	.max_register		= ARRAY_SIZE(ak4642_reg) + 1,
 	.reg_defaults		= ak4642_reg,
 	.num_reg_defaults	= ARRAY_SIZE(ak4642_reg),
+=======
+	.max_register		= FIL1_3,
+	.reg_defaults		= ak4642_reg,
+	.num_reg_defaults	= NUM_AK4642_REG_DEFAULTS,
+	.cache_type		= REGCACHE_RBTREE,
+};
+
+static const struct regmap_config ak4643_regmap = {
+	.reg_bits		= 8,
+	.val_bits		= 8,
+	.max_register		= SPK_MS,
+	.reg_defaults		= ak4643_reg,
+	.num_reg_defaults	= ARRAY_SIZE(ak4643_reg),
+	.cache_type		= REGCACHE_RBTREE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct regmap_config ak4648_regmap = {
 	.reg_bits		= 8,
 	.val_bits		= 8,
+<<<<<<< HEAD
 	.max_register		= ARRAY_SIZE(ak4648_reg) + 1,
 	.reg_defaults		= ak4648_reg,
 	.num_reg_defaults	= ARRAY_SIZE(ak4648_reg),
+=======
+	.max_register		= EQ_FBEQE,
+	.reg_defaults		= ak4648_reg,
+	.num_reg_defaults	= ARRAY_SIZE(ak4648_reg),
+	.cache_type		= REGCACHE_RBTREE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct ak4642_drvdata ak4642_drvdata = {
@@ -539,7 +588,11 @@ static const struct ak4642_drvdata ak4642_drvdata = {
 };
 
 static const struct ak4642_drvdata ak4643_drvdata = {
+<<<<<<< HEAD
 	.regmap_config = &ak4642_regmap,
+=======
+	.regmap_config = &ak4643_regmap,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct ak4642_drvdata ak4648_drvdata = {

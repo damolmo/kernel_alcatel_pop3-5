@@ -41,7 +41,11 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 				 const struct nf_conn *ct,
 				 u16 *rover)
 {
+<<<<<<< HEAD
 	unsigned int range_size, min, i;
+=======
+	unsigned int range_size, min, max, i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__be16 *portptr;
 	u_int16_t off;
 
@@ -71,7 +75,14 @@ void nf_nat_l4proto_unique_tuple(const struct nf_nat_l3proto *l3proto,
 		}
 	} else {
 		min = ntohs(range->min_proto.all);
+<<<<<<< HEAD
 		range_size = ntohs(range->max_proto.all) - min + 1;
+=======
+		max = ntohs(range->max_proto.all);
+		if (unlikely(max < min))
+			swap(max, min);
+		range_size = max - min + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (range->flags & NF_NAT_RANGE_PROTO_RANDOM) {

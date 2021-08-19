@@ -430,6 +430,10 @@ next2:
 			break;
 	}
 out:
+<<<<<<< HEAD
+=======
+	btrfs_free_path(path);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fs_info->qgroup_flags |= flags;
 	if (!(fs_info->qgroup_flags & BTRFS_QGROUP_STATUS_FLAG_ON)) {
 		fs_info->quota_enabled = 0;
@@ -438,7 +442,10 @@ out:
 		   ret >= 0) {
 		ret = qgroup_rescan_init(fs_info, rescan_progress, 0);
 	}
+<<<<<<< HEAD
 	btrfs_free_path(path);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ret < 0) {
 		ulist_free(fs_info->qgroup_ulist);
@@ -2513,6 +2520,24 @@ void assert_qgroups_uptodate(struct btrfs_trans_handle *trans)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Check if the leaf is the last leaf. Which means all node pointers
+ * are at their last position.
+ */
+static bool is_last_leaf(struct btrfs_path *path)
+{
+	int i;
+
+	for (i = 1; i < BTRFS_MAX_LEVEL && path->nodes[i]; i++) {
+		if (path->slots[i] != btrfs_header_nritems(path->nodes[i]) - 1)
+			return false;
+	}
+	return true;
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * returns < 0 on error, 0 when more leafs are to be scanned.
  * returns 1 when done, 2 when done and FLAG_INCONSISTENT was cleared.
  */
@@ -2527,6 +2552,10 @@ qgroup_rescan_leaf(struct btrfs_fs_info *fs_info, struct btrfs_path *path,
 	u64 num_bytes;
 	u64 seq;
 	int new_roots;
+<<<<<<< HEAD
+=======
+	bool done;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int slot;
 	int ret;
 
@@ -2555,6 +2584,10 @@ qgroup_rescan_leaf(struct btrfs_fs_info *fs_info, struct btrfs_path *path,
 		mutex_unlock(&fs_info->qgroup_rescan_lock);
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+	done = is_last_leaf(path);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	btrfs_item_key_to_cpu(path->nodes[0], &found,
 			      btrfs_header_nritems(path->nodes[0]) - 1);
@@ -2607,6 +2640,11 @@ qgroup_rescan_leaf(struct btrfs_fs_info *fs_info, struct btrfs_path *path,
 out:
 	btrfs_put_tree_mod_seq(fs_info, &tree_mod_seq_elem);
 
+<<<<<<< HEAD
+=======
+	if (done && !ret)
+		ret = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -2752,6 +2790,10 @@ qgroup_rescan_zero_tracking(struct btrfs_fs_info *fs_info)
 		qgroup->rfer_cmpr = 0;
 		qgroup->excl = 0;
 		qgroup->excl_cmpr = 0;
+<<<<<<< HEAD
+=======
+		qgroup_dirty(fs_info, qgroup);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	spin_unlock(&fs_info->qgroup_lock);
 }
@@ -2796,7 +2838,12 @@ btrfs_qgroup_rescan(struct btrfs_fs_info *fs_info)
 	return 0;
 }
 
+<<<<<<< HEAD
 int btrfs_qgroup_wait_for_completion(struct btrfs_fs_info *fs_info)
+=======
+int btrfs_qgroup_wait_for_completion(struct btrfs_fs_info *fs_info,
+				     bool interruptible)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int running;
 	int ret = 0;
@@ -2807,9 +2854,20 @@ int btrfs_qgroup_wait_for_completion(struct btrfs_fs_info *fs_info)
 	spin_unlock(&fs_info->qgroup_lock);
 	mutex_unlock(&fs_info->qgroup_rescan_lock);
 
+<<<<<<< HEAD
 	if (running)
 		ret = wait_for_completion_interruptible(
 					&fs_info->qgroup_rescan_completion);
+=======
+	if (!running)
+		return 0;
+
+	if (interruptible)
+		ret = wait_for_completion_interruptible(
+					&fs_info->qgroup_rescan_completion);
+	else
+		wait_for_completion(&fs_info->qgroup_rescan_completion);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }

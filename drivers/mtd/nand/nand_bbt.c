@@ -70,7 +70,10 @@
 #include <linux/vmalloc.h>
 #include <linux/export.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <asm/div64.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define BBT_BLOCK_GOOD		0x00
 #define BBT_BLOCK_WORN		0x01
@@ -1152,10 +1155,13 @@ static int nand_update_bbt(struct mtd_info *mtd, loff_t offs)
 	uint8_t *buf;
 	struct nand_bbt_descr *td = this->bbt_td;
 	struct nand_bbt_descr *md = this->bbt_md;
+<<<<<<< HEAD
 #if defined(CONFIG_MTK_TLC_NAND_SUPPORT)
 	loff_t temp;
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!this->bbt || !td)
 		return -EINVAL;
@@ -1169,6 +1175,7 @@ static int nand_update_bbt(struct mtd_info *mtd, loff_t offs)
 
 	/* Do we have a bbt per chip? */
 	if (td->options & NAND_BBT_PERCHIP) {
+<<<<<<< HEAD
 		#if defined(CONFIG_MTK_TLC_NAND_SUPPORT)
 		temp = mtk_nand_device_size();
 		if (offs >= temp)
@@ -1178,6 +1185,9 @@ static int nand_update_bbt(struct mtd_info *mtd, loff_t offs)
 		#else
 		chip = (int)(offs >> this->chip_shift);
 		#endif
+=======
+		chip = (int)(offs >> this->chip_shift);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		chipsel = chip;
 	} else {
 		chip = 0;

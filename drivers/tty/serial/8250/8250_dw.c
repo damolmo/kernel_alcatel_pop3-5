@@ -202,7 +202,11 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
 	unsigned int rate;
 	int ret;
 
+<<<<<<< HEAD
 	if (IS_ERR(d->clk) || !old)
+=======
+	if (IS_ERR(d->clk))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	/* Not requesting clock rates below 1.8432Mhz */
@@ -392,7 +396,11 @@ static int dw8250_probe(struct platform_device *pdev)
 	}
 
 	data->pclk = devm_clk_get(&pdev->dev, "apb_pclk");
+<<<<<<< HEAD
 	if (IS_ERR(data->clk) && PTR_ERR(data->clk) == -EPROBE_DEFER) {
+=======
+	if (IS_ERR(data->pclk) && PTR_ERR(data->pclk) == -EPROBE_DEFER) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = -EPROBE_DEFER;
 		goto err_clk;
 	}

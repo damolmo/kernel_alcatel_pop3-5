@@ -68,7 +68,11 @@ static unsigned int drm_timestamp_precision = 20;  /* Default to 20 usecs. */
  */
 unsigned int drm_timestamp_monotonic = 1;
 
+<<<<<<< HEAD
 static int drm_vblank_offdelay = 50;    /* Default to 50 msecs. */
+=======
+static int drm_vblank_offdelay = 5000;    /* Default to 5000 msecs. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 module_param_named(vblankoffdelay, drm_vblank_offdelay, int, 0600);
 module_param_named(timestamp_precision_usec, drm_timestamp_precision, int, 0600);
@@ -131,12 +135,20 @@ static void drm_update_vblank_count(struct drm_device *dev, int crtc)
 
 	/* Reinitialize corresponding vblank timestamp if high-precision query
 	 * available. Skip this step if query unsupported or failed. Will
+<<<<<<< HEAD
 	 * reinitialize delayed at next vblank interrupt in that case.
 	 */
 	if (rc) {
 		tslot = atomic_read(&vblank->count) + diff;
 		vblanktimestamp(dev, crtc, tslot) = t_vblank;
 	}
+=======
+	 * reinitialize delayed at next vblank interrupt in that case and
+	 * assign 0 for now, to mark the vblanktimestamp as invalid.
+	 */
+	tslot = atomic_read(&vblank->count) + diff;
+	vblanktimestamp(dev, crtc, tslot) = rc ? t_vblank : (struct timeval) {0, 0};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	smp_mb__before_atomic();
 	atomic_add(diff, &vblank->count);
@@ -830,8 +842,11 @@ drm_get_last_vbltimestamp(struct drm_device *dev, int crtc,
  * vblank events since the system was booted, including lost events due to
  * modesetting activity.
  *
+<<<<<<< HEAD
  * This is the legacy version of drm_crtc_vblank_count().
  *
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Returns:
  * The software vblank counter.
  */
@@ -846,6 +861,7 @@ u32 drm_vblank_count(struct drm_device *dev, int crtc)
 EXPORT_SYMBOL(drm_vblank_count);
 
 /**
+<<<<<<< HEAD
  * drm_crtc_vblank_count - retrieve "cooked" vblank counter value
  * @crtc: which counter to retrieve
  *
@@ -865,6 +881,8 @@ u32 drm_crtc_vblank_count(struct drm_crtc *crtc)
 EXPORT_SYMBOL(drm_crtc_vblank_count);
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * drm_vblank_count_and_time - retrieve "cooked" vblank counter value
  * and the system timestamp corresponding to that vblank counter value.
  *
@@ -925,8 +943,11 @@ static void send_vblank_event(struct drm_device *dev,
  *
  * Updates sequence # and timestamp on event, and sends it to userspace.
  * Caller must hold event lock.
+<<<<<<< HEAD
  *
  * This is the legacy version of drm_crtc_send_vblank_event().
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void drm_send_vblank_event(struct drm_device *dev, int crtc,
 		struct drm_pending_vblank_event *e)
@@ -946,6 +967,7 @@ void drm_send_vblank_event(struct drm_device *dev, int crtc,
 EXPORT_SYMBOL(drm_send_vblank_event);
 
 /**
+<<<<<<< HEAD
  * drm_crtc_send_vblank_event - helper to send vblank event after pageflip
  * @crtc: the source CRTC of the vblank event
  * @e: the event to send
@@ -963,6 +985,8 @@ void drm_crtc_send_vblank_event(struct drm_crtc *crtc,
 EXPORT_SYMBOL(drm_crtc_send_vblank_event);
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * drm_vblank_enable - enable the vblank interrupt on a CRTC
  * @dev: DRM device
  * @crtc: CRTC in question
@@ -1079,9 +1103,15 @@ void drm_vblank_put(struct drm_device *dev, int crtc)
 	if (atomic_dec_and_test(&vblank->refcount)) {
 		if (drm_vblank_offdelay == 0)
 			return;
+<<<<<<< HEAD
 		else if (dev->vblank_disable_immediate || drm_vblank_offdelay < 0)
 			vblank_disable_fn((unsigned long)vblank);
 		else
+=======
+		else if (drm_vblank_offdelay < 0)
+			vblank_disable_fn((unsigned long)vblank);
+		else if (!dev->vblank_disable_immediate)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mod_timer(&vblank->disable_timer,
 				  jiffies + ((drm_vblank_offdelay * HZ)/1000));
 	}
@@ -1231,7 +1261,11 @@ EXPORT_SYMBOL(drm_crtc_vblank_off);
  *
  * This functions restores the vblank interrupt state captured with
  * drm_vblank_off() again. Note that calls to drm_vblank_on() and
+<<<<<<< HEAD
  * drm_vblank_off() can be unbalanced and so can also be unconditionally called
+=======
+ * drm_vblank_off() can be unbalanced and so can also be unconditionaly called
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * in driver load code to reflect the current hardware state of the crtc.
  *
  * This is the legacy version of drm_crtc_vblank_on().
@@ -1265,8 +1299,12 @@ void drm_vblank_on(struct drm_device *dev, int crtc)
 	 * re-enable interrupts if there are users left, or the
 	 * user wishes vblank interrupts to be enabled all the time.
 	 */
+<<<<<<< HEAD
 	if (atomic_read(&vblank->refcount) != 0 ||
 	    (!dev->vblank_disable_immediate && drm_vblank_offdelay == 0))
+=======
+	if (atomic_read(&vblank->refcount) != 0 || drm_vblank_offdelay == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		WARN_ON(drm_vblank_enable(dev, crtc));
 	spin_unlock_irqrestore(&dev->vbl_lock, irqflags);
 }
@@ -1278,7 +1316,11 @@ EXPORT_SYMBOL(drm_vblank_on);
  *
  * This functions restores the vblank interrupt state captured with
  * drm_vblank_off() again. Note that calls to drm_vblank_on() and
+<<<<<<< HEAD
  * drm_vblank_off() can be unbalanced and so can also be unconditionally called
+=======
+ * drm_vblank_off() can be unbalanced and so can also be unconditionaly called
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * in driver load code to reflect the current hardware state of the crtc.
  *
  * This is the native kms version of drm_vblank_on().
@@ -1634,8 +1676,11 @@ static void drm_handle_vblank_events(struct drm_device *dev, int crtc)
  *
  * Drivers should call this routine in their vblank interrupt handlers to
  * update the vblank counter and send any signals that may be pending.
+<<<<<<< HEAD
  *
  * This is the legacy version of drm_crtc_handle_vblank().
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 bool drm_handle_vblank(struct drm_device *dev, int crtc)
 {
@@ -1707,11 +1752,25 @@ bool drm_handle_vblank(struct drm_device *dev, int crtc)
 	wake_up(&vblank->queue);
 	drm_handle_vblank_events(dev, crtc);
 
+<<<<<<< HEAD
+=======
+	/* With instant-off, we defer disabling the interrupt until after
+	 * we finish processing the following vblank. The disable has to
+	 * be last (after drm_handle_vblank_events) so that the timestamp
+	 * is always accurate.
+	 */
+	if (dev->vblank_disable_immediate &&
+	    drm_vblank_offdelay > 0 &&
+	    !atomic_read(&vblank->refcount))
+		vblank_disable_fn((unsigned long)vblank);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irqrestore(&dev->event_lock, irqflags);
 
 	return true;
 }
 EXPORT_SYMBOL(drm_handle_vblank);
+<<<<<<< HEAD
 
 /**
  * drm_crtc_handle_vblank - handle a vblank event
@@ -1730,3 +1789,5 @@ bool drm_crtc_handle_vblank(struct drm_crtc *crtc)
 	return drm_handle_vblank(crtc->dev, drm_crtc_index(crtc));
 }
 EXPORT_SYMBOL(drm_crtc_handle_vblank);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -30,6 +30,10 @@ int modify_match_busid(char *busid, int add)
 	char command[SYSFS_BUS_ID_SIZE + 4];
 	char match_busid_attr_path[SYSFS_PATH_MAX];
 	int rc;
+<<<<<<< HEAD
+=======
+	int cmd_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	snprintf(match_busid_attr_path, sizeof(match_busid_attr_path),
 		 "%s/%s/%s/%s/%s/%s", SYSFS_MNT_PATH, SYSFS_BUS_NAME,
@@ -37,12 +41,23 @@ int modify_match_busid(char *busid, int add)
 		 attr_name);
 
 	if (add)
+<<<<<<< HEAD
 		snprintf(command, SYSFS_BUS_ID_SIZE + 4, "add %s", busid);
 	else
 		snprintf(command, SYSFS_BUS_ID_SIZE + 4, "del %s", busid);
 
 	rc = write_sysfs_attribute(match_busid_attr_path, command,
 				   sizeof(command));
+=======
+		cmd_size = snprintf(command, SYSFS_BUS_ID_SIZE + 4, "add %s",
+				    busid);
+	else
+		cmd_size = snprintf(command, SYSFS_BUS_ID_SIZE + 4, "del %s",
+				    busid);
+
+	rc = write_sysfs_attribute(match_busid_attr_path, command,
+				   cmd_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rc < 0) {
 		dbg("failed to write match_busid: %s", strerror(errno));
 		return -1;

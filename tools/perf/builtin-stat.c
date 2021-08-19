@@ -1117,7 +1117,11 @@ static void abs_printout(int id, int nr, struct perf_evsel *evsel, double avg)
 static void print_aggr(char *prefix)
 {
 	struct perf_evsel *counter;
+<<<<<<< HEAD
 	int cpu, cpu2, s, s2, id, nr;
+=======
+	int cpu, s, s2, id, nr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	double uval;
 	u64 ena, run, val;
 
@@ -1130,8 +1134,12 @@ static void print_aggr(char *prefix)
 			val = ena = run = 0;
 			nr = 0;
 			for (cpu = 0; cpu < perf_evsel__nr_cpus(counter); cpu++) {
+<<<<<<< HEAD
 				cpu2 = perf_evsel__cpus(counter)->map[cpu];
 				s2 = aggr_get_id(evsel_list->cpus, cpu2);
+=======
+				s2 = aggr_get_id(perf_evsel__cpus(counter), cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (s2 != id)
 					continue;
 				val += counter->counts->cpu[cpu].val;
@@ -1820,7 +1828,11 @@ int cmd_stat(int argc, const char **argv, const char *prefix __maybe_unused)
 				run_idx + 1);
 
 		status = run_perf_stat(argc, argv);
+<<<<<<< HEAD
 		if (forever && status != -1) {
+=======
+		if (forever && status != -1 && !interval) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			print_stat(argc, argv);
 			perf_stat__reset_stats(evsel_list);
 		}

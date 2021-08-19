@@ -86,6 +86,10 @@ static int crypto_authenc_esn_setkey(struct crypto_aead *authenc_esn, const u8 *
 					   CRYPTO_TFM_RES_MASK);
 
 out:
+<<<<<<< HEAD
+=======
+	memzero_explicit(&keys, sizeof(keys));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 
 badkey:

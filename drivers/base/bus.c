@@ -32,6 +32,12 @@ static struct kset *system_kset;
 
 #define to_drv_attr(_attr) container_of(_attr, struct driver_attribute, attr)
 
+<<<<<<< HEAD
+=======
+#define DRIVER_ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store) \
+	struct driver_attribute driver_attr_##_name =		\
+		__ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int __must_check bus_rescan_devices_helper(struct device *dev,
 						void *data);
@@ -197,7 +203,11 @@ static ssize_t unbind_store(struct device_driver *drv, const char *buf,
 	bus_put(bus);
 	return err;
 }
+<<<<<<< HEAD
 static DRIVER_ATTR_WO(unbind);
+=======
+static DRIVER_ATTR_IGNORE_LOCKDEP(unbind, S_IWUSR, NULL, unbind_store);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Manually attach a device to a driver.
@@ -233,7 +243,11 @@ static ssize_t bind_store(struct device_driver *drv, const char *buf,
 	bus_put(bus);
 	return err;
 }
+<<<<<<< HEAD
 static DRIVER_ATTR_WO(bind);
+=======
+static DRIVER_ATTR_IGNORE_LOCKDEP(bind, S_IWUSR, NULL, bind_store);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static ssize_t show_drivers_autoprobe(struct bus_type *bus, char *buf)
 {
@@ -722,7 +736,11 @@ int bus_add_driver(struct device_driver *drv)
 
 out_unregister:
 	kobject_put(&priv->kobj);
+<<<<<<< HEAD
 	kfree(drv->p);
+=======
+	/* drv->p is freed in driver_release()  */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	drv->p = NULL;
 out_put_bus:
 	bus_put(bus);

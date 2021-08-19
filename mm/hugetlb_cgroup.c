@@ -181,7 +181,11 @@ int hugetlb_cgroup_charge_cgroup(int idx, unsigned long nr_pages,
 again:
 	rcu_read_lock();
 	h_cg = hugetlb_cgroup_from_task(current);
+<<<<<<< HEAD
 	if (!css_tryget_online(&h_cg->css)) {
+=======
+	if (!css_tryget(&h_cg->css)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rcu_read_unlock();
 		goto again;
 	}

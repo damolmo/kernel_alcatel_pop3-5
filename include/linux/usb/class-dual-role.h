@@ -98,8 +98,11 @@ devm_dual_role_instance_register(struct device *parent,
 extern void devm_dual_role_instance_unregister(struct device *dev,
 					       struct dual_role_phy_instance
 					       *dual_role);
+<<<<<<< HEAD
 extern struct dual_role_phy_instance
 		*dual_role_phy_instance_get_byname(const char *name);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int dual_role_get_property(struct dual_role_phy_instance *dual_role,
 				  enum dual_role_property prop,
 				  unsigned int *val);

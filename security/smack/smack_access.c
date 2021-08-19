@@ -451,7 +451,11 @@ char *smk_parse_smack(const char *string, int len)
 	if (i == 0 || i >= SMK_LONGLABEL)
 		return NULL;
 
+<<<<<<< HEAD
 	smack = kzalloc(i + 1, GFP_KERNEL);
+=======
+	smack = kzalloc(i + 1, GFP_NOFS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (smack != NULL) {
 		strncpy(smack, string, i + 1);
 		smack[i] = '\0';
@@ -520,7 +524,11 @@ struct smack_known *smk_import_entry(const char *string, int len)
 	if (skp != NULL)
 		goto freeout;
 
+<<<<<<< HEAD
 	skp = kzalloc(sizeof(*skp), GFP_KERNEL);
+=======
+	skp = kzalloc(sizeof(*skp), GFP_NOFS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (skp == NULL)
 		goto freeout;
 

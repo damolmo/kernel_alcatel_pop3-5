@@ -22,7 +22,10 @@
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "ion.h"
 #include "ion_priv.h"
 
@@ -40,11 +43,16 @@ ion_phys_addr_t ion_carveout_allocate(struct ion_heap *heap,
 		container_of(heap, struct ion_carveout_heap, heap);
 	unsigned long offset = gen_pool_alloc(carveout_heap->pool, size);
 
+<<<<<<< HEAD
 	if (!offset) {
 		IONMSG("ion_carveout alloc fail! size=0x%lu, free=0x%zu\n", size,
 			gen_pool_avail(carveout_heap->pool));
 		return ION_CARVEOUT_ALLOCATE_FAIL;
 	}
+=======
+	if (!offset)
+		return ION_CARVEOUT_ALLOCATE_FAIL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return offset;
 }
@@ -150,6 +158,7 @@ static struct ion_heap_ops carveout_heap_ops = {
 	.unmap_kernel = ion_heap_unmap_kernel,
 };
 
+<<<<<<< HEAD
 static void ion_carveout_chunk_show(struct gen_pool *pool,
 		struct gen_pool_chunk *chunk,
 		void *data)
@@ -186,6 +195,8 @@ static int ion_carveout_heap_debug_show(struct ion_heap *heap, struct seq_file *
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
 {
 	struct ion_carveout_heap *carveout_heap;
@@ -207,7 +218,11 @@ struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
 	if (!carveout_heap)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	carveout_heap->pool = gen_pool_create(12, -1);
+=======
+	carveout_heap->pool = gen_pool_create(PAGE_SHIFT, -1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!carveout_heap->pool) {
 		kfree(carveout_heap);
 		return ERR_PTR(-ENOMEM);
@@ -218,7 +233,11 @@ struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
 	carveout_heap->heap.ops = &carveout_heap_ops;
 	carveout_heap->heap.type = ION_HEAP_TYPE_CARVEOUT;
 	carveout_heap->heap.flags = ION_HEAP_FLAG_DEFER_FREE;
+<<<<<<< HEAD
 	carveout_heap->heap.debug_show = ion_carveout_heap_debug_show;
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return &carveout_heap->heap;
 }
 

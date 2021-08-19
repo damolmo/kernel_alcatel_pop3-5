@@ -547,7 +547,11 @@ static const int CA91CX42_LINT_LM[] = { CA91CX42_LINT_LM0, CA91CX42_LINT_LM1,
 #define CA91CX42_LM_CTL_DATA		(1<<22)
 #define CA91CX42_LM_CTL_SUPR		(1<<21)
 #define CA91CX42_LM_CTL_NPRIV		(1<<20)
+<<<<<<< HEAD
 #define CA91CX42_LM_CTL_AS_M		(5<<16)
+=======
+#define CA91CX42_LM_CTL_AS_M		(7<<16)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CA91CX42_LM_CTL_AS_A16		0
 #define CA91CX42_LM_CTL_AS_A24		(1<<16)
 #define CA91CX42_LM_CTL_AS_A32		(1<<17)

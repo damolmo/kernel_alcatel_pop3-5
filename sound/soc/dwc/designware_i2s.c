@@ -100,10 +100,17 @@ static inline void i2s_clear_irqs(struct dw_i2s_dev *dev, u32 stream)
 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		for (i = 0; i < 4; i++)
+<<<<<<< HEAD
 			i2s_write_reg(dev->i2s_base, TOR(i), 0);
 	} else {
 		for (i = 0; i < 4; i++)
 			i2s_write_reg(dev->i2s_base, ROR(i), 0);
+=======
+			i2s_read_reg(dev->i2s_base, TOR(i));
+	} else {
+		for (i = 0; i < 4; i++)
+			i2s_read_reg(dev->i2s_base, ROR(i));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

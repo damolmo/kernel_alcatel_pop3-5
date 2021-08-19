@@ -505,9 +505,15 @@ static void orion_gpio_unmask_irq(struct irq_data *d)
 	u32 mask = d->mask;
 
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	reg_val = irq_reg_readl(gc->reg_base + ct->regs.mask);
 	reg_val |= mask;
 	irq_reg_writel(reg_val, gc->reg_base + ct->regs.mask);
+=======
+	reg_val = irq_reg_readl(gc, ct->regs.mask);
+	reg_val |= mask;
+	irq_reg_writel(gc, reg_val, ct->regs.mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 }
 
@@ -519,9 +525,15 @@ static void orion_gpio_mask_irq(struct irq_data *d)
 	u32 reg_val;
 
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	reg_val = irq_reg_readl(gc->reg_base + ct->regs.mask);
 	reg_val &= ~mask;
 	irq_reg_writel(reg_val, gc->reg_base + ct->regs.mask);
+=======
+	reg_val = irq_reg_readl(gc, ct->regs.mask);
+	reg_val &= ~mask;
+	irq_reg_writel(gc, reg_val, ct->regs.mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 }
 

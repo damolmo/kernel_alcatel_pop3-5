@@ -257,7 +257,11 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		return 0;
 
 	case LIRC_GET_REC_RESOLUTION:
+<<<<<<< HEAD
 		val = dev->rx_resolution;
+=======
+		val = dev->rx_resolution / 1000;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	case LIRC_SET_WIDEBAND_RECEIVER:
@@ -289,11 +293,22 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
 		if (!dev->max_timeout)
 			return -ENOSYS;
 
+<<<<<<< HEAD
 		tmp = val * 1000;
 
 		if (tmp < dev->min_timeout ||
 		    tmp > dev->max_timeout)
 				return -EINVAL;
+=======
+		/* Check for multiply overflow */
+		if (val > U32_MAX / 1000)
+			return -EINVAL;
+
+		tmp = val * 1000;
+
+		if (tmp < dev->min_timeout || tmp > dev->max_timeout)
+			return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		dev->timeout = tmp;
 		break;

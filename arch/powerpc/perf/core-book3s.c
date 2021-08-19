@@ -396,8 +396,17 @@ static __u64 power_pmu_bhrb_to(u64 addr)
 	int ret;
 	__u64 target;
 
+<<<<<<< HEAD
 	if (is_kernel_addr(addr))
 		return branch_target((unsigned int *)addr);
+=======
+	if (is_kernel_addr(addr)) {
+		if (probe_kernel_read(&instr, (void *)addr, sizeof(instr)))
+			return 0;
+
+		return branch_target(&instr);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Userspace: need copy instruction here then translate it */
 	pagefault_disable();
@@ -439,6 +448,19 @@ static void power_pmu_bhrb_read(struct cpu_hw_events *cpuhw)
 				/* invalid entry */
 				continue;
 
+<<<<<<< HEAD
+=======
+			/*
+			 * BHRB rolling buffer could very much contain the kernel
+			 * addresses at this point. Check the privileges before
+			 * exporting it to userspace (avoid exposure of regions
+			 * where we could have speculative execution)
+			 */
+			if (perf_paranoid_kernel() && !capable(CAP_SYS_ADMIN) &&
+				is_kernel_addr(addr))
+				continue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* Branches are read most recent first (ie. mfbhrb 0 is
 			 * the most recent branch).
 			 * There are two types of valid entries:
@@ -1179,6 +1201,10 @@ static void power_pmu_disable(struct pmu *pmu)
 		 */
 		write_mmcr0(cpuhw, val);
 		mb();
+<<<<<<< HEAD
+=======
+		isync();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * Disable instruction sampling if it was enabled
@@ -1187,12 +1213,32 @@ static void power_pmu_disable(struct pmu *pmu)
 			mtspr(SPRN_MMCRA,
 			      cpuhw->mmcr[2] & ~MMCRA_SAMPLE_ENABLE);
 			mb();
+<<<<<<< HEAD
+=======
+			isync();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		cpuhw->disabled = 1;
 		cpuhw->n_added = 0;
 
 		ebb_switch_out(mmcr0);
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PPC64
+		/*
+		 * These are readable by userspace, may contain kernel
+		 * addresses and are not switched by context switch, so clear
+		 * them now to avoid leaking anything to userspace in general
+		 * including to another process.
+		 */
+		if (ppmu->flags & PPMU_ARCH_207S) {
+			mtspr(SPRN_SDAR, 0);
+			mtspr(SPRN_SIAR, 0);
+		}
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	local_irq_restore(flags);
@@ -1372,7 +1418,11 @@ static int collect_events(struct perf_event *group, int max_count,
 	int n = 0;
 	struct perf_event *event;
 
+<<<<<<< HEAD
 	if (!is_software_event(group)) {
+=======
+	if (group->pmu->task_ctx_nr == perf_hw_context) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (n >= max_count)
 			return -1;
 		ctrs[n] = group;
@@ -1380,7 +1430,11 @@ static int collect_events(struct perf_event *group, int max_count,
 		events[n++] = group->hw.config;
 	}
 	list_for_each_entry(event, &group->sibling_list, group_entry) {
+<<<<<<< HEAD
 		if (!is_software_event(event) &&
+=======
+		if (event->pmu->task_ctx_nr == perf_hw_context &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    event->state != PERF_EVENT_STATE_OFF) {
 			if (n >= max_count)
 				return -1;

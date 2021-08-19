@@ -194,6 +194,7 @@ static ssize_t musb_test_mode_write(struct file *file,
 	if (copy_from_user(&buf, ubuf, min_t(size_t, sizeof(buf) - 1, count)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (!strncmp(buf, "force host", 9))
 		test = MUSB_TEST_FORCE_HOST;
 
@@ -207,10 +208,26 @@ static ssize_t musb_test_mode_write(struct file *file,
 		test = MUSB_TEST_FORCE_HS;
 
 	if (!strncmp(buf, "test packet", 10)) {
+=======
+	if (strstarts(buf, "force host"))
+		test = MUSB_TEST_FORCE_HOST;
+
+	if (strstarts(buf, "fifo access"))
+		test = MUSB_TEST_FIFO_ACCESS;
+
+	if (strstarts(buf, "force full-speed"))
+		test = MUSB_TEST_FORCE_FS;
+
+	if (strstarts(buf, "force high-speed"))
+		test = MUSB_TEST_FORCE_HS;
+
+	if (strstarts(buf, "test packet")) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		test = MUSB_TEST_PACKET;
 		musb_load_testpacket(musb);
 	}
 
+<<<<<<< HEAD
 	if (!strncmp(buf, "test K", 6))
 		test = MUSB_TEST_K;
 
@@ -218,6 +235,15 @@ static ssize_t musb_test_mode_write(struct file *file,
 		test = MUSB_TEST_J;
 
 	if (!strncmp(buf, "test SE0 NAK", 12))
+=======
+	if (strstarts(buf, "test K"))
+		test = MUSB_TEST_K;
+
+	if (strstarts(buf, "test J"))
+		test = MUSB_TEST_J;
+
+	if (strstarts(buf, "test SE0 NAK"))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		test = MUSB_TEST_SE0_NAK;
 
 	musb_writeb(musb->mregs, MUSB_TESTMODE, test);

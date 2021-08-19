@@ -524,6 +524,10 @@ static void rtsx_usb_ms_handle_req(struct work_struct *work)
 	int rc;
 
 	if (!host->req) {
+<<<<<<< HEAD
+=======
+		pm_runtime_get_sync(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		do {
 			rc = memstick_next_req(msh, &host->req);
 			dev_dbg(ms_dev(host), "next req %d\n", rc);
@@ -544,6 +548,10 @@ static void rtsx_usb_ms_handle_req(struct work_struct *work)
 						host->req->error);
 			}
 		} while (!rc);
+<<<<<<< HEAD
+=======
+		pm_runtime_put(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 }
@@ -570,6 +578,10 @@ static int rtsx_usb_ms_set_param(struct memstick_host *msh,
 	dev_dbg(ms_dev(host), "%s: param = %d, value = %d\n",
 			__func__, param, value);
 
+<<<<<<< HEAD
+=======
+	pm_runtime_get_sync(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&ucr->dev_mutex);
 
 	err = rtsx_usb_card_exclusive_check(ucr, RTSX_USB_MS_CARD);
@@ -635,6 +647,10 @@ static int rtsx_usb_ms_set_param(struct memstick_host *msh,
 	}
 out:
 	mutex_unlock(&ucr->dev_mutex);
+<<<<<<< HEAD
+=======
+	pm_runtime_put(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* power-on delay */
 	if (param == MEMSTICK_POWER && value == MEMSTICK_POWER_ON)
@@ -681,6 +697,10 @@ static int rtsx_usb_detect_ms_card(void *__host)
 	int err;
 
 	for (;;) {
+<<<<<<< HEAD
+=======
+		pm_runtime_get_sync(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_lock(&ucr->dev_mutex);
 
 		/* Check pending MS card changes */
@@ -703,6 +723,10 @@ static int rtsx_usb_detect_ms_card(void *__host)
 		}
 
 poll_again:
+<<<<<<< HEAD
+=======
+		pm_runtime_put(ms_dev(host));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (host->eject)
 			break;
 

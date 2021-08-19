@@ -127,7 +127,11 @@ static void fill_kobj_path(struct kobject *kobj, char *path, int length)
 		int cur = strlen(kobject_name(parent));
 		/* back up enough to print this name with '/' */
 		length -= cur;
+<<<<<<< HEAD
 		strncpy(path + length, kobject_name(parent), cur);
+=======
+		memcpy(path + length, kobject_name(parent), cur);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*(path + --length) = '/';
 	}
 
@@ -234,6 +238,7 @@ static int kobject_add_internal(struct kobject *kobj)
 
 		/* be noisy on error issues */
 		if (error == -EEXIST)
+<<<<<<< HEAD
 			WARN(1, "%s failed for %s with "
 			     "-EEXIST, don't try to register things with "
 			     "the same name in the same directory.\n",
@@ -242,6 +247,14 @@ static int kobject_add_internal(struct kobject *kobj)
 			WARN(1, "%s failed for %s (error: %d parent: %s)\n",
 			     __func__, kobject_name(kobj), error,
 			     parent ? kobject_name(parent) : "'none'");
+=======
+			pr_err("%s failed for %s with -EEXIST, don't try to register things with the same name in the same directory.\n",
+			       __func__, kobject_name(kobj));
+		else
+			pr_err("%s failed for %s (error: %d parent: %s)\n",
+			       __func__, kobject_name(kobj), error,
+			       parent ? kobject_name(parent) : "'none'");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		kobj->state_in_sysfs = 1;
 
@@ -581,12 +594,23 @@ struct kobject *kobject_get(struct kobject *kobj)
 	return kobj;
 }
 
+<<<<<<< HEAD
 static struct kobject * __must_check kobject_get_unless_zero(struct kobject *kobj)
 {
+=======
+struct kobject * __must_check kobject_get_unless_zero(struct kobject *kobj)
+{
+	if (!kobj)
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!kref_get_unless_zero(&kobj->kref))
 		kobj = NULL;
 	return kobj;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(kobject_get_unless_zero);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * kobject_cleanup - free kobject resources.

@@ -216,7 +216,11 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
 			dev_kfree_skb_any(skb);
 			spin_unlock_irqrestore(&lp->lock, flags);
 
+<<<<<<< HEAD
 			return NETDEV_TX_BUSY;
+=======
+			return NETDEV_TX_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -900,10 +904,17 @@ static void korina_restart_task(struct work_struct *work)
 				DMA_STAT_DONE | DMA_STAT_HALT | DMA_STAT_ERR,
 				&lp->rx_dma_regs->dmasm);
 
+<<<<<<< HEAD
 	korina_free_ring(dev);
 
 	napi_disable(&lp->napi);
 
+=======
+	napi_disable(&lp->napi);
+
+	korina_free_ring(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (korina_init(dev) < 0) {
 		printk(KERN_ERR "%s: cannot restart device\n", dev->name);
 		return;
@@ -1064,12 +1075,20 @@ static int korina_close(struct net_device *dev)
 	tmp = tmp | DMA_STAT_DONE | DMA_STAT_HALT | DMA_STAT_ERR;
 	writel(tmp, &lp->rx_dma_regs->dmasm);
 
+<<<<<<< HEAD
 	korina_free_ring(dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	napi_disable(&lp->napi);
 
 	cancel_work_sync(&lp->restart_task);
 
+<<<<<<< HEAD
+=======
+	korina_free_ring(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	free_irq(lp->rx_irq, dev);
 	free_irq(lp->tx_irq, dev);
 	free_irq(lp->ovr_irq, dev);
@@ -1188,7 +1207,11 @@ out:
 	return rc;
 
 probe_err_register:
+<<<<<<< HEAD
 	kfree(lp->td_ring);
+=======
+	kfree((struct dma_desc *)KSEG0ADDR(lp->td_ring));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 probe_err_td_ring:
 	iounmap(lp->tx_dma_regs);
 probe_err_dma_tx:
@@ -1208,6 +1231,10 @@ static int korina_remove(struct platform_device *pdev)
 	iounmap(lp->eth_regs);
 	iounmap(lp->rx_dma_regs);
 	iounmap(lp->tx_dma_regs);
+<<<<<<< HEAD
+=======
+	kfree((struct dma_desc *)KSEG0ADDR(lp->td_ring));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unregister_netdev(bif->dev);
 	free_netdev(bif->dev);

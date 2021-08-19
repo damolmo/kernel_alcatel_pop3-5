@@ -687,8 +687,15 @@ int __kprobes analyse_instr(struct instruction_op *op, struct pt_regs *regs,
 	case 19:
 		switch ((instr >> 1) & 0x3ff) {
 		case 0:		/* mcrf */
+<<<<<<< HEAD
 			rd = (instr >> 21) & 0x1c;
 			ra = (instr >> 16) & 0x1c;
+=======
+			rd = 7 - ((instr >> 23) & 0x7);
+			ra = 7 - ((instr >> 18) & 0x7);
+			rd *= 4;
+			ra *= 4;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			val = (regs->ccr >> ra) & 0xf;
 			regs->ccr = (regs->ccr & ~(0xfUL << rd)) | (val << rd);
 			goto instr_done;
@@ -967,6 +974,22 @@ int __kprobes analyse_instr(struct instruction_op *op, struct pt_regs *regs,
 #endif
 
 		case 19:	/* mfcr */
+<<<<<<< HEAD
+=======
+			if ((instr >> 20) & 1) {
+				imm = 0xf0000000UL;
+				for (sh = 0; sh < 8; ++sh) {
+					if (instr & (0x80000 >> sh)) {
+						regs->gpr[rd] = regs->ccr & imm;
+						break;
+					}
+					imm >>= 4;
+				}
+
+				goto instr_done;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			regs->gpr[rd] = regs->ccr;
 			regs->gpr[rd] &= 0xffffffffUL;
 			goto instr_done;
@@ -1806,8 +1829,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto instr_done;
 
 	case LARX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (op.ea & (size - 1))
 			break;		/* can't handle misaligned */
 		err = -EFAULT;
@@ -1829,8 +1855,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto ldst_done;
 
 	case STCX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (op.ea & (size - 1))
 			break;		/* can't handle misaligned */
 		err = -EFAULT;
@@ -1854,8 +1883,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto ldst_done;
 
 	case LOAD:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = read_mem(&regs->gpr[op.reg], op.ea, size, regs);
 		if (!err) {
 			if (op.type & SIGNEXT)
@@ -1866,8 +1898,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto ldst_done;
 
 	case LOAD_FP:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (size == 4)
 			err = do_fp_load(op.reg, do_lfs, op.ea, size, regs);
 		else
@@ -1876,15 +1911,21 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 
 #ifdef CONFIG_ALTIVEC
 	case LOAD_VMX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = do_vec_load(op.reg, do_lvx, op.ea & ~0xfUL, regs);
 		goto ldst_done;
 #endif
 #ifdef CONFIG_VSX
 	case LOAD_VSX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = do_vsx_load(op.reg, do_lxvd2x, op.ea, regs);
 		goto ldst_done;
 #endif
@@ -1907,8 +1948,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto instr_done;
 
 	case STORE:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if ((op.type & UPDATE) && size == sizeof(long) &&
 		    op.reg == 1 && op.update_reg == 1 &&
 		    !(regs->msr & MSR_PR) &&
@@ -1920,8 +1964,11 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 		goto ldst_done;
 
 	case STORE_FP:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (size == 4)
 			err = do_fp_store(op.reg, do_stfs, op.ea, size, regs);
 		else
@@ -1930,15 +1977,21 @@ int __kprobes emulate_step(struct pt_regs *regs, unsigned int instr)
 
 #ifdef CONFIG_ALTIVEC
 	case STORE_VMX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = do_vec_store(op.reg, do_stvx, op.ea & ~0xfUL, regs);
 		goto ldst_done;
 #endif
 #ifdef CONFIG_VSX
 	case STORE_VSX:
+<<<<<<< HEAD
 		if (regs->msr & MSR_LE)
 			return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = do_vsx_store(op.reg, do_stxvd2x, op.ea, regs);
 		goto ldst_done;
 #endif

@@ -419,6 +419,10 @@ void debug_dma_dump_mappings(struct device *dev)
 		}
 
 		spin_unlock_irqrestore(&bucket->lock, flags);
+<<<<<<< HEAD
+=======
+		cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 EXPORT_SYMBOL(debug_dma_dump_mappings);
@@ -646,9 +650,15 @@ static struct dma_debug_entry *dma_entry_alloc(void)
 	spin_lock_irqsave(&free_entries_lock, flags);
 
 	if (list_empty(&free_entries)) {
+<<<<<<< HEAD
 		pr_err("DMA-API: debugging out of memory - disabling\n");
 		global_disable = true;
 		spin_unlock_irqrestore(&free_entries_lock, flags);
+=======
+		global_disable = true;
+		spin_unlock_irqrestore(&free_entries_lock, flags);
+		pr_err("DMA-API: debugging out of memory - disabling\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 	}
 
@@ -1165,7 +1175,11 @@ static inline bool overlap(void *addr, unsigned long len, void *start, void *end
 
 static void check_for_illegal_area(struct device *dev, void *addr, unsigned long len)
 {
+<<<<<<< HEAD
 	if (overlap(addr, len, _text, _etext) ||
+=======
+	if (overlap(addr, len, _stext, _etext) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    overlap(addr, len, __start_rodata, __end_rodata))
 		err_printk(dev, NULL, "DMA-API: device driver maps memory from kernel text or rodata [addr=%p] [len=%lu]\n", addr, len);
 }

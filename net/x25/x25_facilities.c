@@ -277,6 +277,10 @@ int x25_negotiate_facilities(struct sk_buff *skb, struct sock *sk,
 
 	memset(&theirs, 0, sizeof(theirs));
 	memcpy(new, ours, sizeof(*new));
+<<<<<<< HEAD
+=======
+	memset(dte, 0, sizeof(*dte));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	len = x25_parse_facilities(skb, &theirs, dte, &x25->vc_facil_mask);
 	if (len < 0)

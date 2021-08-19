@@ -691,3 +691,7 @@ module_i2c_driver(wm8994_i2c_driver);
 MODULE_DESCRIPTION("Core support for the WM8994 audio CODEC");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
+<<<<<<< HEAD
+=======
+MODULE_SOFTDEP("pre: wm8994_regulator");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

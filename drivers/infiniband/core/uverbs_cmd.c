@@ -2204,6 +2204,15 @@ ssize_t ib_uverbs_post_send(struct ib_uverbs_file *file,
 		next->send_flags = user_wr->send_flags;
 
 		if (is_ud) {
+<<<<<<< HEAD
+=======
+			if (next->opcode != IB_WR_SEND &&
+			    next->opcode != IB_WR_SEND_WITH_IMM) {
+				ret = -EINVAL;
+				goto out_put;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			next->wr.ud.ah = idr_read_ah(user_wr->wr.ud.ah,
 						     file->ucontext);
 			if (!next->wr.ud.ah) {
@@ -2243,9 +2252,17 @@ ssize_t ib_uverbs_post_send(struct ib_uverbs_file *file,
 					user_wr->wr.atomic.compare_add;
 				next->wr.atomic.swap = user_wr->wr.atomic.swap;
 				next->wr.atomic.rkey = user_wr->wr.atomic.rkey;
+<<<<<<< HEAD
 				break;
 			default:
 				break;
+=======
+			case IB_WR_SEND:
+				break;
+			default:
+				ret = -EINVAL;
+				goto out_put;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 
@@ -2332,6 +2349,16 @@ static struct ib_recv_wr *ib_uverbs_unmarshall_recv(const char __user *buf,
 			goto err;
 		}
 
+<<<<<<< HEAD
+=======
+		if (user_wr->num_sge >=
+		    (U32_MAX - ALIGN(sizeof *next, sizeof (struct ib_sge))) /
+		    sizeof (struct ib_sge)) {
+			ret = -EINVAL;
+			goto err;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		next = kmalloc(ALIGN(sizeof *next, sizeof (struct ib_sge)) +
 			       user_wr->num_sge * sizeof (struct ib_sge),
 			       GFP_KERNEL);

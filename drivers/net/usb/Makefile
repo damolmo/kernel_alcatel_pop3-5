@@ -22,7 +22,11 @@ obj-$(CONFIG_USB_NET_GL620A)	+= gl620a.o
 obj-$(CONFIG_USB_NET_NET1080)	+= net1080.o
 obj-$(CONFIG_USB_NET_PLUSB)	+= plusb.o
 obj-$(CONFIG_USB_NET_RNDIS_HOST)	+= rndis_host.o
+<<<<<<< HEAD
 obj-$(CONFIG_USB_NET_CDC_SUBSET)	+= cdc_subset.o
+=======
+obj-$(CONFIG_USB_NET_CDC_SUBSET_ENABLE)	+= cdc_subset.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_USB_NET_ZAURUS)	+= zaurus.o
 obj-$(CONFIG_USB_NET_MCS7830)	+= mcs7830.o
 obj-$(CONFIG_USB_USBNET)	+= usbnet.o

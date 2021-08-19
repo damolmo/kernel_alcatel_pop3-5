@@ -1838,13 +1838,21 @@ static void atmci_tasklet_func(unsigned long priv)
 			}
 
 			atmci_request_end(host, host->mrq);
+<<<<<<< HEAD
 			state = STATE_IDLE;
+=======
+			goto unlock; /* atmci_request_end() sets host->state */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 	} while (state != prev_state);
 
 	host->state = state;
 
+<<<<<<< HEAD
+=======
+unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&host->lock);
 }
 

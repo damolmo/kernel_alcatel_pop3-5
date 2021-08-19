@@ -1420,7 +1420,10 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
 					  rq->rx_ring[i].basePA);
 			rq->rx_ring[i].base = NULL;
 		}
+<<<<<<< HEAD
 		rq->buf_info[i] = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (rq->comp_ring.base) {
@@ -1435,6 +1438,10 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
 			(rq->rx_ring[0].size + rq->rx_ring[1].size);
 		dma_free_coherent(&adapter->pdev->dev, sz, rq->buf_info[0],
 				  rq->buf_info_pa);
+<<<<<<< HEAD
+=======
+		rq->buf_info[0] = rq->buf_info[1] = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -2648,6 +2655,14 @@ vmxnet3_force_close(struct vmxnet3_adapter *adapter)
 	/* we need to enable NAPI, otherwise dev_close will deadlock */
 	for (i = 0; i < adapter->num_rx_queues; i++)
 		napi_enable(&adapter->rx_queue[i].napi);
+<<<<<<< HEAD
+=======
+	/*
+	 * Need to clear the quiesce bit to ensure that vmxnet3_close
+	 * can quiesce the device properly
+	 */
+	clear_bit(VMXNET3_STATE_BIT_QUIESCED, &adapter->state);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev_close(adapter->netdev);
 }
 

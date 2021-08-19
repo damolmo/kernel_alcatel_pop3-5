@@ -442,6 +442,10 @@ int __init pci_xen_hvm_init(void)
 	 * just how GSIs get registered.
 	 */
 	__acpi_register_gsi = acpi_register_gsi_xen_hvm;
+<<<<<<< HEAD
+=======
+	__acpi_unregister_gsi = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #ifdef CONFIG_PCI_MSI
@@ -464,8 +468,17 @@ int __init pci_xen_initial_domain(void)
 	x86_msi.msix_mask_irq = xen_nop_msix_mask_irq;
 #endif
 	__acpi_register_gsi = acpi_register_gsi_xen;
+<<<<<<< HEAD
 	/* Pre-allocate legacy irqs */
 	for (irq = 0; irq < nr_legacy_irqs(); irq++) {
+=======
+	__acpi_unregister_gsi = NULL;
+	/*
+	 * Pre-allocate the legacy IRQs.  Use NR_LEGACY_IRQS here
+	 * because we don't have a PIC and thus nr_legacy_irqs() is zero.
+	 */
+	for (irq = 0; irq < NR_IRQS_LEGACY; irq++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int trigger, polarity;
 
 		if (acpi_get_override_irq(irq, &trigger, &polarity) == -1)

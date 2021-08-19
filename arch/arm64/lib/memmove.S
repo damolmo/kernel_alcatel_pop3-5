@@ -194,4 +194,8 @@ ENTRY(memmove)
 	tst	count, #0x3f
 	b.ne	.Ltail63
 	ret
+<<<<<<< HEAD
 ENDPROC(memmove)
+=======
+ENDPIPROC(memmove)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

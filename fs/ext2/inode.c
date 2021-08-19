@@ -1169,6 +1169,7 @@ do_indirects:
 
 static void ext2_truncate_blocks(struct inode *inode, loff_t offset)
 {
+<<<<<<< HEAD
 	/*
 	 * XXX: it seems like a bug here that we don't allow
 	 * IS_APPEND inode to have blocks-past-i_size trimmed off.
@@ -1177,13 +1178,18 @@ static void ext2_truncate_blocks(struct inode *inode, loff_t offset)
 	 * Also would be nice to be able to handle IO errors and such,
 	 * but that's probably too much to ask.
 	 */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 	    S_ISLNK(inode->i_mode)))
 		return;
 	if (ext2_inode_is_fast_symlink(inode))
 		return;
+<<<<<<< HEAD
 	if (IS_APPEND(inode) || IS_IMMUTABLE(inode))
 		return;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__ext2_truncate_blocks(inode, offset);
 }
 

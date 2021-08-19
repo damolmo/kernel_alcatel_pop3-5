@@ -2,8 +2,11 @@
 # Makefile for the linux kernel.
 #
 
+<<<<<<< HEAD
 ccflags-y += -Idrivers/misc/mediatek/mtprof/
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-y                          := main.o version.o mounts.o
 obj-y                          += noinitramfs.o
 obj-$(CONFIG_BLK_DEV_INITRD)   += initramfs.o
@@ -17,6 +20,10 @@ mounts-y			:= do_mounts.o
 mounts-$(CONFIG_BLK_DEV_RAM)	+= do_mounts_rd.o
 mounts-$(CONFIG_BLK_DEV_INITRD)	+= do_mounts_initrd.o
 mounts-$(CONFIG_BLK_DEV_MD)	+= do_mounts_md.o
+<<<<<<< HEAD
+=======
+mounts-$(CONFIG_BLK_DEV_DM)	+= do_mounts_dm.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 # dependencies on generated files need to be listed explicitly
 $(obj)/version.o: include/generated/compile.h

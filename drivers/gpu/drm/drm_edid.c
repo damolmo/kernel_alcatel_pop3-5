@@ -72,6 +72,13 @@
 #define EDID_QUIRK_FORCE_8BPC			(1 << 8)
 /* Force 12bpc */
 #define EDID_QUIRK_FORCE_12BPC			(1 << 9)
+<<<<<<< HEAD
+=======
+/* Force 6bpc */
+#define EDID_QUIRK_FORCE_6BPC			(1 << 10)
+/* Force 10bpc */
+#define EDID_QUIRK_FORCE_10BPC			(1 << 11)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct detailed_mode_closure {
 	struct drm_connector *connector;
@@ -98,6 +105,15 @@ static struct edid_quirk {
 	/* Unknown Acer */
 	{ "ACR", 2423, EDID_QUIRK_FIRST_DETAILED_PREFERRED },
 
+<<<<<<< HEAD
+=======
+	/* AEO model 0 reports 8 bpc, but is a 6 bpc panel */
+	{ "AEO", 0, EDID_QUIRK_FORCE_6BPC },
+
+	/* CPT panel of Asus UX303LA reports 8 bpc, but is a 6 bpc panel */
+	{ "CPT", 0x17df, EDID_QUIRK_FORCE_6BPC },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Belinea 10 15 55 */
 	{ "MAX", 1516, EDID_QUIRK_PREFER_LARGE_60 },
 	{ "MAX", 0x77e, EDID_QUIRK_PREFER_LARGE_60 },
@@ -111,6 +127,12 @@ static struct edid_quirk {
 	{ "FCM", 13600, EDID_QUIRK_PREFER_LARGE_75 |
 	  EDID_QUIRK_DETAILED_IN_CM },
 
+<<<<<<< HEAD
+=======
+	/* LGD panel of HP zBook 17 G2, eDP 10 bpc, but reports unknown bpc */
+	{ "LGD", 764, EDID_QUIRK_FORCE_10BPC },
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* LG Philips LCD LP154W01-A5 */
 	{ "LPL", 0, EDID_QUIRK_DETAILED_USE_MAXIMUM_SIZE },
 	{ "LPL", 0x2a00, EDID_QUIRK_DETAILED_USE_MAXIMUM_SIZE },
@@ -138,6 +160,12 @@ static struct edid_quirk {
 
 	/* Panel in Samsung NP700G7A-S01PL notebook reports 6bpc */
 	{ "SEC", 0xd033, EDID_QUIRK_FORCE_8BPC },
+<<<<<<< HEAD
+=======
+
+	/* Rotel RSX-1058 forwards sink's EDID but only does HDMI 1.1*/
+	{ "ETR", 13896, EDID_QUIRK_FORCE_8BPC },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -1125,9 +1153,15 @@ EXPORT_SYMBOL(drm_edid_is_valid);
  * Return: 0 on success or -1 on failure.
  */
 static int
+<<<<<<< HEAD
 drm_do_probe_ddc_edid(void *data, u8 *buf, unsigned int block, size_t len)
 {
 	struct i2c_adapter *adapter = data;
+=======
+drm_do_probe_ddc_edid(struct i2c_adapter *adapter, unsigned char *buf,
+		      int block, int len)
+{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned char start = block * EDID_LENGTH;
 	unsigned char segment = block >> 1;
 	unsigned char xfers = segment ? 3 : 2;
@@ -1184,6 +1218,7 @@ static bool drm_edid_is_zero(u8 *in_edid, int length)
 	return true;
 }
 
+<<<<<<< HEAD
 /**
  * drm_do_get_edid - get EDID data using a custom EDID block read function
  * @connector: connector we're probing
@@ -1204,6 +1239,10 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 	int (*get_edid_block)(void *data, u8 *buf, unsigned int block,
 			      size_t len),
 	void *data)
+=======
+static u8 *
+drm_do_get_edid(struct drm_connector *connector, struct i2c_adapter *adapter)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int i, j = 0, valid_extensions = 0;
 	u8 *block, *new;
@@ -1214,7 +1253,11 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 
 	/* base block fetch */
 	for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 		if (get_edid_block(data, block, 0, EDID_LENGTH))
+=======
+		if (drm_do_probe_ddc_edid(adapter, block, 0, EDID_LENGTH))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		if (drm_edid_block_valid(block, 0, print_bad_edid))
 			break;
@@ -1228,7 +1271,11 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 
 	/* if there's no extensions, we're done */
 	if (block[0x7e] == 0)
+<<<<<<< HEAD
 		return (struct edid *)block;
+=======
+		return block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	new = krealloc(block, (block[0x7e] + 1) * EDID_LENGTH, GFP_KERNEL);
 	if (!new)
@@ -1237,7 +1284,11 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 
 	for (j = 1; j <= block[0x7e]; j++) {
 		for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 			if (get_edid_block(data,
+=======
+			if (drm_do_probe_ddc_edid(adapter,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  block + (valid_extensions + 1) * EDID_LENGTH,
 				  j, EDID_LENGTH))
 				goto out;
@@ -1265,7 +1316,11 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
 		block = new;
 	}
 
+<<<<<<< HEAD
 	return (struct edid *)block;
+=======
+	return block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 carp:
 	if (print_bad_edid) {
@@ -1278,7 +1333,10 @@ out:
 	kfree(block);
 	return NULL;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(drm_do_get_edid);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * drm_probe_ddc() - probe DDC presence
@@ -1308,10 +1366,19 @@ EXPORT_SYMBOL(drm_probe_ddc);
 struct edid *drm_get_edid(struct drm_connector *connector,
 			  struct i2c_adapter *adapter)
 {
+<<<<<<< HEAD
 	if (!drm_probe_ddc(adapter))
 		return NULL;
 
 	return drm_do_get_edid(connector, drm_do_probe_ddc_edid, adapter);
+=======
+	struct edid *edid = NULL;
+
+	if (drm_probe_ddc(adapter))
+		edid = (struct edid *)drm_do_get_edid(connector, adapter);
+
+	return edid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_get_edid);
 
@@ -3145,12 +3212,18 @@ void drm_edid_to_eld(struct drm_connector *connector, struct edid *edid)
 		}
 	}
 	eld[5] |= sad_count << 4;
+<<<<<<< HEAD
 
 	eld[DRM_ELD_BASELINE_ELD_LEN] =
 		DIV_ROUND_UP(drm_eld_calc_baseline_block_size(eld), 4);
 
 	DRM_DEBUG_KMS("ELD size %d, SAD count %d\n",
 		      drm_eld_size(eld), sad_count);
+=======
+	eld[2] = (20 + mnl + sad_count * 3 + 3) / 4;
+
+	DRM_DEBUG_KMS("ELD size %d, SAD count %d\n", (int)eld[2], sad_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_edid_to_eld);
 
@@ -3691,9 +3764,21 @@ int drm_add_edid_modes(struct drm_connector *connector, struct edid *edid)
 
 	drm_add_display_info(edid, &connector->display_info, connector);
 
+<<<<<<< HEAD
 	if (quirks & EDID_QUIRK_FORCE_8BPC)
 		connector->display_info.bpc = 8;
 
+=======
+	if (quirks & EDID_QUIRK_FORCE_6BPC)
+		connector->display_info.bpc = 6;
+
+	if (quirks & EDID_QUIRK_FORCE_8BPC)
+		connector->display_info.bpc = 8;
+
+	if (quirks & EDID_QUIRK_FORCE_10BPC)
+		connector->display_info.bpc = 10;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (quirks & EDID_QUIRK_FORCE_12BPC)
 		connector->display_info.bpc = 12;
 

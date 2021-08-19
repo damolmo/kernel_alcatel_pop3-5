@@ -14,7 +14,14 @@ obj-$(CONFIG_OF_PCI_IRQ)  += of_pci_irq.o
 obj-$(CONFIG_OF_MTD)	+= of_mtd.o
 obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
 obj-$(CONFIG_OF_RESOLVE)  += resolver.o
+<<<<<<< HEAD
 
 CFLAGS_fdt.o = -I$(src)/../../scripts/dtc/libfdt
 CFLAGS_fdt_address.o = -I$(src)/../../scripts/dtc/libfdt
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/include
+=======
+obj-$(CONFIG_OF_OVERLAY) += overlay.o
+
+CFLAGS_fdt.o = -I$(src)/../../scripts/dtc/libfdt
+CFLAGS_fdt_address.o = -I$(src)/../../scripts/dtc/libfdt
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

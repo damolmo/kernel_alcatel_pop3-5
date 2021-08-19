@@ -55,7 +55,13 @@ static SLAVE_ATTR_RO(link_failure_count);
 
 static ssize_t perm_hwaddr_show(struct slave *slave, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%pM\n", slave->perm_hwaddr);
+=======
+	return sprintf(buf, "%*phC\n",
+		       slave->dev->addr_len,
+		       slave->perm_hwaddr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 static SLAVE_ATTR_RO(perm_hwaddr);
 
@@ -119,8 +125,15 @@ int bond_sysfs_slave_add(struct slave *slave)
 
 	err = kobject_init_and_add(&slave->kobj, &slave_ktype,
 				   &(slave->dev->dev.kobj), "bonding_slave");
+<<<<<<< HEAD
 	if (err)
 		return err;
+=======
+	if (err) {
+		kobject_put(&slave->kobj);
+		return err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (a = slave_attrs; *a; ++a) {
 		err = sysfs_create_file(&slave->kobj, &((*a)->attr));

@@ -1,4 +1,5 @@
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/rbtree_augmented.h>
 #include <linux/random.h>
 #include <asm/timex.h>
@@ -6,6 +7,22 @@
 #define NODES       100
 #define PERF_LOOPS  100000
 #define CHECK_LOOPS 100
+=======
+#include <linux/moduleparam.h>
+#include <linux/rbtree_augmented.h>
+#include <linux/random.h>
+#include <linux/slab.h>
+#include <asm/timex.h>
+
+#define __param(type, name, init, msg)		\
+	static type name = init;		\
+	module_param(name, type, 0444);		\
+	MODULE_PARM_DESC(name, msg);
+
+__param(int, nnodes, 100, "Number of nodes in the rb-tree");
+__param(int, perf_loops, 1000, "Number of iterations modifying the rb-tree");
+__param(int, check_loops, 100, "Number of iterations modifying and verifying the rb-tree");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct test_node {
 	u32 key;
@@ -17,7 +34,11 @@ struct test_node {
 };
 
 static struct rb_root root = RB_ROOT;
+<<<<<<< HEAD
 static struct test_node nodes[NODES];
+=======
+static struct test_node *nodes = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct rnd_state rnd;
 
@@ -95,7 +116,11 @@ static void erase_augmented(struct test_node *node, struct rb_root *root)
 static void init(void)
 {
 	int i;
+<<<<<<< HEAD
 	for (i = 0; i < NODES; i++) {
+=======
+	for (i = 0; i < nnodes; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nodes[i].key = prandom_u32_state(&rnd);
 		nodes[i].val = prandom_u32_state(&rnd);
 	}
@@ -177,6 +202,13 @@ static int __init rbtree_test_init(void)
 	int i, j;
 	cycles_t time1, time2, time;
 
+<<<<<<< HEAD
+=======
+	nodes = kmalloc(nnodes * sizeof(*nodes), GFP_KERNEL);
+	if (!nodes)
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk(KERN_ALERT "rbtree testing");
 
 	prandom_seed_state(&rnd, 3141592653589793238ULL);
@@ -184,16 +216,24 @@ static int __init rbtree_test_init(void)
 
 	time1 = get_cycles();
 
+<<<<<<< HEAD
 	for (i = 0; i < PERF_LOOPS; i++) {
 		for (j = 0; j < NODES; j++)
 			insert(nodes + j, &root);
 		for (j = 0; j < NODES; j++)
+=======
+	for (i = 0; i < perf_loops; i++) {
+		for (j = 0; j < nnodes; j++)
+			insert(nodes + j, &root);
+		for (j = 0; j < nnodes; j++)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			erase(nodes + j, &root);
 	}
 
 	time2 = get_cycles();
 	time = time2 - time1;
 
+<<<<<<< HEAD
 	time = div_u64(time, PERF_LOOPS);
 	printk(" -> %llu cycles\n", (unsigned long long)time);
 
@@ -205,6 +245,19 @@ static int __init rbtree_test_init(void)
 		}
 		for (j = 0; j < NODES; j++) {
 			check(NODES - j);
+=======
+	time = div_u64(time, perf_loops);
+	printk(" -> %llu cycles\n", (unsigned long long)time);
+
+	for (i = 0; i < check_loops; i++) {
+		init();
+		for (j = 0; j < nnodes; j++) {
+			check(j);
+			insert(nodes + j, &root);
+		}
+		for (j = 0; j < nnodes; j++) {
+			check(nnodes - j);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			erase(nodes + j, &root);
 		}
 		check(0);
@@ -216,16 +269,24 @@ static int __init rbtree_test_init(void)
 
 	time1 = get_cycles();
 
+<<<<<<< HEAD
 	for (i = 0; i < PERF_LOOPS; i++) {
 		for (j = 0; j < NODES; j++)
 			insert_augmented(nodes + j, &root);
 		for (j = 0; j < NODES; j++)
+=======
+	for (i = 0; i < perf_loops; i++) {
+		for (j = 0; j < nnodes; j++)
+			insert_augmented(nodes + j, &root);
+		for (j = 0; j < nnodes; j++)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			erase_augmented(nodes + j, &root);
 	}
 
 	time2 = get_cycles();
 	time = time2 - time1;
 
+<<<<<<< HEAD
 	time = div_u64(time, PERF_LOOPS);
 	printk(" -> %llu cycles\n", (unsigned long long)time);
 
@@ -237,11 +298,29 @@ static int __init rbtree_test_init(void)
 		}
 		for (j = 0; j < NODES; j++) {
 			check_augmented(NODES - j);
+=======
+	time = div_u64(time, perf_loops);
+	printk(" -> %llu cycles\n", (unsigned long long)time);
+
+	for (i = 0; i < check_loops; i++) {
+		init();
+		for (j = 0; j < nnodes; j++) {
+			check_augmented(j);
+			insert_augmented(nodes + j, &root);
+		}
+		for (j = 0; j < nnodes; j++) {
+			check_augmented(nnodes - j);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			erase_augmented(nodes + j, &root);
 		}
 		check_augmented(0);
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(nodes);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return -EAGAIN; /* Fail will directly unload the module */
 }
 

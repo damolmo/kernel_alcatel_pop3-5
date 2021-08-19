@@ -433,7 +433,11 @@ static int efm32_i2c_probe(struct platform_device *pdev)
 	ret = request_irq(ddata->irq, efm32_i2c_irq, 0, DRIVER_NAME, ddata);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to request irq (%d)\n", ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_disable_clk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = i2c_add_adapter(&ddata->adapter);

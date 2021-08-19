@@ -119,7 +119,10 @@ static void mesh_sync_offset_rx_bcn_presp(struct ieee80211_sub_if_data *sdata,
 	 */
 
 	if (elems->mesh_config && mesh_peer_tbtt_adjusting(elems)) {
+<<<<<<< HEAD
 		clear_sta_flag(sta, WLAN_STA_TOFFSET_KNOWN);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		msync_dbg(sdata, "STA %pM : is adjusting TBTT\n",
 			  sta->sta.addr);
 		goto no_sync;
@@ -168,11 +171,17 @@ static void mesh_sync_offset_adjust_tbtt(struct ieee80211_sub_if_data *sdata,
 					 struct beacon_data *beacon)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
+<<<<<<< HEAD
 	u8 cap;
 
 	WARN_ON(ifmsh->mesh_sp_id != IEEE80211_SYNC_METHOD_NEIGHBOR_OFFSET);
 	WARN_ON(!rcu_read_lock_held());
 	cap = beacon->meshconf->meshconf_cap;
+=======
+
+	WARN_ON(ifmsh->mesh_sp_id != IEEE80211_SYNC_METHOD_NEIGHBOR_OFFSET);
+	WARN_ON(!rcu_read_lock_held());
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_bh(&ifmsh->sync_offset_lock);
 
@@ -186,13 +195,17 @@ static void mesh_sync_offset_adjust_tbtt(struct ieee80211_sub_if_data *sdata,
 			  "TBTT : kicking off TBTT adjustment with clockdrift_max=%lld\n",
 			  ifmsh->sync_offset_clockdrift_max);
 		set_bit(MESH_WORK_DRIFT_ADJUST, &ifmsh->wrkq_flags);
+<<<<<<< HEAD
 
 		ifmsh->adjusting_tbtt = true;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		msync_dbg(sdata,
 			  "TBTT : max clockdrift=%lld; too small to adjust\n",
 			  (long long)ifmsh->sync_offset_clockdrift_max);
 		ifmsh->sync_offset_clockdrift_max = 0;
+<<<<<<< HEAD
 
 		ifmsh->adjusting_tbtt = false;
 	}
@@ -201,6 +214,10 @@ static void mesh_sync_offset_adjust_tbtt(struct ieee80211_sub_if_data *sdata,
 	beacon->meshconf->meshconf_cap = ifmsh->adjusting_tbtt ?
 			IEEE80211_MESHCONF_CAPAB_TBTT_ADJUSTING | cap :
 			~IEEE80211_MESHCONF_CAPAB_TBTT_ADJUSTING & cap;
+=======
+	}
+	spin_unlock_bh(&ifmsh->sync_offset_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct sync_method sync_methods[] = {

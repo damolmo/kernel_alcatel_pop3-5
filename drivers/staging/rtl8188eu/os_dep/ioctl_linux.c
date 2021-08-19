@@ -1171,9 +1171,17 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
 						break;
 					}
 					sec_len = *(pos++); len -= 1;
+<<<<<<< HEAD
 					if (sec_len > 0 && sec_len <= len) {
 						ssid[ssid_index].SsidLength = sec_len;
 						memcpy(ssid[ssid_index].Ssid, pos, ssid[ssid_index].SsidLength);
+=======
+					if (sec_len > 0 &&
+					    sec_len <= len &&
+					    sec_len <= 32) {
+						ssid[ssid_index].SsidLength = sec_len;
+						memcpy(ssid[ssid_index].Ssid, pos, sec_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 						ssid_index++;
 					}
 					pos += sec_len;
@@ -1396,6 +1404,7 @@ static int rtw_wx_get_essid(struct net_device *dev,
 	if ((check_fwstate(pmlmepriv, _FW_LINKED)) ||
 	    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE))) {
 		len = pcur_bss->Ssid.SsidLength;
+<<<<<<< HEAD
 
 		wrqu->essid.length = len;
 
@@ -1409,6 +1418,15 @@ static int rtw_wx_get_essid(struct net_device *dev,
 
 exit:
 
+=======
+		memcpy(extra, pcur_bss->Ssid.Ssid, len);
+	} else {
+		len = 0;
+		*extra = 0;
+	}
+	wrqu->essid.length = len;
+	wrqu->essid.flags = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -2059,7 +2077,11 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 	struct ieee_param *param;
 	uint ret = 0;
 
+<<<<<<< HEAD
 	if (p->length < sizeof(struct ieee_param) || !p->pointer) {
+=======
+	if (!p->pointer || p->length != sizeof(struct ieee_param)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -EINVAL;
 		goto out;
 	}
@@ -2876,7 +2898,11 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (!p->pointer) {
+=======
+	if (!p->pointer || p->length != sizeof(struct ieee_param)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -EINVAL;
 		goto out;
 	}

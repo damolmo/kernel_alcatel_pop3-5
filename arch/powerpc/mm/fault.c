@@ -294,7 +294,11 @@ int __kprobes do_page_fault(struct pt_regs *regs, unsigned long address,
 	 * can result in fault, which will cause a deadlock when called with
 	 * mmap_sem held
 	 */
+<<<<<<< HEAD
 	if (user_mode(regs))
+=======
+	if (!is_exec && user_mode(regs))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		store_update_sp = store_updates_sp(regs);
 
 	if (user_mode(regs))

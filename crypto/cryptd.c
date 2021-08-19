@@ -565,9 +565,20 @@ static int cryptd_hash_export(struct ahash_request *req, void *out)
 
 static int cryptd_hash_import(struct ahash_request *req, const void *in)
 {
+<<<<<<< HEAD
 	struct cryptd_hash_request_ctx *rctx = ahash_request_ctx(req);
 
 	return crypto_shash_import(&rctx->desc, in);
+=======
+	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
+	struct cryptd_hash_ctx *ctx = crypto_ahash_ctx(tfm);
+	struct shash_desc *desc = cryptd_shash_desc(req);
+
+	desc->tfm = ctx->child;
+	desc->flags = req->base.flags;
+
+	return crypto_shash_import(desc, in);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int cryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
@@ -601,6 +612,10 @@ static int cryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 	inst->alg.halg.base.cra_flags = CRYPTO_ALG_ASYNC;
 
 	inst->alg.halg.digestsize = salg->digestsize;
+<<<<<<< HEAD
+=======
+	inst->alg.halg.statesize = salg->statesize;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	inst->alg.halg.base.cra_ctxsize = sizeof(struct cryptd_hash_ctx);
 
 	inst->alg.halg.base.cra_init = cryptd_hash_init_tfm;
@@ -612,7 +627,12 @@ static int cryptd_create_hash(struct crypto_template *tmpl, struct rtattr **tb,
 	inst->alg.finup  = cryptd_hash_finup_enqueue;
 	inst->alg.export = cryptd_hash_export;
 	inst->alg.import = cryptd_hash_import;
+<<<<<<< HEAD
 	inst->alg.setkey = cryptd_hash_setkey;
+=======
+	if (crypto_shash_alg_has_setkey(salg))
+		inst->alg.setkey = cryptd_hash_setkey;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	inst->alg.digest = cryptd_hash_digest_enqueue;
 
 	err = ahash_register_instance(tmpl, inst);

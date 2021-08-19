@@ -23,7 +23,11 @@ endif
 ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
 NEON_FLAGS := -ffreestanding
 ifeq ($(ARCH),arm)
+<<<<<<< HEAD
 NEON_FLAGS += -mfloat-abi=softfp -mfpu=neon
+=======
+NEON_FLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif
 ifeq ($(ARCH),arm64)
 CFLAGS_REMOVE_neon1.o += -mgeneral-regs-only

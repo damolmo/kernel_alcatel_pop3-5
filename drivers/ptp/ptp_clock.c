@@ -167,10 +167,18 @@ static struct posix_clock_operations ptp_clock_ops = {
 	.read		= ptp_read,
 };
 
+<<<<<<< HEAD
 static void delete_ptp_clock(struct posix_clock *pc)
 {
 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
 
+=======
+static void ptp_clock_release(struct device *dev)
+{
+	struct ptp_clock *ptp = container_of(dev, struct ptp_clock, dev);
+
+	ptp_cleanup_pin_groups(ptp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_destroy(&ptp->tsevq_mux);
 	mutex_destroy(&ptp->pincfg_mux);
 	ida_simple_remove(&ptp_clocks_map, ptp->index);
@@ -201,7 +209,10 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	}
 
 	ptp->clock.ops = ptp_clock_ops;
+<<<<<<< HEAD
 	ptp->clock.release = delete_ptp_clock;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ptp->info = info;
 	ptp->devid = MKDEV(major, index);
 	ptp->index = index;
@@ -210,6 +221,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	mutex_init(&ptp->pincfg_mux);
 	init_waitqueue_head(&ptp->tsev_wq);
 
+<<<<<<< HEAD
 	/* Create a new device in our class. */
 	ptp->dev = device_create(ptp_class, parent, ptp->devid, ptp,
 				 "ptp%d", ptp->index);
@@ -221,6 +233,11 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	err = ptp_populate_sysfs(ptp);
 	if (err)
 		goto no_sysfs;
+=======
+	err = ptp_populate_pin_groups(ptp);
+	if (err)
+		goto no_pin_groups;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Register a new PPS source. */
 	if (info->pps) {
@@ -231,13 +248,32 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 		pps.owner = info->owner;
 		ptp->pps_source = pps_register_source(&pps, PTP_PPS_DEFAULTS);
 		if (!ptp->pps_source) {
+<<<<<<< HEAD
+=======
+			err = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			pr_err("failed to register pps source\n");
 			goto no_pps;
 		}
 	}
 
+<<<<<<< HEAD
 	/* Create a posix clock. */
 	err = posix_clock_register(&ptp->clock, ptp->devid);
+=======
+	/* Initialize a new device of our class in our clock structure. */
+	device_initialize(&ptp->dev);
+	ptp->dev.devt = ptp->devid;
+	ptp->dev.class = ptp_class;
+	ptp->dev.parent = parent;
+	ptp->dev.groups = ptp->pin_attr_groups;
+	ptp->dev.release = ptp_clock_release;
+	dev_set_drvdata(&ptp->dev, ptp);
+	dev_set_name(&ptp->dev, "ptp%d", ptp->index);
+
+	/* Create a posix clock and link it to the device. */
+	err = posix_clock_register(&ptp->clock, &ptp->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		pr_err("failed to create posix clock\n");
 		goto no_clock;
@@ -249,10 +285,15 @@ no_clock:
 	if (ptp->pps_source)
 		pps_unregister_source(ptp->pps_source);
 no_pps:
+<<<<<<< HEAD
 	ptp_cleanup_sysfs(ptp);
 no_sysfs:
 	device_destroy(ptp_class, ptp->devid);
 no_device:
+=======
+	ptp_cleanup_pin_groups(ptp);
+no_pin_groups:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_destroy(&ptp->tsevq_mux);
 	mutex_destroy(&ptp->pincfg_mux);
 no_slot:
@@ -270,10 +311,16 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
 	/* Release the clock's resources. */
 	if (ptp->pps_source)
 		pps_unregister_source(ptp->pps_source);
+<<<<<<< HEAD
 	ptp_cleanup_sysfs(ptp);
 	device_destroy(ptp_class, ptp->devid);
 
 	posix_clock_unregister(&ptp->clock);
+=======
+
+	posix_clock_unregister(&ptp->clock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(ptp_clock_unregister);

@@ -6,8 +6,13 @@
 #include <linux/mutex.h>
 #include <net/sock.h>
 
+<<<<<<< HEAD
 void unix_inflight(struct file *fp);
 void unix_notinflight(struct file *fp);
+=======
+void unix_inflight(struct user_struct *user, struct file *fp);
+void unix_notinflight(struct user_struct *user, struct file *fp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void unix_gc(void);
 void wait_for_unix_gc(void);
 struct sock *unix_get_socket(struct file *filp);
@@ -65,7 +70,15 @@ struct unix_sock {
 	struct socket_wq	peer_wq;
 	wait_queue_t		peer_wake;
 };
+<<<<<<< HEAD
 #define unix_sk(__sk) ((struct unix_sock *)__sk)
+=======
+
+static inline struct unix_sock *unix_sk(struct sock *sk)
+{
+	return (struct unix_sock *)sk;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define peer_wait peer_wq.wait
 

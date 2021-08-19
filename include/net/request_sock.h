@@ -49,7 +49,14 @@ int inet_rtx_syn_ack(struct sock *parent, struct request_sock *req);
  */
 struct request_sock {
 	struct sock_common		__req_common;
+<<<<<<< HEAD
 	struct request_sock		*dl_next;
+=======
+#define rsk_refcnt			__req_common.skc_refcnt
+
+	struct request_sock		*dl_next;
+	struct sock			*rsk_listener;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u16				mss;
 	u8				num_retrans; /* number of retransmits */
 	u8				cookie_ts:1; /* syncookie: encode tcpopts in timestamp */
@@ -65,6 +72,7 @@ struct request_sock {
 	u32				peer_secid;
 };
 
+<<<<<<< HEAD
 static inline struct request_sock *reqsk_alloc(const struct request_sock_ops *ops)
 {
 	struct request_sock *req = kmem_cache_alloc(ops->slab, GFP_ATOMIC);
@@ -75,6 +83,26 @@ static inline struct request_sock *reqsk_alloc(const struct request_sock_ops *op
 	return req;
 }
 
+=======
+static inline struct request_sock *
+reqsk_alloc(const struct request_sock_ops *ops, struct sock *sk_listener)
+{
+	struct request_sock *req = kmem_cache_alloc(ops->slab, GFP_ATOMIC);
+
+	if (req) {
+		req->rsk_ops = ops;
+		sock_hold(sk_listener);
+		req->rsk_listener = sk_listener;
+	}
+	return req;
+}
+
+static inline struct request_sock *inet_reqsk(struct sock *sk)
+{
+	return (struct request_sock *)sk;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void __reqsk_free(struct request_sock *req)
 {
 	kmem_cache_free(req->rsk_ops->slab, req);
@@ -84,6 +112,17 @@ static inline void reqsk_free(struct request_sock *req)
 {
 	req->rsk_ops->destructor(req);
 	__reqsk_free(req);
+<<<<<<< HEAD
+=======
+	if (req->rsk_listener)
+		sock_put(req->rsk_listener);
+}
+
+static inline void reqsk_put(struct request_sock *req)
+{
+	if (atomic_dec_and_test(&req->rsk_refcnt))
+		reqsk_free(req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 extern int sysctl_max_syn_backlog;

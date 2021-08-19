@@ -11,6 +11,10 @@
 
 #include "misc.h"
 #include "../string.h"
+<<<<<<< HEAD
+=======
+#include <asm/bootparam_utils.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* WARNING!!
  * This code is compiled with -fPIC and it is relocated dynamically
@@ -260,7 +264,11 @@ static void handle_relocations(void *output, unsigned long output_len)
 
 	/*
 	 * Process relocations: 32 bit relocations first then 64 bit after.
+<<<<<<< HEAD
 	 * Two sets of binary relocations are added to the end of the kernel
+=======
+	 * Three sets of binary relocations are added to the end of the kernel
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * before compression. Each relocation table entry is the kernel
 	 * address of the location which needs to be updated stored as a
 	 * 32-bit value which is sign extended to 64 bits.
@@ -270,6 +278,11 @@ static void handle_relocations(void *output, unsigned long output_len)
 	 * kernel bits...
 	 * 0 - zero terminator for 64 bit relocations
 	 * 64 bit relocation repeated
+<<<<<<< HEAD
+=======
+	 * 0 - zero terminator for inverse 32 bit relocations
+	 * 32 bit inverse relocation repeated
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * 0 - zero terminator for 32 bit relocations
 	 * 32 bit relocation repeated
 	 *
@@ -286,6 +299,19 @@ static void handle_relocations(void *output, unsigned long output_len)
 		*(uint32_t *)ptr += delta;
 	}
 #ifdef CONFIG_X86_64
+<<<<<<< HEAD
+=======
+	while (*--reloc) {
+		long extended = *reloc;
+		extended += map;
+
+		ptr = (unsigned long)extended;
+		if (ptr < min_addr || ptr > max_addr)
+			error("inverse 32-bit relocation outside of kernel!\n");
+
+		*(int32_t *)ptr -= delta;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (reloc--; *reloc; reloc--) {
 		long extended = *reloc;
 		extended += map;
@@ -337,6 +363,13 @@ static void parse_elf(void *output)
 
 		switch (phdr->p_type) {
 		case PT_LOAD:
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_64
+			if ((phdr->p_align % 0x200000) != 0)
+				error("Alignment of LOAD segment isn't multiple of 2MB");
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_RELOCATABLE
 			dest = output;
 			dest += (phdr->p_paddr - LOAD_PHYSICAL_ADDR);

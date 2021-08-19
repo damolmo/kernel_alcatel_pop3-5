@@ -239,16 +239,24 @@ int snd_dma_alloc_pages_fallback(int type, struct device *device, size_t size,
 	int err;
 
 	while ((err = snd_dma_alloc_pages(type, device, size, dmab)) < 0) {
+<<<<<<< HEAD
 		size_t aligned_size;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err != -ENOMEM)
 			return err;
 		if (size <= PAGE_SIZE)
 			return -ENOMEM;
+<<<<<<< HEAD
 		aligned_size = PAGE_SIZE << get_order(size);
 		if (size != aligned_size)
 			size = aligned_size;
 		else
 			size >>= 1;
+=======
+		size >>= 1;
+		size = PAGE_SIZE << get_order(size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	if (! dmab->area)
 		return -ENOMEM;

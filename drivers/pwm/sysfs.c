@@ -330,6 +330,7 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
 void pwmchip_sysfs_unexport(struct pwm_chip *chip)
 {
 	struct device *parent;
+<<<<<<< HEAD
 
 	parent = class_find_device(&pwm_class, NULL, chip,
 				   pwmchip_sysfs_match);
@@ -338,6 +339,23 @@ void pwmchip_sysfs_unexport(struct pwm_chip *chip)
 		put_device(parent);
 		device_unregister(parent);
 	}
+=======
+	unsigned int i;
+
+	parent = class_find_device(&pwm_class, NULL, chip,
+				   pwmchip_sysfs_match);
+	if (!parent)
+		return;
+
+	for (i = 0; i < chip->npwm; i++) {
+		struct pwm_device *pwm = &chip->pwms[i];
+
+		if (test_bit(PWMF_EXPORTED, &pwm->flags))
+			pwm_unexport_child(parent, pwm);
+	}
+
+	put_device(parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __init pwm_sysfs_init(void)

@@ -763,8 +763,15 @@ static int r592_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto error3;
 
 	dev->mmio = pci_ioremap_bar(pdev, 0);
+<<<<<<< HEAD
 	if (!dev->mmio)
 		goto error4;
+=======
+	if (!dev->mmio) {
+		error = -ENOMEM;
+		goto error4;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev->irq = pdev->irq;
 	spin_lock_init(&dev->irq_lock);
@@ -791,12 +798,23 @@ static int r592_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		&dev->dummy_dma_page_physical_address);
 	r592_stop_dma(dev , 0);
 
+<<<<<<< HEAD
 	if (request_irq(dev->irq, &r592_irq, IRQF_SHARED,
 			  DRV_NAME, dev))
 		goto error6;
 
 	r592_update_card_detect(dev);
 	if (memstick_add_host(host))
+=======
+	error = request_irq(dev->irq, &r592_irq, IRQF_SHARED,
+			  DRV_NAME, dev);
+	if (error)
+		goto error6;
+
+	r592_update_card_detect(dev);
+	error = memstick_add_host(host);
+	if (error)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto error7;
 
 	message("driver successfully loaded");

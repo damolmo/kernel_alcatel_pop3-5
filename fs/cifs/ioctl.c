@@ -67,6 +67,15 @@ static long cifs_ioctl_clone(unsigned int xid, struct file *dst_file,
 		goto out_drop_write;
 	}
 
+<<<<<<< HEAD
+=======
+	if (src_file.file->f_op->unlocked_ioctl != cifs_ioctl) {
+		rc = -EBADF;
+		cifs_dbg(VFS, "src file seems to be from a different filesystem type\n");
+		goto out_fput;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((!src_file.file->private_data) || (!dst_file->private_data)) {
 		rc = -EBADF;
 		cifs_dbg(VFS, "missing cifsFileInfo on copy range src file\n");

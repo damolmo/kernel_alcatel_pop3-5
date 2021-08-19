@@ -374,7 +374,11 @@ static inline void ext4_update_inode_fsync_trans(handle_t *handle,
 {
 	struct ext4_inode_info *ei = EXT4_I(inode);
 
+<<<<<<< HEAD
 	if (ext4_handle_valid(handle)) {
+=======
+	if (ext4_handle_valid(handle) && !is_handle_aborted(handle)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ei->i_sync_tid = handle->h_transaction->t_tid;
 		if (datasync)
 			ei->i_datasync_tid = handle->h_transaction->t_tid;

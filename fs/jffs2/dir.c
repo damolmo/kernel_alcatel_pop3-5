@@ -207,8 +207,12 @@ static int jffs2_create(struct inode *dir_i, struct dentry *dentry,
 		  __func__, inode->i_ino, inode->i_mode, inode->i_nlink,
 		  f->inocache->pino_nlink, inode->i_mapping->nrpages);
 
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	d_instantiate(dentry, inode);
+=======
+	d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  fail:
@@ -427,8 +431,12 @@ static int jffs2_symlink (struct inode *dir_i, struct dentry *dentry, const char
 	mutex_unlock(&dir_f->sem);
 	jffs2_complete_reservation(c);
 
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	d_instantiate(dentry, inode);
+=======
+	d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  fail:
@@ -572,8 +580,12 @@ static int jffs2_mkdir (struct inode *dir_i, struct dentry *dentry, umode_t mode
 	mutex_unlock(&dir_f->sem);
 	jffs2_complete_reservation(c);
 
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	d_instantiate(dentry, inode);
+=======
+	d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  fail:
@@ -590,10 +602,21 @@ static int jffs2_rmdir (struct inode *dir_i, struct dentry *dentry)
 	int ret;
 	uint32_t now = get_seconds();
 
+<<<<<<< HEAD
 	for (fd = f->dents ; fd; fd = fd->next) {
 		if (fd->ino)
 			return -ENOTEMPTY;
 	}
+=======
+	mutex_lock(&f->sem);
+	for (fd = f->dents ; fd; fd = fd->next) {
+		if (fd->ino) {
+			mutex_unlock(&f->sem);
+			return -ENOTEMPTY;
+		}
+	}
+	mutex_unlock(&f->sem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = jffs2_do_unlink(c, dir_f, dentry->d_name.name,
 			      dentry->d_name.len, f, now);
@@ -747,8 +770,12 @@ static int jffs2_mknod (struct inode *dir_i, struct dentry *dentry, umode_t mode
 	mutex_unlock(&dir_f->sem);
 	jffs2_complete_reservation(c);
 
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	d_instantiate(dentry, inode);
+=======
+	d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  fail:
@@ -845,9 +872,20 @@ static int jffs2_rename (struct inode *old_dir_i, struct dentry *old_dentry,
 
 		pr_notice("%s(): Link succeeded, unlink failed (err %d). You now have a hard link\n",
 			  __func__, ret);
+<<<<<<< HEAD
 		/* Might as well let the VFS know */
 		d_instantiate(new_dentry, old_dentry->d_inode);
 		ihold(old_dentry->d_inode);
+=======
+		/*
+		 * We can't keep the target in dcache after that.
+		 * For one thing, we can't afford dentry aliases for directories.
+		 * For another, if there was a victim, we _can't_ set new inode
+		 * for that sucker and we have to trigger mount eviction - the
+		 * caller won't do it on its own since we are returning an error.
+		 */
+		d_invalidate(new_dentry);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		new_dir_i->i_mtime = new_dir_i->i_ctime = ITIME(now);
 		return ret;
 	}

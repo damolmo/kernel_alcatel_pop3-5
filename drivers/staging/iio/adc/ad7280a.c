@@ -250,7 +250,13 @@ static int ad7280_read(struct ad7280_state *st, unsigned devaddr,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	__ad7280_read32(st, &tmp);
+=======
+	ret = __ad7280_read32(st, &tmp);
+	if (ret)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ad7280_check_crc(st, tmp))
 		return -EIO;
@@ -288,7 +294,13 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned devaddr,
 
 	ad7280_delay(st);
 
+<<<<<<< HEAD
 	__ad7280_read32(st, &tmp);
+=======
+	ret = __ad7280_read32(st, &tmp);
+	if (ret)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ad7280_check_crc(st, tmp))
 		return -EIO;
@@ -321,7 +333,13 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned cnt,
 	ad7280_delay(st);
 
 	for (i = 0; i < cnt; i++) {
+<<<<<<< HEAD
 		__ad7280_read32(st, &tmp);
+=======
+		ret = __ad7280_read32(st, &tmp);
+		if (ret)
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (ad7280_check_crc(st, tmp))
 			return -EIO;
@@ -364,7 +382,14 @@ static int ad7280_chain_setup(struct ad7280_state *st)
 		return ret;
 
 	for (n = 0; n <= AD7280A_MAX_CHAIN; n++) {
+<<<<<<< HEAD
 		__ad7280_read32(st, &val);
+=======
+		ret = __ad7280_read32(st, &val);
+		if (ret)
+			return ret;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (val == 0)
 			return n - 1;
 

@@ -53,10 +53,22 @@ module_param_named(disable_hugepages,
 MODULE_PARM_DESC(disable_hugepages,
 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
 
+<<<<<<< HEAD
+=======
+static unsigned int dma_entry_limit __read_mostly = U16_MAX;
+module_param_named(dma_entry_limit, dma_entry_limit, uint, 0644);
+MODULE_PARM_DESC(dma_entry_limit,
+		 "Maximum number of user DMA mappings per container (65535).");
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct vfio_iommu {
 	struct list_head	domain_list;
 	struct mutex		lock;
 	struct rb_root		dma_list;
+<<<<<<< HEAD
+=======
+	unsigned int		dma_avail;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bool			v2;
 	bool			nesting;
 };
@@ -129,6 +141,7 @@ static void vfio_unlink_dma(struct vfio_iommu *iommu, struct vfio_dma *old)
 	rb_erase(&old->node, &iommu->dma_list);
 }
 
+<<<<<<< HEAD
 struct vwork {
 	struct mm_struct	*mm;
 	long			npage;
@@ -180,6 +193,36 @@ static void vfio_lock_acct(long npage)
 	vwork->mm = mm;
 	vwork->npage = npage;
 	schedule_work(&vwork->work);
+=======
+static int vfio_lock_acct(long npage, bool *lock_cap)
+{
+	int ret = 0;
+
+	if (!npage)
+		return 0;
+
+	if (!current->mm)
+		return -ESRCH; /* process exited */
+
+	down_write(&current->mm->mmap_sem);
+	if (npage > 0) {
+		if (lock_cap ? !*lock_cap : !capable(CAP_IPC_LOCK)) {
+			unsigned long limit;
+
+			limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+
+			if (current->mm->locked_vm + npage > limit)
+				ret = -ENOMEM;
+		}
+	}
+
+	if (!ret)
+		current->mm->locked_vm += npage;
+
+	up_write(&current->mm->mmap_sem);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -243,8 +286,13 @@ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
 	vma = find_vma_intersection(current->mm, vaddr, vaddr + 1);
 
 	if (vma && vma->vm_flags & VM_PFNMAP) {
+<<<<<<< HEAD
 		*pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
 		if (is_invalid_reserved_pfn(*pfn))
+=======
+		if (!follow_pfn(vma, vaddr, pfn) &&
+		    is_invalid_reserved_pfn(*pfn))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = 0;
 	}
 
@@ -261,9 +309,15 @@ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
 static long vfio_pin_pages(unsigned long vaddr, long npage,
 			   int prot, unsigned long *pfn_base)
 {
+<<<<<<< HEAD
 	unsigned long limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
 	bool lock_cap = capable(CAP_IPC_LOCK);
 	long ret, i;
+=======
+	unsigned long pfn = 0, limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+	bool lock_cap = capable(CAP_IPC_LOCK);
+	long ret, i = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!current->mm)
 		return -ENODEV;
@@ -282,6 +336,7 @@ static long vfio_pin_pages(unsigned long vaddr, long npage,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(disable_hugepages)) {
 		vfio_lock_acct(1);
 		return 1;
@@ -291,6 +346,13 @@ static long vfio_pin_pages(unsigned long vaddr, long npage,
 	for (i = 1, vaddr += PAGE_SIZE; i < npage; i++, vaddr += PAGE_SIZE) {
 		unsigned long pfn = 0;
 
+=======
+	if (unlikely(disable_hugepages))
+		goto out;
+
+	/* Lock all the consecutive pages from pfn_base */
+	for (vaddr += PAGE_SIZE; i < npage; i++, vaddr += PAGE_SIZE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = vaddr_get_pfn(vaddr, prot, &pfn);
 		if (ret)
 			break;
@@ -304,11 +366,29 @@ static long vfio_pin_pages(unsigned long vaddr, long npage,
 			put_pfn(pfn, prot);
 			pr_warn("%s: RLIMIT_MEMLOCK (%ld) exceeded\n",
 				__func__, limit << PAGE_SHIFT);
+<<<<<<< HEAD
 			break;
 		}
 	}
 
 	vfio_lock_acct(i);
+=======
+			ret = -ENOMEM;
+			goto unpin_out;
+		}
+	}
+
+out:
+	ret = vfio_lock_acct(i, &lock_cap);
+
+unpin_out:
+	if (ret) {
+		for (pfn = *pfn_base ; i ; pfn++, i--)
+			put_pfn(pfn, prot);
+
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return i;
 }
@@ -323,7 +403,11 @@ static long vfio_unpin_pages(unsigned long pfn, long npage,
 		unlocked += put_pfn(pfn++, prot);
 
 	if (do_accounting)
+<<<<<<< HEAD
 		vfio_lock_acct(-unlocked);
+=======
+		vfio_lock_acct(-unlocked, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return unlocked;
 }
@@ -369,7 +453,11 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
 		iova += unmapped;
 	}
 
+<<<<<<< HEAD
 	vfio_lock_acct(-unlocked);
+=======
+	vfio_lock_acct(-unlocked, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
@@ -377,6 +465,10 @@ static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
 	vfio_unmap_unpin(iommu, dma);
 	vfio_unlink_dma(iommu, dma);
 	kfree(dma);
+<<<<<<< HEAD
+=======
+	iommu->dma_avail++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned long vfio_pgsize_bitmap(struct vfio_iommu *iommu)
@@ -562,12 +654,24 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
 		return -EEXIST;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!iommu->dma_avail) {
+		mutex_unlock(&iommu->lock);
+		return -ENOSPC;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
 	if (!dma) {
 		mutex_unlock(&iommu->lock);
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	iommu->dma_avail--;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dma->iova = iova;
 	dma->vaddr = vaddr;
 	dma->prot = prot;
@@ -848,6 +952,10 @@ static void *vfio_iommu_type1_open(unsigned long arg)
 
 	INIT_LIST_HEAD(&iommu->domain_list);
 	iommu->dma_list = RB_ROOT;
+<<<<<<< HEAD
+=======
+	iommu->dma_avail = dma_entry_limit;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_init(&iommu->lock);
 
 	return iommu;
@@ -928,7 +1036,12 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
 
 		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
 
+<<<<<<< HEAD
 		return copy_to_user((void __user *)arg, &info, minsz);
+=======
+		return copy_to_user((void __user *)arg, &info, minsz) ?
+			-EFAULT : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
 		struct vfio_iommu_type1_dma_map map;
@@ -961,7 +1074,12 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
 		if (ret)
 			return ret;
 
+<<<<<<< HEAD
 		return copy_to_user((void __user *)arg, &unmap, minsz);
+=======
+		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+			-EFAULT : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return -ENOTTY;

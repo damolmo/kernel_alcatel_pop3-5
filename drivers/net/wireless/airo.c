@@ -5470,7 +5470,11 @@ static int proc_BSSList_open( struct inode *inode, struct file *file ) {
            we have to add a spin lock... */
 	rc = readBSSListRid(ai, doLoseSync, &BSSList_rid);
 	while(rc == 0 && BSSList_rid.index != cpu_to_le16(0xffff)) {
+<<<<<<< HEAD
 		ptr += sprintf(ptr, "%pM %*s rssi = %d",
+=======
+		ptr += sprintf(ptr, "%pM %.*s rssi = %d",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       BSSList_rid.bssid,
 				(int)BSSList_rid.ssidLen,
 				BSSList_rid.ssid,
@@ -7797,6 +7801,7 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
 	case AIROGVLIST:    ridcode = RID_APLIST;       break;
 	case AIROGDRVNAM:   ridcode = RID_DRVNAME;      break;
 	case AIROGEHTENC:   ridcode = RID_ETHERENCAP;   break;
+<<<<<<< HEAD
 	case AIROGWEPKTMP:  ridcode = RID_WEP_TEMP;
 		/* Only super-user can read WEP keys */
 		if (!capable(CAP_NET_ADMIN))
@@ -7807,6 +7812,10 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
 		break;
+=======
+	case AIROGWEPKTMP:  ridcode = RID_WEP_TEMP;	break;
+	case AIROGWEPKNV:   ridcode = RID_WEP_PERM;	break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case AIROGSTAT:     ridcode = RID_STATUS;       break;
 	case AIROGSTATSD32: ridcode = RID_STATSDELTA;   break;
 	case AIROGSTATSC32: ridcode = RID_STATS;        break;
@@ -7820,7 +7829,17 @@ static int readrids(struct net_device *dev, aironet_ioctl *comp) {
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if ((iobuf = kmalloc(RIDSIZE, GFP_KERNEL)) == NULL)
+=======
+	if (ridcode == RID_WEP_TEMP || ridcode == RID_WEP_PERM) {
+		/* Only super-user can read WEP keys */
+		if (!capable(CAP_NET_ADMIN))
+			return -EPERM;
+	}
+
+	if ((iobuf = kzalloc(RIDSIZE, GFP_KERNEL)) == NULL)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 
 	PC4500_readrid(ai,ridcode,iobuf,RIDSIZE, 1);

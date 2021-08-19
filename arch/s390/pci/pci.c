@@ -190,6 +190,14 @@ int zpci_fmb_enable_device(struct zpci_dev *zdev)
 		return -ENOMEM;
 	WARN_ON((u64) zdev->fmb & 0xf);
 
+<<<<<<< HEAD
+=======
+	/* reset software counters */
+	atomic64_set(&zdev->allocated_pages, 0);
+	atomic64_set(&zdev->mapped_pages, 0);
+	atomic64_set(&zdev->unmapped_pages, 0);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	args.fmb_addr = virt_to_phys(zdev->fmb);
 	return mod_pci(zdev, ZPCI_MOD_FC_SET_MEASURE, 0, &args);
 }
@@ -392,6 +400,11 @@ int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 	hwirq = 0;
 	list_for_each_entry(msi, &pdev->msi_list, list) {
 		rc = -EIO;
+<<<<<<< HEAD
+=======
+		if (hwirq >= msi_vecs)
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		irq = irq_alloc_desc(0);	/* Alloc irq on node 0 */
 		if (irq < 0)
 			goto out_msi;
@@ -840,8 +853,16 @@ static inline int barsize(u8 size)
 
 static int zpci_mem_init(void)
 {
+<<<<<<< HEAD
 	zdev_fmb_cache = kmem_cache_create("PCI_FMB_cache", sizeof(struct zpci_fmb),
 				16, 0, NULL);
+=======
+	BUILD_BUG_ON(!is_power_of_2(__alignof__(struct zpci_fmb)) ||
+		     __alignof__(struct zpci_fmb) < sizeof(struct zpci_fmb));
+
+	zdev_fmb_cache = kmem_cache_create("PCI_FMB_cache", sizeof(struct zpci_fmb),
+					   __alignof__(struct zpci_fmb), 0, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!zdev_fmb_cache)
 		goto error_zdev;
 

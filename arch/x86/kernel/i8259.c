@@ -204,7 +204,11 @@ spurious_8259A_irq:
 		 * lets ACK and report it. [once per IRQ]
 		 */
 		if (!(spurious_irq_mask & irqmask)) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG
+=======
+			printk_deferred(KERN_DEBUG
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       "spurious 8259A interrupt: IRQ%d.\n", irq);
 			spurious_irq_mask |= irqmask;
 		}
@@ -405,6 +409,10 @@ struct legacy_pic default_legacy_pic = {
 };
 
 struct legacy_pic *legacy_pic = &default_legacy_pic;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(legacy_pic);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int __init i8259A_init_ops(void)
 {

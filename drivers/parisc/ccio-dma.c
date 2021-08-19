@@ -743,6 +743,11 @@ ccio_map_single(struct device *dev, void *addr, size_t size,
 
 	BUG_ON(!dev);
 	ioc = GET_IOC(dev);
+<<<<<<< HEAD
+=======
+	if (!ioc)
+		return DMA_ERROR_CODE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	BUG_ON(size <= 0);
 
@@ -807,6 +812,13 @@ ccio_unmap_single(struct device *dev, dma_addr_t iova, size_t size,
 	
 	BUG_ON(!dev);
 	ioc = GET_IOC(dev);
+<<<<<<< HEAD
+=======
+	if (!ioc) {
+		WARN_ON(!ioc);
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	DBG_RUN("%s() iovp 0x%lx/%x\n",
 		__func__, (long)iova, size);
@@ -910,6 +922,11 @@ ccio_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
 	
 	BUG_ON(!dev);
 	ioc = GET_IOC(dev);
+<<<<<<< HEAD
+=======
+	if (!ioc)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	DBG_RUN_SG("%s() START %d entries\n", __func__, nents);
 
@@ -982,6 +999,13 @@ ccio_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
 
 	BUG_ON(!dev);
 	ioc = GET_IOC(dev);
+<<<<<<< HEAD
+=======
+	if (!ioc) {
+		WARN_ON(!ioc);
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	DBG_RUN_SG("%s() START %d entries,  %08lx,%x\n",
 		__func__, nents, sg_virt_addr(sglist), sglist->length);

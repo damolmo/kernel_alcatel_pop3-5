@@ -5,6 +5,7 @@ config UBIFS_FS
 	select CRYPTO if UBIFS_FS_ADVANCED_COMPR
 	select CRYPTO if UBIFS_FS_LZO
 	select CRYPTO if UBIFS_FS_ZLIB
+<<<<<<< HEAD
 	select CRYPTO if UBIFS_FS_LZ4K
 	select CRYPTO_LZO if UBIFS_FS_LZO
 	select CRYPTO_LZ4K if UBIFS_FS_LZ4K
@@ -13,6 +14,13 @@ config UBIFS_FS
 	help
 	  UBIFS is a file system for flash devices,
 	  which works on top of UBI.
+=======
+	select CRYPTO_LZO if UBIFS_FS_LZO
+	select CRYPTO_DEFLATE if UBIFS_FS_ZLIB
+	depends on MTD_UBI
+	help
+	  UBIFS is a file system for flash devices which works on top of UBI.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config UBIFS_FS_ADVANCED_COMPR
 	bool "Advanced compression options"
@@ -29,6 +37,7 @@ config UBIFS_FS_LZO
 	depends on UBIFS_FS
 	default y
 	help
+<<<<<<< HEAD
 	   LZO compressor is generally faster than zlib,
 	   but compresses worse.
 	   Say 'Y' if unsure.
@@ -43,13 +52,21 @@ config UBIFS_FS_LZ4K
 	   but compresses worse.
 	   Say 'Y' if unsure.
 	   default n.
+=======
+	   LZO compressor is generally faster than zlib but compresses worse.
+	   Say 'Y' if unsure.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config UBIFS_FS_ZLIB
 	bool "ZLIB compression support" if UBIFS_FS_ADVANCED_COMPR
 	depends on UBIFS_FS
 	default y
 	help
+<<<<<<< HEAD
 	  Zlib compresses better than LZO,
 	  but it is slower.
 	  Say 'Y' if unsure.
 	  default y.
+=======
+	  Zlib compresses better than LZO but it is slower. Say 'Y' if unsure.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

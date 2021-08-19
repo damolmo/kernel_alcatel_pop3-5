@@ -28,8 +28,19 @@ SECTIONS
 {
 	. = 0x00000000;
 	.text : {
+<<<<<<< HEAD
 	_text = .;		/* Text and read-only data */
 		HEAD_TEXT
+=======
+		/* Text and read-only data */
+		HEAD_TEXT
+		/*
+		 * E.g. perf doesn't like symbols starting at address zero,
+		 * therefore skip the initial PSW and channel program located
+		 * at address zero and let _text start at 0x200.
+		 */
+	_text = 0x200;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		TEXT_TEXT
 		SCHED_TEXT
 		LOCK_TEXT

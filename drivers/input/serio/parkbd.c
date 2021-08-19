@@ -194,6 +194,10 @@ static int __init parkbd_init(void)
 	parkbd_port = parkbd_allocate_serio();
 	if (!parkbd_port) {
 		parport_release(parkbd_dev);
+<<<<<<< HEAD
+=======
+		parport_unregister_device(parkbd_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	}
 

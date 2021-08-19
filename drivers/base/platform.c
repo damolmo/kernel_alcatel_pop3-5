@@ -96,7 +96,11 @@ int platform_get_irq(struct platform_device *dev, unsigned int num)
 		int ret;
 
 		ret = of_irq_get(dev->dev.of_node, num);
+<<<<<<< HEAD
 		if (ret >= 0 || ret == -EPROBE_DEFER)
+=======
+		if (ret > 0 || ret == -EPROBE_DEFER)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 	}
 
@@ -154,7 +158,11 @@ int platform_get_irq_byname(struct platform_device *dev, const char *name)
 		int ret;
 
 		ret = of_irq_get_byname(dev->dev.of_node, name);
+<<<<<<< HEAD
 		if (ret >= 0 || ret == -EPROBE_DEFER)
+=======
+		if (ret > 0 || ret == -EPROBE_DEFER)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 	}
 
@@ -375,9 +383,13 @@ int platform_device_add(struct platform_device *pdev)
 
 	while (--i >= 0) {
 		struct resource *r = &pdev->resource[i];
+<<<<<<< HEAD
 		unsigned long type = resource_type(r);
 
 		if (type == IORESOURCE_MEM || type == IORESOURCE_IO)
+=======
+		if (r->parent)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			release_resource(r);
 	}
 
@@ -408,9 +420,13 @@ void platform_device_del(struct platform_device *pdev)
 
 		for (i = 0; i < pdev->num_resources; i++) {
 			struct resource *r = &pdev->resource[i];
+<<<<<<< HEAD
 			unsigned long type = resource_type(r);
 
 			if (type == IORESOURCE_MEM || type == IORESOURCE_IO)
+=======
+			if (r->parent)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				release_resource(r);
 		}
 	}
@@ -518,9 +534,20 @@ static int platform_drv_probe(struct device *_dev)
 
 	ret = dev_pm_domain_attach(_dev, true);
 	if (ret != -EPROBE_DEFER) {
+<<<<<<< HEAD
 		ret = drv->probe(dev);
 		if (ret)
 			dev_pm_domain_detach(_dev, true);
+=======
+		if (drv->probe) {
+			ret = drv->probe(dev);
+			if (ret)
+				dev_pm_domain_detach(_dev, true);
+		} else {
+			/* don't fail if just dev_pm_domain_attach failed */
+			ret = 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
@@ -624,6 +651,11 @@ int __init_or_module platform_driver_probe(struct platform_driver *drv,
 	/* temporary section violation during probe() */
 	drv->probe = probe;
 	retval = code = platform_driver_register(drv);
+<<<<<<< HEAD
+=======
+	if (retval)
+		return retval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Fixup that section violation, being paranoid about code scanning
@@ -731,9 +763,16 @@ static ssize_t driver_override_store(struct device *dev,
 				     const char *buf, size_t count)
 {
 	struct platform_device *pdev = to_platform_device(dev);
+<<<<<<< HEAD
 	char *driver_override, *old = pdev->driver_override, *cp;
 
 	if (count > PATH_MAX)
+=======
+	char *driver_override, *old, *cp;
+
+	/* We need to keep extra room for a newline */
+	if (count >= (PAGE_SIZE - 1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	driver_override = kstrndup(buf, count, GFP_KERNEL);
@@ -744,12 +783,21 @@ static ssize_t driver_override_store(struct device *dev,
 	if (cp)
 		*cp = '\0';
 
+<<<<<<< HEAD
+=======
+	device_lock(dev);
+	old = pdev->driver_override;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (strlen(driver_override)) {
 		pdev->driver_override = driver_override;
 	} else {
 		kfree(driver_override);
 		pdev->driver_override = NULL;
 	}
+<<<<<<< HEAD
+=======
+	device_unlock(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree(old);
 
@@ -760,8 +808,17 @@ static ssize_t driver_override_show(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
 	struct platform_device *pdev = to_platform_device(dev);
+<<<<<<< HEAD
 
 	return sprintf(buf, "%s\n", pdev->driver_override);
+=======
+	ssize_t len;
+
+	device_lock(dev);
+	len = sprintf(buf, "%s\n", pdev->driver_override);
+	device_unlock(dev);
+	return len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 static DEVICE_ATTR_RW(driver_override);
 

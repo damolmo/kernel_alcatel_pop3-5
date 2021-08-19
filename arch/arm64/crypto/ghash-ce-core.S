@@ -29,8 +29,13 @@
 	 *			   struct ghash_key const *k, const char *head)
 	 */
 ENTRY(pmull_ghash_update)
+<<<<<<< HEAD
 	ld1		{SHASH.16b}, [x3]
 	ld1		{XL.16b}, [x1]
+=======
+	ld1		{SHASH.2d}, [x3]
+	ld1		{XL.2d}, [x1]
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	movi		MASK.16b, #0xe1
 	ext		SHASH2.16b, SHASH.16b, SHASH.16b, #8
 	shl		MASK.2d, MASK.2d, #57
@@ -74,6 +79,10 @@ CPU_LE(	rev64		T1.16b, T1.16b	)
 
 	cbnz		w0, 0b
 
+<<<<<<< HEAD
 	st1		{XL.16b}, [x1]
+=======
+	st1		{XL.2d}, [x1]
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 ENDPROC(pmull_ghash_update)

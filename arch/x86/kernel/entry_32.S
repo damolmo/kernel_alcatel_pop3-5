@@ -398,7 +398,11 @@ sysenter_past_esp:
 	 * A tiny bit of offset fixup is necessary - 4*4 means the 4 words
 	 * pushed above; +8 corresponds to copy_thread's esp0 setting.
 	 */
+<<<<<<< HEAD
 	pushl_cfi ((TI_sysenter_return)-THREAD_SIZE+8+4*4)(%esp)
+=======
+	pushl_cfi ((TI_sysenter_return)-THREAD_SIZE+TOP_OF_KERNEL_STACK_PADDING+4*4)(%esp)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	CFI_REL_OFFSET eip, 0
 
 	pushl_cfi %eax
@@ -819,7 +823,11 @@ ENTRY(simd_coprocessor_error)
 661:	pushl_cfi $do_general_protection
 662:
 .section .altinstructions,"a"
+<<<<<<< HEAD
 	altinstruction_entry 661b, 663f, X86_FEATURE_XMM, 662b-661b, 664f-663f
+=======
+	altinstruction_entry 661b, 663f, X86_FEATURE_XMM, 662b-661b, 664f-663f, 0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 .previous
 .section .altinstr_replacement,"ax"
 663:	pushl $do_simd_coprocessor_error

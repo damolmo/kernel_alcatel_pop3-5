@@ -107,6 +107,11 @@ static snd_pcm_sframes_t linear_transfer(struct snd_pcm_plugin *plugin,
 		}
 	}
 #endif
+<<<<<<< HEAD
+=======
+	if (frames > dst_channels[0].frames)
+		frames = dst_channels[0].frames;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	convert(plugin, src_channels, dst_channels, frames);
 	return frames;
 }

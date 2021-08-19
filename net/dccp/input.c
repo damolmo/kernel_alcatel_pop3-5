@@ -606,7 +606,12 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 			if (inet_csk(sk)->icsk_af_ops->conn_request(sk,
 								    skb) < 0)
 				return 1;
+<<<<<<< HEAD
 			goto discard;
+=======
+			consume_skb(skb);
+			return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		if (dh->dccph_type == DCCP_PKT_RESET)
 			goto discard;

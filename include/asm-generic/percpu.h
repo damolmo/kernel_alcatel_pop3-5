@@ -105,15 +105,46 @@ do {									\
 	(__ret);							\
 })
 
+<<<<<<< HEAD
 #define this_cpu_generic_read(pcp)					\
 ({									\
 	typeof(pcp) __ret;						\
 	preempt_disable();						\
 	__ret = *this_cpu_ptr(&(pcp));					\
+=======
+#define __this_cpu_generic_read_nopreempt(pcp)				\
+({									\
+	typeof(pcp) __ret;						\
+	preempt_disable();						\
+	__ret = READ_ONCE(*raw_cpu_ptr(&(pcp)));			\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	preempt_enable();						\
 	__ret;								\
 })
 
+<<<<<<< HEAD
+=======
+#define __this_cpu_generic_read_noirq(pcp)				\
+({									\
+	typeof(pcp) __ret;						\
+	unsigned long __flags;						\
+	raw_local_irq_save(__flags);					\
+	__ret = *raw_cpu_ptr(&(pcp));					\
+	raw_local_irq_restore(__flags);					\
+	__ret;								\
+})
+
+#define this_cpu_generic_read(pcp)					\
+({									\
+	typeof(pcp) __ret;						\
+	if (__native_word(pcp))						\
+		__ret = __this_cpu_generic_read_nopreempt(pcp);		\
+	else								\
+		__ret = __this_cpu_generic_read_noirq(pcp);		\
+	__ret;								\
+})
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define this_cpu_generic_to_op(pcp, val, op)				\
 do {									\
 	unsigned long __flags;						\

@@ -39,6 +39,10 @@
 #define	SCKP		(1 << 13)	/* Serial Bit Clock Polarity */
 #define	SWSP		(1 << 12)	/* Serial WS Polarity */
 #define	SDTA		(1 << 10)	/* Serial Data Alignment */
+<<<<<<< HEAD
+=======
+#define	PDTA		(1 <<  9)	/* Parallel Data Alignment */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define	DEL		(1 <<  8)	/* Serial Data Delay */
 #define	CKDV(v)		(v <<  4)	/* Serial Clock Division Ratio */
 #define	TRMD		(1 <<  1)	/* Transmit/Receive Mode Select */
@@ -146,6 +150,18 @@ static int rsnd_ssi_master_clk_start(struct rsnd_ssi *ssi,
 		for (j = 0; j < ARRAY_SIZE(ssi_clk_mul_table); j++) {
 
 			/*
+<<<<<<< HEAD
+=======
+			 * It will set SSIWSR.CONT here, but SSICR.CKDV = 000
+			 * with it is not allowed. (SSIWSR.WS_MODE with
+			 * SSICR.CKDV = 000 is not allowed either).
+			 * Skip it. See SSICR.CKDV
+			 */
+			if (j == 0)
+				continue;
+
+			/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 * this driver is assuming that
 			 * system word is 64fs (= 2 x 32bit)
 			 * see rsnd_ssi_init()
@@ -263,7 +279,11 @@ static int rsnd_ssi_init(struct rsnd_mod *mod,
 	struct snd_pcm_runtime *runtime = rsnd_io_to_runtime(io);
 	u32 cr;
 
+<<<<<<< HEAD
 	cr = FORCE;
+=======
+	cr = FORCE | PDTA;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * always use 32bit system word for easy clock calculation.
@@ -350,6 +370,16 @@ static irqreturn_t rsnd_ssi_pio_interrupt(int irq, void *data)
 		struct snd_pcm_runtime *runtime = rsnd_io_to_runtime(io);
 		u32 *buf = (u32 *)(runtime->dma_area +
 				   rsnd_dai_pointer_offset(io, 0));
+<<<<<<< HEAD
+=======
+		int shift = 0;
+
+		switch (runtime->sample_bits) {
+		case 32:
+			shift = 8;
+			break;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		rsnd_ssi_record_error(ssi, status);
 
@@ -359,9 +389,15 @@ static irqreturn_t rsnd_ssi_pio_interrupt(int irq, void *data)
 		 * see rsnd_ssi_init()
 		 */
 		if (rsnd_dai_is_play(rdai, io))
+<<<<<<< HEAD
 			rsnd_mod_write(mod, SSITDR, *buf);
 		else
 			*buf = rsnd_mod_read(mod, SSIRDR);
+=======
+			rsnd_mod_write(mod, SSITDR, (*buf) << shift);
+		else
+			*buf = (rsnd_mod_read(mod, SSIRDR) >> shift);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		rsnd_dai_pointer_update(io, sizeof(*buf));
 
@@ -458,8 +494,20 @@ static int rsnd_ssi_dma_probe(struct rsnd_mod *mod,
 static int rsnd_ssi_dma_remove(struct rsnd_mod *mod,
 			       struct rsnd_dai *rdai)
 {
+<<<<<<< HEAD
 	rsnd_dma_quit(rsnd_mod_to_priv(mod), rsnd_mod_to_dma(mod));
 
+=======
+	struct rsnd_dai_stream *io = rsnd_mod_to_io(mod);
+	struct rsnd_mod *pure_ssi_mod = rsnd_io_to_mod_ssi(io);
+
+	rsnd_dma_quit(rsnd_mod_to_priv(mod), rsnd_mod_to_dma(mod));
+
+	/* Do nothing if non SSI (= SSI parent, multi SSI) mod */
+	if (pure_ssi_mod != mod)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

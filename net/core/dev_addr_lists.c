@@ -57,8 +57,13 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
 		return -EINVAL;
 
 	list_for_each_entry(ha, &list->list, list) {
+<<<<<<< HEAD
 		if (!memcmp(ha->addr, addr, addr_len) &&
 		    ha->type == addr_type) {
+=======
+		if (ha->type == addr_type &&
+		    !memcmp(ha->addr, addr, addr_len)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (global) {
 				/* check if addr is already used as global */
 				if (ha->global_use)

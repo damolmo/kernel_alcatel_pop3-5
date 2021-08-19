@@ -146,6 +146,14 @@ void __init sched_clock_register(u64 (*read)(void), int bits,
 	cd.epoch_ns = ns;
 	raw_write_seqcount_end(&cd.seq);
 
+<<<<<<< HEAD
+=======
+	if (sched_clock_timer.function != NULL) {
+		/* update timeout for clock wrap */
+		hrtimer_start(&sched_clock_timer, cd.wrap_kt, HRTIMER_MODE_REL);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = rate;
 	if (r >= 4000000) {
 		r /= 1000000;

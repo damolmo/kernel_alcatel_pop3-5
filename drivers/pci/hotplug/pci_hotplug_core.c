@@ -457,8 +457,22 @@ int __pci_hp_register(struct hotplug_slot *slot, struct pci_bus *bus,
 	list_add(&slot->slot_list, &pci_hotplug_slot_list);
 
 	result = fs_add_slot(pci_slot);
+<<<<<<< HEAD
 	kobject_uevent(&pci_slot->kobj, KOBJ_ADD);
 	dbg("Added slot %s to the list\n", name);
+=======
+	if (result)
+		goto err_list_del;
+
+	kobject_uevent(&pci_slot->kobj, KOBJ_ADD);
+	dbg("Added slot %s to the list\n", name);
+	goto out;
+
+err_list_del:
+	list_del(&slot->slot_list);
+	pci_slot->hotplug = NULL;
+	pci_destroy_slot(pci_slot);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	mutex_unlock(&pci_hp_mutex);
 	return result;

@@ -18,7 +18,11 @@
  *	L	- lower subcluster; L0 - subcluster L0; L1 - subcluster L1
  */
 
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -107,3 +111,7 @@ $eos:
 	nop
 
 	.end strrchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strrchr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

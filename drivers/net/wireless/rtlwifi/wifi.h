@@ -2212,6 +2212,12 @@ struct rtl_mod_params {
 
 	/* default 0: 1 means disable */
 	bool disable_watchdog;
+<<<<<<< HEAD
+=======
+
+	/* default 0: 1 means do not disable interrupts */
+	bool int_clear;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct rtl_hal_usbint_cfg {

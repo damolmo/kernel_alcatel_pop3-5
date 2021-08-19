@@ -112,6 +112,16 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
+<<<<<<< HEAD
+=======
+config CPU_FREQ_DEFAULT_GOV_SCHED
+	bool "sched"
+	select CPU_FREQ_GOV_INTERACTIVE
+	help
+	  Use the CPUfreq governor 'sched' as default. This scales
+	  cpu frequency using CPU utilization estimates from the
+	  scheduler.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -210,6 +220,24 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
+<<<<<<< HEAD
+=======
+config CPU_FREQ_GOV_SCHED
+	bool "'sched' cpufreq governor"
+	depends on CPU_FREQ
+	depends on SMP
+	select CPU_FREQ_GOV_COMMON
+	help
+	  'sched' - this governor scales cpu frequency from the
+	  scheduler as a function of cpu capacity utilization. It does
+	  not evaluate utilization on a periodic basis (as ondemand
+	  does) but instead is event-driven by the scheduler.
+
+	  If in doubt, say N.
+
+comment "CPU frequency scaling drivers"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config CPUFREQ_DT
 	tristate "Generic DT based cpufreq driver"
 	depends on HAVE_CLK && OF

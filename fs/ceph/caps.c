@@ -907,12 +907,33 @@ void __ceph_remove_cap(struct ceph_cap *cap, bool queue_release)
 {
 	struct ceph_mds_session *session = cap->session;
 	struct ceph_inode_info *ci = cap->ci;
+<<<<<<< HEAD
 	struct ceph_mds_client *mdsc =
 		ceph_sb_to_client(ci->vfs_inode.i_sb)->mdsc;
 	int removed = 0;
 
 	dout("__ceph_remove_cap %p from %p\n", cap, &ci->vfs_inode);
 
+=======
+	struct ceph_mds_client *mdsc;
+	int removed = 0;
+
+	/* 'ci' being NULL means the remove have already occurred */
+	if (!ci) {
+		dout("%s: cap inode is NULL\n", __func__);
+		return;
+	}
+
+	dout("__ceph_remove_cap %p from %p\n", cap, &ci->vfs_inode);
+
+	mdsc = ceph_inode_to_client(&ci->vfs_inode)->mdsc;
+
+	/* remove from inode's cap rbtree, and clear auth cap */
+	rb_erase(&cap->ci_node, &ci->i_caps);
+	if (ci->i_auth_cap == cap)
+		ci->i_auth_cap = NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* remove from session list */
 	spin_lock(&session->s_cap_lock);
 	/*
@@ -939,11 +960,14 @@ void __ceph_remove_cap(struct ceph_cap *cap, bool queue_release)
 	cap->ci = NULL;
 	spin_unlock(&session->s_cap_lock);
 
+<<<<<<< HEAD
 	/* remove from inode list */
 	rb_erase(&cap->ci_node, &ci->i_caps);
 	if (ci->i_auth_cap == cap)
 		ci->i_auth_cap = NULL;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (removed)
 		ceph_put_cap(mdsc, cap);
 
@@ -1070,20 +1094,34 @@ void __queue_cap_release(struct ceph_mds_session *session,
 }
 
 /*
+<<<<<<< HEAD
  * Queue cap releases when an inode is dropped from our cache.  Since
  * inode is about to be destroyed, there is no need for i_ceph_lock.
+=======
+ * Queue cap releases when an inode is dropped from our cache.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void ceph_queue_caps_release(struct inode *inode)
 {
 	struct ceph_inode_info *ci = ceph_inode(inode);
 	struct rb_node *p;
 
+<<<<<<< HEAD
+=======
+	/* lock i_ceph_lock, because ceph_d_revalidate(..., LOOKUP_RCU)
+	 * may call __ceph_caps_issued_mask() on a freeing inode. */
+	spin_lock(&ci->i_ceph_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	p = rb_first(&ci->i_caps);
 	while (p) {
 		struct ceph_cap *cap = rb_entry(p, struct ceph_cap, ci_node);
 		p = rb_next(p);
 		__ceph_remove_cap(cap, true);
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock(&ci->i_ceph_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1638,8 +1676,17 @@ retry_locked:
 		}
 
 		/* want more caps from mds? */
+<<<<<<< HEAD
 		if (want & ~(cap->mds_wanted | cap->issued))
 			goto ack;
+=======
+		if (want & ~cap->mds_wanted) {
+			if (want & ~(cap->mds_wanted | cap->issued))
+				goto ack;
+			if (!__cap_is_valid(cap))
+				goto ack;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* things we might delay */
 		if ((cap->issued & ~retain) == 0 &&
@@ -1677,12 +1724,31 @@ ack:
 			if (mutex_trylock(&session->s_mutex) == 0) {
 				dout("inverting session/ino locks on %p\n",
 				     session);
+<<<<<<< HEAD
+=======
+				session = ceph_get_mds_session(session);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				spin_unlock(&ci->i_ceph_lock);
 				if (took_snap_rwsem) {
 					up_read(&mdsc->snap_rwsem);
 					took_snap_rwsem = 0;
 				}
+<<<<<<< HEAD
 				mutex_lock(&session->s_mutex);
+=======
+				if (session) {
+					mutex_lock(&session->s_mutex);
+					ceph_put_mds_session(session);
+				} else {
+					/*
+					 * Because we take the reference while
+					 * holding the i_ceph_lock, it should
+					 * never be NULL. Throw a warning if it
+					 * ever is.
+					 */
+					WARN_ON_ONCE(true);
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto retry;
 			}
 		}
@@ -2830,7 +2896,10 @@ retry:
 			tcap->cap_id = t_cap_id;
 			tcap->seq = t_seq - 1;
 			tcap->issue_seq = t_seq - 1;
+<<<<<<< HEAD
 			tcap->mseq = t_mseq;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			tcap->issued |= issued;
 			tcap->implemented |= issued;
 			if (cap == ci->i_auth_cap)
@@ -2875,6 +2944,10 @@ retry:
 		WARN_ON(1);
 		tsession = NULL;
 		target = -1;
+<<<<<<< HEAD
+=======
+		mutex_lock(&session->s_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	goto retry;
 

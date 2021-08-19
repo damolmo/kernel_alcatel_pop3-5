@@ -41,6 +41,10 @@ struct thermal_instance {
 	struct thermal_zone_device *tz;
 	struct thermal_cooling_device *cdev;
 	int trip;
+<<<<<<< HEAD
+=======
+	bool initialized;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long upper;	/* Highest cooling state for this trip point */
 	unsigned long lower;	/* Lowest cooling state for this trip point */
 	unsigned long target;	/* expected cooling state */

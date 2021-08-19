@@ -63,10 +63,18 @@ struct pnpipehdr {
 		u8		state_after_reset;	/* reset request */
 		u8		error_code;		/* any response */
 		u8		pep_type;		/* status indication */
+<<<<<<< HEAD
 		u8		data[1];
 	};
 };
 #define other_pep_type		data[1]
+=======
+		u8		data0;			/* anything else */
+	};
+	u8			data[];
+};
+#define other_pep_type		data[0]
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline struct pnpipehdr *pnp_hdr(struct sk_buff *skb)
 {

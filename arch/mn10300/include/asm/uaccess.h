@@ -181,6 +181,10 @@ struct __large_struct { unsigned long buf[100]; };
 		"2:\n"						\
 		"	.section	.fixup,\"ax\"\n"	\
 		"3:\n\t"					\
+<<<<<<< HEAD
+=======
+		"	mov		0,%1\n"			\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		"	mov		%3,%0\n"		\
 		"	jmp		2b\n"			\
 		"	.previous\n"				\

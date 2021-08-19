@@ -126,6 +126,11 @@ static int qlcnic_sriov_virtid_fn(struct qlcnic_adapter *adapter, int vf_id)
 		return 0;
 
 	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_SRIOV);
+<<<<<<< HEAD
+=======
+	if (!pos)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pci_read_config_word(dev, pos + PCI_SRIOV_VF_OFFSET, &offset);
 	pci_read_config_word(dev, pos + PCI_SRIOV_VF_STRIDE, &stride);
 

@@ -421,6 +421,10 @@ static int s5k6aa_set_ahb_address(struct i2c_client *client)
 
 /**
  * s5k6aa_configure_pixel_clock - apply ISP main clock/PLL configuration
+<<<<<<< HEAD
+=======
+ * @s5k6aa: pointer to &struct s5k6aa describing the device
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Configure the internal ISP PLL for the required output frequency.
  * Locking: called with s5k6aa.lock mutex held.
@@ -669,6 +673,10 @@ static int s5k6aa_set_input_params(struct s5k6aa *s5k6aa)
 
 /**
  * s5k6aa_configure_video_bus - configure the video output interface
+<<<<<<< HEAD
+=======
+ * @s5k6aa: pointer to &struct s5k6aa describing the device
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @bus_type: video bus type: parallel or MIPI-CSI
  * @nlanes: number of MIPI lanes to be used (MIPI-CSI only)
  *
@@ -724,6 +732,11 @@ static int s5k6aa_new_config_sync(struct i2c_client *client, int timeout,
 
 /**
  * s5k6aa_set_prev_config - write user preview register set
+<<<<<<< HEAD
+=======
+ * @s5k6aa: pointer to &struct s5k6aa describing the device
+ * @preset: s5kaa preset to be applied
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Configure output resolution and color fromat, pixel clock
  * frequency range, device frame rate type and frame period range.
@@ -777,6 +790,10 @@ static int s5k6aa_set_prev_config(struct s5k6aa *s5k6aa,
 
 /**
  * s5k6aa_initialize_isp - basic ISP MCU initialization
+<<<<<<< HEAD
+=======
+ * @sd: pointer to V4L2 sub-device descriptor
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Configure AHB addresses for registers read/write; configure PLLs for
  * required output pixel clock. The ISP power supply needs to be already

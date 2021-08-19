@@ -41,6 +41,7 @@ static int __init setup_noreplace_smp(char *str)
 }
 __setup("noreplace-smp", setup_noreplace_smp);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PARAVIRT
 static int __initdata_or_module noreplace_paravirt = 0;
 
@@ -52,6 +53,8 @@ static int __init setup_noreplace_paravirt(char *str)
 __setup("noreplace-paravirt", setup_noreplace_paravirt);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DPRINTK(fmt, ...)				\
 do {							\
 	if (debug_alternative)				\
@@ -269,7 +272,10 @@ void __init_or_module apply_alternatives(struct alt_instr *start,
 	for (a = start; a < end; a++) {
 		instr = (u8 *)&a->instr_offset + a->instr_offset;
 		replacement = (u8 *)&a->repl_offset + a->repl_offset;
+<<<<<<< HEAD
 		BUG_ON(a->replacementlen > a->instrlen);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		BUG_ON(a->instrlen > sizeof(insnbuf));
 		BUG_ON(a->cpuid >= (NCAPINTS + NBUGINTS) * 32);
 		if (!boot_cpu_has(a->cpuid))
@@ -281,8 +287,14 @@ void __init_or_module apply_alternatives(struct alt_instr *start,
 		if (*insnbuf == 0xe8 && a->replacementlen == 5)
 		    *(s32 *)(insnbuf + 1) += replacement - instr;
 
+<<<<<<< HEAD
 		add_nops(insnbuf + a->replacementlen,
 			 a->instrlen - a->replacementlen);
+=======
+		if (a->instrlen > a->replacementlen)
+			add_nops(insnbuf + a->replacementlen,
+				 a->instrlen - a->replacementlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		text_poke_early(instr, insnbuf, a->instrlen);
 	}
@@ -449,9 +461,12 @@ void __init_or_module apply_paravirt(struct paravirt_patch_site *start,
 	struct paravirt_patch_site *p;
 	char insnbuf[MAX_PATCH_LEN];
 
+<<<<<<< HEAD
 	if (noreplace_paravirt)
 		return;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (p = start; p < end; p++) {
 		unsigned int used;
 

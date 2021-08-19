@@ -708,11 +708,22 @@ int vmw_surface_define_ioctl(struct drm_device *dev, void *data,
 			128;
 
 	num_sizes = 0;
+<<<<<<< HEAD
 	for (i = 0; i < DRM_VMW_MAX_SURFACE_FACES; ++i)
 		num_sizes += req->mip_levels[i];
 
 	if (num_sizes > DRM_VMW_MAX_SURFACE_FACES *
 	    DRM_VMW_MAX_MIP_LEVELS)
+=======
+	for (i = 0; i < DRM_VMW_MAX_SURFACE_FACES; ++i) {
+		if (req->mip_levels[i] > DRM_VMW_MAX_MIP_LEVELS)
+			return -EINVAL;
+		num_sizes += req->mip_levels[i];
+	}
+
+	if (num_sizes > DRM_VMW_MAX_SURFACE_FACES * DRM_VMW_MAX_MIP_LEVELS ||
+	    num_sizes == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	size = vmw_user_surface_size + 128 +
@@ -895,17 +906,27 @@ vmw_surface_handle_reference(struct vmw_private *dev_priv,
 	uint32_t handle;
 	struct ttm_base_object *base;
 	int ret;
+<<<<<<< HEAD
+=======
+	bool require_exist = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (handle_type == DRM_VMW_HANDLE_PRIME) {
 		ret = ttm_prime_fd_to_handle(tfile, u_handle, &handle);
 		if (unlikely(ret != 0))
 			return ret;
 	} else {
+<<<<<<< HEAD
 		if (unlikely(drm_is_render_client(file_priv))) {
 			DRM_ERROR("Render client refused legacy "
 				  "surface reference.\n");
 			return -EACCES;
 		}
+=======
+		if (unlikely(drm_is_render_client(file_priv)))
+			require_exist = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		handle = u_handle;
 	}
 
@@ -927,6 +948,7 @@ vmw_surface_handle_reference(struct vmw_private *dev_priv,
 
 		/*
 		 * Make sure the surface creator has the same
+<<<<<<< HEAD
 		 * authenticating master.
 		 */
 		if (drm_is_primary_client(file_priv) &&
@@ -938,6 +960,16 @@ vmw_surface_handle_reference(struct vmw_private *dev_priv,
 		}
 
 		ret = ttm_ref_object_add(tfile, base, TTM_REF_USAGE, NULL);
+=======
+		 * authenticating master, or is already registered with us.
+		 */
+		if (drm_is_primary_client(file_priv) &&
+		    user_srf->master != file_priv->master)
+			require_exist = true;
+
+		ret = ttm_ref_object_add(tfile, base, TTM_REF_USAGE, NULL,
+					 require_exist);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (unlikely(ret != 0)) {
 			DRM_ERROR("Could not add a reference to a surface.\n");
 			goto out_bad_resource;
@@ -1244,6 +1276,12 @@ int vmw_gb_surface_define_ioctl(struct drm_device *dev, void *data,
 	const struct svga3d_surface_desc *desc;
 	uint32_t backup_handle;
 
+<<<<<<< HEAD
+=======
+	if (req->mip_levels > DRM_VMW_MAX_MIP_LEVELS)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (unlikely(vmw_user_surface_size == 0))
 		vmw_user_surface_size = ttm_round_pot(sizeof(*user_srf)) +
 			128;

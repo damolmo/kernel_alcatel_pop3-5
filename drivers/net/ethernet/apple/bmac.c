@@ -1187,7 +1187,11 @@ bmac_get_station_address(struct net_device *dev, unsigned char *ea)
 	int i;
 	unsigned short data;
 
+<<<<<<< HEAD
 	for (i = 0; i < 6; i++)
+=======
+	for (i = 0; i < 3; i++)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		{
 			reset_and_select_srom(dev);
 			data = read_srom(dev, i + EnetAddressOffset/2, SROMAddressBits);

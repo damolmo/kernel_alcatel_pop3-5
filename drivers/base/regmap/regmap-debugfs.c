@@ -32,8 +32,12 @@ static DEFINE_MUTEX(regmap_debugfs_early_lock);
 /* Calculate the length of a fixed format  */
 static size_t regmap_calc_reg_len(int max_val, char *buf, size_t buf_size)
 {
+<<<<<<< HEAD
 	snprintf(buf, buf_size, "%x", max_val);
 	return strlen(buf);
+=======
+	return snprintf(NULL, 0, "%x", max_val);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static ssize_t regmap_name_read_file(struct file *file,
@@ -196,6 +200,12 @@ static ssize_t regmap_read_debugfs(struct regmap *map, unsigned int from,
 	if (*ppos < 0 || !count)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (count > (PAGE_SIZE << (MAX_ORDER - 1)))
+		count = PAGE_SIZE << (MAX_ORDER - 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	buf = kmalloc(count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
@@ -343,6 +353,12 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 	if (*ppos < 0 || !count)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (count > (PAGE_SIZE << (MAX_ORDER - 1)))
+		count = PAGE_SIZE << (MAX_ORDER - 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	buf = kmalloc(count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
@@ -432,7 +448,11 @@ static ssize_t regmap_access_read_file(struct file *file,
 		/* If we're in the region the user is trying to read */
 		if (p >= *ppos) {
 			/* ...but not beyond it */
+<<<<<<< HEAD
 			if (buf_pos >= count - 1 - tot_len)
+=======
+			if (buf_pos + tot_len + 1 >= count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				break;
 
 			/* Format the register */

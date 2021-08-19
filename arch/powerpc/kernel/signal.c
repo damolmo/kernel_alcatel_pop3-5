@@ -102,7 +102,11 @@ static void check_syscall_restart(struct pt_regs *regs, struct k_sigaction *ka,
 static void do_signal(struct pt_regs *regs)
 {
 	sigset_t *oldset = sigmask_to_save();
+<<<<<<< HEAD
 	struct ksignal ksig;
+=======
+	struct ksignal ksig = { .sig = 0 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 	int is32 = is_32bit_task();
 

@@ -78,21 +78,39 @@ ssize_t led_trigger_show(struct device *dev, struct device_attribute *attr,
 	down_read(&led_cdev->trigger_lock);
 
 	if (!led_cdev->trigger)
+<<<<<<< HEAD
 		len += sprintf(buf+len, "[none] ");
 	else
 		len += sprintf(buf+len, "none ");
+=======
+		len += scnprintf(buf+len, PAGE_SIZE - len, "[none] ");
+	else
+		len += scnprintf(buf+len, PAGE_SIZE - len, "none ");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_for_each_entry(trig, &trigger_list, next_trig) {
 		if (led_cdev->trigger && !strcmp(led_cdev->trigger->name,
 							trig->name))
+<<<<<<< HEAD
 			len += sprintf(buf+len, "[%s] ", trig->name);
 		else
 			len += sprintf(buf+len, "%s ", trig->name);
+=======
+			len += scnprintf(buf+len, PAGE_SIZE - len, "[%s] ",
+					 trig->name);
+		else
+			len += scnprintf(buf+len, PAGE_SIZE - len, "%s ",
+					 trig->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	up_read(&led_cdev->trigger_lock);
 	up_read(&triggers_list_lock);
 
+<<<<<<< HEAD
 	len += sprintf(len+buf, "\n");
+=======
+	len += scnprintf(len+buf, PAGE_SIZE - len, "\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return len;
 }
 EXPORT_SYMBOL_GPL(led_trigger_show);

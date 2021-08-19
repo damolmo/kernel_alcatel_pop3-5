@@ -81,7 +81,10 @@ struct netns_ipv6 {
 
 #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
 struct netns_nf_frag {
+<<<<<<< HEAD
 	struct netns_sysctl_ipv6 sysctl;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct netns_frags	frags;
 };
 #endif

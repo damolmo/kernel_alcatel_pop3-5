@@ -59,6 +59,10 @@
  * Wildcat Point-LP (PCH)	0x9ca2	32	hard	yes	yes	yes
  * BayTrail (SOC)		0x0f12	32	hard	yes	yes	yes
  * Sunrise Point-H (PCH) 	0xa123  32	hard	yes	yes	yes
+<<<<<<< HEAD
+=======
+ * Sunrise Point-LP (PCH)	0x9d23	32	hard	yes	yes	yes
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Features supported by this driver:
  * Software PEC				no
@@ -182,6 +186,10 @@
 #define PCI_DEVICE_ID_INTEL_LYNXPOINT_LP_SMBUS		0x9c22
 #define PCI_DEVICE_ID_INTEL_WILDCATPOINT_LP_SMBUS	0x9ca2
 #define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_H_SMBUS	0xa123
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SMBUS	0x9d23
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct i801_mux_config {
 	char *gpio_chip;
@@ -291,11 +299,17 @@ static int i801_check_post(struct i801_priv *priv, int status)
 		dev_err(&priv->pci_dev->dev, "Transaction timeout\n");
 		/* try to stop the current command */
 		dev_dbg(&priv->pci_dev->dev, "Terminating the current operation\n");
+<<<<<<< HEAD
 		outb_p(inb_p(SMBHSTCNT(priv)) | SMBHSTCNT_KILL,
 		       SMBHSTCNT(priv));
 		usleep_range(1000, 2000);
 		outb_p(inb_p(SMBHSTCNT(priv)) & (~SMBHSTCNT_KILL),
 		       SMBHSTCNT(priv));
+=======
+		outb_p(SMBHSTCNT_KILL, SMBHSTCNT(priv));
+		usleep_range(1000, 2000);
+		outb_p(0, SMBHSTCNT(priv));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Check if it worked */
 		status = inb_p(SMBHSTSTS(priv));
@@ -829,6 +843,10 @@ static const struct pci_device_id i801_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BAYTRAIL_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BRASWELL_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SUNRISEPOINT_H_SMBUS) },
+<<<<<<< HEAD
+=======
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_SUNRISEPOINT_LP_SMBUS) },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ 0, }
 };
 

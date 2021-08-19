@@ -652,7 +652,11 @@ static struct dma_chan *k3_of_dma_simple_xlate(struct of_phandle_args *dma_spec,
 	struct k3_dma_dev *d = ofdma->of_dma_data;
 	unsigned int request = dma_spec->args[0];
 
+<<<<<<< HEAD
 	if (request > d->dma_requests)
+=======
+	if (request >= d->dma_requests)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 
 	return dma_get_slave_channel(&(d->chans[request].vc.chan));

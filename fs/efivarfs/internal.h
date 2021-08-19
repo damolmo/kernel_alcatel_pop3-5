@@ -15,7 +15,12 @@ extern const struct file_operations efivarfs_file_operations;
 extern const struct inode_operations efivarfs_dir_inode_operations;
 extern bool efivarfs_valid_name(const char *str, int len);
 extern struct inode *efivarfs_get_inode(struct super_block *sb,
+<<<<<<< HEAD
 			const struct inode *dir, int mode, dev_t dev);
+=======
+			const struct inode *dir, int mode, dev_t dev,
+			bool is_removable);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern struct list_head efivarfs_list;
 

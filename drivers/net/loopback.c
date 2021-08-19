@@ -164,6 +164,10 @@ static void loopback_setup(struct net_device *dev)
 {
 	dev->mtu		= 64 * 1024;
 	dev->hard_header_len	= ETH_HLEN;	/* 14	*/
+<<<<<<< HEAD
+=======
+	dev->min_header_len	= ETH_HLEN;	/* 14	*/
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->addr_len		= ETH_ALEN;	/* 6	*/
 	dev->tx_queue_len	= 0;
 	dev->type		= ARPHRD_LOOPBACK;	/* 0x0001*/

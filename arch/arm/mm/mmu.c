@@ -22,6 +22,10 @@
 #include <asm/cputype.h>
 #include <asm/sections.h>
 #include <asm/cachetype.h>
+<<<<<<< HEAD
+=======
+#include <asm/fixmap.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/smp_plat.h>
@@ -36,7 +40,10 @@
 #include <asm/mach/map.h>
 #include <asm/mach/pci.h>
 #include <asm/fixmap.h>
+<<<<<<< HEAD
 #include <mt-plat/mtk_memcfg.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "mm.h"
 #include "tcm.h"
@@ -53,6 +60,11 @@ EXPORT_SYMBOL(empty_zero_page);
  */
 pmd_t *top_pmd;
 
+<<<<<<< HEAD
+=======
+pmdval_t user_pmd_table = _PAGE_USER_TABLE;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CPOLICY_UNCACHED	0
 #define CPOLICY_BUFFERED	1
 #define CPOLICY_WRITETHROUGH	2
@@ -289,13 +301,21 @@ static struct mem_type mem_types[] = {
 		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
 				L_PTE_RDONLY,
 		.prot_l1   = PMD_TYPE_TABLE,
+<<<<<<< HEAD
 		.domain    = DOMAIN_USER,
+=======
+		.domain    = DOMAIN_VECTORS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	[MT_HIGH_VECTORS] = {
 		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY |
 				L_PTE_USER | L_PTE_RDONLY,
 		.prot_l1   = PMD_TYPE_TABLE,
+<<<<<<< HEAD
 		.domain    = DOMAIN_USER,
+=======
+		.domain    = DOMAIN_VECTORS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	[MT_MEMORY_RWX] = {
 		.prot_pte  = L_PTE_PRESENT | L_PTE_YOUNG | L_PTE_DIRTY,
@@ -394,6 +414,32 @@ SET_MEMORY_FN(x, pte_set_x)
 SET_MEMORY_FN(nx, pte_set_nx)
 
 /*
+<<<<<<< HEAD
+=======
+ * To avoid TLB flush broadcasts, this uses local_flush_tlb_kernel_range().
+ * As a result, this can only be called with preemption disabled, as under
+ * stop_machine().
+ */
+void __set_fixmap(enum fixed_addresses idx, phys_addr_t phys, pgprot_t prot)
+{
+	unsigned long vaddr = __fix_to_virt(idx);
+	pte_t *pte = pte_offset_kernel(pmd_off_k(vaddr), vaddr);
+
+	/* Make sure fixmap region does not exceed available allocation. */
+	BUILD_BUG_ON(FIXADDR_START + (__end_of_fixed_addresses * PAGE_SIZE) >
+		     FIXADDR_END);
+	BUG_ON(idx >= __end_of_fixed_addresses);
+
+	if (pgprot_val(prot))
+		set_pte_at(NULL, vaddr, pte,
+			pfn_pte(phys >> PAGE_SHIFT, prot));
+	else
+		pte_clear(NULL, vaddr, pte);
+	local_flush_tlb_kernel_range(vaddr, vaddr + PAGE_SIZE);
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Adjust the PMD section entries according to the CPU in use.
  */
 static void __init build_mem_type_table(void)
@@ -539,6 +585,28 @@ static void __init build_mem_type_table(void)
 		vecs_pgprot |= L_PTE_MT_VECTORS;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_ARM_LPAE
+	/*
+	 * We don't use domains on ARMv6 (since this causes problems with
+	 * v6/v7 kernels), so we must use a separate memory type for user
+	 * r/o, kernel r/w to map the vectors page.
+	 */
+	if (cpu_arch == CPU_ARCH_ARMv6)
+		vecs_pgprot |= L_PTE_MT_VECTORS;
+
+	/*
+	 * Check is it with support for the PXN bit
+	 * in the Short-descriptor translation table format descriptors.
+	 */
+	if (cpu_arch == CPU_ARCH_ARMv7 &&
+		(read_cpuid_ext(CPUID_EXT_MMFR0) & 0xF) >= 4) {
+		user_pmd_table |= PMD_PXNTABLE;
+	}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * ARMv6 and above have extended page tables.
 	 */
@@ -606,6 +674,14 @@ static void __init build_mem_type_table(void)
 	}
 	kern_pgprot |= PTE_EXT_AF;
 	vecs_pgprot |= PTE_EXT_AF;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Set PXN for user mappings
+	 */
+	user_pgprot |= PTE_EXT_PXN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	for (i = 0; i < 16; i++) {
@@ -1143,15 +1219,25 @@ void __init sanity_check_meminfo(void)
 
 	high_memory = __va(arm_lowmem_limit - 1) + 1;
 
+<<<<<<< HEAD
+=======
+	if (!memblock_limit)
+		memblock_limit = arm_lowmem_limit;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Round the memblock limit down to a pmd size.  This
 	 * helps to ensure that we will allocate memory from the
 	 * last full pmd, which should be mapped.
 	 */
+<<<<<<< HEAD
 	if (memblock_limit)
 		memblock_limit = round_down(memblock_limit, PMD_SIZE);
 	if (!memblock_limit)
 		memblock_limit = arm_lowmem_limit;
+=======
+	memblock_limit = round_down(memblock_limit, PMD_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	memblock_set_current_limit(memblock_limit);
 }
@@ -1327,10 +1413,17 @@ static void __init kmap_init(void)
 #ifdef CONFIG_HIGHMEM
 	pkmap_page_table = early_pte_alloc(pmd_off_k(PKMAP_BASE),
 		PKMAP_BASE, _PAGE_KERNEL_TABLE);
+<<<<<<< HEAD
 
 	fixmap_page_table = early_pte_alloc(pmd_off_k(FIXADDR_START),
 		FIXADDR_START, _PAGE_KERNEL_TABLE);
 #endif
+=======
+#endif
+
+	early_pte_alloc(pmd_off_k(FIXADDR_START), FIXADDR_START,
+			_PAGE_KERNEL_TABLE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __init map_lowmem(void)
@@ -1344,23 +1437,42 @@ static void __init map_lowmem(void)
 		phys_addr_t start = reg->base;
 		phys_addr_t end = start + reg->size;
 		struct map_desc map;
+<<<<<<< HEAD
 		MTK_MEMCFG_LOG_AND_PRINTK("[PHY layout]kernel   :   0x%08llx - 0x%08llx (0x%08llx)\n",
 						(unsigned long long)start,
 						(unsigned long long)end - 1,
 						(unsigned long long)reg->size);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (end > arm_lowmem_limit)
 			end = arm_lowmem_limit;
 		if (start >= end)
+<<<<<<< HEAD
 			continue;
 
 		if (end < kernel_x_start || start >= kernel_x_end) {
+=======
+			break;
+
+		if (end < kernel_x_start) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			map.pfn = __phys_to_pfn(start);
 			map.virtual = __phys_to_virt(start);
 			map.length = end - start;
 			map.type = MT_MEMORY_RWX;
 
 			create_mapping(&map);
+<<<<<<< HEAD
+=======
+		} else if (start >= kernel_x_end) {
+			map.pfn = __phys_to_pfn(start);
+			map.virtual = __phys_to_virt(start);
+			map.length = end - start;
+			map.type = MT_MEMORY_RW;
+
+			create_mapping(&map);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			/* This better cover the entire kernel */
 			if (start < kernel_x_start) {
@@ -1388,6 +1500,7 @@ static void __init map_lowmem(void)
 				create_mapping(&map);
 			}
 		}
+<<<<<<< HEAD
 
 		if (!(end & ~SECTION_MASK))
 			memblock_set_current_limit(end);
@@ -1395,6 +1508,16 @@ static void __init map_lowmem(void)
 }
 
 #ifdef CONFIG_ARM_LPAE
+=======
+	}
+}
+
+#ifdef CONFIG_ARM_PV_FIXUP
+extern unsigned long __atags_pointer;
+typedef void pgtables_remap(long long offset, unsigned long pgd, void *bdata);
+pgtables_remap lpae_pgtables_remap_asm;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * early_paging_init() recreates boot time page table setup, allowing machines
  * to switch over to a high (>4G) address space on LPAE systems
@@ -1402,6 +1525,7 @@ static void __init map_lowmem(void)
 void __init early_paging_init(const struct machine_desc *mdesc,
 			      struct proc_info_list *procinfo)
 {
+<<<<<<< HEAD
 	pmdval_t pmdprot = procinfo->__cpu_mm_mmu_flags;
 	unsigned long map_start, map_end;
 	pgd_t *pgd0, *pgdk;
@@ -1409,10 +1533,18 @@ void __init early_paging_init(const struct machine_desc *mdesc,
 	pmd_t *pmd0, *pmdk;
 	phys_addr_t phys;
 	int i;
+=======
+	pgtables_remap *lpae_pgtables_remap;
+	unsigned long pa_pgd;
+	unsigned int cr, ttbcr;
+	long long offset;
+	void *boot_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!(mdesc->init_meminfo))
 		return;
 
+<<<<<<< HEAD
 	/* remap kernel code and data */
 	map_start = init_mm.start_code & PMD_MASK;
 	map_end   = ALIGN(init_mm.brk, PMD_SIZE);
@@ -1504,6 +1636,58 @@ void __init early_paging_init(const struct machine_desc *mdesc,
 	/* Finally flush any stale TLB values. */
 	local_flush_bp_all();
 	local_flush_tlb_all();
+=======
+	offset = mdesc->init_meminfo();
+	if (offset == 0)
+		return;
+
+	/* Re-set the phys pfn offset, and the pv offset */
+	__pv_offset += offset;
+	__pv_phys_pfn_offset += PFN_DOWN(offset);
+
+	/*
+	 * Get the address of the remap function in the 1:1 identity
+	 * mapping setup by the early page table assembly code.  We
+	 * must get this prior to the pv update.  The following barrier
+	 * ensures that this is complete before we fixup any P:V offsets.
+	 */
+	lpae_pgtables_remap = (pgtables_remap *)(unsigned long)__pa(lpae_pgtables_remap_asm);
+	pa_pgd = __pa(swapper_pg_dir);
+	boot_data = __va(__atags_pointer);
+	barrier();
+
+	/* Run the patch stub to update the constants */
+	fixup_pv_table(&__pv_table_begin,
+		(&__pv_table_end - &__pv_table_begin) << 2);
+
+	/*
+	 * We changing not only the virtual to physical mapping, but also
+	 * the physical addresses used to access memory.  We need to flush
+	 * all levels of cache in the system with caching disabled to
+	 * ensure that all data is written back, and nothing is prefetched
+	 * into the caches.  We also need to prevent the TLB walkers
+	 * allocating into the caches too.  Note that this is ARMv7 LPAE
+	 * specific.
+	 */
+	cr = get_cr();
+	set_cr(cr & ~(CR_I | CR_C));
+	asm("mrc p15, 0, %0, c2, c0, 2" : "=r" (ttbcr));
+	asm volatile("mcr p15, 0, %0, c2, c0, 2"
+		: : "r" (ttbcr & ~(3 << 8 | 3 << 10)));
+	flush_cache_all();
+
+	/*
+	 * Fixup the page tables - this must be in the idmap region as
+	 * we need to disable the MMU to do this safely, and hence it
+	 * needs to be assembly.  It's fairly simple, as we're using the
+	 * temporary tables setup by the initial assembly code.
+	 */
+	lpae_pgtables_remap(offset, pa_pgd, boot_data);
+
+	/* Re-enable the caches and cacheable TLB walks */
+	asm volatile("mcr p15, 0, %0, c2, c0, 2" : : "r" (ttbcr));
+	set_cr(cr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #else
@@ -1511,8 +1695,24 @@ void __init early_paging_init(const struct machine_desc *mdesc,
 void __init early_paging_init(const struct machine_desc *mdesc,
 			      struct proc_info_list *procinfo)
 {
+<<<<<<< HEAD
 	if (mdesc->init_meminfo)
 		mdesc->init_meminfo();
+=======
+	long long offset;
+
+	if (!mdesc->init_meminfo)
+		return;
+
+	offset = mdesc->init_meminfo();
+	if (offset == 0)
+		return;
+
+	pr_crit("Physical address space modification is only to support Keystone2.\n");
+	pr_crit("Please enable ARM_LPAE and ARM_PATCH_PHYS_VIRT support to use this\n");
+	pr_crit("feature. Your kernel may crash now, have a good day.\n");
+	add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif

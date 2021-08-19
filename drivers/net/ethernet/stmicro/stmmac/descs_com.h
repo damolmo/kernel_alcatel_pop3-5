@@ -33,9 +33,16 @@
 /* Specific functions used for Ring mode */
 
 /* Enhanced descriptors */
+<<<<<<< HEAD
 static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end)
 {
 	p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
+=======
+static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+{
+	if (bfsize == BUF_SIZE_16KiB)
+		p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (end)
 		p->des01.erx.end_ring = 1;
 }
@@ -61,9 +68,20 @@ static inline void enh_set_tx_desc_len_on_ring(struct dma_desc *p, int len)
 }
 
 /* Normal descriptors */
+<<<<<<< HEAD
 static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end)
 {
 	p->des01.rx.buffer2_size = BUF_SIZE_2KiB - 1;
+=======
+static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+{
+	int size;
+
+	if (bfsize >= BUF_SIZE_2KiB) {
+		size = min(bfsize - BUF_SIZE_2KiB + 1, BUF_SIZE_2KiB - 1);
+		p->des01.rx.buffer2_size = size;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (end)
 		p->des01.rx.end_ring = 1;
 }

@@ -247,13 +247,24 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 			   u64 len, u8 page_size, u32 pbl_size, u32 pbl_addr)
 {
 	int err;
+<<<<<<< HEAD
 	struct fw_ri_tpte tpt;
+=======
+	struct fw_ri_tpte *tpt;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 stag_idx;
 	static atomic_t key;
 
 	if (c4iw_fatal_error(rdev))
 		return -EIO;
 
+<<<<<<< HEAD
+=======
+	tpt = kmalloc(sizeof(*tpt), GFP_KERNEL);
+	if (!tpt)
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	stag_state = stag_state > 0;
 	stag_idx = (*stag) >> 8;
 
@@ -263,6 +274,10 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 			mutex_lock(&rdev->stats.lock);
 			rdev->stats.stag.fail++;
 			mutex_unlock(&rdev->stats.lock);
+<<<<<<< HEAD
+=======
+			kfree(tpt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -ENOMEM;
 		}
 		mutex_lock(&rdev->stats.lock);
@@ -277,6 +292,7 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 
 	/* write TPT entry */
 	if (reset_tpt_entry)
+<<<<<<< HEAD
 		memset(&tpt, 0, sizeof(tpt));
 	else {
 		tpt.valid_to_pdid = cpu_to_be32(F_FW_RI_TPTE_VALID |
@@ -284,10 +300,20 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 			V_FW_RI_TPTE_STAGSTATE(stag_state) |
 			V_FW_RI_TPTE_STAGTYPE(type) | V_FW_RI_TPTE_PDID(pdid));
 		tpt.locread_to_qpid = cpu_to_be32(V_FW_RI_TPTE_PERM(perm) |
+=======
+		memset(tpt, 0, sizeof(*tpt));
+	else {
+		tpt->valid_to_pdid = cpu_to_be32(F_FW_RI_TPTE_VALID |
+			V_FW_RI_TPTE_STAGKEY((*stag & M_FW_RI_TPTE_STAGKEY)) |
+			V_FW_RI_TPTE_STAGSTATE(stag_state) |
+			V_FW_RI_TPTE_STAGTYPE(type) | V_FW_RI_TPTE_PDID(pdid));
+		tpt->locread_to_qpid = cpu_to_be32(V_FW_RI_TPTE_PERM(perm) |
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			(bind_enabled ? F_FW_RI_TPTE_MWBINDEN : 0) |
 			V_FW_RI_TPTE_ADDRTYPE((zbva ? FW_RI_ZERO_BASED_TO :
 						      FW_RI_VA_BASED_TO))|
 			V_FW_RI_TPTE_PS(page_size));
+<<<<<<< HEAD
 		tpt.nosnoop_pbladdr = !pbl_size ? 0 : cpu_to_be32(
 			V_FW_RI_TPTE_PBLADDR(PBL_OFF(rdev, pbl_addr)>>3));
 		tpt.len_lo = cpu_to_be32((u32)(len & 0xffffffffUL));
@@ -299,6 +325,19 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 	err = write_adapter_mem(rdev, stag_idx +
 				(rdev->lldi.vr->stag.start >> 5),
 				sizeof(tpt), &tpt);
+=======
+		tpt->nosnoop_pbladdr = !pbl_size ? 0 : cpu_to_be32(
+			V_FW_RI_TPTE_PBLADDR(PBL_OFF(rdev, pbl_addr)>>3));
+		tpt->len_lo = cpu_to_be32((u32)(len & 0xffffffffUL));
+		tpt->va_hi = cpu_to_be32((u32)(to >> 32));
+		tpt->va_lo_fbo = cpu_to_be32((u32)(to & 0xffffffffUL));
+		tpt->dca_mwbcnt_pstag = cpu_to_be32(0);
+		tpt->len_hi = cpu_to_be32((u32)(len >> 32));
+	}
+	err = write_adapter_mem(rdev, stag_idx +
+				(rdev->lldi.vr->stag.start >> 5),
+				sizeof(*tpt), tpt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (reset_tpt_entry) {
 		c4iw_put_resource(&rdev->resource.tpt_table, stag_idx);
@@ -306,6 +345,10 @@ static int write_tpt_entry(struct c4iw_rdev *rdev, u32 reset_tpt_entry,
 		rdev->stats.stag.cur -= 32;
 		mutex_unlock(&rdev->stats.lock);
 	}
+<<<<<<< HEAD
+=======
+	kfree(tpt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

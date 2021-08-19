@@ -546,7 +546,11 @@ static struct kmemleak_object *create_object(unsigned long ptr, size_t size,
 	if (in_irq()) {
 		object->pid = 0;
 		strncpy(object->comm, "hardirq", sizeof(object->comm));
+<<<<<<< HEAD
 	} else if (in_softirq()) {
+=======
+	} else if (in_serving_softirq()) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		object->pid = 0;
 		strncpy(object->comm, "softirq", sizeof(object->comm));
 	} else {
@@ -1353,6 +1357,11 @@ static void kmemleak_scan(void)
 			if (page_count(page) == 0)
 				continue;
 			scan_block(page, page + 1, NULL, 1);
+<<<<<<< HEAD
+=======
+			if (!(pfn % (MAX_SCAN_SIZE / sizeof(*page))))
+				cond_resched();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	put_online_mems();
@@ -1481,8 +1490,12 @@ static void start_scan_thread(void)
 }
 
 /*
+<<<<<<< HEAD
  * Stop the automatic memory scanning thread. This function must be called
  * with the scan_mutex held.
+=======
+ * Stop the automatic memory scanning thread.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static void stop_scan_thread(void)
 {
@@ -1746,12 +1759,24 @@ static void kmemleak_do_cleanup(struct work_struct *work)
 	mutex_lock(&scan_mutex);
 	stop_scan_thread();
 
+<<<<<<< HEAD
 	/*
 	 * Once the scan thread has stopped, it is safe to no longer track
 	 * object freeing. Ordering of the scan thread stopping and the memory
 	 * accesses below is guaranteed by the kthread_stop() function.
 	 */
 	kmemleak_free_enabled = 0;
+=======
+	mutex_lock(&scan_mutex);
+	/*
+	 * Once it is made sure that kmemleak_scan has stopped, it is safe to no
+	 * longer track object freeing. Ordering of the scan thread stopping and
+	 * the memory accesses below is guaranteed by the kthread_stop()
+	 * function.
+	 */
+	kmemleak_free_enabled = 0;
+	mutex_unlock(&scan_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!kmemleak_found_leaks)
 		__kmemleak_do_cleanup();

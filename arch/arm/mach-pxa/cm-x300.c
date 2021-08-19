@@ -542,7 +542,11 @@ static struct pxa3xx_u2d_platform_data cm_x300_u2d_platform_data = {
 	.exit		= cm_x300_u2d_exit,
 };
 
+<<<<<<< HEAD
 static void cm_x300_init_u2d(void)
+=======
+static void __init cm_x300_init_u2d(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	pxa3xx_set_u2d_info(&cm_x300_u2d_platform_data);
 }

@@ -133,8 +133,14 @@ static int mf6x4_ai_eoc(struct comedi_device *dev,
 	struct mf6x4_private *devpriv = dev->private;
 	unsigned int status;
 
+<<<<<<< HEAD
 	status = ioread32(devpriv->gpioc_R);
 	if (status & MF6X4_GPIOC_EOLC)
+=======
+	/* EOLC goes low at end of conversion. */
+	status = ioread32(devpriv->gpioc_R);
+	if ((status & MF6X4_GPIOC_EOLC) == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	return -EBUSY;
 }

@@ -26,6 +26,10 @@ static inline struct mcryptd_ahash *__mcryptd_ahash_cast(
 
 struct mcryptd_cpu_queue {
 	struct crypto_queue queue;
+<<<<<<< HEAD
+=======
+	spinlock_t q_lock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct work_struct work;
 };
 

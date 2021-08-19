@@ -2498,6 +2498,10 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		qlcnic_sriov_vf_register_map(ahw);
 		break;
 	default:
+<<<<<<< HEAD
+=======
+		err = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto err_out_free_hw_res;
 	}
 
@@ -2696,6 +2700,10 @@ err_out_free_hw_res:
 	kfree(ahw);
 
 err_out_free_res:
+<<<<<<< HEAD
+=======
+	pci_disable_pcie_error_reporting(pdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pci_release_regions(pdev);
 
 err_out_disable_pdev:

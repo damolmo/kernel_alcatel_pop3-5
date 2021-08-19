@@ -194,7 +194,10 @@ typedef struct sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
 #define SG_DEFAULT_RETRIES 0
 
 /* Defaults, commented if they differ from original sg driver */
+<<<<<<< HEAD
 #define SG_DEF_FORCE_LOW_DMA 0  /* was 1 -> memory below 16MB on i386 */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SG_DEF_FORCE_PACK_ID 0
 #define SG_DEF_KEEP_ORPHAN 0
 #define SG_DEF_RESERVED_SIZE SG_SCATTER_SZ /* load time option */

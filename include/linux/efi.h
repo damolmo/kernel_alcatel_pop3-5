@@ -360,8 +360,13 @@ typedef struct {
 	u32 attributes;
 	u32 get_bar_attributes;
 	u32 set_bar_attributes;
+<<<<<<< HEAD
 	uint64_t romsize;
 	void *romimage;
+=======
+	u64 romsize;
+	u32 romimage;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } efi_pci_io_protocol_32;
 
 typedef struct {
@@ -380,8 +385,13 @@ typedef struct {
 	u64 attributes;
 	u64 get_bar_attributes;
 	u64 set_bar_attributes;
+<<<<<<< HEAD
 	uint64_t romsize;
 	void *romimage;
+=======
+	u64 romsize;
+	u64 romimage;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } efi_pci_io_protocol_64;
 
 typedef struct {
@@ -547,6 +557,12 @@ void efi_native_runtime_setup(void);
 #define SMBIOS_TABLE_GUID    \
     EFI_GUID(  0xeb9d2d31, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
 
+<<<<<<< HEAD
+=======
+#define SMBIOS3_TABLE_GUID    \
+    EFI_GUID(  0xf2fd1544, 0x9794, 0x4a2c, 0x99, 0x2e, 0xe5, 0xbb, 0xcf, 0x20, 0xe3, 0x94 )
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SAL_SYSTEM_TABLE_GUID    \
     EFI_GUID(  0xeb9d2d32, 0x2d88, 0x11d3, 0x9a, 0x16, 0x0, 0x90, 0x27, 0x3f, 0xc1, 0x4d )
 
@@ -810,7 +826,12 @@ extern struct efi {
 	unsigned long mps;		/* MPS table */
 	unsigned long acpi;		/* ACPI table  (IA64 ext 0.71) */
 	unsigned long acpi20;		/* ACPI table  (ACPI 2.0) */
+<<<<<<< HEAD
 	unsigned long smbios;		/* SM BIOS table */
+=======
+	unsigned long smbios;		/* SMBIOS table (32 bit entry point) */
+	unsigned long smbios3;		/* SMBIOS table (64 bit entry point) */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long sal_systab;	/* SAL system table */
 	unsigned long boot_info;	/* boot info table */
 	unsigned long hcdp;		/* HCDP table */
@@ -871,6 +892,11 @@ static inline efi_status_t efi_query_variable_store(u32 attributes, unsigned lon
 #endif
 extern void __iomem *efi_lookup_mapped_addr(u64 phys_addr);
 extern int efi_config_init(efi_config_table_type_t *arch_tables);
+<<<<<<< HEAD
+=======
+extern int efi_config_parse_tables(void *config_tables, int count, int sz,
+				   efi_config_table_type_t *arch_tables);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern u64 efi_get_iobase (void);
 extern u32 efi_mem_type (unsigned long phys_addr);
 extern u64 efi_mem_attributes (unsigned long phys_addr);
@@ -1155,7 +1181,14 @@ int efivar_entry_iter(int (*func)(struct efivar_entry *, void *),
 struct efivar_entry *efivar_entry_find(efi_char16_t *name, efi_guid_t guid,
 				       struct list_head *head, bool remove);
 
+<<<<<<< HEAD
 bool efivar_validate(efi_char16_t *var_name, u8 *data, unsigned long len);
+=======
+bool efivar_validate(efi_guid_t vendor, efi_char16_t *var_name, u8 *data,
+		     unsigned long data_size);
+bool efivar_variable_is_removable(efi_guid_t vendor, const char *name,
+				  size_t len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern struct work_struct efivar_work;
 void efivar_run_worker(void);

@@ -34,6 +34,7 @@
 #include <linux/random.h>
 #include "ubifs.h"
 
+<<<<<<< HEAD
 /* Jack note: this varibale is record max clean znode count until now */
 long ubifs_max_clean_zn_cnt;
 static DEFINE_SPINLOCK(dbg_lock);
@@ -52,6 +53,10 @@ uint32_t total_clean_tnc_leaf_lens = 0;
 
 static struct ubifs_global_debug_tnc g_dbg_tnc_info;
 
+=======
+static DEFINE_SPINLOCK(dbg_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const char *get_key_fmt(int fmt)
 {
 	switch (fmt) {
@@ -727,7 +732,10 @@ void ubifs_dump_lprop(const struct ubifs_info *c, const struct ubifs_lprops *lp)
 		bud = rb_entry(rb, struct ubifs_bud, rb);
 		if (bud->lnum == lp->lnum) {
 			int head = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			for (i = 0; i < c->jhead_cnt; i++) {
 				/*
 				 * Note, if we are in R/O mode or in the middle
@@ -889,10 +897,13 @@ void ubifs_dump_znode(const struct ubifs_info *c,
 	pr_err("zbranches:\n");
 	for (n = 0; n < znode->child_cnt; n++) {
 		zbr = &znode->zbranch[n];
+<<<<<<< HEAD
 		if (zbr->znode) {
 			total_znode++;
 			total_tnc_leaf_lens += zbr->len;
 		}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (znode->level > 0)
 			pr_err("\t%d: znode %p LEB %d:%d len %d key %s\n",
 			       n, zbr->znode, zbr->lnum, zbr->offs, zbr->len,
@@ -940,14 +951,21 @@ void ubifs_dump_pnode(struct ubifs_info *c, struct ubifs_pnode *pnode,
 		       i, lp->free, lp->dirty, lp->flags, lp->lnum);
 	}
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void ubifs_dump_tnc(struct ubifs_info *c)
 {
 	struct ubifs_znode *znode;
 	int level;
 
+<<<<<<< HEAD
 	total_znode = 0;
 	total_tnc_leaf_lens = 0;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pr_err("\n");
 	pr_err("(pid %d) start dumping TNC tree\n", current->pid);
 	znode = ubifs_tnc_levelorder_next(c->zroot.znode, NULL);
@@ -962,7 +980,10 @@ void ubifs_dump_tnc(struct ubifs_info *c)
 		znode = ubifs_tnc_levelorder_next(c->zroot.znode, znode);
 	}
 	pr_err("(pid %d) finish dumping TNC tree\n", current->pid);
+<<<<<<< HEAD
 	pr_err("total_znode =  %d, total_tnc_leaf_lens = %d bytes at TNC tree\n", total_znode, total_tnc_leaf_lens);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int dump_znode(struct ubifs_info *c, struct ubifs_znode *znode,
@@ -1149,6 +1170,10 @@ int dbg_check_dir(struct ubifs_info *c, const struct inode *dir)
 			err = PTR_ERR(dent);
 			if (err == -ENOENT)
 				break;
+<<<<<<< HEAD
+=======
+			kfree(pdent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return err;
 		}
 
@@ -2698,6 +2723,7 @@ static int provide_user_output(int val, char __user *u, size_t count,
 	return simple_read_from_buffer(u, count, ppos, buf, 2);
 }
 
+<<<<<<< HEAD
 void dbg_cal_znode_lens(const struct ubifs_info *c,
 		    const struct ubifs_znode *znode)
 {
@@ -2981,6 +3007,8 @@ static int provide_lca_tnc_output(int val, char __user *u, size_t count,
 }
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static ssize_t dfs_file_read(struct file *file, char __user *u, size_t count,
 			     loff_t *ppos)
 {
@@ -3003,6 +3031,7 @@ static ssize_t dfs_file_read(struct file *file, char __user *u, size_t count,
 		val = d->tst_rcvry;
 	else if (dent == d->dfs_ro_error)
 		val = c->ro_error;
+<<<<<<< HEAD
 	else if (dent == d->dfs_lca_debug) {
 		val = 1;
 		ubifs_err("test dfs_lca_debug should=1, count = %zu\n", count);
@@ -3030,6 +3059,9 @@ static ssize_t dfs_file_read(struct file *file, char __user *u, size_t count,
 		return simple_read_from_buffer(u, count, ppos, buf, len);
 
 	} else
+=======
+	else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	return provide_user_output(val, u, count, ppos);
@@ -3232,6 +3264,7 @@ int dbg_debugfs_init_fs(struct ubifs_info *c)
 		goto out_remove;
 	d->dfs_ro_error = dent;
 
+<<<<<<< HEAD
 	fname = "lca_debug";
 	dent = debugfs_create_file(fname, S_IRUSR , d->dfs_dir, c,
 			&dfs_fops);
@@ -3270,6 +3303,8 @@ int dbg_debugfs_init_fs(struct ubifs_info *c)
 	d->dfs_host_wcount = dent;
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_remove:
@@ -3299,7 +3334,10 @@ static struct dentry *dfs_chk_orph;
 static struct dentry *dfs_chk_lprops;
 static struct dentry *dfs_chk_fs;
 static struct dentry *dfs_tst_rcvry;
+<<<<<<< HEAD
 static struct dentry *dfs_lca_debug;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static ssize_t dfs_global_file_read(struct file *file, char __user *u,
 				    size_t count, loff_t *ppos)
@@ -3319,10 +3357,14 @@ static ssize_t dfs_global_file_read(struct file *file, char __user *u,
 		val = ubifs_dbg.chk_fs;
 	else if (dent == dfs_tst_rcvry)
 		val = ubifs_dbg.tst_rcvry;
+<<<<<<< HEAD
 	else if (dent == dfs_lca_debug) {
 		val = 1;
 		return dbg_show_all_tnc_info(val, u, count, ppos);
 	} else
+=======
+	else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	return provide_user_output(val, u, count, ppos);
@@ -3428,6 +3470,7 @@ int dbg_debugfs_init(void)
 		goto out_remove;
 	dfs_tst_rcvry = dent;
 
+<<<<<<< HEAD
 
 	fname = "lca_tnc";
 	dent = debugfs_create_file(fname, S_IRUSR , dfs_rootdir, NULL,
@@ -3436,6 +3479,8 @@ int dbg_debugfs_init(void)
 		goto out_remove;
 	dfs_lca_debug = dent;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_remove:

@@ -792,9 +792,16 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int ssb_bus_register(struct ssb_bus *bus,
 			    ssb_invariants_func_t get_invariants,
 			    unsigned long baseaddr)
+=======
+static int __maybe_unused
+ssb_bus_register(struct ssb_bus *bus,
+		 ssb_invariants_func_t get_invariants,
+		 unsigned long baseaddr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int err;
 

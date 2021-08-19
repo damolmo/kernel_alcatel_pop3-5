@@ -884,6 +884,7 @@ static int sccnxp_probe(struct platform_device *pdev)
 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk)) {
+<<<<<<< HEAD
 		if (PTR_ERR(clk) == -EPROBE_DEFER) {
 			ret = -EPROBE_DEFER;
 			goto err_out;
@@ -892,6 +893,21 @@ static int sccnxp_probe(struct platform_device *pdev)
 		uartclk = s->chip->freq_std;
 	} else
 		uartclk = clk_get_rate(clk);
+=======
+		ret = PTR_ERR(clk);
+		if (ret == -EPROBE_DEFER)
+			goto err_out;
+		uartclk = 0;
+	} else {
+		clk_prepare_enable(clk);
+		uartclk = clk_get_rate(clk);
+	}
+
+	if (!uartclk) {
+		dev_notice(&pdev->dev, "Using default clock frequency\n");
+		uartclk = s->chip->freq_std;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Check input frequency */
 	if ((uartclk < s->chip->freq_min) || (uartclk > s->chip->freq_max)) {

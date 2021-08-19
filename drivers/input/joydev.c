@@ -453,7 +453,11 @@ static int joydev_handle_JSIOCSAXMAP(struct joydev *joydev,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < joydev->nabs; i++) {
+=======
+	for (i = 0; i < len && i < joydev->nabs; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (abspam[i] > ABS_MAX) {
 			retval = -EINVAL;
 			goto out;
@@ -477,6 +481,12 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 	int i;
 	int retval = 0;
 
+<<<<<<< HEAD
+=======
+	if (len % sizeof(*keypam))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	len = min(len, sizeof(joydev->keypam));
 
 	/* Validate the map. */
@@ -489,7 +499,11 @@ static int joydev_handle_JSIOCSBTNMAP(struct joydev *joydev,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < joydev->nkey; i++) {
+=======
+	for (i = 0; i < (len / 2) && i < joydev->nkey; i++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (keypam[i] > KEY_MAX || keypam[i] < BTN_MISC) {
 			retval = -EINVAL;
 			goto out;

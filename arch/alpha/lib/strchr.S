@@ -5,7 +5,11 @@
  * Return the address of a given character within a null-terminated
  * string, or null if it is not found.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/regdef.h>
 
 	.set noreorder
@@ -68,3 +72,7 @@ $retnull:
 	ret			# .. e1 :
 
 	.end strchr
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strchr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

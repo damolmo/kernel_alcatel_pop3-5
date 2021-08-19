@@ -99,9 +99,15 @@ DeleteMidQEntry(struct mid_q_entry *midEntry)
 	   something is wrong, unless it is quite a slow link or server */
 	if ((now - midEntry->when_alloc) > HZ) {
 		if ((cifsFYI & CIFS_TIMER) && (midEntry->command != command)) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG " CIFS slow rsp: cmd %d mid %llu",
 			       midEntry->command, midEntry->mid);
 			printk(" A: 0x%lx S: 0x%lx R: 0x%lx\n",
+=======
+			pr_debug(" CIFS slow rsp: cmd %d mid %llu",
+			       midEntry->command, midEntry->mid);
+			pr_info(" A: 0x%lx S: 0x%lx R: 0x%lx\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       now - midEntry->when_alloc,
 			       now - midEntry->when_sent,
 			       now - midEntry->when_received);
@@ -360,7 +366,11 @@ uncork:
 	if (rc < 0 && rc != -EINTR)
 		cifs_dbg(VFS, "Error %d sending data on socket to server\n",
 			 rc);
+<<<<<<< HEAD
 	else
+=======
+	else if (rc > 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rc = 0;
 
 	return rc;
@@ -576,14 +586,25 @@ cifs_call_async(struct TCP_Server_Info *server, struct smb_rqst *rqst,
 	cifs_in_send_dec(server);
 	cifs_save_when_sent(mid);
 
+<<<<<<< HEAD
 	if (rc < 0)
 		server->sequence_number -= 2;
+=======
+	if (rc < 0) {
+		server->sequence_number -= 2;
+		cifs_delete_mid(mid);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&server->srv_mutex);
 
 	if (rc == 0)
 		return 0;
 
+<<<<<<< HEAD
 	cifs_delete_mid(mid);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	add_credits_and_wake_if(server, credits, optype);
 	return rc;
 }
@@ -782,9 +803,17 @@ SendReceive2(const unsigned int xid, struct cifs_ses *ses,
 
 	rc = wait_for_response(ses->server, midQ);
 	if (rc != 0) {
+<<<<<<< HEAD
 		send_cancel(ses->server, buf, midQ);
 		spin_lock(&GlobalMid_Lock);
 		if (midQ->mid_state == MID_REQUEST_SUBMITTED) {
+=======
+		cifs_dbg(FYI, "Cancelling wait for mid %llu\n",	midQ->mid);
+		send_cancel(ses->server, buf, midQ);
+		spin_lock(&GlobalMid_Lock);
+		if (midQ->mid_state == MID_REQUEST_SUBMITTED) {
+			midQ->mid_flags |= MID_WAIT_CANCELLED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			midQ->callback = DeleteMidQEntry;
 			spin_unlock(&GlobalMid_Lock);
 			cifs_small_buf_release(buf);

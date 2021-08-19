@@ -81,6 +81,12 @@ static bool turbo_mode = true;
 module_param(turbo_mode, bool, 0644);
 MODULE_PARM_DESC(turbo_mode, "Enable multiple frames per Rx transaction");
 
+<<<<<<< HEAD
+=======
+static int smsc75xx_link_ok_nopm(struct usbnet *dev);
+static int smsc75xx_phy_gig_workaround(struct usbnet *dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
 					    u32 *data, int in_pm)
 {
@@ -725,6 +731,12 @@ static int smsc75xx_ethtool_set_wol(struct net_device *net,
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (wolinfo->wolopts & ~SUPPORTED_WAKE)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pdata->wolopts = wolinfo->wolopts & SUPPORTED_WAKE;
 
 	ret = device_set_wakeup_enable(&dev->udev->dev, pdata->wolopts);
@@ -840,6 +852,12 @@ static int smsc75xx_phy_initialize(struct usbnet *dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	/* phy workaround for gig link */
+	smsc75xx_phy_gig_workaround(dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	smsc75xx_mdio_write(dev->net, dev->mii.phy_id, MII_ADVERTISE,
 		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
 		ADVERTISE_PAUSE_ASYM);
@@ -945,10 +963,18 @@ static int smsc75xx_set_features(struct net_device *netdev,
 	/* it's racing here! */
 
 	ret = smsc75xx_write_reg(dev, RFE_CTL, pdata->rfe_ctl);
+<<<<<<< HEAD
 	if (ret < 0)
 		netdev_warn(dev->net, "Error writing RFE_CTL\n");
 
 	return ret;
+=======
+	if (ret < 0) {
+		netdev_warn(dev->net, "Error writing RFE_CTL\n");
+		return ret;
+	}
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int smsc75xx_wait_ready(struct usbnet *dev, int in_pm)
@@ -977,6 +1003,65 @@ static int smsc75xx_wait_ready(struct usbnet *dev, int in_pm)
 	return -EIO;
 }
 
+<<<<<<< HEAD
+=======
+static int smsc75xx_phy_gig_workaround(struct usbnet *dev)
+{
+	struct mii_if_info *mii = &dev->mii;
+	int ret = 0, timeout = 0;
+	u32 buf, link_up = 0;
+
+	/* Set the phy in Gig loopback */
+	smsc75xx_mdio_write(dev->net, mii->phy_id, MII_BMCR, 0x4040);
+
+	/* Wait for the link up */
+	do {
+		link_up = smsc75xx_link_ok_nopm(dev);
+		usleep_range(10000, 20000);
+		timeout++;
+	} while ((!link_up) && (timeout < 1000));
+
+	if (timeout >= 1000) {
+		netdev_warn(dev->net, "Timeout waiting for PHY link up\n");
+		return -EIO;
+	}
+
+	/* phy reset */
+	ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+	if (ret < 0) {
+		netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n", ret);
+		return ret;
+	}
+
+	buf |= PMT_CTL_PHY_RST;
+
+	ret = smsc75xx_write_reg(dev, PMT_CTL, buf);
+	if (ret < 0) {
+		netdev_warn(dev->net, "Failed to write PMT_CTL: %d\n", ret);
+		return ret;
+	}
+
+	timeout = 0;
+	do {
+		usleep_range(10000, 20000);
+		ret = smsc75xx_read_reg(dev, PMT_CTL, &buf);
+		if (ret < 0) {
+			netdev_warn(dev->net, "Failed to read PMT_CTL: %d\n",
+				    ret);
+			return ret;
+		}
+		timeout++;
+	} while ((buf & PMT_CTL_PHY_RST) && (timeout < 100));
+
+	if (timeout >= 100) {
+		netdev_warn(dev->net, "timeout waiting for PHY Reset\n");
+		return -EIO;
+	}
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int smsc75xx_reset(struct usbnet *dev)
 {
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
@@ -1419,7 +1504,11 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	ret = smsc75xx_wait_ready(dev, 0);
 	if (ret < 0) {
 		netdev_warn(dev->net, "device not ready in smsc75xx_bind\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		goto free_pdata;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	smsc75xx_init_mac_address(dev);
@@ -1428,7 +1517,11 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	ret = smsc75xx_reset(dev);
 	if (ret < 0) {
 		netdev_warn(dev->net, "smsc75xx_reset error %d\n", ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto cancel_work;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	dev->net->netdev_ops = &smsc75xx_netdev_ops;
@@ -1437,15 +1530,31 @@ static int smsc75xx_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->hard_header_len += SMSC75XX_TX_OVERHEAD;
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
 	return 0;
+<<<<<<< HEAD
+=======
+
+cancel_work:
+	cancel_work_sync(&pdata->set_multicast);
+free_pdata:
+	kfree(pdata);
+	dev->data[0] = 0;
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void smsc75xx_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct smsc75xx_priv *pdata = (struct smsc75xx_priv *)(dev->data[0]);
 	if (pdata) {
+<<<<<<< HEAD
 		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
 		kfree(pdata);
 		pdata = NULL;
+=======
+		cancel_work_sync(&pdata->set_multicast);
+		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+		kfree(pdata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev->data[0] = 0;
 	}
 }
@@ -2198,6 +2307,7 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 {
 	u32 tx_cmd_a, tx_cmd_b;
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < SMSC75XX_TX_OVERHEAD) {
 		struct sk_buff *skb2 =
 			skb_copy_expand(skb, SMSC75XX_TX_OVERHEAD, 0, flags);
@@ -2205,6 +2315,11 @@ static struct sk_buff *smsc75xx_tx_fixup(struct usbnet *dev,
 		skb = skb2;
 		if (!skb)
 			return NULL;
+=======
+	if (skb_cow_head(skb, SMSC75XX_TX_OVERHEAD)) {
+		dev_kfree_skb_any(skb);
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	tx_cmd_a = (u32)(skb->len & TX_CMD_A_LEN) | TX_CMD_A_FCS;

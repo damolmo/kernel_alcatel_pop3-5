@@ -860,6 +860,14 @@ retest:
 	case IB_CM_SIDR_REQ_RCVD:
 		spin_unlock_irq(&cm_id_priv->lock);
 		cm_reject_sidr_req(cm_id_priv, IB_SIDR_REJECT);
+<<<<<<< HEAD
+=======
+		spin_lock_irq(&cm.lock);
+		if (!RB_EMPTY_NODE(&cm_id_priv->sidr_id_node))
+			rb_erase(&cm_id_priv->sidr_id_node,
+				 &cm.remote_sidr_table);
+		spin_unlock_irq(&cm.lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case IB_CM_REQ_SENT:
 		ib_cancel_mad(cm_id_priv->av.port->mad_agent, cm_id_priv->msg);
@@ -1132,6 +1140,10 @@ int ib_send_cm_req(struct ib_cm_id *cm_id,
 							    id.local_id);
 	if (IS_ERR(cm_id_priv->timewait_info)) {
 		ret = PTR_ERR(cm_id_priv->timewait_info);
+<<<<<<< HEAD
+=======
+		cm_id_priv->timewait_info = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -1540,6 +1552,10 @@ static int cm_req_handler(struct cm_work *work)
 							    id.local_id);
 	if (IS_ERR(cm_id_priv->timewait_info)) {
 		ret = PTR_ERR(cm_id_priv->timewait_info);
+<<<<<<< HEAD
+=======
+		cm_id_priv->timewait_info = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto destroy;
 	}
 	cm_id_priv->timewait_info->work.remote_id = req_msg->local_comm_id;
@@ -3099,7 +3115,14 @@ int ib_send_cm_sidr_rep(struct ib_cm_id *cm_id,
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
 	spin_lock_irqsave(&cm.lock, flags);
+<<<<<<< HEAD
 	rb_erase(&cm_id_priv->sidr_id_node, &cm.remote_sidr_table);
+=======
+	if (!RB_EMPTY_NODE(&cm_id_priv->sidr_id_node)) {
+		rb_erase(&cm_id_priv->sidr_id_node, &cm.remote_sidr_table);
+		RB_CLEAR_NODE(&cm_id_priv->sidr_id_node);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock_irqrestore(&cm.lock, flags);
 	return 0;
 

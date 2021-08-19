@@ -233,6 +233,18 @@ struct exynos_drm_gem_obj *exynos_drm_gem_create(struct drm_device *dev,
 	if (!buf)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
+=======
+	if (!is_drm_iommu_supported(dev) && (flags & EXYNOS_BO_NONCONTIG)) {
+		/*
+		 * when no IOMMU is available, all allocated buffers are
+		 * contiguous anyway, so drop EXYNOS_BO_NONCONTIG flag
+		 */
+		flags &= ~EXYNOS_BO_NONCONTIG;
+		DRM_WARN("Non-contiguous allocation is not supported without IOMMU, falling back to contiguous buffer\n");
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	exynos_gem_obj = exynos_drm_gem_init(dev, size);
 	if (!exynos_gem_obj) {
 		ret = -ENOMEM;

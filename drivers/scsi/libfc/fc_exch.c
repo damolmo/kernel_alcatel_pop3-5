@@ -733,8 +733,11 @@ static bool fc_invoke_resp(struct fc_exch *ep, struct fc_seq *sp,
 	if (resp) {
 		resp(sp, fp, arg);
 		res = true;
+<<<<<<< HEAD
 	} else if (!IS_ERR(fp)) {
 		fc_frame_free(fp);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	spin_lock_bh(&ep->ex_lock);
@@ -1579,8 +1582,18 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 		rc = fc_exch_done_locked(ep);
 		WARN_ON(fc_seq_exch(sp) != ep);
 		spin_unlock_bh(&ep->ex_lock);
+<<<<<<< HEAD
 		if (!rc)
 			fc_exch_delete(ep);
+=======
+		if (!rc) {
+			fc_exch_delete(ep);
+		} else {
+			FC_EXCH_DBG(ep, "ep is completed already,"
+					"hence skip calling the resp\n");
+			goto skip_resp;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*
@@ -1596,8 +1609,15 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 	 * If new exch resp handler is valid then call that
 	 * first.
 	 */
+<<<<<<< HEAD
 	fc_invoke_resp(ep, sp, fp);
 
+=======
+	if (!fc_invoke_resp(ep, sp, fp))
+		fc_frame_free(fp);
+
+skip_resp:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fc_exch_release(ep);
 	return;
 rel:
@@ -1695,7 +1715,12 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 	fc_exch_hold(ep);
 	if (!rc)
 		fc_exch_delete(ep);
+<<<<<<< HEAD
 	fc_invoke_resp(ep, sp, fp);
+=======
+	if (!fc_invoke_resp(ep, sp, fp))
+		fc_frame_free(fp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (has_rec)
 		fc_exch_timer_set(ep, ep->r_a_tov);
 	fc_exch_release(ep);
@@ -1841,10 +1866,23 @@ static void fc_exch_reset(struct fc_exch *ep)
 
 	fc_exch_hold(ep);
 
+<<<<<<< HEAD
 	if (!rc)
 		fc_exch_delete(ep);
 
 	fc_invoke_resp(ep, sp, ERR_PTR(-FC_EX_CLOSED));
+=======
+	if (!rc) {
+		fc_exch_delete(ep);
+	} else {
+		FC_EXCH_DBG(ep, "ep is completed already,"
+				"hence skip calling the resp\n");
+		goto skip_resp;
+	}
+
+	fc_invoke_resp(ep, sp, ERR_PTR(-FC_EX_CLOSED));
+skip_resp:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	fc_seq_set_resp(sp, NULL, ep->arg);
 	fc_exch_release(ep);
 }
@@ -2499,7 +2537,11 @@ void fc_exch_recv(struct fc_lport *lport, struct fc_frame *fp)
 
 	/* lport lock ? */
 	if (!lport || lport->state == LPORT_ST_DISABLED) {
+<<<<<<< HEAD
 		FC_LPORT_DBG(lport, "Receiving frames for an lport that "
+=======
+		FC_LIBFC_DBG("Receiving frames for an lport that "
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			     "has not been initialized correctly\n");
 		fc_frame_free(fp);
 		return;

@@ -674,6 +674,7 @@ static int ata_ioc32(struct ata_port *ap)
 int ata_sas_scsi_ioctl(struct ata_port *ap, struct scsi_device *scsidev,
 		     int cmd, void __user *arg)
 {
+<<<<<<< HEAD
 	int val = -EINVAL, rc = -EINVAL;
 	unsigned long flags;
 
@@ -687,6 +688,20 @@ int ata_sas_scsi_ioctl(struct ata_port *ap, struct scsi_device *scsidev,
 		return 0;
 
 	case ATA_IOC_SET_IO32:
+=======
+	unsigned long val;
+	int rc = -EINVAL;
+	unsigned long flags;
+
+	switch (cmd) {
+	case HDIO_GET_32BIT:
+		spin_lock_irqsave(ap->lock, flags);
+		val = ata_ioc32(ap);
+		spin_unlock_irqrestore(ap->lock, flags);
+		return put_user(val, (unsigned long __user *)arg);
+
+	case HDIO_SET_32BIT:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		val = (unsigned long) arg;
 		rc = 0;
 		spin_lock_irqsave(ap->lock, flags);
@@ -1641,6 +1656,24 @@ nothing_to_do:
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+static bool ata_check_nblocks(struct scsi_cmnd *scmd, u32 n_blocks)
+{
+	struct request *rq = scmd->request;
+	u32 req_blocks;
+
+	if (!blk_rq_is_passthrough(rq))
+		return true;
+
+	req_blocks = blk_rq_bytes(rq) / scmd->device->sector_size;
+	if (n_blocks > req_blocks)
+		return false;
+
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	ata_scsi_rw_xlat - Translate SCSI r/w command into an ATA one
  *	@qc: Storage for translated ATA taskfile
@@ -1680,6 +1713,11 @@ static unsigned int ata_scsi_rw_xlat(struct ata_queued_cmd *qc)
 		scsi_10_lba_len(cdb, &block, &n_block);
 		if (cdb[1] & (1 << 3))
 			tf_flags |= ATA_TFLAG_FUA;
+<<<<<<< HEAD
+=======
+		if (!ata_check_nblocks(scmd, n_block))
+			goto invalid_fld;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case READ_6:
 	case WRITE_6:
@@ -1692,6 +1730,11 @@ static unsigned int ata_scsi_rw_xlat(struct ata_queued_cmd *qc)
 		 */
 		if (!n_block)
 			n_block = 256;
+<<<<<<< HEAD
+=======
+		if (!ata_check_nblocks(scmd, n_block))
+			goto invalid_fld;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case READ_16:
 	case WRITE_16:
@@ -1700,6 +1743,11 @@ static unsigned int ata_scsi_rw_xlat(struct ata_queued_cmd *qc)
 		scsi_16_lba_len(cdb, &block, &n_block);
 		if (cdb[1] & (1 << 3))
 			tf_flags |= ATA_TFLAG_FUA;
+<<<<<<< HEAD
+=======
+		if (!ata_check_nblocks(scmd, n_block))
+			goto invalid_fld;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		DPRINTK("no-byte command\n");
@@ -2514,6 +2562,7 @@ static unsigned int ata_scsiop_read_cap(struct ata_scsi_args *args, u8 *rbuf)
 		rbuf[14] = (lowest_aligned >> 8) & 0x3f;
 		rbuf[15] = lowest_aligned;
 
+<<<<<<< HEAD
 		if (ata_id_has_trim(args->id)) {
 			rbuf[14] |= 0x80; /* TPE */
 
@@ -2522,6 +2571,19 @@ static unsigned int ata_scsiop_read_cap(struct ata_scsi_args *args, u8 *rbuf)
 		}
 	}
 
+=======
+		if (ata_id_has_trim(args->id) &&
+		    !(dev->horkage & ATA_HORKAGE_NOTRIM)) {
+			rbuf[14] |= 0x80; /* LBPME */
+
+			if (ata_id_has_zero_after_trim(args->id) &&
+			    dev->horkage & ATA_HORKAGE_ZERO_AFTER_TRIM) {
+				ata_dev_info(dev, "Enabling discard_zeroes_data\n");
+				rbuf[14] |= 0x40; /* LBPRZ */
+			}
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -2796,10 +2858,19 @@ static unsigned int atapi_xlat(struct ata_queued_cmd *qc)
 static struct ata_device *ata_find_dev(struct ata_port *ap, int devno)
 {
 	if (!sata_pmp_attached(ap)) {
+<<<<<<< HEAD
 		if (likely(devno < ata_link_max_devices(&ap->link)))
 			return &ap->link.device[devno];
 	} else {
 		if (likely(devno < ap->nr_pmp_links))
+=======
+		if (likely(devno >= 0 &&
+			   devno < ata_link_max_devices(&ap->link)))
+			return &ap->link.device[devno];
+	} else {
+		if (likely(devno >= 0 &&
+			   devno < ap->nr_pmp_links))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return &ap->pmp_link[devno].device[0];
 	}
 
@@ -3425,7 +3496,13 @@ static inline int __ata_scsi_queuecmd(struct scsi_cmnd *scmd,
 		if (likely((scsi_op != ATA_16) || !atapi_passthru16)) {
 			/* relay SCSI command to ATAPI device */
 			int len = COMMAND_SIZE(scsi_op);
+<<<<<<< HEAD
 			if (unlikely(len > scmd->cmd_len || len > dev->cdb_len))
+=======
+			if (unlikely(len > scmd->cmd_len ||
+				     len > dev->cdb_len ||
+				     scmd->cmd_len > ATAPI_CDB_LEN))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto bad_cdb_len;
 
 			xlat_func = atapi_xlat;
@@ -3650,22 +3727,36 @@ int ata_scsi_add_hosts(struct ata_host *host, struct scsi_host_template *sht)
 		 */
 		shost->max_host_blocked = 1;
 
+<<<<<<< HEAD
 		rc = scsi_add_host_with_dma(ap->scsi_host,
 						&ap->tdev, ap->host->dev);
 		if (rc)
 			goto err_add;
+=======
+		rc = scsi_add_host_with_dma(shost, &ap->tdev, ap->host->dev);
+		if (rc)
+			goto err_alloc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
 
+<<<<<<< HEAD
  err_add:
 	scsi_host_put(host->ports[i]->scsi_host);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  err_alloc:
 	while (--i >= 0) {
 		struct Scsi_Host *shost = host->ports[i]->scsi_host;
 
+<<<<<<< HEAD
 		scsi_remove_host(shost);
 		scsi_host_put(shost);
+=======
+		/* scsi_host_put() is in ata_devres_release() */
+		scsi_remove_host(shost);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return rc;
 }

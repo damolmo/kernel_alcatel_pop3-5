@@ -1250,7 +1250,11 @@ static int rr_open(struct net_device *dev)
 		rrpriv->info = NULL;
 	}
 	if (rrpriv->rx_ctrl) {
+<<<<<<< HEAD
 		pci_free_consistent(pdev, sizeof(struct ring_ctrl),
+=======
+		pci_free_consistent(pdev, 256 * sizeof(struct ring_ctrl),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				    rrpriv->rx_ctrl, rrpriv->rx_ctrl_dma);
 		rrpriv->rx_ctrl = NULL;
 	}
@@ -1381,8 +1385,13 @@ static int rr_close(struct net_device *dev)
 			    rrpriv->info_dma);
 	rrpriv->info = NULL;
 
+<<<<<<< HEAD
 	free_irq(pdev->irq, dev);
 	spin_unlock_irqrestore(&rrpriv->lock, flags);
+=======
+	spin_unlock_irqrestore(&rrpriv->lock, flags);
+	free_irq(pdev->irq, dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

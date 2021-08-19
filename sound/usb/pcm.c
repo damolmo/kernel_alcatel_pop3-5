@@ -159,6 +159,11 @@ static int init_pitch_v1(struct snd_usb_audio *chip, int iface,
 	unsigned char data[1];
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (get_iface_desc(alts)->bNumEndpoints < 1)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ep = get_endpoint(alts, 0)->bEndpointAddress;
 
 	data[0] = 1;
@@ -216,7 +221,11 @@ int snd_usb_init_pitch(struct snd_usb_audio *chip, int iface,
 	}
 }
 
+<<<<<<< HEAD
 static int start_endpoints(struct snd_usb_substream *subs, bool can_sleep)
+=======
+static int start_endpoints(struct snd_usb_substream *subs)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int err;
 
@@ -229,7 +238,11 @@ static int start_endpoints(struct snd_usb_substream *subs, bool can_sleep)
 		dev_dbg(&subs->dev->dev, "Starting data EP @%p\n", ep);
 
 		ep->data_subs = subs;
+<<<<<<< HEAD
 		err = snd_usb_endpoint_start(ep, can_sleep);
+=======
+		err = snd_usb_endpoint_start(ep);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0) {
 			clear_bit(SUBSTREAM_FLAG_DATA_EP_STARTED, &subs->flags);
 			return err;
@@ -258,7 +271,11 @@ static int start_endpoints(struct snd_usb_substream *subs, bool can_sleep)
 		dev_dbg(&subs->dev->dev, "Starting sync EP @%p\n", ep);
 
 		ep->sync_slave = subs->data_endpoint;
+<<<<<<< HEAD
 		err = snd_usb_endpoint_start(ep, can_sleep);
+=======
+		err = snd_usb_endpoint_start(ep);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0) {
 			clear_bit(SUBSTREAM_FLAG_SYNC_EP_STARTED, &subs->flags);
 			return err;
@@ -311,6 +328,12 @@ static int search_roland_implicit_fb(struct usb_device *dev, int ifnum,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* Setup an implicit feedback endpoint from a quirk. Returns 0 if no quirk
+ * applies. Returns 1 if a quirk was found.
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int set_sync_ep_implicit_fb_quirk(struct snd_usb_substream *subs,
 					 struct usb_device *dev,
 					 struct usb_interface_descriptor *altsd,
@@ -319,6 +342,10 @@ static int set_sync_ep_implicit_fb_quirk(struct snd_usb_substream *subs,
 	struct usb_host_interface *alts;
 	struct usb_interface *iface;
 	unsigned int ep;
+<<<<<<< HEAD
+=======
+	unsigned int ifnum;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Implicit feedback sync EPs consumers are always playback EPs */
 	if (subs->direction != SNDRV_PCM_STREAM_PLAYBACK)
@@ -327,6 +354,7 @@ static int set_sync_ep_implicit_fb_quirk(struct snd_usb_substream *subs,
 	switch (subs->stream->chip->usb_id) {
 	case USB_ID(0x0763, 0x2030): /* M-Audio Fast Track C400 */
 	case USB_ID(0x0763, 0x2031): /* M-Audio Fast Track C600 */
+<<<<<<< HEAD
 		ep = 0x81;
 		iface = usb_ifnum_to_if(dev, 3);
 
@@ -347,6 +375,23 @@ static int set_sync_ep_implicit_fb_quirk(struct snd_usb_substream *subs,
 		alts = &iface->altsetting[1];
 		goto add_sync_ep;
 	}
+=======
+	case USB_ID(0x22f0, 0x0006): /* Allen&Heath Qu-16 */
+		ep = 0x81;
+		ifnum = 3;
+		goto add_sync_ep_from_ifnum;
+	case USB_ID(0x0763, 0x2080): /* M-Audio FastTrack Ultra */
+	case USB_ID(0x0763, 0x2081):
+		ep = 0x81;
+		ifnum = 2;
+		goto add_sync_ep_from_ifnum;
+	case USB_ID(0x1397, 0x0002):
+		ep = 0x81;
+		ifnum = 1;
+		goto add_sync_ep_from_ifnum;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (attr == USB_ENDPOINT_SYNC_ASYNC &&
 	    altsd->bInterfaceClass == USB_CLASS_VENDOR_SPEC &&
 	    altsd->bInterfaceProtocol == 2 &&
@@ -361,6 +406,17 @@ static int set_sync_ep_implicit_fb_quirk(struct snd_usb_substream *subs,
 	/* No quirk */
 	return 0;
 
+<<<<<<< HEAD
+=======
+add_sync_ep_from_ifnum:
+	iface = usb_ifnum_to_if(dev, ifnum);
+
+	if (!iface || iface->num_altsetting < 2)
+		return -EINVAL;
+
+	alts = &iface->altsetting[1];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 add_sync_ep:
 	subs->sync_endpoint = snd_usb_add_endpoint(subs->stream->chip,
 						   alts, ep, !subs->direction,
@@ -370,7 +426,11 @@ add_sync_ep:
 
 	subs->data_endpoint->sync_master = subs->sync_endpoint;
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int set_sync_endpoint(struct snd_usb_substream *subs,
@@ -395,6 +455,13 @@ static int set_sync_endpoint(struct snd_usb_substream *subs,
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
+=======
+	/* endpoint set by quirk */
+	if (err > 0)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (altsd->bNumEndpoints < 2)
 		return 0;
 
@@ -419,6 +486,10 @@ static int set_sync_endpoint(struct snd_usb_substream *subs,
 	}
 	ep = get_endpoint(alts, 1)->bEndpointAddress;
 	if (get_endpoint(alts, 0)->bLength >= USB_DT_ENDPOINT_AUDIO_SIZE &&
+<<<<<<< HEAD
+=======
+	    get_endpoint(alts, 0)->bSynchAddress != 0 &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    ((is_playback && ep != (unsigned int)(get_endpoint(alts, 0)->bSynchAddress | USB_DIR_IN)) ||
 	     (!is_playback && ep != (unsigned int)(get_endpoint(alts, 0)->bSynchAddress & ~USB_DIR_IN)))) {
 		dev_err(&dev->dev,
@@ -813,7 +884,11 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
 	/* for playback, submit the URBs now; otherwise, the first hwptr_done
 	 * updates for all URBs would happen at the same time when starting */
 	if (subs->direction == SNDRV_PCM_STREAM_PLAYBACK)
+<<<<<<< HEAD
 		ret = start_endpoints(subs, true);
+=======
+		ret = start_endpoints(subs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
  unlock:
 	up_read(&subs->stream->chip->shutdown_rwsem);
@@ -1257,13 +1332,26 @@ static void retire_capture_urb(struct snd_usb_substream *subs,
 			// continue;
 		}
 		bytes = urb->iso_frame_desc[i].actual_length;
+<<<<<<< HEAD
+=======
+		if (subs->stream_offset_adj > 0) {
+			unsigned int adj = min(subs->stream_offset_adj, bytes);
+			cp += adj;
+			bytes -= adj;
+			subs->stream_offset_adj -= adj;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		frames = bytes / stride;
 		if (!subs->txfr_quirk)
 			bytes = frames * stride;
 		if (bytes % (runtime->sample_bits >> 3) != 0) {
 			int oldbytes = bytes;
 			bytes = frames * stride;
+<<<<<<< HEAD
 			dev_warn(&subs->dev->dev,
+=======
+			dev_warn_ratelimited(&subs->dev->dev,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				 "Corrected urb data len. %d->%d\n",
 							oldbytes, bytes);
 		}
@@ -1578,7 +1666,11 @@ static int snd_usb_substream_capture_trigger(struct snd_pcm_substream *substream
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		err = start_endpoints(subs, false);
+=======
+		err = start_endpoints(subs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0)
 			return err;
 

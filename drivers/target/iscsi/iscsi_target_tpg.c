@@ -261,7 +261,10 @@ err_out:
 		iscsi_release_param_list(tpg->param_list);
 		tpg->param_list = NULL;
 	}
+<<<<<<< HEAD
 	kfree(tpg);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return -ENOMEM;
 }
 
@@ -464,7 +467,10 @@ static bool iscsit_tpg_check_network_portal(
 struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 	struct iscsi_portal_group *tpg,
 	struct __kernel_sockaddr_storage *sockaddr,
+<<<<<<< HEAD
 	char *ip_str,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct iscsi_tpg_np *tpg_np_parent,
 	int network_transport)
 {
@@ -474,8 +480,13 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 	if (!tpg_np_parent) {
 		if (iscsit_tpg_check_network_portal(tpg->tpg_tiqn, sockaddr,
 				network_transport)) {
+<<<<<<< HEAD
 			pr_err("Network Portal: %s already exists on a"
 				" different TPG on %s\n", ip_str,
+=======
+			pr_err("Network Portal: %pISc already exists on a"
+				" different TPG on %s\n", sockaddr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				tpg->tpg_tiqn->tiqn);
 			return ERR_PTR(-EEXIST);
 		}
@@ -488,7 +499,11 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 		return ERR_PTR(-ENOMEM);
 	}
 
+<<<<<<< HEAD
 	np = iscsit_add_np(sockaddr, ip_str, network_transport);
+=======
+	np = iscsit_add_np(sockaddr, network_transport);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(np)) {
 		kfree(tpg_np);
 		return ERR_CAST(np);
@@ -519,8 +534,13 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 		spin_unlock(&tpg_np_parent->tpg_np_parent_lock);
 	}
 
+<<<<<<< HEAD
 	pr_debug("CORE[%s] - Added Network Portal: %s:%hu,%hu on %s\n",
 		tpg->tpg_tiqn->tiqn, np->np_ip, np->np_port, tpg->tpgt,
+=======
+	pr_debug("CORE[%s] - Added Network Portal: %pISc:%hu,%hu on %s\n",
+		tpg->tpg_tiqn->tiqn, &np->np_sockaddr, np->np_port, tpg->tpgt,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		np->np_transport->name);
 
 	return tpg_np;
@@ -533,8 +553,13 @@ static int iscsit_tpg_release_np(
 {
 	iscsit_clear_tpg_np_login_thread(tpg_np, tpg, true);
 
+<<<<<<< HEAD
 	pr_debug("CORE[%s] - Removed Network Portal: %s:%hu,%hu on %s\n",
 		tpg->tpg_tiqn->tiqn, np->np_ip, np->np_port, tpg->tpgt,
+=======
+	pr_debug("CORE[%s] - Removed Network Portal: %pISc:%hu,%hu on %s\n",
+		tpg->tpg_tiqn->tiqn, &np->np_sockaddr, np->np_port, tpg->tpgt,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		np->np_transport->name);
 
 	tpg_np->tpg_np = NULL;
@@ -652,8 +677,12 @@ int iscsit_ta_authentication(struct iscsi_portal_group *tpg, u32 authentication)
 		none = strstr(buf1, NONE);
 		if (none)
 			goto out;
+<<<<<<< HEAD
 		strncat(buf1, ",", strlen(","));
 		strncat(buf1, NONE, strlen(NONE));
+=======
+		strlcat(buf1, "," NONE, sizeof(buf1));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (iscsi_update_param_value(param, buf1) < 0)
 			return -EINVAL;
 	}

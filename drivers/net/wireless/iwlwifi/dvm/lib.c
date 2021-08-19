@@ -1022,7 +1022,11 @@ static void iwlagn_wowlan_program_keys(struct ieee80211_hw *hw,
 			u8 *pn = seq.ccmp.pn;
 
 			ieee80211_get_key_rx_seq(key, i, &seq);
+<<<<<<< HEAD
 			aes_sc->pn = cpu_to_le64(
+=======
+			aes_sc[i].pn = cpu_to_le64(
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					(u64)pn[5] |
 					((u64)pn[4] << 8) |
 					((u64)pn[3] << 16) |
@@ -1156,6 +1160,12 @@ int iwlagn_suspend(struct iwl_priv *priv, struct cfg80211_wowlan *wowlan)
 
 	priv->ucode_loaded = false;
 	iwl_trans_stop_device(priv->trans);
+<<<<<<< HEAD
+=======
+	ret = iwl_trans_start_hw(priv->trans);
+	if (ret)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv->wowlan = true;
 

@@ -388,11 +388,28 @@ int xstateregs_set(struct task_struct *target, const struct user_regset *regset,
 	xsave_hdr = &target->thread.fpu.state->xsave.xsave_hdr;
 
 	xsave_hdr->xstate_bv &= pcntxt_mask;
+<<<<<<< HEAD
+=======
+
+	/* xcomp_bv must be 0 when using uncompacted format */
+	if (!ret && xsave_hdr->xcomp_bv)
+		ret = -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * These bits must be zero.
 	 */
 	memset(xsave_hdr->reserved, 0, 48);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * In case of failure, mark all states as init:
+	 */
+	if (ret)
+		fpu_finit(&target->thread.fpu);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

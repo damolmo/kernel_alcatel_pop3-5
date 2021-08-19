@@ -68,13 +68,21 @@ int iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
 
 	iph->version	=	4;
 	iph->ihl	=	sizeof(struct iphdr) >> 2;
+<<<<<<< HEAD
 	iph->frag_off	=	df;
+=======
+	iph->frag_off	=	ip_mtu_locked(&rt->dst) ? 0 : df;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iph->protocol	=	proto;
 	iph->tos	=	tos;
 	iph->daddr	=	dst;
 	iph->saddr	=	src;
 	iph->ttl	=	ttl;
+<<<<<<< HEAD
 	__ip_select_ident(iph, skb_shinfo(skb)->gso_segs ?: 1);
+=======
+	__ip_select_ident(sock_net(sk), iph, skb_shinfo(skb)->gso_segs ?: 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = ip_local_out_sk(sk, skb);
 	if (unlikely(net_xmit_eval(err)))

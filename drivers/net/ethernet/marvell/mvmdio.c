@@ -241,7 +241,12 @@ static int orion_mdio_probe(struct platform_device *pdev)
 			dev->regs + MVMDIO_ERR_INT_MASK);
 
 	} else if (dev->err_interrupt == -EPROBE_DEFER) {
+<<<<<<< HEAD
 		return -EPROBE_DEFER;
+=======
+		ret = -EPROBE_DEFER;
+		goto out_mdio;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	mutex_init(&dev->lock);

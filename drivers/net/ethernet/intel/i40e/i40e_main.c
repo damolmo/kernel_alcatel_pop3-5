@@ -1952,6 +1952,13 @@ void i40e_vlan_stripping_enable(struct i40e_vsi *vsi)
 	struct i40e_vsi_context ctxt;
 	i40e_status ret;
 
+<<<<<<< HEAD
+=======
+	/* Don't modify stripping options if a port VLAN is active */
+	if (vsi->info.pvid)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((vsi->info.valid_sections &
 	     cpu_to_le16(I40E_AQ_VSI_PROP_VLAN_VALID)) &&
 	    ((vsi->info.port_vlan_flags & I40E_AQ_VSI_PVLAN_MODE_MASK) == 0))
@@ -1980,6 +1987,13 @@ void i40e_vlan_stripping_disable(struct i40e_vsi *vsi)
 	struct i40e_vsi_context ctxt;
 	i40e_status ret;
 
+<<<<<<< HEAD
+=======
+	/* Don't modify stripping options if a port VLAN is active */
+	if (vsi->info.pvid)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((vsi->info.valid_sections &
 	     cpu_to_le16(I40E_AQ_VSI_PROP_VLAN_VALID)) &&
 	    ((vsi->info.port_vlan_flags & I40E_AQ_VSI_PVLAN_EMOD_MASK) ==
@@ -3214,7 +3228,11 @@ static bool i40e_clean_fdir_tx_irq(struct i40e_ring *tx_ring, int budget)
 			break;
 
 		/* prevent any other reads prior to eop_desc */
+<<<<<<< HEAD
 		read_barrier_depends();
+=======
+		smp_rmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* if the descriptor isn't done, no work yet to do */
 		if (!(eop_desc->cmd_type_offset_bsz &
@@ -3814,8 +3832,17 @@ static void i40e_napi_enable_all(struct i40e_vsi *vsi)
 	if (!vsi->netdev)
 		return;
 
+<<<<<<< HEAD
 	for (q_idx = 0; q_idx < vsi->num_q_vectors; q_idx++)
 		napi_enable(&vsi->q_vectors[q_idx]->napi);
+=======
+	for (q_idx = 0; q_idx < vsi->num_q_vectors; q_idx++) {
+		struct i40e_q_vector *q_vector = vsi->q_vectors[q_idx];
+
+		if (q_vector->rx.ring || q_vector->tx.ring)
+			napi_enable(&q_vector->napi);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -3829,8 +3856,17 @@ static void i40e_napi_disable_all(struct i40e_vsi *vsi)
 	if (!vsi->netdev)
 		return;
 
+<<<<<<< HEAD
 	for (q_idx = 0; q_idx < vsi->num_q_vectors; q_idx++)
 		napi_disable(&vsi->q_vectors[q_idx]->napi);
+=======
+	for (q_idx = 0; q_idx < vsi->num_q_vectors; q_idx++) {
+		struct i40e_q_vector *q_vector = vsi->q_vectors[q_idx];
+
+		if (q_vector->rx.ring || q_vector->tx.ring)
+			napi_disable(&q_vector->napi);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -5968,6 +6004,10 @@ static void i40e_reset_and_rebuild(struct i40e_pf *pf, bool reinit)
 {
 	struct i40e_hw *hw = &pf->hw;
 	i40e_status ret;
+<<<<<<< HEAD
+=======
+	u32 val;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 v;
 
 	/* Now we wait for GRST to settle out.
@@ -6092,6 +6132,23 @@ static void i40e_reset_and_rebuild(struct i40e_pf *pf, bool reinit)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Reconfigure hardware for allowing smaller MSS in the case
+	 * of TSO, so that we avoid the MDD being fired and causing
+	 * a reset in the case of small MSS+TSO.
+	 */
+#define I40E_REG_MSS          0x000E64DC
+#define I40E_REG_MSS_MIN_MASK 0x3FF0000
+#define I40E_64BYTE_MSS       0x400000
+	val = rd32(hw, I40E_REG_MSS);
+	if ((val & I40E_REG_MSS_MIN_MASK) > I40E_64BYTE_MSS) {
+		val &= ~I40E_REG_MSS_MIN_MASK;
+		val |= I40E_64BYTE_MSS;
+		wr32(hw, I40E_REG_MSS, val);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* reinit the misc interrupt */
 	if (pf->flags & I40E_FLAG_MSIX_ENABLED)
 		ret = i40e_setup_misc_vector(pf);
@@ -7060,6 +7117,10 @@ static int i40e_sw_init(struct i40e_pf *pf)
 {
 	int err = 0;
 	int size;
+<<<<<<< HEAD
+=======
+	u16 pow;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pf->msg_enable = netif_msg_init(I40E_DEFAULT_MSG_ENABLE,
 				(NETIF_MSG_DRV|NETIF_MSG_PROBE|NETIF_MSG_LINK));
@@ -7088,6 +7149,14 @@ static int i40e_sw_init(struct i40e_pf *pf)
 	pf->rss_size = 1;
 	pf->rss_size_max = min_t(int, pf->rss_size_max,
 				 pf->hw.func_caps.num_tx_qp);
+<<<<<<< HEAD
+=======
+
+	/* find the next higher power-of-2 of num cpus */
+	pow = roundup_pow_of_two(num_online_cpus());
+	pf->rss_size_max = min_t(int, pf->rss_size_max, pow);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pf->hw.func_caps.rss) {
 		pf->flags |= I40E_FLAG_RSS_ENABLED;
 		pf->rss_size = min_t(int, pf->rss_size_max, num_online_cpus());
@@ -8924,6 +8993,10 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	u16 link_status;
 	int err = 0;
 	u32 len;
+<<<<<<< HEAD
+=======
+	u32 val;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 i;
 
 	err = pci_enable_device_mem(pdev);
@@ -9158,6 +9231,20 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Reconfigure hardware for allowing smaller MSS in the case
+	 * of TSO, so that we avoid the MDD being fired and causing
+	 * a reset in the case of small MSS+TSO.
+	 */
+	val = rd32(hw, I40E_REG_MSS);
+	if ((val & I40E_REG_MSS_MIN_MASK) > I40E_64BYTE_MSS) {
+		val &= ~I40E_REG_MSS_MIN_MASK;
+		val |= I40E_64BYTE_MSS;
+		wr32(hw, I40E_REG_MSS, val);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* The main driver is (mostly) up and happy. We need to set this state
 	 * before setting up the misc vector or we get a race and the vector
 	 * ends up disabled forever.
@@ -9391,6 +9478,15 @@ static pci_ers_result_t i40e_pci_error_detected(struct pci_dev *pdev,
 
 	dev_info(&pdev->dev, "%s: error %d\n", __func__, error);
 
+<<<<<<< HEAD
+=======
+	if (!pf) {
+		dev_info(&pdev->dev,
+			 "Cannot recover - error happened during device probe\n");
+		return PCI_ERS_RESULT_DISCONNECT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* shutdown all operations */
 	if (!test_bit(__I40E_SUSPENDED, &pf->state)) {
 		rtnl_lock();

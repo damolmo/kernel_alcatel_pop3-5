@@ -1066,6 +1066,7 @@ struct hsm_action_item {
  * \retval buffer
  */
 static inline char *hai_dump_data_field(struct hsm_action_item *hai,
+<<<<<<< HEAD
 					char *buffer, int len)
 {
 	int i, sz, data_len;
@@ -1083,6 +1084,23 @@ static inline char *hai_dump_data_field(struct hsm_action_item *hai,
 		sz -= cnt;
 	}
 	*ptr = '\0';
+=======
+					char *buffer, size_t len)
+{
+	int i, data_len;
+	char *ptr;
+
+	ptr = buffer;
+	data_len = hai->hai_len - sizeof(*hai);
+	for (i = 0; (i < data_len) && (len > 2); i++) {
+		snprintf(ptr, 3, "%02X", (unsigned char)hai->hai_data[i]);
+		ptr += 2;
+		len -= 2;
+	}
+
+	*ptr = '\0';
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return buffer;
 }
 

@@ -58,6 +58,7 @@
 static bool drm_kms_helper_poll = true;
 module_param_named(poll, drm_kms_helper_poll, bool, 0600);
 
+<<<<<<< HEAD
 static enum drm_mode_status
 drm_mode_validate_flag(const struct drm_display_mode *mode,
 		       int flags)
@@ -75,6 +76,30 @@ drm_mode_validate_flag(const struct drm_display_mode *mode,
 		return MODE_NO_STEREO;
 
 	return MODE_OK;
+=======
+static void drm_mode_validate_flag(struct drm_connector *connector,
+				   int flags)
+{
+	struct drm_display_mode *mode;
+
+	if (flags == (DRM_MODE_FLAG_DBLSCAN | DRM_MODE_FLAG_INTERLACE |
+		      DRM_MODE_FLAG_3D_MASK))
+		return;
+
+	list_for_each_entry(mode, &connector->modes, head) {
+		if ((mode->flags & DRM_MODE_FLAG_INTERLACE) &&
+				!(flags & DRM_MODE_FLAG_INTERLACE))
+			mode->status = MODE_NO_INTERLACE;
+		if ((mode->flags & DRM_MODE_FLAG_DBLSCAN) &&
+				!(flags & DRM_MODE_FLAG_DBLSCAN))
+			mode->status = MODE_NO_DBLESCAN;
+		if ((mode->flags & DRM_MODE_FLAG_3D_MASK) &&
+				!(flags & DRM_MODE_FLAG_3D_MASK))
+			mode->status = MODE_NO_STEREO;
+	}
+
+	return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int drm_helper_probe_add_cmdline_mode(struct drm_connector *connector)
@@ -106,8 +131,13 @@ static int drm_helper_probe_single_connector_modes_merge_bits(struct drm_connect
 
 	WARN_ON(!mutex_is_locked(&dev->mode_config.mutex));
 
+<<<<<<< HEAD
 	//DRM_INFO("[CONNECTOR:%d:%s]\n", connector->base.id,
 			//connector->name);
+=======
+	DRM_DEBUG_KMS("[CONNECTOR:%d:%s]\n", connector->base.id,
+			connector->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* set all modes to the unverified state */
 	list_for_each_entry(mode, &connector->modes, head)
 		mode->status = MODE_UNVERIFIED;
@@ -146,6 +176,10 @@ static int drm_helper_probe_single_connector_modes_merge_bits(struct drm_connect
 			struct edid *edid = (struct edid *) connector->edid_blob_ptr->data;
 
 			count = drm_add_edid_modes(connector, edid);
+<<<<<<< HEAD
+=======
+			drm_edid_to_eld(connector, edid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else
 			count = (*connector_funcs->get_modes)(connector);
 	}
@@ -158,12 +192,19 @@ static int drm_helper_probe_single_connector_modes_merge_bits(struct drm_connect
 
 	drm_mode_connector_list_update(connector, merge_type_bits);
 
+<<<<<<< HEAD
+=======
+	if (maxX && maxY)
+		drm_mode_validate_size(dev, &connector->modes, maxX, maxY);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (connector->interlace_allowed)
 		mode_flags |= DRM_MODE_FLAG_INTERLACE;
 	if (connector->doublescan_allowed)
 		mode_flags |= DRM_MODE_FLAG_DBLSCAN;
 	if (connector->stereo_allowed)
 		mode_flags |= DRM_MODE_FLAG_3D_MASK;
+<<<<<<< HEAD
 
 	list_for_each_entry(mode, &connector->modes, head) {
 		mode->status = drm_mode_validate_basic(mode);
@@ -174,6 +215,11 @@ static int drm_helper_probe_single_connector_modes_merge_bits(struct drm_connect
 		if (mode->status == MODE_OK)
 			mode->status = drm_mode_validate_flag(mode, mode_flags);
 
+=======
+	drm_mode_validate_flag(connector, mode_flags);
+
+	list_for_each_entry(mode, &connector->modes, head) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (mode->status == MODE_OK && connector_funcs->mode_valid)
 			mode->status = connector_funcs->mode_valid(connector,
 								   mode);
@@ -190,8 +236,13 @@ prune:
 
 	drm_mode_sort(&connector->modes);
 
+<<<<<<< HEAD
 	//DRM_DEBUG_KMS("[CONNECTOR:%d:%s] probed modes :\n", connector->base.id,
 	//		connector->name);
+=======
+	DRM_DEBUG_KMS("[CONNECTOR:%d:%s] probed modes :\n", connector->base.id,
+			connector->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry(mode, &connector->modes, head) {
 		drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
 		drm_mode_debug_printmodeline(mode);
@@ -275,6 +326,12 @@ static void output_poll_execute(struct work_struct *work)
 	enum drm_connector_status old_status;
 	bool repoll = false, changed = false;
 
+<<<<<<< HEAD
+=======
+	if (!dev->mode_config.poll_enabled)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!drm_kms_helper_poll)
 		return;
 
@@ -406,7 +463,15 @@ EXPORT_SYMBOL(drm_kms_helper_poll_init);
  */
 void drm_kms_helper_poll_fini(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	drm_kms_helper_poll_disable(dev);
+=======
+	if (!dev->mode_config.poll_enabled)
+		return;
+
+	dev->mode_config.poll_enabled = false;
+	cancel_delayed_work_sync(&dev->mode_config.output_poll_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_kms_helper_poll_fini);
 

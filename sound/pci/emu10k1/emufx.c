@@ -36,6 +36,10 @@
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <sound/core.h>
 #include <sound/tlv.h>
@@ -1001,6 +1005,11 @@ static int snd_emu10k1_ipcm_poke(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ipcm->channels > 32)
 		return -EINVAL;
 	pcm = &emu->fx8010.pcm[ipcm->substream];
@@ -1047,6 +1056,11 @@ static int snd_emu10k1_ipcm_peek(struct snd_emu10k1 *emu,
 
 	if (ipcm->substream >= EMU10K1_FX8010_PCM_COUNT)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	ipcm->substream = array_index_nospec(ipcm->substream,
+					     EMU10K1_FX8010_PCM_COUNT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pcm = &emu->fx8010.pcm[ipcm->substream];
 	mutex_lock(&emu->fx8010.lock);
 	spin_lock_irq(&emu->reg_lock);
@@ -2521,7 +2535,11 @@ static int snd_emu10k1_fx8010_ioctl(struct snd_hwdep * hw, struct file *file, un
 		emu->support_tlv = 1;
 		return put_user(SNDRV_EMU10K1_VERSION, (int __user *)argp);
 	case SNDRV_EMU10K1_IOCTL_INFO:
+<<<<<<< HEAD
 		info = kmalloc(sizeof(*info), GFP_KERNEL);
+=======
+		info = kzalloc(sizeof(*info), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!info)
 			return -ENOMEM;
 		snd_emu10k1_fx8010_info(emu, info);

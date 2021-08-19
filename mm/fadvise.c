@@ -66,8 +66,17 @@ SYSCALL_DEFINE4(fadvise64_64, int, fd, loff_t, offset, loff_t, len, int, advice)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* Careful about overflows. Len == 0 means "as much as possible" */
 	endbyte = offset + len;
+=======
+	/*
+	 * Careful about overflows. Len == 0 means "as much as possible".  Use
+	 * unsigned math because signed overflows are undefined and UBSan
+	 * complains.
+	 */
+	endbyte = (u64)offset + (u64)len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!len || endbyte < len)
 		endbyte = -1;
 	else

@@ -61,6 +61,10 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
 		UDP_SKB_CB(skb)->cscov = cscov;
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
 			skb->ip_summed = CHECKSUM_NONE;
+<<<<<<< HEAD
+=======
+		skb->csum_valid = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         }
 
 	return 0;

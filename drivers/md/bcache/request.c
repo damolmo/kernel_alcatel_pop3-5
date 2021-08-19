@@ -193,6 +193,7 @@ static void bch_data_insert_start(struct closure *cl)
 	struct data_insert_op *op = container_of(cl, struct data_insert_op, cl);
 	struct bio *bio = op->bio, *n;
 
+<<<<<<< HEAD
 	if (atomic_sub_return(bio_sectors(bio), &op->c->sectors_to_gc) < 0) {
 		set_gc_sectors(op->c);
 		wake_up_gc(op->c);
@@ -201,6 +202,14 @@ static void bch_data_insert_start(struct closure *cl)
 	if (op->bypass)
 		return bch_data_invalidate(cl);
 
+=======
+	if (op->bypass)
+		return bch_data_invalidate(cl);
+
+	if (atomic_sub_return(bio_sectors(bio), &op->c->sectors_to_gc) < 0)
+		wake_up_gc(op->c);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Journal writes are marked REQ_FLUSH; if the original write was a
 	 * flush, it'll wait on the journal write.
@@ -464,6 +473,10 @@ struct search {
 	unsigned		recoverable:1;
 	unsigned		write:1;
 	unsigned		read_dirty_data:1;
+<<<<<<< HEAD
+=======
+	unsigned		cache_missed:1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned long		start_time;
 
@@ -630,11 +643,18 @@ static void do_bio_hook(struct search *s, struct bio *orig_bio)
 static void search_free(struct closure *cl)
 {
 	struct search *s = container_of(cl, struct search, cl);
+<<<<<<< HEAD
 	bio_complete(s);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (s->iop.bio)
 		bio_put(s->iop.bio);
 
+<<<<<<< HEAD
+=======
+	bio_complete(s);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	closure_debug_destroy(cl);
 	mempool_free(s, s->d->c->search);
 }
@@ -651,6 +671,10 @@ static inline struct search *search_alloc(struct bio *bio,
 
 	s->orig_bio		= bio;
 	s->cache_miss		= NULL;
+<<<<<<< HEAD
+=======
+	s->cache_missed		= 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	s->d			= d;
 	s->recoverable		= 1;
 	s->write		= (bio->bi_rw & REQ_WRITE) != 0;
@@ -706,7 +730,18 @@ static void cached_dev_read_error(struct closure *cl)
 	struct search *s = container_of(cl, struct search, cl);
 	struct bio *bio = &s->bio.bio;
 
+<<<<<<< HEAD
 	if (s->recoverable) {
+=======
+	/*
+	 * If read request hit dirty data (s->read_dirty_data is true),
+	 * then recovery a failed read request from cached device may
+	 * get a stale data back. So read failure recovery is only
+	 * permitted when read request hit clean data in cache device,
+	 * or when cache read race happened.
+	 */
+	if (s->recoverable && !s->read_dirty_data) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Retry from the backing device: */
 		trace_bcache_read_retry(s->orig_bio);
 
@@ -767,7 +802,11 @@ static void cached_dev_read_done_bh(struct closure *cl)
 	struct cached_dev *dc = container_of(s->d, struct cached_dev, disk);
 
 	bch_mark_cache_accounting(s->iop.c, s->d,
+<<<<<<< HEAD
 				  !s->cache_miss, s->iop.bypass);
+=======
+				  !s->cache_missed, s->iop.bypass);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	trace_bcache_read(s->orig_bio, !s->cache_miss, s->iop.bypass);
 
 	if (s->iop.error)
@@ -786,6 +825,11 @@ static int cached_dev_cache_miss(struct btree *b, struct search *s,
 	struct cached_dev *dc = container_of(s->d, struct cached_dev, disk);
 	struct bio *miss, *cache_bio;
 
+<<<<<<< HEAD
+=======
+	s->cache_missed = 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (s->cache_miss || s->iop.bypass) {
 		miss = bio_next_split(bio, sectors, GFP_NOIO, s->d->bio_split);
 		ret = miss == bio ? MAP_DONE : MAP_CONTINUE;

@@ -555,7 +555,11 @@ static int cryp_set_dma_transfer(struct cryp_ctx *ctx,
 		desc = dmaengine_prep_slave_sg(channel,
 				ctx->device->dma.sg_src,
 				ctx->device->dma.sg_src_len,
+<<<<<<< HEAD
 				direction, DMA_CTRL_ACK);
+=======
+				DMA_MEM_TO_DEV, DMA_CTRL_ACK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	case DMA_FROM_DEVICE:
@@ -579,7 +583,11 @@ static int cryp_set_dma_transfer(struct cryp_ctx *ctx,
 		desc = dmaengine_prep_slave_sg(channel,
 				ctx->device->dma.sg_dst,
 				ctx->device->dma.sg_dst_len,
+<<<<<<< HEAD
 				direction,
+=======
+				DMA_DEV_TO_MEM,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				DMA_CTRL_ACK |
 				DMA_PREP_INTERRUPT);
 
@@ -1448,9 +1456,15 @@ static int ux500_cryp_probe(struct platform_device *pdev)
 
 	device_data->phybase = res->start;
 	device_data->base = ioremap(res->start, resource_size(res));
+<<<<<<< HEAD
 	if (!device_data->base) {
 		dev_err(dev, "[%s]: ioremap failed!", __func__);
 		ret = -ENOMEM;
+=======
+	if (IS_ERR(device_data->base)) {
+		dev_err(dev, "[%s]: ioremap failed!", __func__);
+		ret = PTR_ERR(device_data->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_free_mem;
 	}
 

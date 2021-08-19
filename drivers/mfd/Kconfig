@@ -467,6 +467,7 @@ config MFD_MAX8998
 	  additional drivers must be enabled in order to use the functionality
 	  of the device.
 
+<<<<<<< HEAD
 config MFD_MT6323
 	tristate "MediaTek MT6323 PMIC Support"
 	select MFD_CORE
@@ -487,6 +488,8 @@ config MFD_MT6397
 	  accessing the device; additional drivers must be enabled in order
 	  to use the functionality of the device.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config MFD_MENF21BMC
 	tristate "MEN 14F021P00 Board Management Controller Support"
 	depends on I2C
@@ -1306,6 +1309,10 @@ config MFD_WM8350
 config MFD_WM8350_I2C
 	bool "Wolfson Microelectronics WM8350 with I2C"
 	select MFD_WM8350
+<<<<<<< HEAD
+=======
+	select REGMAP_I2C
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on I2C=y
 	help
 	  The WM8350 is an integrated audio and power management

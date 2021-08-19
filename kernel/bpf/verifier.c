@@ -643,13 +643,27 @@ static int check_ctx_access(struct verifier_env *env, int off, int size,
 	return -EACCES;
 }
 
+<<<<<<< HEAD
+=======
+static bool is_ctx_reg(struct verifier_env *env, int regno)
+{
+	const struct reg_state *reg = &env->cur_state.regs[regno];
+
+	return reg->type == PTR_TO_CTX;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* check whether memory at (regno + off) is accessible for t = (read | write)
  * if t==write, value_regno is a register which value is stored into memory
  * if t==read, value_regno is a register which will receive the value from memory
  * if t==write && value_regno==-1, some unknown value is stored into memory
  * if t==read && value_regno==-1, don't care what we read from memory
  */
+<<<<<<< HEAD
 static int check_mem_access(struct verifier_env *env, u32 regno, int off,
+=======
+static int check_mem_access(struct verifier_env *env, int insn_idx, u32 regno, int off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			    int bpf_size, enum bpf_access_type t,
 			    int value_regno)
 {
@@ -692,7 +706,11 @@ static int check_mem_access(struct verifier_env *env, u32 regno, int off,
 	return err;
 }
 
+<<<<<<< HEAD
 static int check_xadd(struct verifier_env *env, struct bpf_insn *insn)
+=======
+static int check_xadd(struct verifier_env *env, int insn_idx, struct bpf_insn *insn)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct reg_state *regs = env->cur_state.regs;
 	int err;
@@ -713,14 +731,29 @@ static int check_xadd(struct verifier_env *env, struct bpf_insn *insn)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	/* check whether atomic_add can read the memory */
 	err = check_mem_access(env, insn->dst_reg, insn->off,
+=======
+	if (is_ctx_reg(env, insn->dst_reg)) {
+		verbose("BPF_XADD stores into R%d context is not allowed\n",
+			insn->dst_reg);
+		return -EACCES;
+	}
+
+	/* check whether atomic_add can read the memory */
+	err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       BPF_SIZE(insn->code), BPF_READ, -1);
 	if (err)
 		return err;
 
 	/* check whether atomic_add can write into the same memory */
+<<<<<<< HEAD
 	return check_mem_access(env, insn->dst_reg, insn->off,
+=======
+	return check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				BPF_SIZE(insn->code), BPF_WRITE, -1);
 }
 
@@ -932,7 +965,12 @@ static int check_alu_op(struct reg_state *regs, struct bpf_insn *insn)
 			}
 		} else {
 			if (insn->src_reg != BPF_REG_0 || insn->off != 0 ||
+<<<<<<< HEAD
 			    (insn->imm != 16 && insn->imm != 32 && insn->imm != 64)) {
+=======
+			    (insn->imm != 16 && insn->imm != 32 && insn->imm != 64) ||
+			    BPF_CLASS(insn->code) == BPF_ALU64) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				verbose("BPF_END uses reserved fields\n");
 				return -EINVAL;
 			}
@@ -982,7 +1020,12 @@ static int check_alu_op(struct reg_state *regs, struct bpf_insn *insn)
 				regs[insn->dst_reg].type = UNKNOWN_VALUE;
 				regs[insn->dst_reg].map_ptr = NULL;
 			}
+<<<<<<< HEAD
 		} else {
+=======
+		} else if (BPF_CLASS(insn->code) == BPF_ALU64 ||
+			   insn->imm >= 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* case: R = imm
 			 * remember the value we stored into this reg
 			 */
@@ -1025,6 +1068,24 @@ static int check_alu_op(struct reg_state *regs, struct bpf_insn *insn)
 			return -EINVAL;
 		}
 
+<<<<<<< HEAD
+=======
+		if (opcode == BPF_ARSH && BPF_CLASS(insn->code) != BPF_ALU64) {
+			verbose("BPF_ARSH not supported for 32 bit ALU\n");
+			return -EINVAL;
+		}
+
+		if ((opcode == BPF_LSH || opcode == BPF_RSH ||
+		     opcode == BPF_ARSH) && BPF_SRC(insn->code) == BPF_K) {
+			int size = BPF_CLASS(insn->code) == BPF_ALU64 ? 64 : 32;
+
+			if (insn->imm < 0 || insn->imm >= size) {
+				verbose("invalid shift %d\n", insn->imm);
+				return -EINVAL;
+			}
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* pattern match 'bpf_add Rx, imm' instruction */
 		if (opcode == BPF_ADD && BPF_CLASS(insn->code) == BPF_ALU64 &&
 		    regs[insn->dst_reg].type == FRAME_PTR &&
@@ -1550,7 +1611,11 @@ static int do_check(struct verifier_env *env)
 			/* check that memory (src_reg + off) is readable,
 			 * the state of dst_reg will be updated by this func
 			 */
+<<<<<<< HEAD
 			err = check_mem_access(env, insn->src_reg, insn->off,
+=======
+			err = check_mem_access(env, insn_idx, insn->src_reg, insn->off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					       BPF_SIZE(insn->code), BPF_READ,
 					       insn->dst_reg);
 			if (err)
@@ -1558,7 +1623,11 @@ static int do_check(struct verifier_env *env)
 
 		} else if (class == BPF_STX) {
 			if (BPF_MODE(insn->code) == BPF_XADD) {
+<<<<<<< HEAD
 				err = check_xadd(env, insn);
+=======
+				err = check_xadd(env, insn_idx, insn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (err)
 					return err;
 				insn_idx++;
@@ -1580,7 +1649,11 @@ static int do_check(struct verifier_env *env)
 				return err;
 
 			/* check that memory (dst_reg + off) is writeable */
+<<<<<<< HEAD
 			err = check_mem_access(env, insn->dst_reg, insn->off,
+=======
+			err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					       BPF_SIZE(insn->code), BPF_WRITE,
 					       insn->src_reg);
 			if (err)
@@ -1597,8 +1670,19 @@ static int do_check(struct verifier_env *env)
 			if (err)
 				return err;
 
+<<<<<<< HEAD
 			/* check that memory (dst_reg + off) is writeable */
 			err = check_mem_access(env, insn->dst_reg, insn->off,
+=======
+			if (is_ctx_reg(env, insn->dst_reg)) {
+				verbose("BPF_ST stores into R%d context is not allowed\n",
+					insn->dst_reg);
+				return -EACCES;
+			}
+
+			/* check that memory (dst_reg + off) is writeable */
+			err = check_mem_access(env, insn_idx, insn->dst_reg, insn->off,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					       BPF_SIZE(insn->code), BPF_WRITE,
 					       -1);
 			if (err)
@@ -1727,7 +1811,10 @@ static int replace_map_fd_with_map_ptr(struct verifier_env *env)
 			if (IS_ERR(map)) {
 				verbose("fd %d is not pointing to valid bpf_map\n",
 					insn->imm);
+<<<<<<< HEAD
 				fdput(f);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return PTR_ERR(map);
 			}
 
@@ -1753,7 +1840,11 @@ static int replace_map_fd_with_map_ptr(struct verifier_env *env)
 			/* hold the map. If the program is rejected by verifier,
 			 * the map will be released by release_maps() or it
 			 * will be used by the valid program until it's unloaded
+<<<<<<< HEAD
 			 * and all maps are released in free_bpf_prog_info()
+=======
+			 * and all maps are released in free_used_maps()
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 */
 			atomic_inc(&map->refcnt);
 
@@ -1919,7 +2010,11 @@ free_log_buf:
 free_env:
 	if (!prog->aux->used_maps)
 		/* if we didn't copy map pointers into bpf_prog_info, release
+<<<<<<< HEAD
 		 * them now. Otherwise free_bpf_prog_info() will release them.
+=======
+		 * them now. Otherwise free_used_maps() will release them.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		release_maps(env);
 	kfree(env);

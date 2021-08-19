@@ -391,7 +391,15 @@ static int bond_newlink(struct net *src_net, struct net_device *bond_dev,
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	return register_netdevice(bond_dev);
+=======
+	err = register_netdevice(bond_dev);
+
+	netif_carrier_off(bond_dev);
+
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static size_t bond_get_size(const struct net_device *bond_dev)

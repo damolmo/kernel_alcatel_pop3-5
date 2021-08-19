@@ -59,9 +59,15 @@ static int __init init_soleng_maps(void)
 			return -ENXIO;
 		}
 	}
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Solution Engine: Flash at 0x%08lx, EPROM at 0x%08lx\n",
 	       soleng_flash_map.phys & 0x1fffffff,
 	       soleng_eprom_map.phys & 0x1fffffff);
+=======
+	printk(KERN_NOTICE "Solution Engine: Flash at 0x%pap, EPROM at 0x%pap\n",
+	       &soleng_flash_map.phys,
+	       &soleng_eprom_map.phys);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	flash_mtd->owner = THIS_MODULE;
 
 	eprom_mtd = do_map_probe("map_rom", &soleng_eprom_map);

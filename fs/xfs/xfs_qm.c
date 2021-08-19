@@ -49,7 +49,11 @@
 STATIC int	xfs_qm_init_quotainos(xfs_mount_t *);
 STATIC int	xfs_qm_init_quotainfo(xfs_mount_t *);
 
+<<<<<<< HEAD
 
+=======
+STATIC void	xfs_qm_destroy_quotainos(xfs_quotainfo_t *qi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 STATIC void	xfs_qm_dqfree_one(struct xfs_dquot *dqp);
 /*
  * We use the batch lookup interface to iterate over the dquots as it
@@ -662,9 +666,23 @@ xfs_qm_init_quotainfo(
 	qinf->qi_shrinker.scan_objects = xfs_qm_shrink_scan;
 	qinf->qi_shrinker.seeks = DEFAULT_SEEKS;
 	qinf->qi_shrinker.flags = SHRINKER_NUMA_AWARE;
+<<<<<<< HEAD
 	register_shrinker(&qinf->qi_shrinker);
 	return 0;
 
+=======
+
+	error = register_shrinker(&qinf->qi_shrinker);
+	if (error)
+		goto out_free_inos;
+
+	return 0;
+
+out_free_inos:
+	mutex_destroy(&qinf->qi_quotaofflock);
+	mutex_destroy(&qinf->qi_tree_lock);
+	xfs_qm_destroy_quotainos(qinf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_free_lru:
 	list_lru_destroy(&qinf->qi_lru);
 out_free_qinf:
@@ -673,7 +691,10 @@ out_free_qinf:
 	return error;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Gets called when unmounting a filesystem or when all quotas get
  * turned off.
@@ -690,6 +711,7 @@ xfs_qm_destroy_quotainfo(
 
 	unregister_shrinker(&qi->qi_shrinker);
 	list_lru_destroy(&qi->qi_lru);
+<<<<<<< HEAD
 
 	if (qi->qi_uquotaip) {
 		IRELE(qi->qi_uquotaip);
@@ -703,6 +725,10 @@ xfs_qm_destroy_quotainfo(
 		IRELE(qi->qi_pquotaip);
 		qi->qi_pquotaip = NULL;
 	}
+=======
+	xfs_qm_destroy_quotainos(qi);
+	mutex_destroy(&qi->qi_tree_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_destroy(&qi->qi_quotaofflock);
 	kmem_free(qi);
 	mp->m_quotainfo = NULL;
@@ -1359,12 +1385,16 @@ xfs_qm_quotacheck(
 	mp->m_qflags |= flags;
 
  error_return:
+<<<<<<< HEAD
 	while (!list_empty(&buffer_list)) {
 		struct xfs_buf *bp =
 			list_first_entry(&buffer_list, struct xfs_buf, b_list);
 		list_del_init(&bp->b_list);
 		xfs_buf_relse(bp);
 	}
+=======
+	xfs_buf_delwri_cancel(&buffer_list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (error) {
 		xfs_warn(mp,
@@ -1578,6 +1608,27 @@ error_rele:
 }
 
 STATIC void
+<<<<<<< HEAD
+=======
+xfs_qm_destroy_quotainos(
+	xfs_quotainfo_t	*qi)
+{
+	if (qi->qi_uquotaip) {
+		IRELE(qi->qi_uquotaip);
+		qi->qi_uquotaip = NULL; /* paranoia */
+	}
+	if (qi->qi_gquotaip) {
+		IRELE(qi->qi_gquotaip);
+		qi->qi_gquotaip = NULL;
+	}
+	if (qi->qi_pquotaip) {
+		IRELE(qi->qi_pquotaip);
+		qi->qi_pquotaip = NULL;
+	}
+}
+
+STATIC void
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 xfs_qm_dqfree_one(
 	struct xfs_dquot	*dqp)
 {

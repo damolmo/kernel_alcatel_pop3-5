@@ -114,6 +114,10 @@ EXPORT_SYMBOL(can_ioctl);
 static void can_sock_destruct(struct sock *sk)
 {
 	skb_queue_purge(&sk->sk_receive_queue);
+<<<<<<< HEAD
+=======
+	skb_queue_purge(&sk->sk_error_queue);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct can_proto *can_get_proto(int protocol)
@@ -313,12 +317,17 @@ int can_send(struct sk_buff *skb, int loop)
 		return err;
 	}
 
+<<<<<<< HEAD
 	if (newskb) {
 		if (!(newskb->tstamp.tv64))
 			__net_timestamp(newskb);
 
 		netif_rx_ni(newskb);
 	}
+=======
+	if (newskb)
+		netif_rx_ni(newskb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* update statistics */
 	can_stats.tx_frames++;
@@ -450,6 +459,10 @@ static struct hlist_head *find_rcv_list(canid_t *can_id, canid_t *mask,
  * @func: callback function on filter match
  * @data: returned parameter for callback function
  * @ident: string for calling module identification
+<<<<<<< HEAD
+=======
+ * @sk: socket pointer (might be NULL)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Description:
  *  Invokes the callback function with the received sk_buff and the given
@@ -473,7 +486,11 @@ static struct hlist_head *find_rcv_list(canid_t *can_id, canid_t *mask,
  */
 int can_rx_register(struct net_device *dev, canid_t can_id, canid_t mask,
 		    void (*func)(struct sk_buff *, void *), void *data,
+<<<<<<< HEAD
 		    char *ident)
+=======
+		    char *ident, struct sock *sk)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct receiver *r;
 	struct hlist_head *rl;
@@ -501,6 +518,10 @@ int can_rx_register(struct net_device *dev, canid_t can_id, canid_t mask,
 		r->func    = func;
 		r->data    = data;
 		r->ident   = ident;
+<<<<<<< HEAD
+=======
+		r->sk      = sk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		hlist_add_head_rcu(&r->list, rl);
 		d->entries++;
@@ -525,8 +546,16 @@ EXPORT_SYMBOL(can_rx_register);
 static void can_rx_delete_receiver(struct rcu_head *rp)
 {
 	struct receiver *r = container_of(rp, struct receiver, rcu);
+<<<<<<< HEAD
 
 	kmem_cache_free(rcv_cache, r);
+=======
+	struct sock *sk = r->sk;
+
+	kmem_cache_free(rcv_cache, r);
+	if (sk)
+		sock_put(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -601,8 +630,16 @@ void can_rx_unregister(struct net_device *dev, canid_t can_id, canid_t mask,
 	spin_unlock(&can_rcvlists_lock);
 
 	/* schedule the receiver item for deletion */
+<<<<<<< HEAD
 	if (r)
 		call_rcu(&r->rcu, can_rx_delete_receiver);
+=======
+	if (r) {
+		if (r->sk)
+			sock_hold(r->sk);
+		call_rcu(&r->rcu, can_rx_delete_receiver);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(can_rx_unregister);
 
@@ -715,6 +752,7 @@ static int can_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (unlikely(!net_eq(dev_net(dev), &init_net)))
 		goto drop;
 
+<<<<<<< HEAD
 	if (WARN_ONCE(dev->type != ARPHRD_CAN ||
 		      skb->len != CAN_MTU ||
 		      cfd->len > CAN_MAX_DLEN,
@@ -722,6 +760,14 @@ static int can_rcv(struct sk_buff *skb, struct net_device *dev,
 		      "dev type %d, len %d, datalen %d\n",
 		      dev->type, skb->len, cfd->len))
 		goto drop;
+=======
+	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CAN_MTU ||
+		     cfd->len > CAN_MAX_DLEN)) {
+		pr_warn_once("PF_CAN: dropped non conform CAN skbuf: dev type %d, len %d, datalen %d\n",
+			     dev->type, skb->len, cfd->len);
+		goto drop;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	can_receive(skb, dev);
 	return NET_RX_SUCCESS;
@@ -739,6 +785,7 @@ static int canfd_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (unlikely(!net_eq(dev_net(dev), &init_net)))
 		goto drop;
 
+<<<<<<< HEAD
 	if (WARN_ONCE(dev->type != ARPHRD_CAN ||
 		      skb->len != CANFD_MTU ||
 		      cfd->len > CANFD_MAX_DLEN,
@@ -746,6 +793,14 @@ static int canfd_rcv(struct sk_buff *skb, struct net_device *dev,
 		      "dev type %d, len %d, datalen %d\n",
 		      dev->type, skb->len, cfd->len))
 		goto drop;
+=======
+	if (unlikely(dev->type != ARPHRD_CAN || skb->len != CANFD_MTU ||
+		     cfd->len > CANFD_MAX_DLEN)) {
+		pr_warn_once("PF_CAN: dropped non conform CAN FD skbuf: dev type %d, len %d, datalen %d\n",
+			     dev->type, skb->len, cfd->len);
+		goto drop;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	can_receive(skb, dev);
 	return NET_RX_SUCCESS;

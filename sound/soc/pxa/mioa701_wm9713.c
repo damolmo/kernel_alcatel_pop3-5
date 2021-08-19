@@ -216,3 +216,7 @@ module_platform_driver(mioa701_wm9713_driver);
 MODULE_AUTHOR("Robert Jarzmik (rjarzmik@free.fr)");
 MODULE_DESCRIPTION("ALSA SoC WM9713 MIO A701");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:mioa701-wm9713");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -814,7 +814,11 @@ EndTable
 
 GrpTable: Grp3_1
 0: TEST Eb,Ib
+<<<<<<< HEAD
 1:
+=======
+1: TEST Eb,Ib
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 2: NOT Eb
 3: NEG Eb
 4: MUL AL,Eb

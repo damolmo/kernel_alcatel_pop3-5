@@ -268,6 +268,12 @@ struct smi_info {
 	 */
 	bool interrupt_disabled;
 
+<<<<<<< HEAD
+=======
+	/* Is the driver in maintenance mode? */
+	bool in_maintenance_mode;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* From the get device id response... */
 	struct ipmi_device_id device_id;
 
@@ -1027,11 +1033,28 @@ static int ipmi_thread(void *data)
 		spin_unlock_irqrestore(&(smi_info->si_lock), flags);
 		busy_wait = ipmi_thread_busy_wait(smi_result, smi_info,
 						  &busy_until);
+<<<<<<< HEAD
 		if (smi_result == SI_SM_CALL_WITHOUT_DELAY)
 			; /* do nothing */
 		else if (smi_result == SI_SM_CALL_WITH_DELAY && busy_wait)
 			schedule();
 		else if (smi_result == SI_SM_IDLE) {
+=======
+		if (smi_result == SI_SM_CALL_WITHOUT_DELAY) {
+			; /* do nothing */
+		} else if (smi_result == SI_SM_CALL_WITH_DELAY && busy_wait) {
+			/*
+			 * In maintenance mode we run as fast as
+			 * possible to allow firmware updates to
+			 * complete as fast as possible, but normally
+			 * don't bang on the scheduler.
+			 */
+			if (smi_info->in_maintenance_mode)
+				schedule();
+			else
+				usleep_range(100, 200);
+		} else if (smi_result == SI_SM_IDLE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (atomic_read(&smi_info->need_watch)) {
 				schedule_timeout_interruptible(100);
 			} else {
@@ -1039,8 +1062,14 @@ static int ipmi_thread(void *data)
 				__set_current_state(TASK_INTERRUPTIBLE);
 				schedule();
 			}
+<<<<<<< HEAD
 		} else
 			schedule_timeout_interruptible(1);
+=======
+		} else {
+			schedule_timeout_interruptible(1);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return 0;
 }
@@ -1229,6 +1258,10 @@ static void set_maintenance_mode(void *send_info, bool enable)
 
 	if (!enable)
 		atomic_set(&smi_info->req_events, 0);
+<<<<<<< HEAD
+=======
+	smi_info->in_maintenance_mode = enable;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct ipmi_smi_handlers handlers = {

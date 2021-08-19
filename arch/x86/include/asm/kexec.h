@@ -66,7 +66,11 @@ struct kimage;
 
 /* Memory to backup during crash kdump */
 #define KEXEC_BACKUP_SRC_START	(0UL)
+<<<<<<< HEAD
 #define KEXEC_BACKUP_SRC_END	(640 * 1024UL)	/* 640K */
+=======
+#define KEXEC_BACKUP_SRC_END	(640 * 1024UL - 1)	/* 640K */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * CPU does not save ss and sp on stack if execution is already

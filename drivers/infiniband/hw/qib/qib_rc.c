@@ -2086,8 +2086,15 @@ send_last:
 		ret = qib_get_rwqe(qp, 1);
 		if (ret < 0)
 			goto nack_op_err;
+<<<<<<< HEAD
 		if (!ret)
 			goto rnr_nak;
+=======
+		if (!ret) {
+			qib_put_ss(&qp->r_sge);
+			goto rnr_nak;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		wc.ex.imm_data = ohdr->u.rc.imm_data;
 		hdrsize += 4;
 		wc.wc_flags = IB_WC_WITH_IMM;

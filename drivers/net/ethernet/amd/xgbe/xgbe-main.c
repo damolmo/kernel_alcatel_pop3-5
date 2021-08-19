@@ -491,7 +491,11 @@ static int xgbe_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int xgbe_suspend(struct device *dev)
 {
 	struct net_device *netdev = dev_get_drvdata(dev);
@@ -529,7 +533,11 @@ static int xgbe_resume(struct device *dev)
 
 	return ret;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
+=======
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static const struct of_device_id xgbe_of_match[] = {
 	{ .compatible = "amd,xgbe-seattle-v1a", },

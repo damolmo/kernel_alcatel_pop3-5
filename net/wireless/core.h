@@ -61,6 +61,10 @@ struct cfg80211_registered_device {
 	struct list_head bss_list;
 	struct rb_root bss_tree;
 	u32 bss_generation;
+<<<<<<< HEAD
+=======
+	u32 bss_entries;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct cfg80211_scan_request *scan_req; /* protected by RTNL */
 	struct sk_buff *scan_msg;
 	struct cfg80211_sched_scan_request *sched_scan_req;
@@ -84,6 +88,11 @@ struct cfg80211_registered_device {
 	struct list_head destroy_list;
 	struct work_struct destroy_work;
 
+<<<<<<< HEAD
+=======
+	struct work_struct sched_scan_stop_wk;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* must be last because of the way we do wiphy_priv(),
 	 * and it should at least be aligned to NETDEV_ALIGN */
 	struct wiphy wiphy __aligned(NETDEV_ALIGN);
@@ -212,7 +221,10 @@ struct cfg80211_event {
 			const u8 *ie;
 			size_t ie_len;
 			u16 reason;
+<<<<<<< HEAD
 			bool locally_generated;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} dc;
 		struct {
 			u8 bssid[ETH_ALEN];

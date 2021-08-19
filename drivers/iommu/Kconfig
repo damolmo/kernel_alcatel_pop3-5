@@ -87,6 +87,7 @@ config AMD_IOMMU_V2
 config DMAR_TABLE
 	bool
 
+<<<<<<< HEAD
 config MTK_IOMMU
 	def_bool n
 	prompt "support for MTK IOMMU using DMA Remapping Devices"
@@ -97,6 +98,8 @@ config MTK_IOMMU
 	  MTK iommu driver, support iommu masters access virtual memory address
 	  which will be translated by iommu HW.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config INTEL_IOMMU
 	bool "Support for Intel IOMMU using DMA Remapping Devices"
 	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC)

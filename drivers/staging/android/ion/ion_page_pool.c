@@ -30,6 +30,11 @@ static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool)
 
 	if (!page)
 		return NULL;
+<<<<<<< HEAD
+=======
+	ion_page_pool_alloc_set_cache_policy(pool, page);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ion_pages_sync_for_device(NULL, page, PAGE_SIZE << pool->order,
 						DMA_BIDIRECTIONAL);
 	return page;
@@ -38,6 +43,10 @@ static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool)
 static void ion_page_pool_free_pages(struct ion_page_pool *pool,
 				     struct page *page)
 {
+<<<<<<< HEAD
+=======
+	ion_page_pool_free_set_cache_policy(pool, page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__free_pages(page, pool->order);
 }
 
@@ -103,6 +112,14 @@ void ion_page_pool_free(struct ion_page_pool *pool, struct page *page)
 		ion_page_pool_free_pages(pool, page);
 }
 
+<<<<<<< HEAD
+=======
+void ion_page_pool_free_immediate(struct ion_page_pool *pool, struct page *page)
+{
+	ion_page_pool_free_pages(pool, page);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ion_page_pool_total(struct ion_page_pool *pool, bool high)
 {
 	int count = pool->low_count;
@@ -150,10 +167,15 @@ struct ion_page_pool *ion_page_pool_create(gfp_t gfp_mask, unsigned int order)
 {
 	struct ion_page_pool *pool = kmalloc(sizeof(struct ion_page_pool),
 					     GFP_KERNEL);
+<<<<<<< HEAD
 	if (!pool) {
 		IONMSG("%s kmalloc failed pool is null.\n", __func__);
 		return NULL;
 	}
+=======
+	if (!pool)
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pool->high_count = 0;
 	pool->low_count = 0;
 	INIT_LIST_HEAD(&pool->low_items);

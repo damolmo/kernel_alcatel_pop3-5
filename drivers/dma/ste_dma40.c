@@ -142,7 +142,11 @@ enum d40_events {
  * when the DMA hw is powered off.
  * TODO: Add save/restore of D40_DREG_GCC on dma40 v3 or later, if that works.
  */
+<<<<<<< HEAD
 static u32 d40_backup_regs[] = {
+=======
+static __maybe_unused u32 d40_backup_regs[] = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	D40_DREG_LCPA,
 	D40_DREG_LCLA,
 	D40_DREG_PRMSE,
@@ -211,7 +215,11 @@ static u32 d40_backup_regs_v4b[] = {
 
 #define BACKUP_REGS_SZ_V4B ARRAY_SIZE(d40_backup_regs_v4b)
 
+<<<<<<< HEAD
 static u32 d40_backup_regs_chan[] = {
+=======
+static __maybe_unused u32 d40_backup_regs_chan[] = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	D40_CHAN_REG_SSCFG,
 	D40_CHAN_REG_SSELT,
 	D40_CHAN_REG_SSPTR,
@@ -3715,6 +3723,12 @@ failure:
 
 		kfree(base->lcla_pool.base_unaligned);
 
+<<<<<<< HEAD
+=======
+		if (base->lcpa_base)
+			iounmap(base->lcpa_base);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (base->phy_lcpa)
 			release_mem_region(base->phy_lcpa,
 					   base->lcpa_size);

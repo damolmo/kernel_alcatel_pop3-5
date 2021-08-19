@@ -282,10 +282,18 @@ void dst_release(struct dst_entry *dst)
 {
 	if (dst) {
 		int newrefcnt;
+<<<<<<< HEAD
 
 		newrefcnt = atomic_dec_return(&dst->__refcnt);
 		WARN_ON(newrefcnt < 0);
 		if (unlikely(dst->flags & DST_NOCACHE) && !newrefcnt)
+=======
+		unsigned short nocache = dst->flags & DST_NOCACHE;
+
+		newrefcnt = atomic_dec_return(&dst->__refcnt);
+		WARN_ON(newrefcnt < 0);
+		if (!newrefcnt && unlikely(nocache))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			call_rcu(&dst->rcu_head, dst_destroy_rcu);
 	}
 }
@@ -396,6 +404,23 @@ static int dst_dev_event(struct notifier_block *this, unsigned long event,
 		spin_lock_bh(&dst_garbage.lock);
 		dst = dst_garbage.list;
 		dst_garbage.list = NULL;
+<<<<<<< HEAD
+=======
+		/* The code in dst_ifdown places a hold on the loopback device.
+		 * If the gc entry processing is set to expire after a lengthy
+		 * interval, this hold can cause netdev_wait_allrefs() to hang
+		 * out and wait for a long time -- until the the loopback
+		 * interface is released.  If we're really unlucky, it'll emit
+		 * pr_emerg messages to console too.  Reset the interval here,
+		 * so dst cleanups occur in a more timely fashion.
+		 */
+		if (dst_garbage.timer_inc > DST_GC_INC) {
+			dst_garbage.timer_inc = DST_GC_INC;
+			dst_garbage.timer_expires = DST_GC_MIN;
+			mod_delayed_work(system_wq, &dst_gc_work,
+					 dst_garbage.timer_expires);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock_bh(&dst_garbage.lock);
 
 		if (last)

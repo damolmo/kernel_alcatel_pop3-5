@@ -305,7 +305,12 @@ static int pl031_remove(struct amba_device *adev)
 {
 	struct pl031_local *ldata = dev_get_drvdata(&adev->dev);
 
+<<<<<<< HEAD
 	free_irq(adev->irq[0], ldata);
+=======
+	if (adev->irq[0])
+		free_irq(adev->irq[0], ldata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rtc_device_unregister(ldata->rtc);
 	iounmap(ldata->base);
 	kfree(ldata);
@@ -378,10 +383,18 @@ static int pl031_probe(struct amba_device *adev, const struct amba_id *id)
 		goto out_no_rtc;
 	}
 
+<<<<<<< HEAD
 	if (request_irq(adev->irq[0], pl031_interrupt,
 			vendor->irqflags, "rtc-pl031", ldata)) {
 		ret = -EIO;
 		goto out_no_irq;
+=======
+	if (adev->irq[0]) {
+		ret = request_irq(adev->irq[0], pl031_interrupt,
+				  vendor->irqflags, "rtc-pl031", ldata);
+		if (ret)
+			goto out_no_irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;

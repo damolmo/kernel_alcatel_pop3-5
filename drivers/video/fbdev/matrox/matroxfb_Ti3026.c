@@ -372,7 +372,11 @@ static int Ti3026_init(struct matrox_fb_info *minfo, struct my_timming *m)
 
 	DBG(__func__)
 
+<<<<<<< HEAD
 	memcpy(hw->DACreg, MGADACbpp32, sizeof(hw->DACreg));
+=======
+	memcpy(hw->DACreg, MGADACbpp32, sizeof(MGADACbpp32));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (minfo->fbcon.var.bits_per_pixel) {
 		case 4:	hw->DACreg[POS3026_XLATCHCTRL] = TVP3026_XLATCHCTRL_16_1;	/* or _8_1, they are same */
 			hw->DACreg[POS3026_XTRUECOLORCTRL] = TVP3026_XTRUECOLORCTRL_PSEUDOCOLOR;

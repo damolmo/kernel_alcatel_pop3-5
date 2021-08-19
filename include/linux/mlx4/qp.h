@@ -437,6 +437,10 @@ struct mlx4_update_qp_params {
 	u32	flags;
 };
 
+<<<<<<< HEAD
+=======
+struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int mlx4_update_qp(struct mlx4_dev *dev, u32 qpn,
 		   enum mlx4_update_qp_attr attr,
 		   struct mlx4_update_qp_params *params);

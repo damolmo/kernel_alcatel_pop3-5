@@ -303,13 +303,21 @@ static struct regulator_desc regulators[] = {
 	regulator_desc_ldo(2, STEP_50_MV),
 	regulator_desc_ldo(3, STEP_50_MV),
 	regulator_desc_ldo(4, STEP_50_MV),
+<<<<<<< HEAD
 	regulator_desc_ldo(5, STEP_50_MV),
+=======
+	regulator_desc_ldo(5, STEP_25_MV),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	regulator_desc_ldo(6, STEP_25_MV),
 	regulator_desc_ldo(7, STEP_50_MV),
 	regulator_desc_ldo(8, STEP_50_MV),
 	regulator_desc_ldo(9, STEP_50_MV),
 	regulator_desc_ldo(10, STEP_50_MV),
+<<<<<<< HEAD
 	regulator_desc_ldo(11, STEP_25_MV),
+=======
+	regulator_desc_ldo(11, STEP_50_MV),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	regulator_desc_ldo(12, STEP_50_MV),
 	regulator_desc_ldo(13, STEP_50_MV),
 	regulator_desc_ldo(14, STEP_50_MV),
@@ -320,11 +328,19 @@ static struct regulator_desc regulators[] = {
 	regulator_desc_ldo(19, STEP_50_MV),
 	regulator_desc_ldo(20, STEP_50_MV),
 	regulator_desc_ldo(21, STEP_50_MV),
+<<<<<<< HEAD
 	regulator_desc_ldo(22, STEP_25_MV),
 	regulator_desc_ldo(23, STEP_25_MV),
 	regulator_desc_ldo(24, STEP_50_MV),
 	regulator_desc_ldo(25, STEP_50_MV),
 	regulator_desc_ldo(26, STEP_50_MV),
+=======
+	regulator_desc_ldo(22, STEP_50_MV),
+	regulator_desc_ldo(23, STEP_50_MV),
+	regulator_desc_ldo(24, STEP_50_MV),
+	regulator_desc_ldo(25, STEP_50_MV),
+	regulator_desc_ldo(26, STEP_25_MV),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	regulator_desc_buck1_4(1),
 	regulator_desc_buck1_4(2),
 	regulator_desc_buck1_4(3),

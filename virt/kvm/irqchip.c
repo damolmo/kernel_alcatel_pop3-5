@@ -51,7 +51,11 @@ int kvm_irq_map_gsi(struct kvm *kvm,
 
 	irq_rt = srcu_dereference_check(kvm->irq_routing, &kvm->irq_srcu,
 					lockdep_is_held(&kvm->irq_lock));
+<<<<<<< HEAD
 	if (gsi < irq_rt->nr_rt_entries) {
+=======
+	if (irq_rt && gsi < irq_rt->nr_rt_entries) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hlist_for_each_entry(e, &irq_rt->map[gsi], link) {
 			entries[n] = *e;
 			++n;

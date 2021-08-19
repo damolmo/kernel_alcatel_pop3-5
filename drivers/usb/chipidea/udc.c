@@ -638,6 +638,47 @@ __acquires(hwep->lock)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int _ep_set_halt(struct usb_ep *ep, int value, bool check_transfer)
+{
+	struct ci_hw_ep *hwep = container_of(ep, struct ci_hw_ep, ep);
+	int direction, retval = 0;
+	unsigned long flags;
+
+	if (ep == NULL || hwep->ep.desc == NULL)
+		return -EINVAL;
+
+	if (usb_endpoint_xfer_isoc(hwep->ep.desc))
+		return -EOPNOTSUPP;
+
+	spin_lock_irqsave(hwep->lock, flags);
+
+	if (value && hwep->dir == TX && check_transfer &&
+		!list_empty(&hwep->qh.queue) &&
+			!usb_endpoint_xfer_control(hwep->ep.desc)) {
+		spin_unlock_irqrestore(hwep->lock, flags);
+		return -EAGAIN;
+	}
+
+	direction = hwep->dir;
+	do {
+		retval |= hw_ep_set_halt(hwep->ci, hwep->num, hwep->dir, value);
+
+		if (!value)
+			hwep->wedge = 0;
+
+		if (hwep->type == USB_ENDPOINT_XFER_CONTROL)
+			hwep->dir = (hwep->dir == TX) ? RX : TX;
+
+	} while (hwep->dir != direction);
+
+	spin_unlock_irqrestore(hwep->lock, flags);
+	return retval;
+}
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * _gadget_stop_activity: stops all USB activity, flushes & disables all endpts
  * @gadget: gadget
@@ -887,6 +928,18 @@ static int isr_setup_status_phase(struct ci_hdrc *ci)
 	int retval;
 	struct ci_hw_ep *hwep;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Unexpected USB controller behavior, caused by bad signal integrity
+	 * or ground reference problems, can lead to isr_setup_status_phase
+	 * being called with ci->status equal to NULL.
+	 * If this situation occurs, you should review your USB hardware design.
+	 */
+	if (WARN_ON_ONCE(!ci->status))
+		return -EPIPE;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hwep = (ci->ep0_dir == TX) ? ci->ep0out : ci->ep0in;
 	ci->status->context = ci;
 	ci->status->complete = isr_setup_status_complete;
@@ -1037,7 +1090,11 @@ __acquires(ci->lock)
 				num += ci->hw_ep_max / 2;
 
 			spin_unlock(&ci->lock);
+<<<<<<< HEAD
 			err = usb_ep_set_halt(&ci->ci_hw_ep[num].ep);
+=======
+			err = _ep_set_halt(&ci->ci_hw_ep[num].ep, 1, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			spin_lock(&ci->lock);
 			if (!err)
 				isr_setup_status_phase(ci);
@@ -1096,8 +1153,13 @@ delegate:
 
 	if (err < 0) {
 		spin_unlock(&ci->lock);
+<<<<<<< HEAD
 		if (usb_ep_set_halt(&hwep->ep))
 			dev_err(ci->dev, "error: ep_set_halt\n");
+=======
+		if (_ep_set_halt(&hwep->ep, 1, false))
+			dev_err(ci->dev, "error: _ep_set_halt\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock(&ci->lock);
 	}
 }
@@ -1128,9 +1190,15 @@ __acquires(ci->lock)
 					err = isr_setup_status_phase(ci);
 				if (err < 0) {
 					spin_unlock(&ci->lock);
+<<<<<<< HEAD
 					if (usb_ep_set_halt(&hwep->ep))
 						dev_err(ci->dev,
 							"error: ep_set_halt\n");
+=======
+					if (_ep_set_halt(&hwep->ep, 1, false))
+						dev_err(ci->dev,
+						"error: _ep_set_halt\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					spin_lock(&ci->lock);
 				}
 			}
@@ -1373,6 +1441,7 @@ static int ep_dequeue(struct usb_ep *ep, struct usb_request *req)
  */
 static int ep_set_halt(struct usb_ep *ep, int value)
 {
+<<<<<<< HEAD
 	struct ci_hw_ep *hwep = container_of(ep, struct ci_hw_ep, ep);
 	int direction, retval = 0;
 	unsigned long flags;
@@ -1408,6 +1477,9 @@ static int ep_set_halt(struct usb_ep *ep, int value)
 
 	spin_unlock_irqrestore(hwep->lock, flags);
 	return retval;
+=======
+	return _ep_set_halt(ep, value, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1794,8 +1866,11 @@ static int udc_start(struct ci_hdrc *ci)
 	struct device *dev = ci->dev;
 	int retval = 0;
 
+<<<<<<< HEAD
 	spin_lock_init(&ci->lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ci->gadget.ops          = &usb_gadget_ops;
 	ci->gadget.speed        = USB_SPEED_UNKNOWN;
 	ci->gadget.max_speed    = USB_SPEED_HIGH;
@@ -1890,6 +1965,10 @@ static void udc_id_switch_for_host(struct ci_hdrc *ci)
 int ci_hdrc_gadget_init(struct ci_hdrc *ci)
 {
 	struct ci_role_driver *rdrv;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!hw_read(ci, CAP_DCCPARAMS, DCCPARAMS_DC))
 		return -ENXIO;
@@ -1902,7 +1981,16 @@ int ci_hdrc_gadget_init(struct ci_hdrc *ci)
 	rdrv->stop	= udc_id_switch_for_host;
 	rdrv->irq	= udc_irq;
 	rdrv->name	= "gadget";
+<<<<<<< HEAD
 	ci->roles[CI_ROLE_GADGET] = rdrv;
 
 	return udc_start(ci);
+=======
+
+	ret = udc_start(ci);
+	if (!ret)
+		ci->roles[CI_ROLE_GADGET] = rdrv;
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

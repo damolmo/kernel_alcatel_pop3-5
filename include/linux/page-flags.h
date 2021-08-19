@@ -109,12 +109,15 @@ enum pageflags {
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	PG_compound_lock,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_TOI_INCREMENTAL
 	PG_toi_ignore,		/* Ignore this page */
 	PG_toi_ro,		/* Page was made RO by TOI */
 	PG_toi_cbw,		/* Copy the page before it is written to */
 	PG_toi_dirty,		/* Page has been modified */
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__NR_PAGEFLAGS,
 
 	/* Filesystems */
@@ -289,12 +292,15 @@ TESTSCFLAG(HWPoison, hwpoison)
 PAGEFLAG_FALSE(HWPoison)
 #define __PG_HWPOISON 0
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_TOI_INCREMENTAL
 PAGEFLAG(TOI_RO, toi_ro)
 PAGEFLAG(TOI_Dirty, toi_dirty)
 PAGEFLAG(TOI_Ignore, toi_ignore)
 PAGEFLAG(TOI_CBW, toi_cbw)
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 u64 stable_page_flags(struct page *page);
 

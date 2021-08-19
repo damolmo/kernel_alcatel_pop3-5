@@ -120,12 +120,23 @@ static struct clock_event_device sun4i_clockevent = {
 	.set_next_event = sun4i_clkevt_next_event,
 };
 
+<<<<<<< HEAD
+=======
+static void sun4i_timer_clear_interrupt(void)
+{
+	writel(TIMER_IRQ_EN(0), timer_base + TIMER_IRQ_ST_REG);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static irqreturn_t sun4i_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = (struct clock_event_device *)dev_id;
 
+<<<<<<< HEAD
 	writel(0x1, timer_base + TIMER_IRQ_ST_REG);
+=======
+	sun4i_timer_clear_interrupt();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	evt->event_handler(evt);
 
 	return IRQ_HANDLED;
@@ -182,6 +193,12 @@ static void __init sun4i_timer_init(struct device_node *node)
 	/* Make sure timer is stopped before playing with interrupts */
 	sun4i_clkevt_time_stop(0);
 
+<<<<<<< HEAD
+=======
+	/* clear timer0 interrupt */
+	sun4i_timer_clear_interrupt();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sun4i_clockevent.cpumask = cpu_possible_mask;
 	sun4i_clockevent.irq = irq;
 

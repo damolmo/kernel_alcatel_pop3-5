@@ -188,8 +188,13 @@ proc_read_queues_state(struct snd_info_entry *entry,
 	else
 		consumed = (unsigned int)(efw->push_ptr - efw->pull_ptr);
 
+<<<<<<< HEAD
 	snd_iprintf(buffer, "%d %d/%d\n",
 		    efw->resp_queues, consumed, snd_efw_resp_buf_size);
+=======
+	snd_iprintf(buffer, "%d/%d\n",
+		    consumed, snd_efw_resp_buf_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void

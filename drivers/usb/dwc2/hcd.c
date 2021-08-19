@@ -2953,7 +2953,10 @@ error3:
 error2:
 	usb_put_hcd(hcd);
 error1:
+<<<<<<< HEAD
 	kfree(hsotg->core_params);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_USB_DWC2_TRACK_MISSED_SOFS
 	kfree(hsotg->last_frame_num_array);

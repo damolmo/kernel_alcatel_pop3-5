@@ -27,6 +27,11 @@
 #define IMA_UID		0x0008
 #define IMA_FOWNER	0x0010
 #define IMA_FSUUID	0x0020
+<<<<<<< HEAD
+=======
+#define IMA_INMASK	0x0040
+#define IMA_EUID	0x0080
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define UNKNOWN		0
 #define MEASURE		0x0001	/* same as IMA_MEASURE */
@@ -105,7 +110,11 @@ static struct ima_rule_entry default_appraise_rules[] = {
 
 static LIST_HEAD(ima_default_rules);
 static LIST_HEAD(ima_policy_rules);
+<<<<<<< HEAD
 static struct list_head *ima_rules;
+=======
+static struct list_head *ima_rules = &ima_default_rules;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static DEFINE_MUTEX(ima_rules_mutex);
 
@@ -176,6 +185,12 @@ static bool ima_match_rules(struct ima_rule_entry *rule,
 	if ((rule->flags & IMA_MASK) &&
 	    (rule->mask != mask && func != POST_SETATTR))
 		return false;
+<<<<<<< HEAD
+=======
+	if ((rule->flags & IMA_INMASK) &&
+	    (!(rule->mask & mask) && func != POST_SETATTR))
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((rule->flags & IMA_FSMAGIC)
 	    && rule->fsmagic != inode->i_sb->s_magic)
 		return false;
@@ -184,6 +199,19 @@ static bool ima_match_rules(struct ima_rule_entry *rule,
 		return false;
 	if ((rule->flags & IMA_UID) && !uid_eq(rule->uid, cred->uid))
 		return false;
+<<<<<<< HEAD
+=======
+	if (rule->flags & IMA_EUID) {
+		if (has_capability_noaudit(current, CAP_SETUID)) {
+			if (!uid_eq(rule->uid, cred->euid)
+			    && !uid_eq(rule->uid, cred->suid)
+			    && !uid_eq(rule->uid, cred->uid))
+				return false;
+		} else if (!uid_eq(rule->uid, cred->euid))
+			return false;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((rule->flags & IMA_FOWNER) && !uid_eq(rule->fowner, inode->i_uid))
 		return false;
 	for (i = 0; i < MAX_LSM_RULES; i++) {
@@ -344,7 +372,10 @@ void __init ima_init_policy(void)
 		}
 	}
 
+<<<<<<< HEAD
 	ima_rules = &ima_default_rules;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -378,7 +409,12 @@ enum {
 	Opt_audit,
 	Opt_obj_user, Opt_obj_role, Opt_obj_type,
 	Opt_subj_user, Opt_subj_role, Opt_subj_type,
+<<<<<<< HEAD
 	Opt_func, Opt_mask, Opt_fsmagic, Opt_uid, Opt_fowner,
+=======
+	Opt_func, Opt_mask, Opt_fsmagic,
+	Opt_uid, Opt_euid, Opt_fowner,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	Opt_appraise_type, Opt_fsuuid, Opt_permit_directio
 };
 
@@ -399,6 +435,10 @@ static match_table_t policy_tokens = {
 	{Opt_fsmagic, "fsmagic=%s"},
 	{Opt_fsuuid, "fsuuid=%s"},
 	{Opt_uid, "uid=%s"},
+<<<<<<< HEAD
+=======
+	{Opt_euid, "euid=%s"},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{Opt_fowner, "fowner=%s"},
 	{Opt_appraise_type, "appraise_type=%s"},
 	{Opt_permit_directio, "permit_directio"},
@@ -440,6 +480,10 @@ static void ima_log_string(struct audit_buffer *ab, char *key, char *value)
 static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 {
 	struct audit_buffer *ab;
+<<<<<<< HEAD
+=======
+	char *from;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char *p;
 	int result = 0;
 
@@ -530,6 +574,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 			if (entry->mask)
 				result = -EINVAL;
 
+<<<<<<< HEAD
 			if ((strcmp(args[0].from, "MAY_EXEC")) == 0)
 				entry->mask = MAY_EXEC;
 			else if (strcmp(args[0].from, "MAY_WRITE") == 0)
@@ -537,11 +582,29 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 			else if (strcmp(args[0].from, "MAY_READ") == 0)
 				entry->mask = MAY_READ;
 			else if (strcmp(args[0].from, "MAY_APPEND") == 0)
+=======
+			from = args[0].from;
+			if (*from == '^')
+				from++;
+
+			if ((strcmp(from, "MAY_EXEC")) == 0)
+				entry->mask = MAY_EXEC;
+			else if (strcmp(from, "MAY_WRITE") == 0)
+				entry->mask = MAY_WRITE;
+			else if (strcmp(from, "MAY_READ") == 0)
+				entry->mask = MAY_READ;
+			else if (strcmp(from, "MAY_APPEND") == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				entry->mask = MAY_APPEND;
 			else
 				result = -EINVAL;
 			if (!result)
+<<<<<<< HEAD
 				entry->flags |= IMA_MASK;
+=======
+				entry->flags |= (*args[0].from == '^')
+				     ? IMA_INMASK : IMA_MASK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case Opt_fsmagic:
 			ima_log_string(ab, "fsmagic", args[0].from);
@@ -571,6 +634,12 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 			break;
 		case Opt_uid:
 			ima_log_string(ab, "uid", args[0].from);
+<<<<<<< HEAD
+=======
+		case Opt_euid:
+			if (token == Opt_euid)
+				ima_log_string(ab, "euid", args[0].from);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			if (uid_valid(entry->uid)) {
 				result = -EINVAL;
@@ -579,11 +648,22 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 
 			result = kstrtoul(args[0].from, 10, &lnum);
 			if (!result) {
+<<<<<<< HEAD
 				entry->uid = make_kuid(current_user_ns(), (uid_t)lnum);
 				if (!uid_valid(entry->uid) || (((uid_t)lnum) != lnum))
 					result = -EINVAL;
 				else
 					entry->flags |= IMA_UID;
+=======
+				entry->uid = make_kuid(current_user_ns(),
+						       (uid_t) lnum);
+				if (!uid_valid(entry->uid) ||
+				    (uid_t)lnum != lnum)
+					result = -EINVAL;
+				else
+					entry->flags |= (token == Opt_uid)
+					    ? IMA_UID : IMA_EUID;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			break;
 		case Opt_fowner:

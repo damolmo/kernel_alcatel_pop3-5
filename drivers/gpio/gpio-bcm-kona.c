@@ -470,7 +470,11 @@ static int bcm_kona_gpio_irq_reqres(struct irq_data *d)
 {
 	struct bcm_kona_gpio *kona_gpio = irq_data_get_irq_chip_data(d);
 
+<<<<<<< HEAD
 	if (gpio_lock_as_irq(&kona_gpio->gpio_chip, d->hwirq)) {
+=======
+	if (gpiochip_lock_as_irq(&kona_gpio->gpio_chip, d->hwirq)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(kona_gpio->gpio_chip.dev,
 			"unable to lock HW IRQ %lu for IRQ\n",
 			d->hwirq);
@@ -483,7 +487,11 @@ static void bcm_kona_gpio_irq_relres(struct irq_data *d)
 {
 	struct bcm_kona_gpio *kona_gpio = irq_data_get_irq_chip_data(d);
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&kona_gpio->gpio_chip, d->hwirq);
+=======
+	gpiochip_unlock_as_irq(&kona_gpio->gpio_chip, d->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct irq_chip bcm_gpio_irq_chip = {
@@ -549,11 +557,19 @@ static void bcm_kona_gpio_reset(struct bcm_kona_gpio *kona_gpio)
 	/* disable interrupts and clear status */
 	for (i = 0; i < kona_gpio->num_bank; i++) {
 		/* Unlock the entire bank first */
+<<<<<<< HEAD
 		bcm_kona_gpio_write_lock_regs(kona_gpio, i, UNLOCK_CODE);
 		writel(0xffffffff, reg_base + GPIO_INT_MASK(i));
 		writel(0xffffffff, reg_base + GPIO_INT_STATUS(i));
 		/* Now re-lock the bank */
 		bcm_kona_gpio_write_lock_regs(kona_gpio, i, LOCK_CODE);
+=======
+		bcm_kona_gpio_write_lock_regs(reg_base, i, UNLOCK_CODE);
+		writel(0xffffffff, reg_base + GPIO_INT_MASK(i));
+		writel(0xffffffff, reg_base + GPIO_INT_STATUS(i));
+		/* Now re-lock the bank */
+		bcm_kona_gpio_write_lock_regs(reg_base, i, LOCK_CODE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

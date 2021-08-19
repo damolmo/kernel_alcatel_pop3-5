@@ -782,7 +782,10 @@ void rfkill_pause_polling(struct rfkill *rfkill)
 }
 EXPORT_SYMBOL(rfkill_pause_polling);
 
+<<<<<<< HEAD
 #ifdef CONFIG_RFKILL_PM
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void rfkill_resume_polling(struct rfkill *rfkill)
 {
 	BUG_ON(!rfkill);
@@ -795,7 +798,11 @@ void rfkill_resume_polling(struct rfkill *rfkill)
 }
 EXPORT_SYMBOL(rfkill_resume_polling);
 
+<<<<<<< HEAD
 static int rfkill_suspend(struct device *dev, pm_message_t state)
+=======
+static __maybe_unused int rfkill_suspend(struct device *dev, pm_message_t state)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct rfkill *rfkill = to_rfkill(dev);
 
@@ -804,7 +811,11 @@ static int rfkill_suspend(struct device *dev, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rfkill_resume(struct device *dev)
+=======
+static __maybe_unused int rfkill_resume(struct device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct rfkill *rfkill = to_rfkill(dev);
 	bool cur;
@@ -818,17 +829,26 @@ static int rfkill_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct class rfkill_class = {
 	.name		= "rfkill",
 	.dev_release	= rfkill_release,
 	.dev_groups	= rfkill_dev_groups,
 	.dev_uevent	= rfkill_dev_uevent,
+<<<<<<< HEAD
 #ifdef CONFIG_RFKILL_PM
 	.suspend	= rfkill_suspend,
 	.resume		= rfkill_resume,
 #endif
+=======
+	.suspend	= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_suspend : NULL,
+	.resume		= IS_ENABLED(CONFIG_RFKILL_PM) ? rfkill_resume : NULL,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 bool rfkill_blocked(struct rfkill *rfkill)
@@ -931,10 +951,20 @@ static void rfkill_sync_work(struct work_struct *work)
 int __must_check rfkill_register(struct rfkill *rfkill)
 {
 	static unsigned long rfkill_no;
+<<<<<<< HEAD
 	struct device *dev = &rfkill->dev;
 	int error;
 
 	BUG_ON(!rfkill);
+=======
+	struct device *dev;
+	int error;
+
+	if (!rfkill)
+		return -EINVAL;
+
+	dev = &rfkill->dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&rfkill_global_mutex);
 
@@ -1085,6 +1115,7 @@ static unsigned int rfkill_fop_poll(struct file *file, poll_table *wait)
 	return res;
 }
 
+<<<<<<< HEAD
 static bool rfkill_readable(struct rfkill_data *data)
 {
 	bool r;
@@ -1096,6 +1127,8 @@ static bool rfkill_readable(struct rfkill_data *data)
 	return r;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static ssize_t rfkill_fop_read(struct file *file, char __user *buf,
 			       size_t count, loff_t *pos)
 {
@@ -1112,8 +1145,16 @@ static ssize_t rfkill_fop_read(struct file *file, char __user *buf,
 			goto out;
 		}
 		mutex_unlock(&data->mtx);
+<<<<<<< HEAD
 		ret = wait_event_interruptible(data->read_wait,
 					       rfkill_readable(data));
+=======
+		/* since we re-check and it just compares pointers,
+		 * using !list_empty() without locking isn't a problem
+		 */
+		ret = wait_event_interruptible(data->read_wait,
+					       !list_empty(&data->events));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mutex_lock(&data->mtx);
 
 		if (ret)

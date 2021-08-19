@@ -68,10 +68,20 @@ static int slave_update(struct link_slave *slave)
 		return -ENOMEM;
 	uctl->id = slave->slave.id;
 	err = slave->slave.get(&slave->slave, uctl);
+<<<<<<< HEAD
 	for (ch = 0; ch < slave->info.count; ch++)
 		slave->vals[ch] = uctl->value.integer.value[ch];
 	kfree(uctl);
 	return 0;
+=======
+	if (err < 0)
+		goto error;
+	for (ch = 0; ch < slave->info.count; ch++)
+		slave->vals[ch] = uctl->value.integer.value[ch];
+ error:
+	kfree(uctl);
+	return err < 0 ? err : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* get the slave ctl info and save the initial values */

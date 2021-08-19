@@ -340,17 +340,35 @@ int afs_permission(struct inode *inode, int mask)
 	} else {
 		if (!(access & AFS_ACE_LOOKUP))
 			goto permission_denied;
+<<<<<<< HEAD
 		if (mask & (MAY_EXEC | MAY_READ)) {
 			if (!(access & AFS_ACE_READ))
 				goto permission_denied;
 		} else if (mask & MAY_WRITE) {
 			if (!(access & AFS_ACE_WRITE))
 				goto permission_denied;
+=======
+		if ((mask & MAY_EXEC) && !(inode->i_mode & S_IXUSR))
+			goto permission_denied;
+		if (mask & (MAY_EXEC | MAY_READ)) {
+			if (!(access & AFS_ACE_READ))
+				goto permission_denied;
+			if (!(inode->i_mode & S_IRUSR))
+				goto permission_denied;
+		} else if (mask & MAY_WRITE) {
+			if (!(access & AFS_ACE_WRITE))
+				goto permission_denied;
+			if (!(inode->i_mode & S_IWUSR))
+				goto permission_denied;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
 	key_put(key);
+<<<<<<< HEAD
 	ret = generic_permission(inode, mask);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	_leave(" = %d", ret);
 	return ret;
 

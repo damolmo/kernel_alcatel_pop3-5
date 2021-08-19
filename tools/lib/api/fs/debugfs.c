@@ -67,7 +67,11 @@ int debugfs_valid_mountpoint(const char *debugfs)
 
 	if (statfs(debugfs, &st_fs) < 0)
 		return -ENOENT;
+<<<<<<< HEAD
 	else if (st_fs.f_type != (long) DEBUGFS_MAGIC)
+=======
+	else if ((long)st_fs.f_type != (long)DEBUGFS_MAGIC)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOENT;
 
 	return 0;

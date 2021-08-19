@@ -369,7 +369,13 @@ int __init octeon_msi_initialize(void)
 	int irq;
 	struct irq_chip *msi;
 
+<<<<<<< HEAD
 	if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE) {
+=======
+	if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_INVALID) {
+		return 0;
+	} else if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		msi_rcv_reg[0] = CVMX_PEXP_NPEI_MSI_RCV0;
 		msi_rcv_reg[1] = CVMX_PEXP_NPEI_MSI_RCV1;
 		msi_rcv_reg[2] = CVMX_PEXP_NPEI_MSI_RCV2;

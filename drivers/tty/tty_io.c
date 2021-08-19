@@ -357,7 +357,11 @@ struct tty_driver *tty_find_polling_driver(char *name, int *line)
 	mutex_lock(&tty_mutex);
 	/* Search through the tty devices to look for a match */
 	list_for_each_entry(p, &tty_drivers, tty_drivers) {
+<<<<<<< HEAD
 		if (strncmp(name, p->name, len) != 0)
+=======
+		if (!len || strncmp(name, p->name, len) != 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		stp = str;
 		if (*stp == ',')
@@ -492,6 +496,11 @@ static const struct file_operations hung_up_tty_fops = {
 static DEFINE_SPINLOCK(redirect_lock);
 static struct file *redirect;
 
+<<<<<<< HEAD
+=======
+extern void tty_sysctl_init(void);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	tty_wakeup	-	request more data
  *	@tty: terminal
@@ -2047,7 +2056,16 @@ retry_open:
 	}
 
 	if (tty) {
+<<<<<<< HEAD
 		tty_lock(tty);
+=======
+		retval = tty_lock_interruptible(tty);
+		if (retval) {
+			if (retval == -EINTR)
+				retval = -ERESTARTSYS;
+			goto err_unref;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = tty_reopen(tty);
 		if (retval < 0) {
 			tty_unlock(tty);
@@ -2122,6 +2140,10 @@ retry_open:
 	return 0;
 err_unlock:
 	mutex_unlock(&tty_mutex);
+<<<<<<< HEAD
+=======
+err_unref:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* after locks to avoid deadlock */
 	if (!IS_ERR_OR_NULL(driver))
 		tty_driver_kref_put(driver);
@@ -2243,7 +2265,12 @@ static int tiocsti(struct tty_struct *tty, char __user *p)
 		return -EFAULT;
 	tty_audit_tiocsti(tty, ch);
 	ld = tty_ldisc_ref_wait(tty);
+<<<<<<< HEAD
 	ld->ops->receive_buf(tty, &ch, &mbz, 1);
+=======
+	if (ld->ops->receive_buf)
+		ld->ops->receive_buf(tty, &ch, &mbz, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tty_ldisc_deref(ld);
 	return 0;
 }
@@ -2536,10 +2563,17 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 	if (session_of_pgrp(pgrp) != task_session(current))
 		goto out_unlock;
 	retval = 0;
+<<<<<<< HEAD
 	spin_lock_irqsave(&tty->ctrl_lock, flags);
 	put_pid(real_tty->pgrp);
 	real_tty->pgrp = get_pid(pgrp);
 	spin_unlock_irqrestore(&tty->ctrl_lock, flags);
+=======
+	spin_lock_irqsave(&real_tty->ctrl_lock, flags);
+	put_pid(real_tty->pgrp);
+	real_tty->pgrp = get_pid(pgrp);
+	spin_unlock_irqrestore(&real_tty->ctrl_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_unlock:
 	rcu_read_unlock();
 	return retval;
@@ -2662,14 +2696,22 @@ out:
  *	@p: pointer to result
  *
  *	Obtain the modem status bits from the tty driver if the feature
+<<<<<<< HEAD
  *	is supported. Return -EINVAL if it is not available.
+=======
+ *	is supported. Return -ENOTTY if it is not available.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  *	Locking: none (up to the driver)
  */
 
 static int tty_tiocmget(struct tty_struct *tty, int __user *p)
 {
+<<<<<<< HEAD
 	int retval = -EINVAL;
+=======
+	int retval = -ENOTTY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (tty->ops->tiocmget) {
 		retval = tty->ops->tiocmget(tty);
@@ -2687,7 +2729,11 @@ static int tty_tiocmget(struct tty_struct *tty, int __user *p)
  *	@p: pointer to desired bits
  *
  *	Set the modem status bits from the tty driver if the feature
+<<<<<<< HEAD
  *	is supported. Return -EINVAL if it is not available.
+=======
+ *	is supported. Return -ENOTTY if it is not available.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  *	Locking: none (up to the driver)
  */
@@ -2699,7 +2745,11 @@ static int tty_tiocmset(struct tty_struct *tty, unsigned int cmd,
 	unsigned int set, clear, val;
 
 	if (tty->ops->tiocmset == NULL)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return -ENOTTY;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	retval = get_user(val, p);
 	if (retval)
@@ -3060,7 +3110,14 @@ struct tty_struct *alloc_tty_struct(struct tty_driver *driver, int idx)
 
 	kref_init(&tty->kref);
 	tty->magic = TTY_MAGIC;
+<<<<<<< HEAD
 	tty_ldisc_init(tty);
+=======
+	if (tty_ldisc_init(tty)) {
+		kfree(tty);
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tty->session = NULL;
 	tty->pgrp = NULL;
 	mutex_init(&tty->legacy_mutex);
@@ -3624,6 +3681,10 @@ void console_sysfs_notify(void)
  */
 int __init tty_init(void)
 {
+<<<<<<< HEAD
+=======
+	tty_sysctl_init();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cdev_init(&tty_cdev, &tty_fops);
 	if (cdev_add(&tty_cdev, MKDEV(TTYAUX_MAJOR, 0), 1) ||
 	    register_chrdev_region(MKDEV(TTYAUX_MAJOR, 0), 1, "/dev/tty") < 0)

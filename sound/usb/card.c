@@ -181,9 +181,14 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 				ctrlif, interface);
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
 
 		return 0;
+=======
+		return usb_driver_claim_interface(&usb_audio_driver, iface,
+						  USB_AUDIO_IFACE_UNUSED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if ((altsd->bInterfaceClass != USB_CLASS_AUDIO &&
@@ -203,8 +208,13 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 
 	if (! snd_usb_parse_audio_interface(chip, interface)) {
 		usb_set_interface(dev, interface, 0); /* reset the current interface */
+<<<<<<< HEAD
 		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
 		return -EINVAL;
+=======
+		return usb_driver_claim_interface(&usb_audio_driver, iface,
+						  USB_AUDIO_IFACE_UNUSED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -220,6 +230,10 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 	struct usb_interface_descriptor *altsd;
 	void *control_header;
 	int i, protocol;
+<<<<<<< HEAD
+=======
+	int rest_bytes;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* find audiocontrol interface */
 	host_iface = &usb_ifnum_to_if(dev, ctrlif)->altsetting[0];
@@ -234,6 +248,18 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	rest_bytes = (void *)(host_iface->extra + host_iface->extralen) -
+		control_header;
+
+	/* just to be sure -- this shouldn't hit at all */
+	if (rest_bytes <= 0) {
+		dev_err(&dev->dev, "invalid control header\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (protocol) {
 	default:
 		dev_warn(&dev->dev,
@@ -244,11 +270,27 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 	case UAC_VERSION_1: {
 		struct uac1_ac_header_descriptor *h1 = control_header;
 
+<<<<<<< HEAD
+=======
+		if (rest_bytes < sizeof(*h1)) {
+			dev_err(&dev->dev, "too short v1 buffer descriptor\n");
+			return -EINVAL;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!h1->bInCollection) {
 			dev_info(&dev->dev, "skipping empty audio interface (v1)\n");
 			return -EINVAL;
 		}
 
+<<<<<<< HEAD
+=======
+		if (rest_bytes < h1->bLength) {
+			dev_err(&dev->dev, "invalid buffer length (v1)\n");
+			return -EINVAL;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (h1->bLength < sizeof(*h1) + h1->bInCollection) {
 			dev_err(&dev->dev, "invalid UAC_HEADER (v1)\n");
 			return -EINVAL;
@@ -573,9 +615,18 @@ snd_usb_audio_probe(struct usb_device *dev,
 
  __error:
 	if (chip) {
+<<<<<<< HEAD
 		if (!chip->num_interfaces)
 			snd_card_free(chip->card);
 		chip->probing = 0;
+=======
+		/* chip->probing is inside the chip->card object,
+		 * reset before memory is possibly returned.
+		 */
+		chip->probing = 0;
+		if (!chip->num_interfaces)
+			snd_card_free(chip->card);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	mutex_unlock(&register_mutex);
  __err_val:
@@ -593,7 +644,11 @@ static void snd_usb_audio_disconnect(struct usb_device *dev,
 	struct list_head *p;
 	bool was_shutdown;
 
+<<<<<<< HEAD
 	if (chip == (void *)-1L)
+=======
+	if (chip == USB_AUDIO_IFACE_UNUSED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	card = chip->card;
@@ -687,7 +742,11 @@ static int usb_audio_suspend(struct usb_interface *intf, pm_message_t message)
 	struct usb_mixer_interface *mixer;
 	struct list_head *p;
 
+<<<<<<< HEAD
 	if (chip == (void *)-1L)
+=======
+	if (chip == USB_AUDIO_IFACE_UNUSED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	if (!PMSG_IS_AUTO(message)) {
@@ -725,7 +784,11 @@ static int __usb_audio_resume(struct usb_interface *intf, bool reset_resume)
 	struct list_head *p;
 	int err = 0;
 
+<<<<<<< HEAD
 	if (chip == (void *)-1L)
+=======
+	if (chip == USB_AUDIO_IFACE_UNUSED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	if (--chip->num_suspended_intf)
 		return 0;

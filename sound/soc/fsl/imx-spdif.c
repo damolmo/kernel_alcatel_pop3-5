@@ -71,8 +71,11 @@ static int imx_spdif_audio_probe(struct platform_device *pdev)
 		goto end;
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, data);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 end:
 	if (spdif_np)
 		of_node_put(spdif_np);

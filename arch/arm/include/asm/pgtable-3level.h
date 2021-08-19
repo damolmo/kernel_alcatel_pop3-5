@@ -212,6 +212,10 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
 						: !!(pmd_val(pmd) & (val)))
 #define pmd_isclear(pmd, val)	(!(pmd_val(pmd) & (val)))
 
+<<<<<<< HEAD
+=======
+#define pmd_present(pmd)	(pmd_isset((pmd), L_PMD_SECT_VALID))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define pmd_young(pmd)		(pmd_isset((pmd), PMD_SECT_AF))
 #define pte_special(pte)	(pte_isset((pte), L_PTE_SPECIAL))
 static inline pte_t pte_mkspecial(pte_t pte)
@@ -257,8 +261,16 @@ PMD_BIT_FUNC(mkyoung,   |= PMD_SECT_AF);
 #define pfn_pmd(pfn,prot)	(__pmd(((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot)))
 #define mk_pmd(page,prot)	pfn_pmd(page_to_pfn(page),prot)
 
+<<<<<<< HEAD
 /* represent a notpresent pmd by zero, this is used by pmdp_invalidate */
 #define pmd_mknotpresent(pmd)	(__pmd(0))
+=======
+/* represent a notpresent pmd by faulting entry, this is used by pmdp_invalidate */
+static inline pmd_t pmd_mknotpresent(pmd_t pmd)
+{
+	return __pmd(pmd_val(pmd) & ~L_PMD_SECT_VALID);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 {

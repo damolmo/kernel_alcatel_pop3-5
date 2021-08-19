@@ -131,6 +131,7 @@ static void kgdboc_unregister_kbd(void)
 #define kgdboc_restore_input()
 #endif /* ! CONFIG_KDB_KEYBOARD */
 
+<<<<<<< HEAD
 static int kgdboc_option_setup(char *opt)
 {
 	if (strlen(opt) >= MAX_CONFIG_LEN) {
@@ -144,6 +145,8 @@ static int kgdboc_option_setup(char *opt)
 
 __setup("kgdboc=", kgdboc_option_setup);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void cleanup_kgdboc(void)
 {
 	if (kgdb_unregister_nmi_console())
@@ -157,6 +160,7 @@ static int configure_kgdboc(void)
 {
 	struct tty_driver *p;
 	int tty_line = 0;
+<<<<<<< HEAD
 	int err;
 	char *cptr = config;
 	struct console *cons;
@@ -166,6 +170,17 @@ static int configure_kgdboc(void)
 		goto noconfig;
 
 	err = -ENODEV;
+=======
+	int err = -ENODEV;
+	char *cptr = config;
+	struct console *cons;
+
+	if (!strlen(config) || isspace(config[0])) {
+		err = 0;
+		goto noconfig;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kgdboc_io_ops.is_console = 0;
 	kgdb_tty_driver = NULL;
 
@@ -247,7 +262,11 @@ static void kgdboc_put_char(u8 chr)
 
 static int param_set_kgdboc_var(const char *kmessage, struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	int len = strlen(kmessage);
+=======
+	size_t len = strlen(kmessage);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (len >= MAX_CONFIG_LEN) {
 		printk(KERN_ERR "kgdboc: config string too long\n");
@@ -269,7 +288,11 @@ static int param_set_kgdboc_var(const char *kmessage, struct kernel_param *kp)
 
 	strcpy(config, kmessage);
 	/* Chop out \n char as a result of echo */
+<<<<<<< HEAD
 	if (config[len - 1] == '\n')
+=======
+	if (len && config[len - 1] == '\n')
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		config[len - 1] = '\0';
 
 	if (configured == 1)
@@ -313,6 +336,28 @@ static struct kgdb_io kgdboc_io_ops = {
 };
 
 #ifdef CONFIG_KGDB_SERIAL_CONSOLE
+<<<<<<< HEAD
+=======
+static int kgdboc_option_setup(char *opt)
+{
+	if (!opt) {
+		pr_err("config string not provided\n");
+		return -EINVAL;
+	}
+
+	if (strlen(opt) >= MAX_CONFIG_LEN) {
+		pr_err("config string too long\n");
+		return -ENOSPC;
+	}
+	strcpy(config, opt);
+
+	return 0;
+}
+
+__setup("kgdboc=", kgdboc_option_setup);
+
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* This is only available if kgdboc is a built in for early debugging */
 static int __init kgdboc_early_init(char *opt)
 {

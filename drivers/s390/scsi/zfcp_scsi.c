@@ -138,10 +138,30 @@ static int zfcp_scsi_slave_alloc(struct scsi_device *sdev)
 	struct zfcp_unit *unit;
 	int npiv = adapter->connection_features & FSF_FEATURE_NPIV_MODE;
 
+<<<<<<< HEAD
+=======
+	zfcp_sdev->erp_action.adapter = adapter;
+	zfcp_sdev->erp_action.sdev = sdev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	port = zfcp_get_port_by_wwpn(adapter, rport->port_name);
 	if (!port)
 		return -ENXIO;
 
+<<<<<<< HEAD
+=======
+	zfcp_sdev->erp_action.port = port;
+
+	mutex_lock(&zfcp_sysfs_port_units_mutex);
+	if (zfcp_sysfs_port_is_removing(port)) {
+		/* port is already gone */
+		mutex_unlock(&zfcp_sysfs_port_units_mutex);
+		put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
+		return -ENXIO;
+	}
+	mutex_unlock(&zfcp_sysfs_port_units_mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unit = zfcp_unit_find(port, zfcp_scsi_dev_lun(sdev));
 	if (unit)
 		put_device(&unit->dev);
@@ -245,8 +265,15 @@ static int zfcp_task_mgmt_function(struct scsi_cmnd *scpnt, u8 tm_flags)
 
 		zfcp_erp_wait(adapter);
 		ret = fc_block_scsi_eh(scpnt);
+<<<<<<< HEAD
 		if (ret)
 			return ret;
+=======
+		if (ret) {
+			zfcp_dbf_scsi_devreset("fiof", scpnt, tm_flags);
+			return ret;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (!(atomic_read(&adapter->status) &
 		      ZFCP_STATUS_COMMON_RUNNING)) {
@@ -254,8 +281,15 @@ static int zfcp_task_mgmt_function(struct scsi_cmnd *scpnt, u8 tm_flags)
 			return SUCCESS;
 		}
 	}
+<<<<<<< HEAD
 	if (!fsf_req)
 		return FAILED;
+=======
+	if (!fsf_req) {
+		zfcp_dbf_scsi_devreset("reqf", scpnt, tm_flags);
+		return FAILED;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	wait_for_completion(&fsf_req->completion);
 
@@ -285,6 +319,13 @@ static int zfcp_scsi_eh_host_reset_handler(struct scsi_cmnd *scpnt)
 	struct zfcp_adapter *adapter = zfcp_sdev->port->adapter;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!(adapter->connection_features & FSF_FEATURE_NPIV_MODE)) {
+		zfcp_erp_port_forced_reopen_all(adapter, 0, "schrh_p");
+		zfcp_erp_wait(adapter);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	zfcp_erp_adapter_reopen(adapter, 0, "schrh_1");
 	zfcp_erp_wait(adapter);
 	ret = fc_block_scsi_eh(scpnt);

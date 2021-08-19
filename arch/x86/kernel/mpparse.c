@@ -412,7 +412,11 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
 	processor.apicver = mpc_default_type > 4 ? 0x10 : 0x01;
 	processor.cpuflag = CPU_ENABLED;
 	processor.cpufeature = (boot_cpu_data.x86 << 8) |
+<<<<<<< HEAD
 	    (boot_cpu_data.x86_model << 4) | boot_cpu_data.x86_mask;
+=======
+	    (boot_cpu_data.x86_model << 4) | boot_cpu_data.x86_stepping;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	processor.featureflag = boot_cpu_data.x86_capability[0];
 	processor.reserved[0] = 0;
 	processor.reserved[1] = 0;

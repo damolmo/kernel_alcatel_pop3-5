@@ -1852,7 +1852,11 @@ static int atyfb_ioctl(struct fb_info *info, u_int cmd, u_long arg)
 #if defined(DEBUG) && defined(CONFIG_FB_ATY_CT)
 	case ATYIO_CLKR:
 		if (M64_HAS(INTEGRATED)) {
+<<<<<<< HEAD
 			struct atyclk clk;
+=======
+			struct atyclk clk = { 0 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			union aty_pll *pll = &par->pll;
 			u32 dsp_config = pll->ct.dsp_config;
 			u32 dsp_on_off = pll->ct.dsp_on_off;
@@ -3112,17 +3116,30 @@ static int atyfb_setup_sparc(struct pci_dev *pdev, struct fb_info *info,
 		/*
 		 * PLL Reference Divider M:
 		 */
+<<<<<<< HEAD
 		M = pll_regs[2];
+=======
+		M = pll_regs[PLL_REF_DIV];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * PLL Feedback Divider N (Dependent on CLOCK_CNTL):
 		 */
+<<<<<<< HEAD
 		N = pll_regs[7 + (clock_cntl & 3)];
+=======
+		N = pll_regs[VCLK0_FB_DIV + (clock_cntl & 3)];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * PLL Post Divider P (Dependent on CLOCK_CNTL):
 		 */
+<<<<<<< HEAD
 		P = 1 << (pll_regs[6] >> ((clock_cntl & 3) << 1));
+=======
+		P = aty_postdividers[((pll_regs[VCLK_POST_DIV] >> ((clock_cntl & 3) << 1)) & 3) |
+		                     ((pll_regs[PLL_EXT_CNTL] >> (2 + (clock_cntl & 3))) & 4)];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * PLL Divider Q:

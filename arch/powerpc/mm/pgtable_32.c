@@ -437,7 +437,10 @@ void kernel_map_pages(struct page *page, int numpages, int enable)
 
 	change_page_attr(page, numpages, enable ? PAGE_KERNEL : __pgprot(0));
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(kernel_map_pages);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_DEBUG_PAGEALLOC */
 
 static int fixmaps;

@@ -247,9 +247,12 @@ static int vid_cap_start_streaming(struct vb2_queue *vq, unsigned count)
 	if (vb2_is_streaming(&dev->vb_vid_out_q))
 		dev->can_loop_video = vivid_vid_can_loop(dev);
 
+<<<<<<< HEAD
 	if (dev->kthread_vid_cap)
 		return 0;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->vid_cap_seq_count = 0;
 	dprintk(dev, 1, "%s\n", __func__);
 	for (i = 0; i < VIDEO_MAX_FRAME; i++)
@@ -454,6 +457,11 @@ void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls)
 		tpg_s_rgb_range(&dev->tpg, v4l2_ctrl_g_ctrl(dev->rgb_range_cap));
 		break;
 	}
+<<<<<<< HEAD
+=======
+	vfree(dev->bitmap_cap);
+	dev->bitmap_cap = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vivid_update_quality(dev);
 	tpg_reset_source(&dev->tpg, dev->src_rect.width, dev->src_rect.height, dev->field_cap);
 	dev->crop_cap = dev->src_rect;
@@ -953,7 +961,11 @@ int vivid_vid_cap_s_selection(struct file *file, void *fh, struct v4l2_selection
 		rect_map_inside(&s->r, &dev->fmt_cap_rect);
 		if (dev->bitmap_cap && (compose->width != s->r.width ||
 					compose->height != s->r.height)) {
+<<<<<<< HEAD
 			kfree(dev->bitmap_cap);
+=======
+			vfree(dev->bitmap_cap);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev->bitmap_cap = NULL;
 		}
 		*compose = s->r;

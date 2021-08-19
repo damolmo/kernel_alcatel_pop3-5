@@ -23,18 +23,48 @@
 
 #include <linux/sched.h>
 #include <asm/cputype.h>
+<<<<<<< HEAD
 
 extern void __cpu_flush_user_tlb_range(unsigned long, unsigned long, struct vm_area_struct *);
 extern void __cpu_flush_kern_tlb_range(unsigned long, unsigned long);
 
 extern struct cpu_tlb_fns cpu_tlb;
+=======
+#include <asm/mmu.h>
+
+/*
+ * Raw TLBI operations.
+ *
+ * Where necessary, use the __tlbi() macro to avoid asm()
+ * boilerplate. Drivers and most kernel code should use the TLB
+ * management routines in preference to the macro below.
+ *
+ * The macro can be used as __tlbi(op) or __tlbi(op, arg), depending
+ * on whether a particular TLBI operation takes an argument or
+ * not. The macros handles invoking the asm with or without the
+ * register argument as appropriate.
+ */
+#define __TLBI_0(op, arg)		asm ("tlbi " #op)
+#define __TLBI_1(op, arg)		asm ("tlbi " #op ", %0" : : "r" (arg))
+#define __TLBI_N(op, arg, n, ...)	__TLBI_##n(op, arg)
+
+#define __tlbi(op, ...)		__TLBI_N(op, ##__VA_ARGS__, 1, 0)
+
+#define __tlbi_user(op, arg) do {						\
+	if (arm64_kernel_unmapped_at_el0())					\
+		__tlbi(op, (arg) | USER_ASID_FLAG);				\
+} while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	TLB Management
  *	==============
  *
+<<<<<<< HEAD
  *	The arch/arm64/mm/tlb.S files implement these methods.
  *
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *	The TLB specific code is expected to perform whatever tests it needs
  *	to determine if it should invalidate the TLB for each call.  Start
  *	addresses are inclusive and end addresses are exclusive; it is safe to
@@ -70,26 +100,50 @@ extern struct cpu_tlb_fns cpu_tlb;
  *		only require the D-TLB to be invalidated.
  *		- kaddr - Kernel virtual memory address
  */
+<<<<<<< HEAD
 static inline void flush_tlb_all(void)
 {
 	dsb(ishst);
 	asm("tlbi	vmalle1is");
+=======
+static inline void local_flush_tlb_all(void)
+{
+	dsb(nshst);
+	__tlbi(vmalle1);
+	dsb(nsh);
+	isb();
+}
+
+static inline void flush_tlb_all(void)
+{
+	dsb(ishst);
+	__tlbi(vmalle1is);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dsb(ish);
 	isb();
 }
 
 static inline void flush_tlb_mm(struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	unsigned long asid = (unsigned long)ASID(mm) << 48;
 
 	dsb(ishst);
 	asm("tlbi	aside1is, %0" : : "r" (asid));
+=======
+	unsigned long asid = ASID(mm) << 48;
+
+	dsb(ishst);
+	__tlbi(aside1is, asid);
+	__tlbi_user(aside1is, asid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dsb(ish);
 }
 
 static inline void flush_tlb_page(struct vm_area_struct *vma,
 				  unsigned long uaddr)
 {
+<<<<<<< HEAD
 	unsigned long addr = uaddr >> 12 |
 		((unsigned long)ASID(vma->vm_mm) << 48);
 
@@ -103,10 +157,39 @@ static inline void __flush_tlb_range(struct vm_area_struct *vma,
 {
 	unsigned long asid = (unsigned long)ASID(vma->vm_mm) << 48;
 	unsigned long addr;
+=======
+	unsigned long addr = uaddr >> 12 | (ASID(vma->vm_mm) << 48);
+
+	dsb(ishst);
+	__tlbi(vale1is, addr);
+	__tlbi_user(vale1is, addr);
+	dsb(ish);
+}
+
+/*
+ * This is meant to avoid soft lock-ups on large TLB flushing ranges and not
+ * necessarily a performance improvement.
+ */
+#define MAX_TLB_RANGE	(1024UL << PAGE_SHIFT)
+
+static inline void __flush_tlb_range(struct vm_area_struct *vma,
+				     unsigned long start, unsigned long end,
+				     bool last_level)
+{
+	unsigned long asid = ASID(vma->vm_mm) << 48;
+	unsigned long addr;
+
+	if ((end - start) > MAX_TLB_RANGE) {
+		flush_tlb_mm(vma->vm_mm);
+		return;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	start = asid | (start >> 12);
 	end = asid | (end >> 12);
 
 	dsb(ishst);
+<<<<<<< HEAD
 	for (addr = start; addr < end; addr += 1 << (PAGE_SHIFT - 12))
 		asm("tlbi vae1is, %0" : : "r"(addr));
 	dsb(ish);
@@ -115,17 +198,51 @@ static inline void __flush_tlb_range(struct vm_area_struct *vma,
 static inline void __flush_tlb_kernel_range(unsigned long start, unsigned long end)
 {
 	unsigned long addr;
+=======
+	for (addr = start; addr < end; addr += 1 << (PAGE_SHIFT - 12)) {
+		if (last_level) {
+			__tlbi(vale1is, addr);
+			__tlbi_user(vale1is, addr);
+		} else {
+			__tlbi(vae1is, addr);
+			__tlbi_user(vae1is, addr);
+		}
+	}
+	dsb(ish);
+}
+
+static inline void flush_tlb_range(struct vm_area_struct *vma,
+				   unsigned long start, unsigned long end)
+{
+	__flush_tlb_range(vma, start, end, false);
+}
+
+static inline void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+{
+	unsigned long addr;
+
+	if ((end - start) > MAX_TLB_RANGE) {
+		flush_tlb_all();
+		return;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	start >>= 12;
 	end >>= 12;
 
 	dsb(ishst);
 	for (addr = start; addr < end; addr += 1 << (PAGE_SHIFT - 12))
+<<<<<<< HEAD
 		asm("tlbi vaae1is, %0" : : "r"(addr));
+=======
+		__tlbi(vaae1is, addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dsb(ish);
 	isb();
 }
 
 /*
+<<<<<<< HEAD
  * This is meant to avoid soft lock-ups on large TLB flushing ranges and not
  * necessarily a performance improvement.
  */
@@ -149,12 +266,15 @@ static inline void flush_tlb_kernel_range(unsigned long start, unsigned long end
 }
 
 /*
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Used to invalidate the TLB (walk caches) corresponding to intermediate page
  * table levels (pgd/pud/pmd).
  */
 static inline void __flush_tlb_pgtable(struct mm_struct *mm,
 				       unsigned long uaddr)
 {
+<<<<<<< HEAD
 	unsigned long addr = uaddr >> 12 | ((unsigned long)ASID(mm) << 48);
 
 	dsb(ishst);
@@ -175,6 +295,14 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 }
 
 #define update_mmu_cache_pmd(vma, address, pmd) do { } while (0)
+=======
+	unsigned long addr = uaddr >> 12 | (ASID(mm) << 48);
+
+	__tlbi(vae1is, addr);
+	__tlbi_user(vae1is, addr);
+	dsb(ish);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif
 

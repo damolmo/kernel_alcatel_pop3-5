@@ -180,7 +180,11 @@ static int exynos_irq_request_resources(struct irq_data *irqd)
 	unsigned int con;
 	int ret;
 
+<<<<<<< HEAD
 	ret = gpio_lock_as_irq(&bank->gpio_chip, irqd->hwirq);
+=======
+	ret = gpiochip_lock_as_irq(&bank->gpio_chip, irqd->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		dev_err(bank->gpio_chip.dev, "unable to lock pin %s-%lu IRQ\n",
 			bank->name, irqd->hwirq);
@@ -200,8 +204,11 @@ static int exynos_irq_request_resources(struct irq_data *irqd)
 
 	spin_unlock_irqrestore(&bank->slock, flags);
 
+<<<<<<< HEAD
 	exynos_irq_unmask(irqd);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -222,8 +229,11 @@ static void exynos_irq_release_resources(struct irq_data *irqd)
 	shift = irqd->hwirq * bank_type->fld_width[PINCFG_TYPE_FUNC];
 	mask = (1 << bank_type->fld_width[PINCFG_TYPE_FUNC]) - 1;
 
+<<<<<<< HEAD
 	exynos_irq_mask(irqd);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&bank->slock, flags);
 
 	con = readl(d->virt_base + reg_con);
@@ -233,7 +243,11 @@ static void exynos_irq_release_resources(struct irq_data *irqd)
 
 	spin_unlock_irqrestore(&bank->slock, flags);
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&bank->gpio_chip, irqd->hwirq);
+=======
+	gpiochip_unlock_as_irq(&bank->gpio_chip, irqd->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

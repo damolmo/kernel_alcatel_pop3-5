@@ -77,13 +77,21 @@ ENTRY(stext)
 	orr	r6, r6, #(1 << MPU_RSR_EN)	@ Set region enabled bit
 	bl	__setup_mpu
 #endif
+<<<<<<< HEAD
 	ldr	r13, =__mmap_switched		@ address to jump to after
 						@ initialising sctlr
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	adr	lr, BSYM(1f)			@ return (PIC) address
  ARM(	add	pc, r10, #PROCINFO_INITFUNC	)
  THUMB(	add	r12, r10, #PROCINFO_INITFUNC	)
  THUMB(	ret	r12				)
+<<<<<<< HEAD
  1:	b	__after_proc_init
+=======
+1:	bl	__after_proc_init
+	b	__mmap_switched
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ENDPROC(stext)
 
 #ifdef CONFIG_SMP
@@ -106,8 +114,12 @@ ENTRY(secondary_startup)
 	movs	r10, r5				@ invalid processor?
 	beq	__error_p			@ yes, error 'p'
 
+<<<<<<< HEAD
 	adr	r4, __secondary_data
 	ldmia	r4, {r7, r12}
+=======
+	ldr	r7, __secondary_data
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_ARM_MPU
 	/* Use MPU region info supplied by __cpu_up */
@@ -115,6 +127,7 @@ ENTRY(secondary_startup)
 	bl      __setup_mpu			@ Initialize the MPU
 #endif
 
+<<<<<<< HEAD
 	adr	lr, BSYM(__after_proc_init)	@ return address
 	mov	r13, r12			@ __secondary_switched address
  ARM(	add	pc, r10, #PROCINFO_INITFUNC	)
@@ -127,11 +140,25 @@ ENTRY(__secondary_switched)
 	mov	fp, #0
 	b	secondary_start_kernel
 ENDPROC(__secondary_switched)
+=======
+	adr	lr, BSYM(1f)			@ return (PIC) address
+ ARM(	add	pc, r10, #PROCINFO_INITFUNC	)
+ THUMB(	add	r12, r10, #PROCINFO_INITFUNC	)
+ THUMB(	ret	r12				)
+1:	bl	__after_proc_init
+	ldr	sp, [r7, #12]			@ set up the stack pointer
+	mov	fp, #0
+	b	secondary_start_kernel
+ENDPROC(secondary_startup)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	.type	__secondary_data, %object
 __secondary_data:
 	.long	secondary_data
+<<<<<<< HEAD
 	.long	__secondary_switched
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_SMP */
 
 /*
@@ -164,7 +191,11 @@ __after_proc_init:
 #endif
 	mcr	p15, 0, r0, c1, c0, 0		@ write control reg
 #endif /* CONFIG_CPU_CP15 */
+<<<<<<< HEAD
 	ret	r13
+=======
+	ret	lr
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ENDPROC(__after_proc_init)
 	.ltorg
 

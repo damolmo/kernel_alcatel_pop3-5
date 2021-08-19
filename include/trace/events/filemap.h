@@ -52,6 +52,7 @@ DEFINE_EVENT(mm_filemap_op_page_cache, mm_filemap_add_to_page_cache,
 	TP_ARGS(page)
 	);
 
+<<<<<<< HEAD
 DECLARE_EVENT_CLASS(mm_fmflt_op,
 	TP_PROTO(int x),
 	TP_ARGS(x),
@@ -79,6 +80,8 @@ DEFINE_EVENT(mm_fmflt_op, mm_fmflt_op_wait_done,
 	TP_PROTO(int x),
 	TP_ARGS(x)
 	);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _TRACE_FILEMAP_H */
 
 /* This part must be outside protection */

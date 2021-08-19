@@ -290,6 +290,10 @@ static void __ieee80211_scan_completed(struct ieee80211_hw *hw, bool aborted)
 	struct ieee80211_local *local = hw_to_local(hw);
 	bool hw_scan = local->ops->hw_scan;
 	bool was_scanning = local->scanning;
+<<<<<<< HEAD
+=======
+	struct ieee80211_sub_if_data *sdata;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	lockdep_assert_held(&local->mtx);
 
@@ -343,7 +347,20 @@ static void __ieee80211_scan_completed(struct ieee80211_hw *hw, bool aborted)
 
 	ieee80211_mlme_notify_scan_completed(local);
 	ieee80211_ibss_notify_scan_completed(local);
+<<<<<<< HEAD
 	ieee80211_mesh_notify_scan_completed(local);
+=======
+
+	/* Requeue all the work that might have been ignored while
+	 * the scan was in progress; if there was none this will
+	 * just be a no-op for the particular interface.
+	 */
+	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+		if (ieee80211_sdata_running(sdata))
+			ieee80211_queue_work(&sdata->local->hw, &sdata->work);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (was_scanning)
 		ieee80211_start_next_roc(local);
 }

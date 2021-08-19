@@ -595,7 +595,11 @@ static void vhost_scsi_free_cmd(struct tcm_vhost_cmd *cmd)
 
 static int vhost_scsi_check_stop_free(struct se_cmd *se_cmd)
 {
+<<<<<<< HEAD
 	return target_put_sess_cmd(se_cmd->se_sess, se_cmd);
+=======
+	return target_put_sess_cmd(se_cmd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void
@@ -833,6 +837,10 @@ vhost_scsi_map_iov_to_sgl(struct tcm_vhost_cmd *cmd,
 			  bool write)
 {
 	struct scatterlist *sg = cmd->tvc_sgl;
+<<<<<<< HEAD
+=======
+	struct scatterlist *p = sg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int sgl_count = 0;
 	int ret, i;
 
@@ -856,9 +864,17 @@ vhost_scsi_map_iov_to_sgl(struct tcm_vhost_cmd *cmd,
 		ret = vhost_scsi_map_to_sgl(cmd, sg, sgl_count, &iov[i],
 					    cmd->tvc_upages, write);
 		if (ret < 0) {
+<<<<<<< HEAD
 			for (i = 0; i < cmd->tvc_sgl_count; i++)
 				put_page(sg_page(&cmd->tvc_sgl[i]));
 
+=======
+			while (p < sg) {
+				struct page *page = sg_page(p++);
+				if (page)
+					put_page(page);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cmd->tvc_sgl_count = 0;
 			return ret;
 		}
@@ -1251,7 +1267,11 @@ tcm_vhost_send_evt(struct vhost_scsi *vs,
 		 * lun[4-7] need to be zero according to virtio-scsi spec.
 		 */
 		evt->event.lun[0] = 0x01;
+<<<<<<< HEAD
 		evt->event.lun[1] = tpg->tport_tpgt & 0xFF;
+=======
+		evt->event.lun[1] = tpg->tport_tpgt;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (lun->unpacked_lun >= 256)
 			evt->event.lun[2] = lun->unpacked_lun >> 8 | 0x40 ;
 		evt->event.lun[3] = lun->unpacked_lun & 0xFF;
@@ -2122,12 +2142,20 @@ tcm_vhost_make_tpg(struct se_wwn *wwn,
 			struct tcm_vhost_tport, tport_wwn);
 
 	struct tcm_vhost_tpg *tpg;
+<<<<<<< HEAD
 	unsigned long tpgt;
+=======
+	u16 tpgt;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 
 	if (strstr(name, "tpgt_") != name)
 		return ERR_PTR(-EINVAL);
+<<<<<<< HEAD
 	if (kstrtoul(name + 5, 10, &tpgt) || tpgt > UINT_MAX)
+=======
+	if (kstrtou16(name + 5, 10, &tpgt) || tpgt >= VHOST_SCSI_MAX_TARGET)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-EINVAL);
 
 	tpg = kzalloc(sizeof(struct tcm_vhost_tpg), GFP_KERNEL);

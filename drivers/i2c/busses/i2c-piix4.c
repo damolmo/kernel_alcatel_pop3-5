@@ -54,7 +54,11 @@
 #define SMBSLVDAT	(0xC + piix4_smba)
 
 /* count for request_region */
+<<<<<<< HEAD
 #define SMBIOSIZE	8
+=======
+#define SMBIOSIZE	9
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* PCI Address Constants */
 #define SMBBA		0x090

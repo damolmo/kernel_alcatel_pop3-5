@@ -158,7 +158,11 @@ static int cdc_mbim_bind(struct usbnet *dev, struct usb_interface *intf)
 	if (!cdc_ncm_comm_intf_is_mbim(intf->cur_altsetting))
 		goto err;
 
+<<<<<<< HEAD
 	ret = cdc_ncm_bind_common(dev, intf, data_altsetting, 0);
+=======
+	ret = cdc_ncm_bind_common(dev, intf, data_altsetting);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		goto err;
 
@@ -550,7 +554,11 @@ err:
 
 static const struct driver_info cdc_mbim_info = {
 	.description = "CDC MBIM",
+<<<<<<< HEAD
 	.flags = FLAG_NO_SETINT | FLAG_MULTI_PACKET | FLAG_WWAN,
+=======
+	.flags = FLAG_NO_SETINT | FLAG_MULTI_PACKET | FLAG_WWAN | FLAG_SEND_ZLP,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.bind = cdc_mbim_bind,
 	.unbind = cdc_mbim_unbind,
 	.manage_power = cdc_mbim_manage_power,

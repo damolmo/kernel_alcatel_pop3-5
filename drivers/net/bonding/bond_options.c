@@ -1032,6 +1032,7 @@ static int bond_option_arp_validate_set(struct bonding *bond,
 {
 	netdev_info(bond->dev, "Setting arp_validate to %s (%llu)\n",
 		    newval->string, newval->value);
+<<<<<<< HEAD
 
 	if (bond->dev->flags & IFF_UP) {
 		if (!newval->value)
@@ -1039,6 +1040,8 @@ static int bond_option_arp_validate_set(struct bonding *bond,
 		else if (bond->params.arp_interval)
 			bond->recv_probe = bond_arp_rcv;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bond->params.arp_validate = newval->value;
 
 	return 0;
@@ -1081,6 +1084,10 @@ static int bond_option_primary_set(struct bonding *bond,
 				    slave->dev->name);
 			rcu_assign_pointer(bond->primary_slave, slave);
 			strcpy(bond->params.primary, slave->dev->name);
+<<<<<<< HEAD
+=======
+			bond->force_primary = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			bond_select_active_slave(bond);
 			goto out;
 		}

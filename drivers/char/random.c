@@ -702,6 +702,7 @@ retry:
 	}
 }
 
+<<<<<<< HEAD
 static void credit_entropy_bits_safe(struct entropy_store *r, int nbits)
 {
 	const int nbits_max = (int)(~0U >> (ENTROPY_SHIFT + 1));
@@ -711,6 +712,20 @@ static void credit_entropy_bits_safe(struct entropy_store *r, int nbits)
 	nbits = max(nbits, -nbits_max);
 
 	credit_entropy_bits(r, nbits);
+=======
+static int credit_entropy_bits_safe(struct entropy_store *r, int nbits)
+{
+	const int nbits_max = r->poolinfo->poolwords * 32;
+
+	if (nbits < 0)
+		return -EINVAL;
+
+	/* Cap the value to avoid overflows */
+	nbits = min(nbits,  nbits_max);
+
+	credit_entropy_bits(r, nbits);
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*********************************************************************
@@ -863,12 +878,25 @@ static void add_interrupt_bench(cycles_t start)
 static __u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
 {
 	__u32 *ptr = (__u32 *) regs;
+<<<<<<< HEAD
 
 	if (regs == NULL)
 		return 0;
 	if (f->reg_idx >= sizeof(struct pt_regs) / sizeof(__u32))
 		f->reg_idx = 0;
 	return *(ptr + f->reg_idx++);
+=======
+	unsigned int idx;
+
+	if (regs == NULL)
+		return 0;
+	idx = READ_ONCE(f->reg_idx);
+	if (idx >= sizeof(struct pt_regs) / sizeof(__u32))
+		idx = 0;
+	ptr += idx++;
+	WRITE_ONCE(f->reg_idx, idx);
+	return *ptr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void add_interrupt_randomness(int irq, int irq_flags)
@@ -896,6 +924,10 @@ void add_interrupt_randomness(int irq, int irq_flags)
 
 	fast_mix(fast_pool);
 	add_interrupt_bench(cycles);
+<<<<<<< HEAD
+=======
+	this_cpu_add(net_rand_state.s1, fast_pool->pool[cycles & 3]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((fast_pool->count < 64) &&
 	    !time_after(now, fast_pool->last + HZ))
@@ -925,6 +957,10 @@ void add_interrupt_randomness(int irq, int irq_flags)
 	/* award one bit for the contents of the fast pool */
 	credit_entropy_bits(r, credit + 1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_BLOCK
 void add_disk_randomness(struct gendisk *disk)
@@ -1379,12 +1415,25 @@ random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 static ssize_t
 urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 {
+<<<<<<< HEAD
 	int ret;
 
 	if (unlikely(nonblocking_pool.initialized == 0))
 		printk_once(KERN_NOTICE "random: %s urandom read "
 			    "with %d bits of entropy available\n",
 			    current->comm, nonblocking_pool.entropy_total);
+=======
+	static int maxwarn = 10;
+	int ret;
+
+	if (unlikely(nonblocking_pool.initialized == 0) &&
+	    maxwarn > 0) {
+		maxwarn--;
+		printk(KERN_NOTICE "random: %s: uninitialized urandom read "
+		       "(%zd bytes read, %d bits of entropy available)\n",
+		       current->comm, nbytes, nonblocking_pool.entropy_total);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
 	ret = extract_entropy_user(&nonblocking_pool, buf, nbytes);
@@ -1413,14 +1462,32 @@ static int
 write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
 {
 	size_t bytes;
+<<<<<<< HEAD
 	__u32 buf[16];
 	const char __user *p = buffer;
 
 	while (count > 0) {
+=======
+	__u32 t, buf[16];
+	const char __user *p = buffer;
+
+	while (count > 0) {
+		int b, i = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		bytes = min(count, sizeof(buf));
 		if (copy_from_user(&buf, p, bytes))
 			return -EFAULT;
 
+<<<<<<< HEAD
+=======
+		for (b = bytes ; b > 0 ; b -= sizeof(__u32), i++) {
+			if (!arch_get_random_int(&t))
+				break;
+			buf[i] ^= t;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		count -= bytes;
 		p += bytes;
 
@@ -1464,8 +1531,12 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 			return -EPERM;
 		if (get_user(ent_count, p))
 			return -EFAULT;
+<<<<<<< HEAD
 		credit_entropy_bits_safe(&input_pool, ent_count);
 		return 0;
+=======
+		return credit_entropy_bits_safe(&input_pool, ent_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case RNDADDENTROPY:
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
@@ -1479,8 +1550,12 @@ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 				    size);
 		if (retval < 0)
 			return retval;
+<<<<<<< HEAD
 		credit_entropy_bits_safe(&input_pool, ent_count);
 		return 0;
+=======
+		return credit_entropy_bits_safe(&input_pool, ent_count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case RNDZAPENTCNT:
 	case RNDCLEARPOOL:
 		/*
@@ -1714,21 +1789,33 @@ int random_int_secret_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static DEFINE_PER_CPU(__u32 [MD5_DIGEST_WORDS], get_random_int_hash)
+		__aligned(sizeof(unsigned long));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Get a random word for internal kernel use only. Similar to urandom but
  * with the goal of minimal entropy pool depletion. As a result, the random
  * value is not cryptographically secure but for several uses the cost of
  * depleting entropy is too high
  */
+<<<<<<< HEAD
 static DEFINE_PER_CPU(__u32 [MD5_DIGEST_WORDS], get_random_int_hash);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 unsigned int get_random_int(void)
 {
 	__u32 *hash;
 	unsigned int ret;
 
+<<<<<<< HEAD
 	if (arch_get_random_int(&ret))
 		return ret;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hash = get_cpu_var(get_random_int_hash);
 
 	hash[0] += current->pid + jiffies + random_get_entropy();
@@ -1741,6 +1828,28 @@ unsigned int get_random_int(void)
 EXPORT_SYMBOL(get_random_int);
 
 /*
+<<<<<<< HEAD
+=======
+ * Same as get_random_int(), but returns unsigned long.
+ */
+unsigned long get_random_long(void)
+{
+	__u32 *hash;
+	unsigned long ret;
+
+	hash = get_cpu_var(get_random_int_hash);
+
+	hash[0] += current->pid + jiffies + random_get_entropy();
+	md5_transform(hash, random_int_secret);
+	ret = *(unsigned long *)hash;
+	put_cpu_var(get_random_int_hash);
+
+	return ret;
+}
+EXPORT_SYMBOL(get_random_long);
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * randomize_range() returns a start address such that
  *
  *    [...... <range> .....]
@@ -1768,12 +1877,27 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
 {
 	struct entropy_store *poolp = &input_pool;
 
+<<<<<<< HEAD
 	/* Suspend writing if we're above the trickle threshold.
 	 * We'll be woken up again once below random_write_wakeup_thresh,
 	 * or when the calling thread is about to terminate.
 	 */
 	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+=======
+	if (unlikely(nonblocking_pool.initialized == 0))
+		poolp = &nonblocking_pool;
+	else {
+		/* Suspend writing if we're above the trickle
+		 * threshold.  We'll be woken up again once below
+		 * random_write_wakeup_thresh, or when the calling
+		 * thread is about to terminate.
+		 */
+		wait_event_interruptible(random_write_wait,
+					 kthread_should_stop() ||
+			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mix_pool_bytes(poolp, buffer, count);
 	credit_entropy_bits(poolp, entropy);
 }

@@ -35,6 +35,10 @@
 #include <linux/regulator/consumer.h>
 #include <linux/module.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * This code has been heavily tested on a Nokia 770, and lightly
@@ -410,7 +414,11 @@ static int ads7845_read12_ser(struct device *dev, unsigned command)
 
 	if (status == 0) {
 		/* BE12 value, then padding */
+<<<<<<< HEAD
 		status = be16_to_cpu(*((u16 *)&req->sample[1]));
+=======
+		status = get_unaligned_be16(&req->sample[1]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status = status >> 3;
 		status &= 0x0fff;
 	}
@@ -783,10 +791,18 @@ static void ads7846_report_state(struct ads7846 *ts)
 		/* compute touch pressure resistance using equation #2 */
 		Rt = z2;
 		Rt -= z1;
+<<<<<<< HEAD
 		Rt *= x;
 		Rt *= ts->x_plate_ohms;
 		Rt /= z1;
 		Rt = (Rt + 2047) >> 12;
+=======
+		Rt *= ts->x_plate_ohms;
+		Rt = DIV_ROUND_CLOSEST(Rt, 16);
+		Rt *= x;
+		Rt /= z1;
+		Rt = DIV_ROUND_CLOSEST(Rt, 256);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		Rt = 0;
 	}

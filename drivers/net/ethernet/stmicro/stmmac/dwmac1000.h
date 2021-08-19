@@ -83,10 +83,17 @@ enum power_event {
 #define LPI_CTRL_STATUS_TLPIEN	0x00000001	/* Transmit LPI Entry */
 
 /* GMAC HW ADDR regs */
+<<<<<<< HEAD
 #define GMAC_ADDR_HIGH(reg)	(((reg > 15) ? 0x00000800 : 0x00000040) + \
 				(reg * 8))
 #define GMAC_ADDR_LOW(reg)	(((reg > 15) ? 0x00000804 : 0x00000044) + \
 				(reg * 8))
+=======
+#define GMAC_ADDR_HIGH(reg)	((reg > 15) ? 0x00000800 + (reg - 16) * 8 : \
+				 0x00000040 + (reg * 8))
+#define GMAC_ADDR_LOW(reg)	((reg > 15) ? 0x00000804 + (reg - 16) * 8 : \
+				 0x00000044 + (reg * 8))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define GMAC_MAX_PERFECT_ADDRESSES	1
 
 /* PCS registers (AN/TBI/SGMII/RGMII) offset */

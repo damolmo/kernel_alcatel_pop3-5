@@ -121,10 +121,13 @@ flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned long vma
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 void mark_rodata_ro(void);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/kmap_types.h>
 
 #define ARCH_HAS_KMAP

@@ -646,7 +646,11 @@ int eeh_pci_enable(struct eeh_pe *pe, int function)
 	/* Check if the request is finished successfully */
 	if (active_flag) {
 		rc = eeh_ops->wait_state(pe, PCI_BUS_RESET_WAIT_MSEC);
+<<<<<<< HEAD
 		if (rc <= 0)
+=======
+		if (rc < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return rc;
 
 		if (rc & active_flag)

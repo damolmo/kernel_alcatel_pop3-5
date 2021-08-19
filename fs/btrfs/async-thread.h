@@ -78,4 +78,9 @@ void btrfs_queue_work(struct btrfs_workqueue *wq,
 void btrfs_destroy_workqueue(struct btrfs_workqueue *wq);
 void btrfs_workqueue_set_max(struct btrfs_workqueue *wq, int max);
 void btrfs_set_work_high_priority(struct btrfs_work *work);
+<<<<<<< HEAD
+=======
+void btrfs_flush_workqueue(struct btrfs_workqueue *wq);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

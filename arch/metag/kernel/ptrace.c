@@ -24,6 +24,19 @@
  * user_regset definitions.
  */
 
+<<<<<<< HEAD
+=======
+static unsigned long user_txstatus(const struct pt_regs *regs)
+{
+	unsigned long data = (unsigned long)regs->ctx.Flags;
+
+	if (regs->ctx.SaveMask & TBICTX_CBUF_BIT)
+		data |= USER_GP_REGS_STATUS_CATCH_BIT;
+
+	return data;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int metag_gp_regs_copyout(const struct pt_regs *regs,
 			  unsigned int pos, unsigned int count,
 			  void *kbuf, void __user *ubuf)
@@ -62,9 +75,13 @@ int metag_gp_regs_copyout(const struct pt_regs *regs,
 	if (ret)
 		goto out;
 	/* TXSTATUS */
+<<<<<<< HEAD
 	data = (unsigned long)regs->ctx.Flags;
 	if (regs->ctx.SaveMask & TBICTX_CBUF_BIT)
 		data |= USER_GP_REGS_STATUS_CATCH_BIT;
+=======
+	data = user_txstatus(regs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				  &data, 4*25, 4*26);
 	if (ret)
@@ -119,6 +136,10 @@ int metag_gp_regs_copyin(struct pt_regs *regs,
 	if (ret)
 		goto out;
 	/* TXSTATUS */
+<<<<<<< HEAD
+=======
+	data = user_txstatus(regs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 &data, 4*25, 4*26);
 	if (ret)
@@ -244,6 +265,11 @@ int metag_rp_state_copyin(struct pt_regs *regs,
 	unsigned long long *ptr;
 	int ret, i;
 
+<<<<<<< HEAD
+=======
+	if (count < 4*13)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Read the entire pipeline before making any changes */
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 &rp, 0, 4*13);
@@ -303,7 +329,11 @@ static int metag_tls_set(struct task_struct *target,
 			const void *kbuf, const void __user *ubuf)
 {
 	int ret;
+<<<<<<< HEAD
 	void __user *tls;
+=======
+	void __user *tls = target->thread.tls_ptr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf, &tls, 0, -1);
 	if (ret)

@@ -55,12 +55,21 @@ static int parse_status(const char *value)
 
 	while (*c != '\0') {
 		int port, status, speed, devid;
+<<<<<<< HEAD
 		unsigned long socket;
 		char lbusid[SYSFS_BUS_ID_SIZE];
 
 		ret = sscanf(c, "%d %d %d %x %lx %31s\n",
 				&port, &status, &speed,
 				&devid, &socket, lbusid);
+=======
+		int sockfd;
+		char lbusid[SYSFS_BUS_ID_SIZE];
+
+		ret = sscanf(c, "%d %d %d %x %u %31s\n",
+				&port, &status, &speed,
+				&devid, &sockfd, lbusid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (ret < 5) {
 			dbg("sscanf failed: %d", ret);
@@ -69,7 +78,11 @@ static int parse_status(const char *value)
 
 		dbg("port %d status %d speed %d devid %x",
 				port, status, speed, devid);
+<<<<<<< HEAD
 		dbg("socket %lx lbusid %s", socket, lbusid);
+=======
+		dbg("sockfd %u lbusid %s", sockfd, lbusid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 		/* if a device is connected, look at it */

@@ -39,6 +39,12 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/dmi.h>
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86
+#include <asm/i8259.h>
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* this is for "generic access to PC-style RTC" using CMOS_READ/CMOS_WRITE */
 #include <asm-generic/rtc.h>
@@ -1067,6 +1073,7 @@ static int cmos_pnp_probe(struct pnp_dev *pnp, const struct pnp_device_id *id)
 {
 	cmos_wake_setup(&pnp->dev);
 
+<<<<<<< HEAD
 	if (pnp_port_start(pnp, 0) == 0x70 && !pnp_irq_valid(pnp, 0))
 		/* Some machines contain a PNP entry for the RTC, but
 		 * don't define the IRQ. It should always be safe to
@@ -1078,6 +1085,25 @@ static int cmos_pnp_probe(struct pnp_dev *pnp, const struct pnp_device_id *id)
 		return cmos_do_probe(&pnp->dev,
 				pnp_get_resource(pnp, IORESOURCE_IO, 0),
 				pnp_irq(pnp, 0));
+=======
+	if (pnp_port_start(pnp, 0) == 0x70 && !pnp_irq_valid(pnp, 0)) {
+		unsigned int irq = 0;
+#ifdef CONFIG_X86
+		/* Some machines contain a PNP entry for the RTC, but
+		 * don't define the IRQ. It should always be safe to
+		 * hardcode it on systems with a legacy PIC.
+		 */
+		if (nr_legacy_irqs())
+			irq = 8;
+#endif
+		return cmos_do_probe(&pnp->dev,
+				pnp_get_resource(pnp, IORESOURCE_IO, 0), irq);
+	} else {
+		return cmos_do_probe(&pnp->dev,
+				pnp_get_resource(pnp, IORESOURCE_IO, 0),
+				pnp_irq(pnp, 0));
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __exit cmos_pnp_remove(struct pnp_dev *pnp)

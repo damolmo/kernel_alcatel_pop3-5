@@ -26,14 +26,22 @@
 #include <linux/sched.h>
 #include <linux/shrinker.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
 #include <linux/idr.h>
 #include "mtk/ion_drv.h"
+=======
+#ifdef CONFIG_ION_POOL_CACHE_POLICY
+#include <asm/cacheflush.h>
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "ion.h"
 
 struct ion_buffer *ion_handle_buffer(struct ion_handle *handle);
 
 /**
+<<<<<<< HEAD
  * struct ion_device - the metadata of the ion device node
  * @dev:		the actual misc device
  * @buffers:		an rb tree of all the existing buffers
@@ -120,6 +128,8 @@ struct ion_handle {
 
 
 /**
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * struct ion_buffer - metadata for a particular buffer
  * @ref:		refernce count
  * @node:		node in the ion_device buffers tree
@@ -209,8 +219,11 @@ struct ion_heap_ops {
 	int (*map_user)(struct ion_heap *mapper, struct ion_buffer *buffer,
 			struct vm_area_struct *vma);
 	int (*shrink)(struct ion_heap *heap, gfp_t gfp_mask, int nr_to_scan);
+<<<<<<< HEAD
 	void (*add_freelist)(struct ion_buffer *buffer);
 	int (*page_pool_total)(struct ion_heap *heap);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -414,6 +427,7 @@ void ion_carveout_heap_destroy(struct ion_heap *);
 
 struct ion_heap *ion_chunk_heap_create(struct ion_platform_heap *);
 void ion_chunk_heap_destroy(struct ion_heap *);
+<<<<<<< HEAD
 
 struct ion_heap *ion_mm_heap_create(struct ion_platform_heap *);
 void ion_mm_heap_destroy(struct ion_heap *);
@@ -423,6 +437,11 @@ void ion_cma_heap_destroy(struct ion_heap *);
 
 struct ion_heap *ion_fb_heap_create(struct ion_platform_heap *);
 void ion_fb_heap_destroy(struct ion_heap *);
+=======
+struct ion_heap *ion_cma_heap_create(struct ion_platform_heap *);
+void ion_cma_heap_destroy(struct ion_heap *);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * kernel api to allocate/free from carveout -- used when carveout is
  * used to back an architecture specific custom heap
@@ -431,8 +450,11 @@ ion_phys_addr_t ion_carveout_allocate(struct ion_heap *heap, unsigned long size,
 				      unsigned long align);
 void ion_carveout_free(struct ion_heap *heap, ion_phys_addr_t addr,
 		       unsigned long size);
+<<<<<<< HEAD
 
 int ion_device_destroy_heaps(struct ion_device *dev, int need_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * The carveout heap returns physical addresses, since 0 may be a valid
  * physical address, this is used to indicate allocation failed
@@ -478,6 +500,40 @@ struct ion_page_pool *ion_page_pool_create(gfp_t gfp_mask, unsigned int order);
 void ion_page_pool_destroy(struct ion_page_pool *);
 struct page *ion_page_pool_alloc(struct ion_page_pool *);
 void ion_page_pool_free(struct ion_page_pool *, struct page *);
+<<<<<<< HEAD
+=======
+void ion_page_pool_free_immediate(struct ion_page_pool *, struct page *);
+
+#ifdef CONFIG_ION_POOL_CACHE_POLICY
+static inline void ion_page_pool_alloc_set_cache_policy
+				(struct ion_page_pool *pool,
+				struct page *page){
+	void *va = page_address(page);
+
+	if (va)
+		set_memory_wc((unsigned long)va, 1 << pool->order);
+}
+
+static inline void ion_page_pool_free_set_cache_policy
+				(struct ion_page_pool *pool,
+				struct page *page){
+	void *va = page_address(page);
+
+	if (va)
+		set_memory_wb((unsigned long)va, 1 << pool->order);
+
+}
+#else
+static inline void ion_page_pool_alloc_set_cache_policy
+				(struct ion_page_pool *pool,
+				struct page *page){ }
+
+static inline void ion_page_pool_free_set_cache_policy
+				(struct ion_page_pool *pool,
+				struct page *page){ }
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /** ion_page_pool_shrink - shrinks the size of the memory cached in the pool
  * @pool:		the pool
@@ -500,6 +556,9 @@ int ion_page_pool_shrink(struct ion_page_pool *pool, gfp_t gfp_mask,
 void ion_pages_sync_for_device(struct device *dev, struct page *page,
 		size_t size, enum dma_data_direction dir);
 
+<<<<<<< HEAD
 extern struct ion_device *g_ion_device;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _ION_PRIV_H */

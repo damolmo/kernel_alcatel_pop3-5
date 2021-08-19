@@ -133,7 +133,11 @@ int dump_queue(struct msgque_data *msgque)
 	for (kern_id = 0; kern_id < 256; kern_id++) {
 		ret = msgctl(kern_id, MSG_STAT, &ds);
 		if (ret < 0) {
+<<<<<<< HEAD
 			if (errno == -EINVAL)
+=======
+			if (errno == EINVAL)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				continue;
 			printf("Failed to get stats for IPC queue with id %d\n",
 					kern_id);

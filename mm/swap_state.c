@@ -20,6 +20,10 @@
 #include <linux/page_cgroup.h>
 
 #include <asm/pgtable.h>
+<<<<<<< HEAD
+=======
+#include "internal.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * swapper_space is a fiction, retained to simplify the path through
@@ -330,7 +334,11 @@ struct page *read_swap_cache_async(swp_entry_t entry, gfp_t gfp_mask,
 		/*
 		 * call radix_tree_preload() while we can wait.
 		 */
+<<<<<<< HEAD
 		err = radix_tree_maybe_preload(gfp_mask & GFP_KERNEL);
+=======
+		err = radix_tree_maybe_preload(gfp_mask & GFP_RECLAIM_MASK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err)
 			break;
 

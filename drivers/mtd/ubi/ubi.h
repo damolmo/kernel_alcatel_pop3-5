@@ -43,6 +43,7 @@
 
 #include "ubi-media.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_HIBERNATION
 #define IPOH_VOLUME_NANE "ipoh"
 #endif
@@ -50,6 +51,8 @@
 #define MTK_TMP_DEBUG_LOG
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Maximum number of supported UBI devices */
 #define UBI_MAX_DEVICES 32
 
@@ -175,9 +178,12 @@ struct ubi_wl_entry {
 	} u;
 	int ec;
 	int pnum;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	int tlc;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -436,6 +442,11 @@ struct ubi_debug_info {
  * @fm_size: fastmap size in bytes
  * @fm_sem: allows ubi_update_fastmap() to block EBA table changes
  * @fm_work: fastmap work queue
+<<<<<<< HEAD
+=======
+ * @fm_work_scheduled: non-zero if fastmap work was scheduled
+ * @fast_attach: non-zero if UBI was attached by fastmap
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * @used: RB-tree of used physical eraseblocks
  * @erroneous: RB-tree of erroneous used physical eraseblocks
@@ -447,7 +458,11 @@ struct ubi_debug_info {
  * @pq_head: protection queue head
  * @wl_lock: protects the @used, @free, @pq, @pq_head, @lookuptbl, @move_from,
  *	     @move_to, @move_to_put @erase_pending, @wl_scheduled, @works,
+<<<<<<< HEAD
  *	     @erroneous, and @erroneous_peb_count fields
+=======
+ *	     @erroneous, @erroneous_peb_count, and @fm_work_scheduled fields
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @move_mutex: serializes eraseblock moves
  * @work_sem: used to wait for all the scheduled works to finish and prevent
  * new works from being submitted
@@ -525,6 +540,7 @@ struct ubi_device {
 	int max_ec;
 	/* Note, mean_ec is not updated run-time - should be fixed */
 	int mean_ec;
+<<<<<<< HEAD
 /*MTK start: wl/ec status*/
 	uint64_t ec_sum;
 	int wl_count;
@@ -537,6 +553,8 @@ struct ubi_device {
 	atomic_t move_retry;
 	atomic_t lbb;
 /*MTK end*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* EBA sub-system's stuff */
 	unsigned long long global_sqnum;
@@ -554,6 +572,11 @@ struct ubi_device {
 	void *fm_buf;
 	size_t fm_size;
 	struct work_struct fm_work;
+<<<<<<< HEAD
+=======
+	int fm_work_scheduled;
+	int fast_attach;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Wear-leveling sub-system's stuff */
 	struct rb_root used;
@@ -602,6 +625,7 @@ struct ubi_device {
 	struct mtd_info *mtd;
 
 	void *peb_buf;
+<<<<<<< HEAD
 #ifndef CONFIG_UBI_SHARE_BUFFER
 	struct mutex buf_mutex;
 #endif
@@ -639,6 +663,12 @@ struct ubi_device {
 	int ipoh_ops;
 #endif
 
+=======
+	struct mutex buf_mutex;
+	struct mutex ckvol_mutex;
+
+	struct ubi_debug_info dbg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -665,9 +695,12 @@ struct ubi_ainf_peb {
 	int lnum;
 	unsigned int scrub:1;
 	unsigned int copy_flag:1;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	unsigned int tlc:1;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long long sqnum;
 	union {
 		struct rb_node rb;
@@ -717,7 +750,10 @@ struct ubi_ainf_volume {
  * @erase: list of physical eraseblocks which have to be erased
  * @alien: list of physical eraseblocks which should not be used by UBI (e.g.,
  *         those belonging to "preserve"-compatible internal volumes)
+<<<<<<< HEAD
  * @waiting: list of physical eraseblocks which mabybe fix by BACKUP_LSB
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @corr_peb_count: count of PEBs in the @corr list
  * @empty_peb_count: count of PEBs which are presumably empty (contain only
  *                   0xFF bytes)
@@ -746,9 +782,12 @@ struct ubi_attach_info {
 	struct list_head free;
 	struct list_head erase;
 	struct list_head alien;
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 	struct list_head waiting;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int corr_peb_count;
 	int empty_peb_count;
 	int alien_peb_count;
@@ -763,6 +802,7 @@ struct ubi_attach_info {
 	int mean_ec;
 	uint64_t ec_sum;
 	int ec_count;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	int tlc_min_ec;
 	int tlc_max_ec;
@@ -770,6 +810,8 @@ struct ubi_attach_info {
 	uint64_t tlc_ec_sum;
 	int tlc_ec_count;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct kmem_cache *aeb_slab_cache;
 };
 
@@ -809,6 +851,7 @@ extern const struct file_operations ubi_vol_cdev_operations;
 extern struct class *ubi_class;
 extern struct mutex ubi_devices_mutex;
 extern struct blocking_notifier_head ubi_notifiers;
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 extern u32 mtk_nand_paired_page_transfer(u32, bool);
 #endif
@@ -821,6 +864,8 @@ extern struct mutex ubi_buf_mutex;
 extern u64 mtd_partition_start_address(struct mtd_info *mtd);
 extern bool mtk_block_istlc(u64 addr);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* attach.c */
 int ubi_add_to_av(struct ubi_device *ubi, struct ubi_attach_info *ai, int pnum,
@@ -832,10 +877,13 @@ struct ubi_ainf_peb *ubi_early_get_peb(struct ubi_device *ubi,
 				       struct ubi_attach_info *ai);
 int ubi_attach(struct ubi_device *ubi, int force_scan);
 void ubi_destroy_ai(struct ubi_attach_info *ai);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 int ubi_peb_istlc(struct ubi_device *ubi, int pnum);
 int ubi_trigger_archive_by_slc(struct ubi_device *ubi);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* vtbl.c */
 int ubi_change_vtbl_record(struct ubi_device *ubi, int idx,
@@ -843,12 +891,15 @@ int ubi_change_vtbl_record(struct ubi_device *ubi, int idx,
 int ubi_vtbl_rename_volumes(struct ubi_device *ubi,
 			    struct list_head *rename_list);
 int ubi_read_volume_table(struct ubi_device *ubi, struct ubi_attach_info *ai);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 int ubi_read_mtbl_record(struct ubi_device *ubi, struct ubi_attach_info *ai, int peb_count);
 int ubi_change_mtbl_record(struct ubi_device *ubi, int idx, int ec, int vol_id, int map);
 int ubi_change_empty_ec(struct ubi_device *ubi, int pnum, int ec, int vol_id, int map);
 int ubi_wipe_mtbl_record(struct ubi_device *ubi, int vol_id);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* vmt.c */
 int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req);
@@ -877,12 +928,15 @@ void ubi_calculate_reserved(struct ubi_device *ubi);
 int ubi_check_pattern(const void *buf, uint8_t patt, int size);
 
 /* eba.c */
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 int blb_record_page1(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_hdr *vidh, int work);
 int blb_get_startpage(void);
 int ubi_get_compat(const struct ubi_device *ubi, int vol_id);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ubi_eba_unmap_leb(struct ubi_device *ubi, struct ubi_volume *vol,
 		      int lnum);
 int ubi_eba_read_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
@@ -894,11 +948,16 @@ int ubi_eba_write_leb_st(struct ubi_device *ubi, struct ubi_volume *vol,
 int ubi_eba_atomic_leb_change(struct ubi_device *ubi, struct ubi_volume *vol,
 			      int lnum, const void *buf, int len);
 int ubi_eba_copy_leb(struct ubi_device *ubi, int from, int to,
+<<<<<<< HEAD
 		     struct ubi_vid_hdr *vid_hdr, int do_wl);
+=======
+		     struct ubi_vid_hdr *vid_hdr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ubi_eba_init(struct ubi_device *ubi, struct ubi_attach_info *ai);
 unsigned long long ubi_next_sqnum(struct ubi_device *ubi);
 int self_check_eba(struct ubi_device *ubi, struct ubi_attach_info *ai_fastmap,
 		   struct ubi_attach_info *ai_scan);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 int ubi_eba_copy_tlc_leb(struct ubi_device *ubi, int from, int to,
 		struct ubi_vid_hdr *vid_hdr, int do_wl);
@@ -906,17 +965,22 @@ int ubi_eba_write_tlc_leb(struct ubi_device *ubi, struct ubi_volume *vol, int ln
 	  const void *buf, int offset, int len);
 int ensure_slc_archive(struct ubi_device *ubi, int pnum);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* wl.c */
 int ubi_wl_get_peb(struct ubi_device *ubi);
 int ubi_wl_put_peb(struct ubi_device *ubi, int vol_id, int lnum,
 		   int pnum, int torture);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 struct ubi_wl_entry *get_peb_for_tlc_wl(struct ubi_device *ubi);
 struct ubi_wl_entry *ubi_wl_get_tlc_peb(struct ubi_device *ubi);
 int ubi_wl_archive_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum);
 int __ubi_wl_archive_leb(struct ubi_device *ubi, int pnum);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ubi_wl_flush(struct ubi_device *ubi, int vol_id, int lnum);
 int ubi_wl_scrub_peb(struct ubi_device *ubi, int pnum);
 int ubi_wl_init(struct ubi_device *ubi, struct ubi_attach_info *ai);
@@ -928,8 +992,11 @@ int ubi_wl_put_fm_peb(struct ubi_device *ubi, struct ubi_wl_entry *used_e,
 int ubi_is_erase_work(struct ubi_work *wrk);
 void ubi_refill_pools(struct ubi_device *ubi);
 int ubi_ensure_anchor_pebs(struct ubi_device *ubi);
+<<<<<<< HEAD
 int sync_erase(struct ubi_device *ubi, struct ubi_wl_entry *e, int torture);
 void ubi_wl_move_pg_to_used(struct ubi_device *ubi, int pnum);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* io.c */
 int ubi_io_read(const struct ubi_device *ubi, void *buf, int pnum, int offset,
@@ -947,6 +1014,7 @@ int ubi_io_read_vid_hdr(struct ubi_device *ubi, int pnum,
 			struct ubi_vid_hdr *vid_hdr, int verbose);
 int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_hdr *vid_hdr);
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 int ubi_io_write_vid_hdr_blb(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_hdr *vid_hdr);
@@ -960,6 +1028,8 @@ int ubi_io_write_oob(const struct ubi_device *ubi, void *databuf, void *oobbuf,
 int ubi_io_fill_ec_hdr(struct ubi_device *ubi, int pnum, struct ubi_ec_hdr *ec_hdr, int ec);
 int ubi_io_fill_vid_hdr(struct ubi_device *ubi, int pnum, struct ubi_vid_hdr *vid_hdr);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* build.c */
 int ubi_attach_mtd_dev(struct mtd_info *mtd, int ubi_num,
@@ -1097,6 +1167,7 @@ static inline int ubi_io_read_data(const struct ubi_device *ubi, void *buf,
  * the beginning of the logical eraseblock, not to the beginning of the
  * physical eraseblock.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 static inline int ubi_io_write_tlc_data(struct ubi_device *ubi, const void *buf,
 				    int pnum, int offset, int len)
@@ -1106,6 +1177,8 @@ static inline int ubi_io_write_tlc_data(struct ubi_device *ubi, const void *buf,
 	return ubi_io_write(ubi, buf, pnum, offset, len);
 }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int ubi_io_write_data(struct ubi_device *ubi, const void *buf,
 				    int pnum, int offset, int len)
 {
@@ -1152,4 +1225,22 @@ static inline int idx2vol_id(const struct ubi_device *ubi, int idx)
 		return idx;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * ubi_is_fm_vol - check whether a volume ID is a Fastmap volume.
+ * @vol_id: volume ID
+ */
+static inline bool ubi_is_fm_vol(int vol_id)
+{
+	switch (vol_id) {
+		case UBI_FM_SB_VOLUME_ID:
+		case UBI_FM_DATA_VOLUME_ID:
+		return true;
+	}
+
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* !__UBI_UBI_H__ */

@@ -120,10 +120,17 @@ static void spu_memset(u32 toi, u32 what, int length)
 }
 
 /* spu_memload - write to SPU address space */
+<<<<<<< HEAD
 static void spu_memload(u32 toi, void *from, int length)
 {
 	unsigned long flags;
 	u32 *froml = from;
+=======
+static void spu_memload(u32 toi, const void *from, int length)
+{
+	unsigned long flags;
+	const u32 *froml = from;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 __iomem *to = (u32 __iomem *) (SPU_MEMORY_BASE + toi);
 	int i;
 	u32 val;

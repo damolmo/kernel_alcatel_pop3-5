@@ -1433,6 +1433,11 @@ void snd_usbmidi_disconnect(struct list_head *p)
 	spin_unlock_irq(&umidi->disc_lock);
 	up_write(&umidi->disc_rwsem);
 
+<<<<<<< HEAD
+=======
+	del_timer_sync(&umidi->error_timer);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i) {
 		struct snd_usb_midi_endpoint *ep = &umidi->endpoints[i];
 		if (ep->out)
@@ -1459,7 +1464,10 @@ void snd_usbmidi_disconnect(struct list_head *p)
 			ep->in = NULL;
 		}
 	}
+<<<<<<< HEAD
 	del_timer_sync(&umidi->error_timer);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(snd_usbmidi_disconnect);
 
@@ -1760,6 +1768,31 @@ static int snd_usbmidi_create_endpoints(struct snd_usb_midi *umidi,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static struct usb_ms_endpoint_descriptor *find_usb_ms_endpoint_descriptor(
+					struct usb_host_endpoint *hostep)
+{
+	unsigned char *extra = hostep->extra;
+	int extralen = hostep->extralen;
+
+	while (extralen > 3) {
+		struct usb_ms_endpoint_descriptor *ms_ep =
+				(struct usb_ms_endpoint_descriptor *)extra;
+
+		if (ms_ep->bLength > 3 &&
+		    ms_ep->bDescriptorType == USB_DT_CS_ENDPOINT &&
+		    ms_ep->bDescriptorSubtype == UAC_MS_GENERAL)
+			return ms_ep;
+		if (!extra[0])
+			break;
+		extralen -= extra[0];
+		extra += extra[0];
+	}
+	return NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Returns MIDIStreaming device capabilities.
  */
@@ -1797,11 +1830,22 @@ static int snd_usbmidi_get_ms_info(struct snd_usb_midi *umidi,
 		ep = get_ep_desc(hostep);
 		if (!usb_endpoint_xfer_bulk(ep) && !usb_endpoint_xfer_int(ep))
 			continue;
+<<<<<<< HEAD
 		ms_ep = (struct usb_ms_endpoint_descriptor *)hostep->extra;
 		if (hostep->extralen < 4 ||
 		    ms_ep->bLength < 4 ||
 		    ms_ep->bDescriptorType != USB_DT_CS_ENDPOINT ||
 		    ms_ep->bDescriptorSubtype != UAC_MS_GENERAL)
+=======
+		ms_ep = find_usb_ms_endpoint_descriptor(hostep);
+		if (!ms_ep)
+			continue;
+		if (ms_ep->bLength <= sizeof(*ms_ep))
+			continue;
+		if (ms_ep->bNumEmbMIDIJack > 0x10)
+			continue;
+		if (ms_ep->bLength < sizeof(*ms_ep) + ms_ep->bNumEmbMIDIJack)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		if (usb_endpoint_dir_out(ep)) {
 			if (endpoints[epidx].out_ep) {
@@ -2052,6 +2096,11 @@ static int snd_usbmidi_detect_roland(struct snd_usb_midi *umidi,
 		    cs_desc[1] == USB_DT_CS_INTERFACE &&
 		    cs_desc[2] == 0xf1 &&
 		    cs_desc[3] == 0x02) {
+<<<<<<< HEAD
+=======
+			if (cs_desc[4] > 0x10 || cs_desc[5] > 0x10)
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			endpoint->in_cables  = (1 << cs_desc[4]) - 1;
 			endpoint->out_cables = (1 << cs_desc[5]) - 1;
 			return snd_usbmidi_detect_endpoints(umidi, endpoint, 1);
@@ -2213,16 +2262,33 @@ void snd_usbmidi_input_stop(struct list_head *p)
 }
 EXPORT_SYMBOL(snd_usbmidi_input_stop);
 
+<<<<<<< HEAD
 static void snd_usbmidi_input_start_ep(struct snd_usb_midi_in_endpoint *ep)
 {
 	unsigned int i;
+=======
+static void snd_usbmidi_input_start_ep(struct snd_usb_midi *umidi,
+				       struct snd_usb_midi_in_endpoint *ep)
+{
+	unsigned int i;
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!ep)
 		return;
 	for (i = 0; i < INPUT_URBS; ++i) {
 		struct urb *urb = ep->urbs[i];
+<<<<<<< HEAD
 		urb->dev = ep->umidi->dev;
 		snd_usbmidi_submit_urb(urb, GFP_KERNEL);
+=======
+		spin_lock_irqsave(&umidi->disc_lock, flags);
+		if (!atomic_read(&urb->use_count)) {
+			urb->dev = ep->umidi->dev;
+			snd_usbmidi_submit_urb(urb, GFP_ATOMIC);
+		}
+		spin_unlock_irqrestore(&umidi->disc_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -2238,7 +2304,11 @@ void snd_usbmidi_input_start(struct list_head *p)
 	if (umidi->input_running || !umidi->opened[1])
 		return;
 	for (i = 0; i < MIDI_MAX_ENDPOINTS; ++i)
+<<<<<<< HEAD
 		snd_usbmidi_input_start_ep(umidi->endpoints[i].in);
+=======
+		snd_usbmidi_input_start_ep(umidi, umidi->endpoints[i].in);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	umidi->input_running = 1;
 }
 EXPORT_SYMBOL(snd_usbmidi_input_start);
@@ -2406,7 +2476,10 @@ int snd_usbmidi_create(struct snd_card *card,
 	else
 		err = snd_usbmidi_create_endpoints(umidi, endpoints);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_usbmidi_free(umidi);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err;
 	}
 

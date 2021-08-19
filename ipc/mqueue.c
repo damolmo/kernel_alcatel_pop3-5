@@ -143,7 +143,10 @@ static int msg_insert(struct msg_msg *msg, struct mqueue_inode_info *info)
 		if (!leaf)
 			return -ENOMEM;
 		INIT_LIST_HEAD(&leaf->msg_list);
+<<<<<<< HEAD
 		info->qsize += sizeof(*leaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	leaf->priority = msg->m_type;
 	rb_link_node(&leaf->rb_node, parent, p);
@@ -188,7 +191,10 @@ try_again:
 			     "lazy leaf delete!\n");
 		rb_erase(&leaf->rb_node, &info->msg_tree);
 		if (info->node_cache) {
+<<<<<<< HEAD
 			info->qsize -= sizeof(*leaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			kfree(leaf);
 		} else {
 			info->node_cache = leaf;
@@ -201,7 +207,10 @@ try_again:
 		if (list_empty(&leaf->msg_list)) {
 			rb_erase(&leaf->rb_node, &info->msg_tree);
 			if (info->node_cache) {
+<<<<<<< HEAD
 				info->qsize -= sizeof(*leaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				kfree(leaf);
 			} else {
 				info->node_cache = leaf;
@@ -375,9 +384,15 @@ static void mqueue_evict_inode(struct inode *inode)
 {
 	struct mqueue_inode_info *info;
 	struct user_struct *user;
+<<<<<<< HEAD
 	unsigned long mq_bytes, mq_treesize;
 	struct ipc_namespace *ipc_ns;
 	struct msg_msg *msg;
+=======
+	struct ipc_namespace *ipc_ns;
+	struct msg_msg *msg, *nmsg;
+	LIST_HEAD(tmp_msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	clear_inode(inode);
 
@@ -388,6 +403,7 @@ static void mqueue_evict_inode(struct inode *inode)
 	info = MQUEUE_I(inode);
 	spin_lock(&info->lock);
 	while ((msg = msg_get(info)) != NULL)
+<<<<<<< HEAD
 		free_msg(msg);
 	kfree(info->node_cache);
 	spin_unlock(&info->lock);
@@ -402,6 +418,29 @@ static void mqueue_evict_inode(struct inode *inode)
 
 	user = info->user;
 	if (user) {
+=======
+		list_add_tail(&msg->m_list, &tmp_msg);
+	kfree(info->node_cache);
+	spin_unlock(&info->lock);
+
+	list_for_each_entry_safe(msg, nmsg, &tmp_msg, m_list) {
+		list_del(&msg->m_list);
+		free_msg(msg);
+	}
+
+	user = info->user;
+	if (user) {
+		unsigned long mq_bytes, mq_treesize;
+
+		/* Total amount of bytes accounted for the mqueue */
+		mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
+			min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
+			sizeof(struct posix_msg_tree_node);
+
+		mq_bytes = mq_treesize + (info->attr.mq_maxmsg *
+					  info->attr.mq_msgsize);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock(&mq_lock);
 		user->mq_bytes -= mq_bytes;
 		/*
@@ -754,7 +793,11 @@ static struct file *do_create(struct ipc_namespace *ipc_ns, struct inode *dir,
 	}
 
 	mode &= ~current_umask();
+<<<<<<< HEAD
 	ret = vfs_create(dir, path->dentry, mode, true);
+=======
+	ret = vfs_create2(path->mnt, dir, path->dentry, mode, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	path->dentry->d_fsdata = NULL;
 	if (ret)
 		return ERR_PTR(ret);
@@ -770,7 +813,11 @@ static struct file *do_open(struct path *path, int oflag)
 	if ((oflag & O_ACCMODE) == (O_RDWR | O_WRONLY))
 		return ERR_PTR(-EINVAL);
 	acc = oflag2acc[oflag & O_ACCMODE];
+<<<<<<< HEAD
 	if (inode_permission(path->dentry->d_inode, acc))
+=======
+	if (inode_permission2(path->mnt, path->dentry->d_inode, acc))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-EACCES);
 	return dentry_open(path, oflag, current_cred());
 }
@@ -803,7 +850,11 @@ SYSCALL_DEFINE4(mq_open, const char __user *, u_name, int, oflag, umode_t, mode,
 	ro = mnt_want_write(mnt);	/* we'll drop it in any case */
 	error = 0;
 	mutex_lock(&root->d_inode->i_mutex);
+<<<<<<< HEAD
 	path.dentry = lookup_one_len(name->name, root, strlen(name->name));
+=======
+	path.dentry = lookup_one_len2(name->name, mnt, root, strlen(name->name));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(path.dentry)) {
 		error = PTR_ERR(path.dentry);
 		goto out_putfd;
@@ -874,7 +925,11 @@ SYSCALL_DEFINE1(mq_unlink, const char __user *, u_name)
 	if (err)
 		goto out_name;
 	mutex_lock_nested(&mnt->mnt_root->d_inode->i_mutex, I_MUTEX_PARENT);
+<<<<<<< HEAD
 	dentry = lookup_one_len(name->name, mnt->mnt_root,
+=======
+	dentry = lookup_one_len2(name->name, mnt, mnt->mnt_root,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				strlen(name->name));
 	if (IS_ERR(dentry)) {
 		err = PTR_ERR(dentry);
@@ -886,7 +941,11 @@ SYSCALL_DEFINE1(mq_unlink, const char __user *, u_name)
 		err = -ENOENT;
 	} else {
 		ihold(inode);
+<<<<<<< HEAD
 		err = vfs_unlink(dentry->d_parent->d_inode, dentry, NULL);
+=======
+		err = vfs_unlink2(mnt, dentry->d_parent->d_inode, dentry, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	dput(dentry);
 
@@ -1026,7 +1085,10 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 		/* Save our speculative allocation into the cache */
 		INIT_LIST_HEAD(&new_leaf->msg_list);
 		info->node_cache = new_leaf;
+<<<<<<< HEAD
 		info->qsize += sizeof(*new_leaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		new_leaf = NULL;
 	} else {
 		kfree(new_leaf);
@@ -1133,7 +1195,10 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		/* Save our speculative allocation into the cache */
 		INIT_LIST_HEAD(&new_leaf->msg_list);
 		info->node_cache = new_leaf;
+<<<<<<< HEAD
 		info->qsize += sizeof(*new_leaf);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		kfree(new_leaf);
 	}
@@ -1244,8 +1309,15 @@ retry:
 
 			timeo = MAX_SCHEDULE_TIMEOUT;
 			ret = netlink_attachskb(sock, nc, &timeo, NULL);
+<<<<<<< HEAD
 			if (ret == 1)
 				goto retry;
+=======
+			if (ret == 1) {
+				sock = NULL;
+				goto retry;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (ret) {
 				sock = NULL;
 				nc = NULL;

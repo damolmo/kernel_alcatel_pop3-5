@@ -7,6 +7,7 @@
 #include <linux/lockdep.h>
 #include <linux/tracepoint.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_MUTEXES
 TRACE_EVENT(mutex_contended,
 
@@ -46,6 +47,8 @@ TRACE_EVENT(mutex_acquired,
 	TP_printk("%p %s",  __entry->lockdep_addr, __get_str(name))
 );
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_LOCKDEP
 
 TRACE_EVENT(lock_acquire,

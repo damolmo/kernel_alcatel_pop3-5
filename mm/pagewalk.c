@@ -14,9 +14,15 @@ static int walk_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end,
 		err = walk->pte_entry(pte, addr, addr + PAGE_SIZE, walk);
 		if (err)
 		       break;
+<<<<<<< HEAD
 		addr += PAGE_SIZE;
 		if (addr == end)
 			break;
+=======
+		if (addr >= end - PAGE_SIZE)
+			break;
+		addr += PAGE_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pte++;
 	}
 
@@ -118,8 +124,17 @@ static int walk_hugetlb_range(struct vm_area_struct *vma,
 	do {
 		next = hugetlb_entry_end(h, addr, end);
 		pte = huge_pte_offset(walk->mm, addr & hmask);
+<<<<<<< HEAD
 		if (pte && walk->hugetlb_entry)
 			err = walk->hugetlb_entry(pte, hmask, addr, next, walk);
+=======
+
+		if (pte)
+			err = walk->hugetlb_entry(pte, hmask, addr, next, walk);
+		else if (walk->pte_hole)
+			err = walk->pte_hole(addr, next, walk);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err)
 			return err;
 	} while (addr = next, addr != end);

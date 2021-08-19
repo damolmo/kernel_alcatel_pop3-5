@@ -158,7 +158,11 @@ static int __init nocache_trampoline(unsigned long _arg)
 	unsigned int cluster = MPIDR_AFFINITY_LEVEL(mpidr, 1);
 	phys_reset_t phys_reset;
 
+<<<<<<< HEAD
 	mcpm_set_entry_vector(cpu, cluster, cpu_resume);
+=======
+	mcpm_set_entry_vector(cpu, cluster, cpu_resume_no_hyp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	setup_mm_for_reboot();
 
 	__mcpm_cpu_going_down(cpu, cluster);

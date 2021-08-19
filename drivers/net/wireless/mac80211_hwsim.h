@@ -65,9 +65,16 @@ enum hwsim_tx_control_flags {
  * kernel, uses:
  *	%HWSIM_ATTR_ADDR_TRANSMITTER, %HWSIM_ATTR_FLAGS,
  *	%HWSIM_ATTR_TX_INFO, %HWSIM_ATTR_SIGNAL, %HWSIM_ATTR_COOKIE
+<<<<<<< HEAD
  * @HWSIM_CMD_CREATE_RADIO: create a new radio with the given parameters,
  *	returns the radio ID (>= 0) or negative on errors
  * @HWSIM_CMD_DESTROY_RADIO: destroy a radio
+=======
+ * @HWSIM_CMD_NEW_RADIO: create a new radio with the given parameters,
+ *	returns the radio ID (>= 0) or negative on errors, if successful
+ *	then multicast the result
+ * @HWSIM_CMD_DEL_RADIO: destroy a radio, reply is multicasted
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @__HWSIM_CMD_MAX: enum limit
  */
 enum {
@@ -75,12 +82,23 @@ enum {
 	HWSIM_CMD_REGISTER,
 	HWSIM_CMD_FRAME,
 	HWSIM_CMD_TX_INFO_FRAME,
+<<<<<<< HEAD
 	HWSIM_CMD_CREATE_RADIO,
 	HWSIM_CMD_DESTROY_RADIO,
+=======
+	HWSIM_CMD_NEW_RADIO,
+	HWSIM_CMD_DEL_RADIO,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__HWSIM_CMD_MAX,
 };
 #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
 
+<<<<<<< HEAD
+=======
+#define HWSIM_CMD_CREATE_RADIO   HWSIM_CMD_NEW_RADIO
+#define HWSIM_CMD_DESTROY_RADIO  HWSIM_CMD_DEL_RADIO
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * enum hwsim_attrs - hwsim netlink attributes
  *
@@ -111,6 +129,13 @@ enum {
  * @HWSIM_ATTR_USE_CHANCTX: used with the %HWSIM_CMD_CREATE_RADIO
  *	command to force use of channel contexts even when only a
  *	single channel is supported
+<<<<<<< HEAD
+=======
+ * @HWSIM_ATTR_DESTROY_RADIO_ON_CLOSE: used with the %HWSIM_CMD_CREATE_RADIO
+ *	command to force radio removal when process that created the radio dies
+ * @HWSIM_ATTR_RADIO_NAME: Name of radio, e.g. phy666
+ * @HWSIM_ATTR_NO_VIF:  Do not create vif (wlanX) when creating radio.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @__HWSIM_ATTR_MAX: enum limit
  */
 
@@ -132,6 +157,12 @@ enum {
 	HWSIM_ATTR_REG_STRICT_REG,
 	HWSIM_ATTR_SUPPORT_P2P_DEVICE,
 	HWSIM_ATTR_USE_CHANCTX,
+<<<<<<< HEAD
+=======
+	HWSIM_ATTR_DESTROY_RADIO_ON_CLOSE,
+	HWSIM_ATTR_RADIO_NAME,
+	HWSIM_ATTR_NO_VIF,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__HWSIM_ATTR_MAX,
 };
 #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)

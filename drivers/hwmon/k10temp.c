@@ -180,7 +180,11 @@ static bool has_erratum_319(struct pci_dev *pdev)
 	 * and AM3 formats, but that's the best we can do.
 	 */
 	return boot_cpu_data.x86_model < 4 ||
+<<<<<<< HEAD
 	       (boot_cpu_data.x86_model == 4 && boot_cpu_data.x86_mask <= 2);
+=======
+	       (boot_cpu_data.x86_model == 4 && boot_cpu_data.x86_stepping <= 2);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int k10temp_probe(struct pci_dev *pdev,

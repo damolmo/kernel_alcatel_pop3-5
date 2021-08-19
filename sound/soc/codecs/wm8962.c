@@ -2796,7 +2796,11 @@ static int fll_factors(struct _fll_div *fll_div, unsigned int Fref,
 
 	if (target % Fref == 0) {
 		fll_div->theta = 0;
+<<<<<<< HEAD
 		fll_div->lambda = 0;
+=======
+		fll_div->lambda = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		gcd_fll = gcd(target, fratio * Fref);
 
@@ -2866,7 +2870,11 @@ static int wm8962_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (fll_div.theta || fll_div.lambda)
+=======
+	if (fll_div.theta)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fll1 |= WM8962_FLL_FRAC;
 
 	/* Stop the FLL while we reconfigure */

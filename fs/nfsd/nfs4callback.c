@@ -616,6 +616,17 @@ int set_callback_cred(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void cleanup_callback_cred(void)
+{
+	if (callback_cred) {
+		put_rpccred(callback_cred);
+		callback_cred = NULL;
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct rpc_cred *get_backchannel_cred(struct nfs4_client *clp, struct rpc_clnt *client, struct nfsd4_session *ses)
 {
 	if (clp->cl_minorversion == 0) {
@@ -630,6 +641,7 @@ static struct rpc_cred *get_backchannel_cred(struct nfs4_client *clp, struct rpc
 	}
 }
 
+<<<<<<< HEAD
 static struct rpc_clnt *create_backchannel_client(struct rpc_create_args *args)
 {
 	struct rpc_xprt *xprt;
@@ -646,6 +658,8 @@ static struct rpc_clnt *create_backchannel_client(struct rpc_create_args *args)
 	return rpc_create(args);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int setup_callback_client(struct nfs4_client *clp, struct nfs4_cb_conn *conn, struct nfsd4_session *ses)
 {
 	int maxtime = max_cb_time(clp->net);
@@ -688,7 +702,11 @@ static int setup_callback_client(struct nfs4_client *clp, struct nfs4_cb_conn *c
 		args.authflavor = ses->se_cb_sec.flavor;
 	}
 	/* Create RPC client */
+<<<<<<< HEAD
 	client = create_backchannel_client(&args);
+=======
+	client = rpc_create(&args);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(client)) {
 		dprintk("NFSD: couldn't create callback client: %ld\n",
 			PTR_ERR(client));
@@ -957,6 +975,11 @@ static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 	err = setup_callback_client(clp, &conn, ses);
 	if (err) {
 		nfsd4_mark_cb_down(clp, err);
+<<<<<<< HEAD
+=======
+		if (c)
+			svc_xprt_put(c->cn_xprt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	}
 	/* Yay, the callback channel's back! Restart any callbacks: */

@@ -728,7 +728,12 @@ static int qup_i2c_pm_resume_runtime(struct device *device)
 #ifdef CONFIG_PM_SLEEP
 static int qup_i2c_suspend(struct device *device)
 {
+<<<<<<< HEAD
 	qup_i2c_pm_suspend_runtime(device);
+=======
+	if (!pm_runtime_suspended(device))
+		return qup_i2c_pm_suspend_runtime(device);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

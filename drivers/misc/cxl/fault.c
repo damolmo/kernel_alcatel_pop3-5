@@ -147,7 +147,11 @@ static void cxl_handle_page_fault(struct cxl_context *ctx,
 	access = _PAGE_PRESENT;
 	if (dsisr & CXL_PSL_DSISR_An_S)
 		access |= _PAGE_RW;
+<<<<<<< HEAD
 	if ((!ctx->kernel) || ~(dar & (1ULL << 63)))
+=======
+	if ((!ctx->kernel) || (REGION_ID(dar) == USER_REGION_ID))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		access |= _PAGE_USER;
 	local_irq_save(flags);
 	hash_page_mm(mm, dar, access, 0x300);

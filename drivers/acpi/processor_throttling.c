@@ -66,8 +66,13 @@ struct acpi_processor_throttling_arg {
 #define THROTTLING_POSTCHANGE      (2)
 
 static int acpi_processor_get_throttling(struct acpi_processor *pr);
+<<<<<<< HEAD
 int acpi_processor_set_throttling(struct acpi_processor *pr,
 						int state, bool force);
+=======
+static int __acpi_processor_set_throttling(struct acpi_processor *pr,
+					   int state, bool force, bool direct);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int acpi_processor_update_tsd_coord(void)
 {
@@ -680,6 +685,18 @@ static int acpi_processor_get_throttling_fadt(struct acpi_processor *pr)
 	if (!pr->flags.throttling)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We don't care about error returns - we just try to mark
+	 * these reserved so that nobody else is confused into thinking
+	 * that this region might be unused..
+	 *
+	 * (In particular, allocating the IO range for Cardbus)
+	 */
+	request_region(pr->throttling.address, 6, "ACPI CPU throttle");
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pr->throttling.state = 0;
 
 	duty_mask = pr->throttling.state_count - 1;
@@ -886,7 +903,12 @@ static int acpi_processor_get_throttling_ptc(struct acpi_processor *pr)
 			ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 				"Invalid throttling state, reset\n"));
 			state = 0;
+<<<<<<< HEAD
 			ret = acpi_processor_set_throttling(pr, state, true);
+=======
+			ret = __acpi_processor_set_throttling(pr, state, true,
+							      true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (ret)
 				return ret;
 		}
@@ -896,17 +918,30 @@ static int acpi_processor_get_throttling_ptc(struct acpi_processor *pr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int acpi_processor_get_throttling(struct acpi_processor *pr)
 {
 	cpumask_var_t saved_mask;
 	int ret;
 
+=======
+static long __acpi_processor_get_throttling(void *data)
+{
+	struct acpi_processor *pr = data;
+
+	return pr->throttling.acpi_processor_get_throttling(pr);
+}
+
+static int acpi_processor_get_throttling(struct acpi_processor *pr)
+{
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!pr)
 		return -EINVAL;
 
 	if (!pr->flags.throttling)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (!alloc_cpumask_var(&saved_mask, GFP_KERNEL))
 		return -ENOMEM;
 
@@ -926,6 +961,18 @@ static int acpi_processor_get_throttling(struct acpi_processor *pr)
 	free_cpumask_var(saved_mask);
 
 	return ret;
+=======
+	/*
+	 * This is either called from the CPU hotplug callback of
+	 * processor_driver or via the ACPI probe function. In the latter
+	 * case the CPU is not guaranteed to be online. Both call sites are
+	 * protected against CPU hotplug.
+	 */
+	if (!cpu_online(pr->id))
+		return -ENODEV;
+
+	return work_on_cpu(pr->id, __acpi_processor_get_throttling, pr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int acpi_processor_get_fadt_info(struct acpi_processor *pr)
@@ -1075,8 +1122,20 @@ static long acpi_processor_throttling_fn(void *data)
 			arg->target_state, arg->force);
 }
 
+<<<<<<< HEAD
 int acpi_processor_set_throttling(struct acpi_processor *pr,
 						int state, bool force)
+=======
+static int call_on_cpu(int cpu, long (*fn)(void *), void *arg, bool direct)
+{
+	if (direct)
+		return fn(arg);
+	return work_on_cpu(cpu, fn, arg);
+}
+
+static int __acpi_processor_set_throttling(struct acpi_processor *pr,
+					   int state, bool force, bool direct)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int ret = 0;
 	unsigned int i;
@@ -1125,7 +1184,12 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 		arg.pr = pr;
 		arg.target_state = state;
 		arg.force = force;
+<<<<<<< HEAD
 		ret = work_on_cpu(pr->id, acpi_processor_throttling_fn, &arg);
+=======
+		ret = call_on_cpu(pr->id, acpi_processor_throttling_fn, &arg,
+				  direct);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		/*
 		 * When the T-state coordination is SW_ALL or HW_ALL,
@@ -1158,8 +1222,13 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 			arg.pr = match_pr;
 			arg.target_state = state;
 			arg.force = force;
+<<<<<<< HEAD
 			ret = work_on_cpu(pr->id, acpi_processor_throttling_fn,
 				&arg);
+=======
+			ret = call_on_cpu(pr->id, acpi_processor_throttling_fn,
+					  &arg, direct);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	/*
@@ -1177,6 +1246,15 @@ int acpi_processor_set_throttling(struct acpi_processor *pr,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int acpi_processor_set_throttling(struct acpi_processor *pr, int state,
+				  bool force)
+{
+	return __acpi_processor_set_throttling(pr, state, force, false);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int acpi_processor_get_throttling_info(struct acpi_processor *pr)
 {
 	int result = 0;

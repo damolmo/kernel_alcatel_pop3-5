@@ -60,6 +60,7 @@
 
 #include "ubifs.h"
 
+<<<<<<< HEAD
 #if defined(FEATURE_UBIFS_PERF_INDEX)
 #include <asm/div64.h>
 
@@ -247,6 +248,8 @@ void ubifs_perf_lrcount(unsigned long long usage, unsigned int len)
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * zero_ino_node_unused - zero out unused fields of an on-flash inode node.
  * @ino: the inode to zero out
@@ -740,8 +743,11 @@ int ubifs_jnl_update(struct ubifs_info *c, const struct inode *dir,
 
 	dbg_jnl("ino %lu, dent '%.*s', data len %d in dir ino %lu",
 		inode->i_ino, nm->len, nm->name, ui->data_len, dir->i_ino);
+<<<<<<< HEAD
 	if (!xent)
 		ubifs_assert(host_ui->data_len == 0);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubifs_assert(mutex_is_locked(&host_ui->ui_mutex));
 
 	dlen = UBIFS_DENT_NODE_SZ + nm->len + 1;
@@ -760,11 +766,15 @@ int ubifs_jnl_update(struct ubifs_info *c, const struct inode *dir,
 
 	aligned_dlen = ALIGN(dlen, 8);
 	aligned_ilen = ALIGN(ilen, 8);
+<<<<<<< HEAD
 	/* Make sure to account for dir_ui+data_len in length calculation
 	 * in case there is extended attribute.
 	 */
 	len = aligned_dlen + aligned_ilen +
 	      UBIFS_INO_NODE_SZ + host_ui->data_len;
+=======
+	len = aligned_dlen + aligned_ilen + UBIFS_INO_NODE_SZ;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dent = kmalloc(len, GFP_NOFS);
 	if (!dent)
 		return -ENOMEM;
@@ -841,8 +851,12 @@ int ubifs_jnl_update(struct ubifs_info *c, const struct inode *dir,
 
 	ino_key_init(c, &ino_key, dir->i_ino);
 	ino_offs += aligned_ilen;
+<<<<<<< HEAD
 	err = ubifs_tnc_add(c, &ino_key, lnum, ino_offs,
 			    UBIFS_INO_NODE_SZ + host_ui->data_len);
+=======
+	err = ubifs_tnc_add(c, &ino_key, lnum, ino_offs, UBIFS_INO_NODE_SZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err)
 		goto out_ro;
 
@@ -850,6 +864,14 @@ int ubifs_jnl_update(struct ubifs_info *c, const struct inode *dir,
 	spin_lock(&ui->ui_lock);
 	ui->synced_i_size = ui->ui_size;
 	spin_unlock(&ui->ui_lock);
+<<<<<<< HEAD
+=======
+	if (xent) {
+		spin_lock(&host_ui->ui_lock);
+		host_ui->synced_i_size = host_ui->ui_size;
+		spin_unlock(&host_ui->ui_lock);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mark_inode_clean(c, ui);
 	mark_inode_clean(c, host_ui);
 	return 0;
@@ -889,19 +911,26 @@ int ubifs_jnl_write_data(struct ubifs_info *c, const struct inode *inode,
 	int err, lnum, offs, compr_type, out_len;
 	int dlen = COMPRESSED_DATA_NODE_BUF_SZ, allocated = 1;
 	struct ubifs_inode *ui = ubifs_inode(inode);
+<<<<<<< HEAD
 #if defined(FEATURE_UBIFS_PERF_INDEX)
 	unsigned long long time1 = sched_clock();
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dbg_jnlk(key, "ino %lu, blk %u, len %d, key ",
 		(unsigned long)key_inum(c, key), key_block(c, key), len);
 	ubifs_assert(len <= UBIFS_BLOCK_SIZE);
 
+<<<<<<< HEAD
 #if 1
 	data = vmalloc(dlen);
 #else
 	data = NULL;
 #endif
+=======
+	data = kmalloc(dlen, GFP_NOFS | __GFP_NOWARN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!data) {
 		/*
 		 * Fall-back to the write reserve buffer. Note, we might be
@@ -927,7 +956,10 @@ int ubifs_jnl_write_data(struct ubifs_info *c, const struct inode *inode,
 		compr_type = ui->compr_type;
 
 	out_len = dlen - UBIFS_DATA_NODE_SZ;
+<<<<<<< HEAD
 	c->host_wcount += len;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubifs_compress(buf, len, &data->data, &out_len, &compr_type);
 	ubifs_assert(out_len <= UBIFS_BLOCK_SIZE);
 
@@ -953,10 +985,14 @@ int ubifs_jnl_write_data(struct ubifs_info *c, const struct inode *inode,
 	if (!allocated)
 		mutex_unlock(&c->write_reserve_mutex);
 	else
+<<<<<<< HEAD
 		vfree(data);
 #if defined(FEATURE_UBIFS_PERF_INDEX)
 	ubifs_perf_wcount(sched_clock() - time1, len, dlen);
 #endif
+=======
+		kfree(data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_release:
@@ -968,7 +1004,11 @@ out_free:
 	if (!allocated)
 		mutex_unlock(&c->write_reserve_mutex);
 	else
+<<<<<<< HEAD
 		vfree(data);
+=======
+		kfree(data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -1385,7 +1425,20 @@ int ubifs_jnl_truncate(struct ubifs_info *c, const struct inode *inode,
 		else if (err)
 			goto out_free;
 		else {
+<<<<<<< HEAD
 			if (le32_to_cpu(dn->size) <= dlen)
+=======
+			int dn_len = le32_to_cpu(dn->size);
+
+			if (dn_len <= 0 || dn_len > UBIFS_BLOCK_SIZE) {
+				ubifs_err("bad data node (block %u, inode %lu)",
+					  blk, inode->i_ino);
+				ubifs_dump_node(c, dn);
+				goto out_free;
+			}
+
+			if (dn_len <= dlen)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				dlen = 0; /* Nothing to do */
 			else {
 				int compr_type = le16_to_cpu(dn->compr_type);

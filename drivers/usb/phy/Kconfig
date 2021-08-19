@@ -149,6 +149,10 @@ config USB_MSM_OTG
 	tristate "Qualcomm on-chip USB OTG controller support"
 	depends on (USB || USB_GADGET) && (ARCH_MSM || ARCH_QCOM || COMPILE_TEST)
 	depends on RESET_CONTROLLER
+<<<<<<< HEAD
+=======
+	depends on REGULATOR
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select USB_PHY
 	help
 	  Enable this to support the USB OTG transceiver on Qualcomm chips. It
@@ -221,4 +225,16 @@ config USB_ULPI_VIEWPORT
 	  Provides read/write operations to the ULPI phy register set for
 	  controllers with a viewport register (e.g. Chipidea/ARC controllers).
 
+<<<<<<< HEAD
+=======
+config DUAL_ROLE_USB_INTF
+	bool "Generic DUAL ROLE sysfs interface"
+	depends on SYSFS && USB_PHY
+	help
+	  A generic sysfs interface to track and change the state of
+	  dual role usb phys. The usb phy drivers can register to
+	  this interface to expose it capabilities to the userspace
+	  and thereby allowing userspace to change the port mode.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu

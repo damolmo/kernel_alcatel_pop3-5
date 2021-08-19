@@ -181,7 +181,11 @@ static int hash_set_dma_transfer(struct hash_ctx *ctx, struct scatterlist *sg,
 		__func__);
 	desc = dmaengine_prep_slave_sg(channel,
 			ctx->device->dma.sg, ctx->device->dma.sg_len,
+<<<<<<< HEAD
 			direction, DMA_CTRL_ACK | DMA_PREP_INTERRUPT);
+=======
+			DMA_MEM_TO_DEV, DMA_CTRL_ACK | DMA_PREP_INTERRUPT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!desc) {
 		dev_err(ctx->device->dev,
 			"%s: device_prep_slave_sg() failed!\n", __func__);
@@ -797,7 +801,11 @@ static int hash_process_data(struct hash_device_data *device_data,
 						&device_data->state);
 				memmove(req_ctx->state.buffer,
 					device_data->state.buffer,
+<<<<<<< HEAD
 					HASH_BLOCK_SIZE / sizeof(u32));
+=======
+					HASH_BLOCK_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (ret) {
 					dev_err(device_data->dev,
 						"%s: hash_resume_state() failed!\n",
@@ -848,7 +856,11 @@ static int hash_process_data(struct hash_device_data *device_data,
 
 			memmove(device_data->state.buffer,
 				req_ctx->state.buffer,
+<<<<<<< HEAD
 				HASH_BLOCK_SIZE / sizeof(u32));
+=======
+				HASH_BLOCK_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (ret) {
 				dev_err(device_data->dev, "%s: hash_save_state() failed!\n",
 					__func__);
@@ -1682,9 +1694,15 @@ static int ux500_hash_probe(struct platform_device *pdev)
 
 	device_data->phybase = res->start;
 	device_data->base = ioremap(res->start, resource_size(res));
+<<<<<<< HEAD
 	if (!device_data->base) {
 		dev_err(dev, "%s: ioremap() failed!\n", __func__);
 		ret = -ENOMEM;
+=======
+	if (IS_ERR(device_data->base)) {
+		dev_err(dev, "%s: ioremap() failed!\n", __func__);
+		ret = PTR_ERR(device_data->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_free_mem;
 	}
 	spin_lock_init(&device_data->ctx_lock);

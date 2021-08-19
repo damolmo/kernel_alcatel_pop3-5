@@ -275,11 +275,14 @@ static int faultin_page(struct task_struct *tsk, struct vm_area_struct *vma,
 	unsigned int fault_flags = 0;
 	int ret;
 
+<<<<<<< HEAD
 	/* For mlock, just skip the stack guard page. */
 	if ((*flags & FOLL_MLOCK) &&
 			(stack_guard_page_start(vma, address) ||
 			 stack_guard_page_end(vma, address + PAGE_SIZE)))
 		return -ENOENT;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (*flags & FOLL_WRITE)
 		fault_flags |= FAULT_FLAG_WRITE;
 	if (nonblocking)
@@ -325,7 +328,11 @@ static int faultin_page(struct task_struct *tsk, struct vm_area_struct *vma,
 	 * reCOWed by userspace write).
 	 */
 	if ((ret & VM_FAULT_WRITE) && !(vma->vm_flags & VM_WRITE))
+<<<<<<< HEAD
 		*flags |= FOLL_COW;
+=======
+	        *flags |= FOLL_COW;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -333,6 +340,7 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
 {
 	vm_flags_t vm_flags = vma->vm_flags;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_EXTMEM
 	if (vm_flags & (VM_IO | VM_PFNMAP)) {
 		/*
@@ -348,6 +356,10 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
 	if (vm_flags & (VM_IO | VM_PFNMAP))
 		return -EFAULT;
 #endif
+=======
+	if (vm_flags & (VM_IO | VM_PFNMAP))
+		return -EFAULT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (gup_flags & FOLL_WRITE) {
 		if (!(vm_flags & VM_WRITE)) {

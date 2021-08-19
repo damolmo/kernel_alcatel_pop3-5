@@ -1353,7 +1353,11 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, unsigned long addr,
 		/* Get function entry information */
 		func = basefunc = dwarf_diename(&spdie);
 		if (!func ||
+<<<<<<< HEAD
 		    dwarf_entrypc(&spdie, &baseaddr) != 0 ||
+=======
+		    die_entrypc(&spdie, &baseaddr) != 0 ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    dwarf_decl_line(&spdie, &baseline) != 0) {
 			lineno = 0;
 			goto post;
@@ -1370,7 +1374,11 @@ int debuginfo__find_probe_point(struct debuginfo *dbg, unsigned long addr,
 		while (die_find_top_inlinefunc(&spdie, (Dwarf_Addr)addr,
 						&indie)) {
 			/* There is an inline function */
+<<<<<<< HEAD
 			if (dwarf_entrypc(&indie, &_addr) == 0 &&
+=======
+			if (die_entrypc(&indie, &_addr) == 0 &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			    _addr == addr) {
 				/*
 				 * addr is at an inline function entry.

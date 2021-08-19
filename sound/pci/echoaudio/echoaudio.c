@@ -1990,6 +1990,14 @@ static int snd_echo_create(struct snd_card *card,
 	}
 	chip->dsp_registers = (volatile u32 __iomem *)
 		ioremap_nocache(chip->dsp_registers_phys, sz);
+<<<<<<< HEAD
+=======
+	if (!chip->dsp_registers) {
+		dev_err(chip->card->dev, "ioremap failed\n");
+		snd_echo_free(chip);
+		return -ENOMEM;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (request_irq(pci->irq, snd_echo_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
@@ -2247,17 +2255,28 @@ static int snd_echo_resume(struct device *dev)
 
 	DE_INIT(("resume start\n"));
 	pci_restore_state(pci);
+<<<<<<< HEAD
 	commpage_bak = kmalloc(sizeof(struct echoaudio), GFP_KERNEL);
 	if (commpage_bak == NULL)
 		return -ENOMEM;
 	commpage = chip->comm_page;
 	memcpy(commpage_bak, commpage, sizeof(struct comm_page));
+=======
+	commpage_bak = kmalloc(sizeof(*commpage), GFP_KERNEL);
+	if (commpage_bak == NULL)
+		return -ENOMEM;
+	commpage = chip->comm_page;
+	memcpy(commpage_bak, commpage, sizeof(*commpage));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = init_hw(chip, chip->pci->device, chip->pci->subsystem_device);
 	if (err < 0) {
 		kfree(commpage_bak);
 		DE_INIT(("resume init_hw err=%d\n", err));
+<<<<<<< HEAD
 		snd_echo_free(chip);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err;
 	}
 	DE_INIT(("resume init OK\n"));
@@ -2286,7 +2305,10 @@ static int snd_echo_resume(struct device *dev)
 	if (request_irq(pci->irq, snd_echo_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
 		dev_err(chip->card->dev, "cannot grab irq\n");
+<<<<<<< HEAD
 		snd_echo_free(chip);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EBUSY;
 	}
 	chip->irq = pci->irq;

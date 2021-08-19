@@ -25,6 +25,7 @@ config CUSE
 
 	  If you want to develop or use a userspace character device
 	  based on CUSE, answer Y or M.
+<<<<<<< HEAD
 
 config FUSE_IO_LOG
 	bool "FUSE IO log"
@@ -42,3 +43,5 @@ config FUSE_IO_LOG
 	  Type 2: file operation statics
 	    example: [BLOCK_TAG] FUSEIO {2496:open(0,1,923)}
 	                                {2500:opendir(0,2,846)}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

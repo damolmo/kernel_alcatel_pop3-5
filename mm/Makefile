@@ -2,6 +2,15 @@
 # Makefile for the linux memory manager.
 #
 
+<<<<<<< HEAD
+=======
+KASAN_SANITIZE_slab_common.o := n
+KASAN_SANITIZE_slub.o := n
+
+# Since __builtin_frame_address does work as used, disable the warning.
+CFLAGS_usercopy.o += $(call cc-disable-warning, frame-address)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 mmu-y			:= nommu.o
 mmu-$(CONFIG_MMU)	:= fremap.o gup.o highmem.o memory.o mincore.o \
 			   mlock.o mmap.o mprotect.o mremap.o msync.o rmap.o \
@@ -69,3 +78,7 @@ obj-$(CONFIG_ZSMALLOC)	+= zsmalloc.o
 obj-$(CONFIG_GENERIC_EARLY_IOREMAP) += early_ioremap.o
 obj-$(CONFIG_CMA)	+= cma.o
 obj-$(CONFIG_MEMORY_BALLOON) += balloon_compaction.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_HARDENED_USERCOPY) += usercopy.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

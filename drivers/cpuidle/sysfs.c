@@ -412,7 +412,11 @@ static int cpuidle_add_state_sysfs(struct cpuidle_device *device)
 		ret = kobject_init_and_add(&kobj->kobj, &ktype_state_cpuidle,
 					   &kdev->kobj, "state%d", i);
 		if (ret) {
+<<<<<<< HEAD
 			kfree(kobj);
+=======
+			kobject_put(&kobj->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto error_state;
 		}
 		kobject_uevent(&kobj->kobj, KOBJ_ADD);
@@ -542,7 +546,11 @@ static int cpuidle_add_driver_sysfs(struct cpuidle_device *dev)
 	ret = kobject_init_and_add(&kdrv->kobj, &ktype_driver_cpuidle,
 				   &kdev->kobj, "driver");
 	if (ret) {
+<<<<<<< HEAD
 		kfree(kdrv);
+=======
+		kobject_put(&kdrv->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ret;
 	}
 
@@ -613,6 +621,21 @@ int cpuidle_add_sysfs(struct cpuidle_device *dev)
 	struct device *cpu_dev = get_cpu_device((unsigned long)dev->cpu);
 	int error;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Return if cpu_device is not setup for this CPU.
+	 *
+	 * This could happen if the arch did not set up cpu_device
+	 * since this CPU is not in cpu_present mask and the
+	 * driver did not send a correct CPU mask during registration.
+	 * Without this check we would end up passing bogus
+	 * value for &cpu_dev->kobj in kobject_init_and_add()
+	 */
+	if (!cpu_dev)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kdev = kzalloc(sizeof(*kdev), GFP_KERNEL);
 	if (!kdev)
 		return -ENOMEM;
@@ -624,7 +647,11 @@ int cpuidle_add_sysfs(struct cpuidle_device *dev)
 	error = kobject_init_and_add(&kdev->kobj, &ktype_cpuidle, &cpu_dev->kobj,
 				   "cpuidle");
 	if (error) {
+<<<<<<< HEAD
 		kfree(kdev);
+=======
+		kobject_put(&kdev->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return error;
 	}
 

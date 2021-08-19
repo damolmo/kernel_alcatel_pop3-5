@@ -286,12 +286,25 @@ static int bpp_probe(struct platform_device *op)
 
 	ops = kmemdup(&parport_sunbpp_ops, sizeof(struct parport_operations),
 		      GFP_KERNEL);
+<<<<<<< HEAD
         if (!ops)
 		goto out_unmap;
 
 	dprintk(("register_port\n"));
 	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops)))
 		goto out_free_ops;
+=======
+	if (!ops) {
+		err = -ENOMEM;
+		goto out_unmap;
+	}
+
+	dprintk(("register_port\n"));
+	if (!(p = parport_register_port((unsigned long)base, irq, dma, ops))) {
+		err = -ENOMEM;
+		goto out_free_ops;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	p->size = size;
 	p->dev = &op->dev;

@@ -153,9 +153,14 @@ int copy_siginfo_from_user32(siginfo_t *to, compat_siginfo_t __user *from)
 } while (0)
 
 #define RELOAD_SEG(seg)		{		\
+<<<<<<< HEAD
 	unsigned int pre = GET_SEG(seg);	\
 	unsigned int cur = get_user_seg(seg);	\
 	pre |= 3;				\
+=======
+	unsigned int pre = (seg) | 3;		\
+	unsigned int cur = get_user_seg(seg);	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pre != cur)				\
 		set_user_seg(seg, pre);		\
 }
@@ -165,10 +170,15 @@ static int ia32_restore_sigcontext(struct pt_regs *regs,
 				   unsigned int *pax)
 {
 	unsigned int tmpflags, err = 0;
+<<<<<<< HEAD
+=======
+	u16 gs, fs, es, ds;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void __user *buf;
 	u32 tmp;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
 
 	get_user_try {
@@ -182,6 +192,15 @@ static int ia32_restore_sigcontext(struct pt_regs *regs,
 		RELOAD_SEG(fs);
 		RELOAD_SEG(ds);
 		RELOAD_SEG(es);
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+
+	get_user_try {
+		gs = GET_SEG(gs);
+		fs = GET_SEG(fs);
+		ds = GET_SEG(ds);
+		es = GET_SEG(es);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		COPY(di); COPY(si); COPY(bp); COPY(sp); COPY(bx);
 		COPY(dx); COPY(cx); COPY(ip);
@@ -201,6 +220,20 @@ static int ia32_restore_sigcontext(struct pt_regs *regs,
 		get_user_ex(*pax, &sc->ax);
 	} get_user_catch(err);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Reload fs and gs if they have changed in the signal
+	 * handler.  This does not handle long fs/gs base changes in
+	 * the handler, but does not clobber them at least in the
+	 * normal case.
+	 */
+	RELOAD_SEG(gs);
+	RELOAD_SEG(fs);
+	RELOAD_SEG(ds);
+	RELOAD_SEG(es);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err |= restore_xstate_sig(buf, 1);
 
 	return err;

@@ -11,7 +11,11 @@
  *	  do this instead of the 9 instructions that
  *	  binary search needs).
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.set noreorder
 	.set noat
 
@@ -55,3 +59,7 @@ done:	subq	$0, $16, $0
 	ret	$31, ($26)
 
 	.end	strlen
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(strlen)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

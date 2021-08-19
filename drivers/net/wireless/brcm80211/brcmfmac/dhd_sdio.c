@@ -608,6 +608,11 @@ static const struct sdiod_drive_str sdiod_drvstr_tab2_3v3[] = {
 #define BCM4330_NVRAM_NAME		"brcm/brcmfmac4330-sdio.txt"
 #define BCM4334_FIRMWARE_NAME		"brcm/brcmfmac4334-sdio.bin"
 #define BCM4334_NVRAM_NAME		"brcm/brcmfmac4334-sdio.txt"
+<<<<<<< HEAD
+=======
+#define BCM43340_FIRMWARE_NAME		"brcm/brcmfmac43340-sdio.bin"
+#define BCM43340_NVRAM_NAME		"brcm/brcmfmac43340-sdio.txt"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define BCM4335_FIRMWARE_NAME		"brcm/brcmfmac4335-sdio.bin"
 #define BCM4335_NVRAM_NAME		"brcm/brcmfmac4335-sdio.txt"
 #define BCM43362_FIRMWARE_NAME		"brcm/brcmfmac43362-sdio.bin"
@@ -629,6 +634,11 @@ MODULE_FIRMWARE(BCM4330_FIRMWARE_NAME);
 MODULE_FIRMWARE(BCM4330_NVRAM_NAME);
 MODULE_FIRMWARE(BCM4334_FIRMWARE_NAME);
 MODULE_FIRMWARE(BCM4334_NVRAM_NAME);
+<<<<<<< HEAD
+=======
+MODULE_FIRMWARE(BCM43340_FIRMWARE_NAME);
+MODULE_FIRMWARE(BCM43340_NVRAM_NAME);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_FIRMWARE(BCM4335_FIRMWARE_NAME);
 MODULE_FIRMWARE(BCM4335_NVRAM_NAME);
 MODULE_FIRMWARE(BCM43362_FIRMWARE_NAME);
@@ -660,6 +670,10 @@ static const struct brcmf_firmware_names brcmf_fwname_data[] = {
 	{ BRCM_CC_4329_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM4329) },
 	{ BRCM_CC_4330_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM4330) },
 	{ BRCM_CC_4334_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM4334) },
+<<<<<<< HEAD
+=======
+	{ BRCM_CC_43340_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM43340) },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ BRCM_CC_4335_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM4335) },
 	{ BRCM_CC_43362_CHIP_ID, 0xFFFFFFFE, BRCMF_FIRMWARE_NVRAM(BCM43362) },
 	{ BRCM_CC_4339_CHIP_ID, 0xFFFFFFFF, BRCMF_FIRMWARE_NVRAM(BCM4339) },
@@ -4201,6 +4215,16 @@ void brcmf_sdio_remove(struct brcmf_sdio *bus)
 	brcmf_dbg(TRACE, "Enter\n");
 
 	if (bus) {
+<<<<<<< HEAD
+=======
+		/* Stop watchdog task */
+		if (bus->watchdog_tsk) {
+			send_sig(SIGTERM, bus->watchdog_tsk, 1);
+			kthread_stop(bus->watchdog_tsk);
+			bus->watchdog_tsk = NULL;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* De-register interrupt handler */
 		brcmf_sdiod_intr_unregister(bus->sdiodev);
 

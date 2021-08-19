@@ -250,6 +250,7 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 			continue;
 		}
 
+<<<<<<< HEAD
 		pktlen = info & LEN_MASK;
 		stats->rx_packets++;
 		stats->rx_bytes += pktlen;
@@ -267,10 +268,24 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 		if (unlikely(!rx_buff->skb)) {
 			stats->rx_errors++;
 			/* Because receive_skb is below, increment rx_dropped */
+=======
+		/* Prepare the BD for next cycle. netif_receive_skb()
+		 * only if new skb was allocated and mapped to avoid holes
+		 * in the RX fifo.
+		 */
+		skb = netdev_alloc_skb_ip_align(ndev, EMAC_BUFFER_SIZE);
+		if (unlikely(!skb)) {
+			if (net_ratelimit())
+				netdev_err(ndev, "cannot allocate skb\n");
+			/* Return ownership to EMAC */
+			rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
+			stats->rx_errors++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			stats->rx_dropped++;
 			continue;
 		}
 
+<<<<<<< HEAD
 		/* receive_skb only if new skb was allocated to avoid holes */
 		netif_receive_skb(skb);
 
@@ -283,6 +298,35 @@ static int arc_emac_rx(struct net_device *ndev, int budget)
 			stats->rx_errors++;
 			continue;
 		}
+=======
+		addr = dma_map_single(&ndev->dev, (void *)skb->data,
+				      EMAC_BUFFER_SIZE, DMA_FROM_DEVICE);
+		if (dma_mapping_error(&ndev->dev, addr)) {
+			if (net_ratelimit())
+				netdev_err(ndev, "cannot map dma buffer\n");
+			dev_kfree_skb(skb);
+			/* Return ownership to EMAC */
+			rxbd->info = cpu_to_le32(FOR_EMAC | EMAC_BUFFER_SIZE);
+			stats->rx_errors++;
+			stats->rx_dropped++;
+			continue;
+		}
+
+		/* unmap previosly mapped skb */
+		dma_unmap_single(&ndev->dev, dma_unmap_addr(rx_buff, addr),
+				 dma_unmap_len(rx_buff, len), DMA_FROM_DEVICE);
+
+		pktlen = info & LEN_MASK;
+		stats->rx_packets++;
+		stats->rx_bytes += pktlen;
+		skb_put(rx_buff->skb, pktlen);
+		rx_buff->skb->dev = ndev;
+		rx_buff->skb->protocol = eth_type_trans(rx_buff->skb, ndev);
+
+		netif_receive_skb(rx_buff->skb);
+
+		rx_buff->skb = skb;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dma_unmap_addr_set(rx_buff, addr, addr);
 		dma_unmap_len_set(rx_buff, len, EMAC_BUFFER_SIZE);
 

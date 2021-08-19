@@ -7,6 +7,10 @@
 #define KMSG_COMPONENT "sclp_early"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/ctl_reg.h>
 #include <asm/sclp.h>
 #include <asm/ipl.h>

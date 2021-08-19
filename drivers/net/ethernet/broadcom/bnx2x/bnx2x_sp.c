@@ -5673,6 +5673,10 @@ static inline int bnx2x_func_send_start(struct bnx2x *bp,
 	rdata->gre_tunnel_type	= start_params->gre_tunnel_type;
 	rdata->inner_gre_rss_en = start_params->inner_gre_rss_en;
 	rdata->vxlan_dst_port	= cpu_to_le16(4789);
+<<<<<<< HEAD
+=======
+	rdata->dmae_cmd_id	= BNX2X_FW_DMAE_C;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rdata->sd_accept_mf_clss_fail = start_params->class_fail;
 	if (start_params->class_fail_ethtype) {
 		rdata->sd_accept_mf_clss_fail_match_ethtype = 1;

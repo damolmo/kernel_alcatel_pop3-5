@@ -69,8 +69,13 @@
 #include "iwl-agn-hw.h"
 
 /* Highest firmware API version supported */
+<<<<<<< HEAD
 #define IWL7260_UCODE_API_MAX	10
 #define IWL3160_UCODE_API_MAX	10
+=======
+#define IWL7260_UCODE_API_MAX	12
+#define IWL3160_UCODE_API_MAX	12
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Oldest version we won't warn about */
 #define IWL7260_UCODE_API_OK	9
@@ -102,6 +107,12 @@
 #define IWL7265_FW_PRE "iwlwifi-7265-"
 #define IWL7265_MODULE_FIRMWARE(api) IWL7265_FW_PRE __stringify(api) ".ucode"
 
+<<<<<<< HEAD
+=======
+#define IWL7265D_FW_PRE "iwlwifi-7265D-"
+#define IWL7265D_MODULE_FIRMWARE(api) IWL7265D_FW_PRE __stringify(api) ".ucode"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define NVM_HW_SECTION_NUM_FAMILY_7000		0
 
 static const struct iwl_base_params iwl7000_base_params = {
@@ -267,7 +278,44 @@ const struct iwl_cfg iwl7265_n_cfg = {
 	.pwr_tx_backoffs = iwl7265_pwr_tx_backoffs,
 };
 
+<<<<<<< HEAD
 MODULE_FIRMWARE(IWL7260_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
 MODULE_FIRMWARE(IWL3160_MODULE_FIRMWARE(IWL3160_UCODE_API_OK));
 MODULE_FIRMWARE(IWL3165_MODULE_FIRMWARE(IWL3160_UCODE_API_OK));
 MODULE_FIRMWARE(IWL7265_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
+=======
+const struct iwl_cfg iwl7265d_2ac_cfg = {
+	.name = "Intel(R) Dual Band Wireless AC 7265",
+	.fw_name_pre = IWL7265D_FW_PRE,
+	IWL_DEVICE_7000,
+	.ht_params = &iwl7265_ht_params,
+	.nvm_ver = IWL7265_NVM_VERSION,
+	.nvm_calib_ver = IWL7265_TX_POWER_VERSION,
+	.pwr_tx_backoffs = iwl7265_pwr_tx_backoffs,
+};
+
+const struct iwl_cfg iwl7265d_2n_cfg = {
+	.name = "Intel(R) Dual Band Wireless N 7265",
+	.fw_name_pre = IWL7265D_FW_PRE,
+	IWL_DEVICE_7000,
+	.ht_params = &iwl7265_ht_params,
+	.nvm_ver = IWL7265_NVM_VERSION,
+	.nvm_calib_ver = IWL7265_TX_POWER_VERSION,
+	.pwr_tx_backoffs = iwl7265_pwr_tx_backoffs,
+};
+
+const struct iwl_cfg iwl7265d_n_cfg = {
+	.name = "Intel(R) Wireless N 7265",
+	.fw_name_pre = IWL7265D_FW_PRE,
+	IWL_DEVICE_7000,
+	.ht_params = &iwl7265_ht_params,
+	.nvm_ver = IWL7265_NVM_VERSION,
+	.nvm_calib_ver = IWL7265_TX_POWER_VERSION,
+	.pwr_tx_backoffs = iwl7265_pwr_tx_backoffs,
+};
+
+MODULE_FIRMWARE(IWL7260_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
+MODULE_FIRMWARE(IWL3160_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
+MODULE_FIRMWARE(IWL7265_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
+MODULE_FIRMWARE(IWL7265D_MODULE_FIRMWARE(IWL7260_UCODE_API_OK));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

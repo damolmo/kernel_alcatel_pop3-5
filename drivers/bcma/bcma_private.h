@@ -8,8 +8,11 @@
 #include <linux/bcma/bcma.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #define BCMA_CORE_SIZE		0x1000
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define bcma_err(bus, fmt, ...) \
 	pr_err("bus%d: " fmt, (bus)->num, ##__VA_ARGS__)
 #define bcma_warn(bus, fmt, ...) \

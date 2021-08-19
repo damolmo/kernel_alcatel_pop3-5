@@ -336,9 +336,18 @@ static int read_event_files(struct pevent *pevent)
 		for (x=0; x < count; x++) {
 			size = read8(pevent);
 			ret = read_event_file(pevent, sys, size);
+<<<<<<< HEAD
 			if (ret)
 				return ret;
 		}
+=======
+			if (ret) {
+				free(sys);
+				return ret;
+			}
+		}
+		free(sys);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return 0;
 }

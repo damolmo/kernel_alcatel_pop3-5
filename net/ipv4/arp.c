@@ -221,11 +221,24 @@ static u32 arp_hash(const void *pkey,
 
 static int arp_constructor(struct neighbour *neigh)
 {
+<<<<<<< HEAD
 	__be32 addr = *(__be32 *)neigh->primary_key;
 	struct net_device *dev = neigh->dev;
 	struct in_device *in_dev;
 	struct neigh_parms *parms;
 
+=======
+	__be32 addr;
+	struct net_device *dev = neigh->dev;
+	struct in_device *in_dev;
+	struct neigh_parms *parms;
+	u32 inaddr_any = INADDR_ANY;
+
+	if (dev->flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+		memcpy(neigh->primary_key, &inaddr_any, arp_tbl.key_len);
+
+	addr = *(__be32 *)neigh->primary_key;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rcu_read_lock();
 	in_dev = __in_dev_get_rcu(dev);
 	if (in_dev == NULL) {
@@ -727,6 +740,10 @@ static int arp_process(struct sk_buff *skb)
 	unsigned char *arp_ptr;
 	struct rtable *rt;
 	unsigned char *sha;
+<<<<<<< HEAD
+=======
+	unsigned char *tha = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__be32 sip, tip;
 	u16 dev_type = dev->type;
 	int addr_type;
@@ -798,6 +815,10 @@ static int arp_process(struct sk_buff *skb)
 		break;
 #endif
 	default:
+<<<<<<< HEAD
+=======
+		tha = arp_ptr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		arp_ptr += dev->addr_len;
 	}
 	memcpy(&tip, arp_ptr, 4);
@@ -899,8 +920,23 @@ static int arp_process(struct sk_buff *skb)
 		   It is possible, that this option should be enabled for some
 		   devices (strip is candidate)
 		 */
+<<<<<<< HEAD
 		is_garp = arp->ar_op == htons(ARPOP_REQUEST) && tip == sip &&
 			  inet_addr_type(net, sip) == RTN_UNICAST;
+=======
+		is_garp = tip == sip && addr_type == RTN_UNICAST;
+
+		/* Unsolicited ARP _replies_ also require target hwaddr to be
+		 * the same as source.
+		 */
+		if (is_garp && arp->ar_op == htons(ARPOP_REPLY))
+			is_garp =
+				/* IPv4 over IEEE 1394 doesn't provide target
+				 * hardware address field in its ARP payload.
+				 */
+				tha &&
+				!memcmp(tha, sha, dev->addr_len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (n == NULL &&
 		    ((arp->ar_op == htons(ARPOP_REPLY)  &&
@@ -1309,7 +1345,11 @@ void __init arp_init(void)
 /*
  *	ax25 -> ASCII conversion
  */
+<<<<<<< HEAD
 static char *ax2asc2(ax25_address *a, char *buf)
+=======
+static void ax2asc2(ax25_address *a, char *buf)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	char c, *s;
 	int n;
@@ -1331,10 +1371,17 @@ static char *ax2asc2(ax25_address *a, char *buf)
 	*s++ = n + '0';
 	*s++ = '\0';
 
+<<<<<<< HEAD
 	if (*buf == '\0' || *buf == '-')
 		return "*";
 
 	return buf;
+=======
+	if (*buf == '\0' || *buf == '-') {
+		buf[0] = '*';
+		buf[1] = '\0';
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif /* CONFIG_AX25 */
 
@@ -1368,7 +1415,11 @@ static void arp_format_neigh_entry(struct seq_file *seq,
 	}
 #endif
 	sprintf(tbuf, "%pI4", n->primary_key);
+<<<<<<< HEAD
 	seq_printf(seq, "%-16s 0x%-10x0x%-10x%s     *        %s\n",
+=======
+	seq_printf(seq, "%-16s 0x%-10x0x%-10x%-17s     *        %s\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		   tbuf, hatype, arp_state_to_flags(n), hbuffer, dev->name);
 	read_unlock(&n->lock);
 }

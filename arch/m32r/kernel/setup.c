@@ -81,7 +81,14 @@ static struct resource code_resource = {
 };
 
 unsigned long memory_start;
+<<<<<<< HEAD
 unsigned long memory_end;
+=======
+EXPORT_SYMBOL(memory_start);
+
+unsigned long memory_end;
+EXPORT_SYMBOL(memory_end);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void __init setup_arch(char **);
 int get_cpuinfo(char *);

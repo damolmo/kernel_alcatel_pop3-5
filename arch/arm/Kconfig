@@ -30,6 +30,11 @@ config ARM
 	select HAVE_ARCH_AUDITSYSCALL if (AEABI && !OABI_COMPAT)
 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
 	select HAVE_ARCH_KGDB
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_HARDENED_USERCOPY
+	select HAVE_ARCH_MMAP_RND_BITS if MMU
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select HAVE_ARCH_SECCOMP_FILTER if (AEABI && !OABI_COMPAT)
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_BPF_JIT
@@ -70,6 +75,11 @@ config ARM
 	select IRQ_FORCED_THREADING
 	select MODULES_USE_ELF_REL
 	select NO_BOOTMEM
+<<<<<<< HEAD
+=======
+	select OF_EARLY_FLATTREE if OF
+	select OF_RESERVED_MEM if OF
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select OLD_SIGACTION
 	select OLD_SIGSUSPEND3
 	select PERF_USE_VMALLOC
@@ -197,7 +207,11 @@ config ZONE_DMA
 	bool
 
 config NEED_DMA_MAP_STATE
+<<<<<<< HEAD
 	def_bool y
+=======
+       def_bool y
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config ARCH_SUPPORTS_UPROBES
 	def_bool y
@@ -296,6 +310,17 @@ config MMU
 	  Select if you want MMU-based virtualised addressing space
 	  support by paged memory management. If unsure, say 'Y'.
 
+<<<<<<< HEAD
+=======
+config ARCH_MMAP_RND_BITS_MIN
+	default 8
+
+config ARCH_MMAP_RND_BITS_MAX
+	default 14 if PAGE_OFFSET=0x40000000
+	default 15 if PAGE_OFFSET=0x80000000
+	default 16
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #
 # The "ARM system type" choice list is ordered alphabetically by option
 # text.  Please add new entries in the option alphabetic order.
@@ -721,7 +746,13 @@ config ARCH_S3C24XX
 	select HAVE_S3C_RTC if RTC_CLASS
 	select MULTI_IRQ_HANDLER
 	select NEED_MACH_IO_H
+<<<<<<< HEAD
 	select SAMSUNG_ATAGS
+=======
+	select S3C2410_WATCHDOG
+	select SAMSUNG_ATAGS
+	select WATCHDOG
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Samsung S3C2410, S3C2412, S3C2413, S3C2416, S3C2440, S3C2442, S3C2443
 	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
@@ -786,6 +817,7 @@ config ARCH_OMAP1
 	help
 	  Support for older TI OMAP1 (omap7xx, omap15xx or omap16xx)
 
+<<<<<<< HEAD
 config ARCH_MT6735
 	bool "MediaTek MT6735"
 	select GENERIC_TIME
@@ -994,6 +1026,8 @@ config ARCH_MT8127
 
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endchoice
 
 menu "Multiple platform selection"
@@ -1106,8 +1140,11 @@ source "arch/arm/mach-meson/Kconfig"
 
 source "arch/arm/mach-msm/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/misc/mediatek/mach/Kconfig"
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 source "arch/arm/mach-moxart/Kconfig"
 
 source "arch/arm/mach-mv78xx0/Kconfig"
@@ -1435,9 +1472,15 @@ config ARM_ERRATA_764369
 	  in the diagnostic control register of the SCU.
 
 config ARM_ERRATA_775420
+<<<<<<< HEAD
 	bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
 	depends on CPU_V7
 	help
+=======
+       bool "ARM errata: A data cache maintenance operation which aborts, might lead to deadlock"
+       depends on CPU_V7
+       help
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 This option enables the workaround for the 775420 Cortex-A9 (r2p2,
 	 r2p6,r2p8,r2p10,r3p0) erratum. In case a date cache maintenance
 	 operation aborts with MMU exception, it might cause the processor
@@ -1463,6 +1506,7 @@ config ARM_ERRATA_773022
 	  loop buffer may deliver incorrect instructions. This
 	  workaround disables the loop buffer to avoid the erratum.
 
+<<<<<<< HEAD
 config ARM_ERRATA_814220
 	bool "ARM errata: L2 set/way cache maintenance operation can overtake an L1 set/way cache maintenance operation"
 	depends on CPU_V7
@@ -1498,6 +1542,8 @@ config ARM_ERRATA_836870
           ATF and Preloader are already enable this patch in default in 32-bit and 64 bit project, so
           we could enable this kernel config in default.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu
 
 source "arch/arm/common/Kconfig"
@@ -1677,8 +1723,12 @@ config BIG_LITTLE
 
 config BL_SWITCHER
 	bool "big.LITTLE switcher support"
+<<<<<<< HEAD
 	depends on BIG_LITTLE && MCPM && HOTPLUG_CPU
 	select ARM_CPU_SUSPEND
+=======
+	depends on BIG_LITTLE && MCPM && HOTPLUG_CPU && ARM_GIC
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select CPU_PM
 	help
 	  The big.LITTLE "switcher" provides the core functionality to
@@ -1931,6 +1981,24 @@ config HIGHPTE
 	bool "Allocate 2nd-level pagetables from highmem"
 	depends on HIGHMEM
 
+<<<<<<< HEAD
+=======
+config CPU_SW_DOMAIN_PAN
+	bool "Enable use of CPU domains to implement privileged no-access"
+	depends on MMU && !ARM_LPAE
+	default y
+	help
+	  Increase kernel security by ensuring that normal kernel accesses
+	  are unable to access userspace addresses.  This can help prevent
+	  use-after-free bugs becoming an exploitable privilege escalation
+	  by ensuring that magic values (such as LIST_POISON) will always
+	  fault when dereferenced.
+
+	  CPUs with low-vector mappings use a best-efforts implementation.
+	  Their lower 1MB needs to remain accessible for the vectors, but
+	  the remainder of userspace will become appropriately inaccessible.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config HW_PERF_EVENTS
 	bool "Enable hardware performance counter support for perf events"
 	depends on PERF_EVENTS
@@ -1940,12 +2008,21 @@ config HW_PERF_EVENTS
 	  disabled, perf events will use software events only.
 
 config SYS_SUPPORTS_HUGETLBFS
+<<<<<<< HEAD
 	def_bool y
 	depends on ARM_LPAE
 
 config HAVE_ARCH_TRANSPARENT_HUGEPAGE
 	def_bool y
 	depends on ARM_LPAE
+=======
+       def_bool y
+       depends on ARM_LPAE
+
+config HAVE_ARCH_TRANSPARENT_HUGEPAGE
+       def_bool y
+       depends on ARM_LPAE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config ARCH_WANT_GENERAL_HUGETLB
 	def_bool y
@@ -2052,8 +2129,11 @@ config USE_OF
 	bool "Flattened Device Tree support"
 	select IRQ_DOMAIN
 	select OF
+<<<<<<< HEAD
 	select OF_EARLY_FLATTREE
 	select OF_RESERVED_MEM
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Include support for flattened device tree machine descriptions.
 
@@ -2273,6 +2353,10 @@ config XIP_PHYS_ADDR
 config KEXEC
 	bool "Kexec system call (EXPERIMENTAL)"
 	depends on (!SMP || PM_SLEEP_SMP)
+<<<<<<< HEAD
+=======
+	depends on MMU
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  kexec is a system call that implements the ability to shutdown your
 	  current kernel, and to start another kernel.  It is like a reboot
@@ -2422,7 +2506,12 @@ config ARCH_SUSPEND_POSSIBLE
 	def_bool y
 
 config ARM_CPU_SUSPEND
+<<<<<<< HEAD
 	def_bool PM_SLEEP
+=======
+	def_bool PM_SLEEP || BL_SWITCHER
+	depends on ARCH_SUSPEND_POSSIBLE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config ARCH_HIBERNATION_POSSIBLE
 	bool
@@ -2442,7 +2531,10 @@ source "arch/arm/Kconfig.debug"
 source "security/Kconfig"
 
 source "crypto/Kconfig"
+<<<<<<< HEAD
 source "arch/arm/crypto/Kconfig"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 source "lib/Kconfig"
 

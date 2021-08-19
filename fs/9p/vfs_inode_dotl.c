@@ -87,6 +87,12 @@ static int v9fs_test_inode_dotl(struct inode *inode, void *data)
 
 	if (v9inode->qid.type != st->qid.type)
 		return 0;
+<<<<<<< HEAD
+=======
+
+	if (v9inode->qid.path != st->qid.path)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 
@@ -140,7 +146,11 @@ static struct inode *v9fs_qid_iget_dotl(struct super_block *sb,
 	if (retval)
 		goto error;
 
+<<<<<<< HEAD
 	v9fs_stat2inode_dotl(st, inode);
+=======
+	v9fs_stat2inode_dotl(st, inode, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	v9fs_cache_inode_get_cookie(inode);
 	retval = v9fs_get_acl(inode, fid);
 	if (retval)
@@ -149,8 +159,12 @@ static struct inode *v9fs_qid_iget_dotl(struct super_block *sb,
 	unlock_new_inode(inode);
 	return inode;
 error:
+<<<<<<< HEAD
 	unlock_new_inode(inode);
 	iput(inode);
+=======
+	iget_failed(inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ERR_PTR(retval);
 
 }
@@ -496,7 +510,11 @@ v9fs_vfs_getattr_dotl(struct vfsmount *mnt, struct dentry *dentry,
 	if (IS_ERR(st))
 		return PTR_ERR(st);
 
+<<<<<<< HEAD
 	v9fs_stat2inode_dotl(st, dentry->d_inode);
+=======
+	v9fs_stat2inode_dotl(st, dentry->d_inode, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	generic_fillattr(dentry->d_inode, stat);
 	/* Change block size to what the server returned */
 	stat->blksize = st->st_blksize;
@@ -607,11 +625,20 @@ int v9fs_vfs_setattr_dotl(struct dentry *dentry, struct iattr *iattr)
  * v9fs_stat2inode_dotl - populate an inode structure with stat info
  * @stat: stat structure
  * @inode: inode to populate
+<<<<<<< HEAD
+=======
+ * @flags: ctrl flags (e.g. V9FS_STAT2INODE_KEEP_ISIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  */
 
 void
+<<<<<<< HEAD
 v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode)
+=======
+v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode,
+		      unsigned int flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	umode_t mode;
 	struct v9fs_inode *v9inode = V9FS_I(inode);
@@ -631,7 +658,12 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode)
 		mode |= inode->i_mode & ~S_IALLUGO;
 		inode->i_mode = mode;
 
+<<<<<<< HEAD
 		i_size_write(inode, stat->st_size);
+=======
+		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE))
+			v9fs_i_size_write(inode, stat->st_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		inode->i_blocks = stat->st_blocks;
 	} else {
 		if (stat->st_result_mask & P9_STATS_ATIME) {
@@ -661,8 +693,14 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl *stat, struct inode *inode)
 		}
 		if (stat->st_result_mask & P9_STATS_RDEV)
 			inode->i_rdev = new_decode_dev(stat->st_rdev);
+<<<<<<< HEAD
 		if (stat->st_result_mask & P9_STATS_SIZE)
 			i_size_write(inode, stat->st_size);
+=======
+		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE) &&
+		    stat->st_result_mask & P9_STATS_SIZE)
+			v9fs_i_size_write(inode, stat->st_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (stat->st_result_mask & P9_STATS_BLOCKS)
 			inode->i_blocks = stat->st_blocks;
 	}
@@ -944,9 +982,15 @@ ndset:
 
 int v9fs_refresh_inode_dotl(struct p9_fid *fid, struct inode *inode)
 {
+<<<<<<< HEAD
 	loff_t i_size;
 	struct p9_stat_dotl *st;
 	struct v9fs_session_info *v9ses;
+=======
+	struct p9_stat_dotl *st;
+	struct v9fs_session_info *v9ses;
+	unsigned int flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	v9ses = v9fs_inode2v9ses(inode);
 	st = p9_client_getattr_dotl(fid, P9_STATS_ALL);
@@ -958,16 +1002,25 @@ int v9fs_refresh_inode_dotl(struct p9_fid *fid, struct inode *inode)
 	if ((inode->i_mode & S_IFMT) != (st->st_mode & S_IFMT))
 		goto out;
 
+<<<<<<< HEAD
 	spin_lock(&inode->i_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * We don't want to refresh inode->i_size,
 	 * because we may have cached data
 	 */
+<<<<<<< HEAD
 	i_size = inode->i_size;
 	v9fs_stat2inode_dotl(st, inode);
 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
 		inode->i_size = i_size;
 	spin_unlock(&inode->i_lock);
+=======
+	flags = (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) ?
+		V9FS_STAT2INODE_KEEP_ISIZE : 0;
+	v9fs_stat2inode_dotl(st, inode, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	kfree(st);
 	return 0;

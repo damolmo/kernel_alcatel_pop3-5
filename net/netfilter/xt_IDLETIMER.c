@@ -276,6 +276,25 @@ static int idletimer_resume(struct notifier_block *notifier,
 	return NOTIFY_DONE;
 }
 
+<<<<<<< HEAD
+=======
+static int idletimer_check_sysfs_name(const char *name, unsigned int size)
+{
+	int ret;
+
+	ret = xt_check_proc_name(name, size);
+	if (ret < 0)
+		return ret;
+
+	if (!strcmp(name, "power") ||
+	    !strcmp(name, "subsystem") ||
+	    !strcmp(name, "uevent"))
+		return -EINVAL;
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int idletimer_tg_create(struct idletimer_tg_info *info)
 {
 	int ret;
@@ -286,6 +305,14 @@ static int idletimer_tg_create(struct idletimer_tg_info *info)
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = idletimer_check_sysfs_name(info->label, sizeof(info->label));
+	if (ret < 0)
+		goto out_free_timer;
+
+	sysfs_attr_init(&info->timer->attr.attr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	info->timer->attr.attr.name = kstrdup(info->label, GFP_KERNEL);
 	if (!info->timer->attr.attr.name) {
 		ret = -ENOMEM;
@@ -321,11 +348,19 @@ static int idletimer_tg_create(struct idletimer_tg_info *info)
 		printk(KERN_WARNING "[%s] Failed to register pm notifier %d\n",
 				__func__, ret);
 
+<<<<<<< HEAD
 	mod_timer(&info->timer->timer,
 		  msecs_to_jiffies(info->timeout * 1000) + jiffies);
 
 	INIT_WORK(&info->timer->work, idletimer_tg_work);
 
+=======
+	INIT_WORK(&info->timer->work, idletimer_tg_work);
+
+	mod_timer(&info->timer->timer,
+		  msecs_to_jiffies(info->timeout * 1000) + jiffies);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_free_attr:
@@ -410,7 +445,14 @@ static int idletimer_tg_checkentry(const struct xt_tgchk_param *par)
 		pr_debug("timeout value is zero\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 
+=======
+	if (info->timeout >= INT_MAX / 1000) {
+		pr_debug("timeout value is too big\n");
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (info->label[0] == '\0' ||
 	    strnlen(info->label,
 		    MAX_IDLETIMER_LABEL_SIZE) == MAX_IDLETIMER_LABEL_SIZE) {

@@ -229,7 +229,11 @@ static ssize_t init_verbs_show(struct device *dev,
 	mutex_lock(&codec->user_mutex);
 	for (i = 0; i < codec->init_verbs.used; i++) {
 		struct hda_verb *v = snd_array_elem(&codec->init_verbs, i);
+<<<<<<< HEAD
 		len += snprintf(buf + len, PAGE_SIZE - len,
+=======
+		len += scnprintf(buf + len, PAGE_SIZE - len,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				"0x%02x 0x%03x 0x%04x\n",
 				v->nid, v->verb, v->param);
 	}
@@ -279,7 +283,11 @@ static ssize_t hints_show(struct device *dev,
 	mutex_lock(&codec->user_mutex);
 	for (i = 0; i < codec->hints.used; i++) {
 		struct hda_hint *hint = snd_array_elem(&codec->hints, i);
+<<<<<<< HEAD
 		len += snprintf(buf + len, PAGE_SIZE - len,
+=======
+		len += scnprintf(buf + len, PAGE_SIZE - len,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				"%s = %s\n", hint->key, hint->val);
 	}
 	mutex_unlock(&codec->user_mutex);

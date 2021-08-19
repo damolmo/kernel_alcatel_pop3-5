@@ -381,6 +381,11 @@ int x509_extract_key_data(void *context, size_t hdrlen,
 	ctx->cert->pub->pkey_algo = PKEY_ALGO_RSA;
 
 	/* Discard the BIT STRING metadata */
+<<<<<<< HEAD
+=======
+	if (vlen < 1 || *(const u8 *)value != 0)
+		return -EBADMSG;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ctx->key = value + 1;
 	ctx->key_size = vlen - 1;
 	return 0;

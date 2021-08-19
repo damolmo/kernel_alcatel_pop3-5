@@ -12,6 +12,10 @@ if MISDN != n
 config MISDN_DSP
 	tristate "Digital Audio Processing of transparent data"
 	depends on MISDN
+<<<<<<< HEAD
+=======
+	select BITREVERSE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Enable support for digital audio processing capability.
 

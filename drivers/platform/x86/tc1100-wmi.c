@@ -52,7 +52,13 @@ struct tc1100_data {
 	u32 jogdial;
 };
 
+<<<<<<< HEAD
 static struct tc1100_data suspend_data;
+=======
+#ifdef CONFIG_PM
+static struct tc1100_data suspend_data;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* --------------------------------------------------------------------------
 				Device Management

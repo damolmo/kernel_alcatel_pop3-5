@@ -52,8 +52,15 @@ extern struct inet_hashinfo tcp_hashinfo;
 extern struct percpu_counter tcp_orphan_count;
 void tcp_time_wait(struct sock *sk, int state, int timeo);
 
+<<<<<<< HEAD
 #define MAX_TCP_HEADER	(128 + MAX_HEADER)
 #define MAX_TCP_OPTION_SPACE 40
+=======
+#define MAX_TCP_HEADER	L1_CACHE_ALIGN(128 + MAX_HEADER)
+#define MAX_TCP_OPTION_SPACE 40
+#define TCP_MIN_SND_MSS		48
+#define TCP_MIN_GSO_SIZE	(TCP_MIN_SND_MSS - MAX_TCP_OPTION_SPACE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* 
  * Never offer a window over 32767 without using window scaling. Some
@@ -88,14 +95,22 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
 				 * to ~3sec-8min depending on RTO.
 				 */
 
+<<<<<<< HEAD
 #define TCP_RETR2	10	/*
+=======
+#define TCP_RETR2	15	/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				 * This should take at least
 				 * 90 minutes to time out.
 				 * RFC1122 says that the limit is 100 sec.
 				 * 15 is ~13-30min depending on RTO.
 				 */
 
+<<<<<<< HEAD
 #define TCP_SYN_RETRIES	 9	/* This is how many retries are done
+=======
+#define TCP_SYN_RETRIES	 6	/* This is how many retries are done
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				 * when active opening a connection.
 				 * RFC1122 says the minimum retry MUST
 				 * be at least 180secs.  Nevertheless
@@ -128,7 +143,11 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
 #define TCP_DELACK_MIN	4U
 #define TCP_ATO_MIN	4U
 #endif
+<<<<<<< HEAD
 #define TCP_RTO_MAX	((unsigned)(60*HZ))
+=======
+#define TCP_RTO_MAX	((unsigned)(120*HZ))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define TCP_RTO_MIN	((unsigned)(HZ/5))
 #define TCP_TIMEOUT_INIT ((unsigned)(1*HZ))	/* RFC6298 2.1 initial RTO value	*/
 #define TCP_TIMEOUT_FALLBACK ((unsigned)(3*HZ))	/* RFC 1122 initial RTO value, now
@@ -277,12 +296,27 @@ extern unsigned int sysctl_tcp_notsent_lowat;
 extern int sysctl_tcp_min_tso_segs;
 extern int sysctl_tcp_autocorking;
 extern int sysctl_tcp_default_init_rwnd;
+<<<<<<< HEAD
 extern int sysctl_tcp_rto_min;
 extern int sysctl_tcp_rto_max;
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern atomic_long_t tcp_memory_allocated;
 extern struct percpu_counter tcp_sockets_allocated;
 extern int tcp_memory_pressure;
 
+<<<<<<< HEAD
+=======
+/* optimized version of sk_under_memory_pressure() for TCP sockets */
+static inline bool tcp_under_memory_pressure(const struct sock *sk)
+{
+	if (mem_cgroup_sockets_enabled && sk->sk_cgrp)
+		return !!sk->sk_cgrp->memory_pressure;
+
+	return tcp_memory_pressure;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * The next routines deal with comparing 32 bit unsigned ints
  * and worry about wraparound (automatic with unsigned arithmetic).
@@ -374,6 +408,10 @@ ssize_t tcp_splice_read(struct socket *sk, loff_t *ppos,
 			struct pipe_inode_info *pipe, size_t len,
 			unsigned int flags);
 
+<<<<<<< HEAD
+=======
+void tcp_enter_quickack_mode(struct sock *sk, unsigned int max_quickacks);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void tcp_dec_quickack_mode(struct sock *sk,
 					 const unsigned int pkts)
 {
@@ -532,6 +570,10 @@ int tcp_send_synack(struct sock *);
 bool tcp_syn_flood_action(struct sock *sk, const struct sk_buff *skb,
 			  const char *proto);
 void tcp_push_one(struct sock *, unsigned int mss_now);
+<<<<<<< HEAD
+=======
+void __tcp_send_ack(struct sock *sk, u32 rcv_nxt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void tcp_send_ack(struct sock *sk);
 void tcp_send_delayed_ack(struct sock *sk);
 void tcp_send_loss_probe(struct sock *sk);
@@ -593,8 +635,13 @@ void tcp_init_buffer_space(struct sock *sk);
 
 static inline void tcp_bound_rto(const struct sock *sk)
 {
+<<<<<<< HEAD
 	if (inet_csk(sk)->icsk_rto > sysctl_tcp_rto_max)
 		inet_csk(sk)->icsk_rto = sysctl_tcp_rto_max;
+=======
+	if (inet_csk(sk)->icsk_rto > TCP_RTO_MAX)
+		inet_csk(sk)->icsk_rto = TCP_RTO_MAX;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline u32 __tcp_set_rto(const struct tcp_sock *tp)
@@ -618,7 +665,11 @@ static inline void tcp_fast_path_check(struct sock *sk)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 
+<<<<<<< HEAD
 	if (skb_queue_empty(&tp->out_of_order_queue) &&
+=======
+	if (RB_EMPTY_ROOT(&tp->out_of_order_queue) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    tp->rcv_wnd &&
 	    atomic_read(&sk->sk_rmem_alloc) < sk->sk_rcvbuf &&
 	    !tp->urg_data)
@@ -629,7 +680,11 @@ static inline void tcp_fast_path_check(struct sock *sk)
 static inline u32 tcp_rto_min(struct sock *sk)
 {
 	const struct dst_entry *dst = __sk_dst_get(sk);
+<<<<<<< HEAD
 	u32 rto_min = sysctl_tcp_rto_min;
+=======
+	u32 rto_min = TCP_RTO_MIN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dst && dst_metric_locked(dst, RTAX_RTO_MIN))
 		rto_min = dst_metric_rtt(dst, RTAX_RTO_MIN);
@@ -774,8 +829,11 @@ enum tcp_ca_event {
 	CA_EVENT_LOSS,		/* loss timeout */
 	CA_EVENT_ECN_NO_CE,	/* ECT set, but not CE marked */
 	CA_EVENT_ECN_IS_CE,	/* received CE marked IP packet */
+<<<<<<< HEAD
 	CA_EVENT_DELAYED_ACK,	/* Delayed ack is sent */
 	CA_EVENT_NON_DELAYED_ACK,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* Information about inbound ACK, passed to cong_ops->in_ack_event() */
@@ -1028,7 +1086,11 @@ static inline void tcp_check_probe_timer(struct sock *sk)
 
 	if (!tp->packets_out && !icsk->icsk_pending)
 		inet_csk_reset_xmit_timer(sk, ICSK_TIME_PROBE0,
+<<<<<<< HEAD
 					  icsk->icsk_rto, sysctl_tcp_rto_max);
+=======
+					  icsk->icsk_rto, TCP_RTO_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void tcp_init_wl(struct tcp_sock *tp, u32 seq)
@@ -1072,6 +1134,10 @@ static inline void tcp_prequeue_init(struct tcp_sock *tp)
 }
 
 bool tcp_prequeue(struct sock *sk, struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+int tcp_filter(struct sock *sk, struct sk_buff *skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #undef STATE_TRACE
 
@@ -1086,6 +1152,11 @@ void tcp_set_state(struct sock *sk, int state);
 
 void tcp_done(struct sock *sk);
 
+<<<<<<< HEAD
+=======
+int tcp_abort(struct sock *sk, int err);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void tcp_sack_reset(struct tcp_options_received *rx_opt)
 {
 	rx_opt->dsack = 0;
@@ -1101,9 +1172,17 @@ void tcp_select_initial_window(int __space, __u32 mss, __u32 *rcv_wnd,
 
 static inline int tcp_win_from_space(int space)
 {
+<<<<<<< HEAD
 	return sysctl_tcp_adv_win_scale<=0 ?
 		(space>>(-sysctl_tcp_adv_win_scale)) :
 		space - (space>>sysctl_tcp_adv_win_scale);
+=======
+	int tcp_adv_win_scale = sysctl_tcp_adv_win_scale;
+
+	return tcp_adv_win_scale <= 0 ?
+		(space>>(-tcp_adv_win_scale)) :
+		space - (space>>tcp_adv_win_scale);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Note: caller must be prepared to deal with negative returns */ 
@@ -1225,8 +1304,13 @@ static inline void tcp_mib_init(struct net *net)
 {
 	/* See RFC 2012 */
 	TCP_ADD_STATS_USER(net, TCP_MIB_RTOALGORITHM, 1);
+<<<<<<< HEAD
 	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMIN, sysctl_tcp_rto_min*1000/HZ);
 	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMAX, sysctl_tcp_rto_max*1000/HZ);
+=======
+	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMIN, TCP_RTO_MIN*1000/HZ);
+	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMAX, TCP_RTO_MAX*1000/HZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	TCP_ADD_STATS_USER(net, TCP_MIB_MAXCONN, -1);
 }
 
@@ -1361,6 +1445,14 @@ bool tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
 void tcp_fastopen_init_key_once(bool publish);
 #define TCP_FASTOPEN_KEY_LENGTH 16
 
+<<<<<<< HEAD
+=======
+static inline void tcp_init_send_head(struct sock *sk)
+{
+	sk->sk_send_head = NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Fastopen key context */
 struct tcp_fastopen_context {
 	struct crypto_cipher	*tfm;
@@ -1368,6 +1460,11 @@ struct tcp_fastopen_context {
 	struct rcu_head		rcu;
 };
 
+<<<<<<< HEAD
+=======
+static inline void tcp_init_send_head(struct sock *sk);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* write queue abstraction */
 static inline void tcp_write_queue_purge(struct sock *sk)
 {
@@ -1375,8 +1472,16 @@ static inline void tcp_write_queue_purge(struct sock *sk)
 
 	while ((skb = __skb_dequeue(&sk->sk_write_queue)) != NULL)
 		sk_wmem_free_skb(sk, skb);
+<<<<<<< HEAD
 	sk_mem_reclaim(sk);
 	tcp_clear_all_retrans_hints(tcp_sk(sk));
+=======
+	tcp_init_send_head(sk);
+	sk_mem_reclaim(sk);
+	tcp_clear_all_retrans_hints(tcp_sk(sk));
+	tcp_init_send_head(sk);
+	inet_csk(sk)->icsk_backoff = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline struct sk_buff *tcp_write_queue_head(const struct sock *sk)
@@ -1437,9 +1542,31 @@ static inline void tcp_check_send_head(struct sock *sk, struct sk_buff *skb_unli
 		tcp_sk(sk)->highest_sack = NULL;
 }
 
+<<<<<<< HEAD
 static inline void tcp_init_send_head(struct sock *sk)
 {
 	sk->sk_send_head = NULL;
+=======
+static inline struct sk_buff *tcp_rtx_queue_head(const struct sock *sk)
+{
+	struct sk_buff *skb = tcp_write_queue_head(sk);
+
+	if (skb == tcp_send_head(sk))
+		skb = NULL;
+
+	return skb;
+}
+
+static inline struct sk_buff *tcp_rtx_queue_tail(const struct sock *sk)
+{
+	struct sk_buff *skb = tcp_send_head(sk);
+
+	/* empty retransmit queue, for example due to zero window */
+	if (skb == tcp_write_queue_head(sk))
+		return NULL;
+
+	return skb ? tcp_write_queue_prev(sk, skb) : tcp_write_queue_tail(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void __tcp_add_write_queue_tail(struct sock *sk, struct sk_buff *skb)
@@ -1534,12 +1661,21 @@ static inline void tcp_highest_sack_reset(struct sock *sk)
 	tcp_sk(sk)->highest_sack = tcp_write_queue_head(sk);
 }
 
+<<<<<<< HEAD
 /* Called when old skb is about to be deleted (to be combined with new skb) */
 static inline void tcp_highest_sack_combine(struct sock *sk,
 					    struct sk_buff *old,
 					    struct sk_buff *new)
 {
 	if (tcp_sk(sk)->sacked_out && (old == tcp_sk(sk)->highest_sack))
+=======
+/* Called when old skb is about to be deleted and replaced by new skb */
+static inline void tcp_highest_sack_replace(struct sock *sk,
+					    struct sk_buff *old,
+					    struct sk_buff *new)
+{
+	if (old == tcp_highest_sack(sk))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tcp_sk(sk)->highest_sack = new;
 }
 
@@ -1577,6 +1713,7 @@ struct tcp_iter_state {
 	loff_t			last_pos;
 };
 
+<<<<<<< HEAD
 /* MTK_NET_CHANGES */
 /*
  * reset tcp connection by uid
@@ -1585,6 +1722,8 @@ struct uid_err {
 	int appuid;
 	int errNum;
 };
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int tcp_proc_register(struct net *net, struct tcp_seq_afinfo *afinfo);
 void tcp_proc_unregister(struct net *net, struct tcp_seq_afinfo *afinfo);
 
@@ -1613,12 +1752,15 @@ static inline bool tcp_stream_memory_free(const struct sock *sk)
 	return notsent_bytes < tcp_notsent_lowat(tp);
 }
 
+<<<<<<< HEAD
 /* MTK_NET_CHANGES */
 extern void tcp_v4_reset_connections_by_uid(struct uid_err uid_e);
 extern void tcp_v4_handle_retrans_time_by_uid(struct uid_err uid_e);
 
 extern int tcp_nuke_addr(struct net *net, struct sockaddr *addr);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_PROC_FS
 int tcp4_proc_init(void);
 void tcp4_proc_exit(void);

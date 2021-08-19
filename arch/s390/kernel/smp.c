@@ -1014,7 +1014,15 @@ static ssize_t __ref rescan_store(struct device *dev,
 {
 	int rc;
 
+<<<<<<< HEAD
 	rc = smp_rescan_cpus();
+=======
+	rc = lock_device_hotplug_sysfs();
+	if (rc)
+		return rc;
+	rc = smp_rescan_cpus();
+	unlock_device_hotplug();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc ? rc : count;
 }
 static DEVICE_ATTR(rescan, 0200, NULL, rescan_store);

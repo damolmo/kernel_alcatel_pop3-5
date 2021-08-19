@@ -90,9 +90,12 @@ enum drm_mode_status {
 
 #define CRTC_INTERLACE_HALVE_V	(1 << 0) /* halve V values for interlacing */
 #define CRTC_STEREO_DOUBLE	(1 << 1) /* adjust timings for stereo modes */
+<<<<<<< HEAD
 #define CRTC_NO_DBLSCAN		(1 << 2) /* don't adjust doublescan */
 #define CRTC_NO_VSCAN		(1 << 3) /* don't adjust doublescan */
 #define CRTC_STEREO_DOUBLE_ONLY	(CRTC_NO_DBLSCAN | CRTC_NO_VSCAN)
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DRM_MODE_FLAG_3D_MAX	DRM_MODE_FLAG_3D_SIDE_BY_SIDE_HALF
 
@@ -182,10 +185,13 @@ struct drm_cmdline_mode;
 
 struct drm_display_mode *drm_mode_create(struct drm_device *dev);
 void drm_mode_destroy(struct drm_device *dev, struct drm_display_mode *mode);
+<<<<<<< HEAD
 void drm_mode_convert_to_umode(struct drm_mode_modeinfo *out,
                                const struct drm_display_mode *in);
 int drm_mode_convert_umode(struct drm_display_mode *out,
 			   const struct drm_mode_modeinfo *in);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void drm_mode_probed_add(struct drm_connector *connector, struct drm_display_mode *mode);
 void drm_mode_debug_printmodeline(const struct drm_display_mode *mode);
 
@@ -224,9 +230,15 @@ bool drm_mode_equal_no_clocks_no_stereo(const struct drm_display_mode *mode1,
 					const struct drm_display_mode *mode2);
 
 /* for use by the crtc helper probe functions */
+<<<<<<< HEAD
 enum drm_mode_status drm_mode_validate_basic(const struct drm_display_mode *mode);
 enum drm_mode_status drm_mode_validate_size(const struct drm_display_mode *mode,
 					    int maxX, int maxY);
+=======
+void drm_mode_validate_size(struct drm_device *dev,
+			    struct list_head *mode_list,
+			    int maxX, int maxY);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void drm_mode_prune_invalid(struct drm_device *dev,
 			    struct list_head *mode_list, bool verbose);
 void drm_mode_sort(struct list_head *mode_list);

@@ -5,6 +5,10 @@
 #include <linux/mm.h>
 #include <linux/ptrace.h>
 #include <asm/desc.h>
+<<<<<<< HEAD
+=======
+#include <asm/mmu_context.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *regs)
 {
@@ -27,6 +31,7 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 		struct desc_struct *desc;
 		unsigned long base;
 
+<<<<<<< HEAD
 		seg &= ~7UL;
 
 		mutex_lock(&child->mm->context.lock);
@@ -34,6 +39,16 @@ unsigned long convert_ip_to_linear(struct task_struct *child, struct pt_regs *re
 			addr = -1L; /* bogus selector, access would fault */
 		else {
 			desc = child->mm->context.ldt + seg;
+=======
+		seg >>= 3;
+
+		mutex_lock(&child->mm->context.lock);
+		if (unlikely(!child->mm->context.ldt ||
+			     seg >= child->mm->context.ldt->size))
+			addr = -1L; /* bogus selector, access would fault */
+		else {
+			desc = &child->mm->context.ldt->entries[seg];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			base = get_desc_base(desc);
 
 			/* 16-bit code segment? */

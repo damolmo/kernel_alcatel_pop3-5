@@ -612,7 +612,11 @@ static void ip_vs_sync_conn_v0(struct net *net, struct ip_vs_conn *cp,
 			pkts = atomic_add_return(1, &cp->in_pkts);
 		else
 			pkts = sysctl_sync_threshold(ipvs);
+<<<<<<< HEAD
 		ip_vs_sync_conn(net, cp->control, pkts);
+=======
+		ip_vs_sync_conn(net, cp, pkts);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

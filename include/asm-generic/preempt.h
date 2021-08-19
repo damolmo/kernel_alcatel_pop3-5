@@ -7,10 +7,17 @@
 
 static __always_inline int preempt_count(void)
 {
+<<<<<<< HEAD
 	return current_thread_info()->preempt_count;
 }
 
 static __always_inline int *preempt_count_ptr(void)
+=======
+	return READ_ONCE(current_thread_info()->preempt_count);
+}
+
+static __always_inline volatile int *preempt_count_ptr(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return &current_thread_info()->preempt_count;
 }

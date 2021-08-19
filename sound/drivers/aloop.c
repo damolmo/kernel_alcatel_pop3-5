@@ -39,6 +39,10 @@
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
+<<<<<<< HEAD
+=======
+#include <sound/pcm_params.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <sound/info.h>
 #include <sound/initval.h>
 
@@ -192,6 +196,14 @@ static inline void loopback_timer_stop(struct loopback_pcm *dpcm)
 	dpcm->timer.expires = 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline void loopback_timer_stop_sync(struct loopback_pcm *dpcm)
+{
+	del_timer_sync(&dpcm->timer);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define CABLE_VALID_PLAYBACK	(1 << SNDRV_PCM_STREAM_PLAYBACK)
 #define CABLE_VALID_CAPTURE	(1 << SNDRV_PCM_STREAM_CAPTURE)
 #define CABLE_VALID_BOTH	(CABLE_VALID_PLAYBACK|CABLE_VALID_CAPTURE)
@@ -291,6 +303,11 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 		cable->pause |= stream;
 		loopback_timer_stop(dpcm);
 		spin_unlock(&cable->lock);
+<<<<<<< HEAD
+=======
+		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+			loopback_active_notify(dpcm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 	case SNDRV_PCM_TRIGGER_RESUME:
@@ -299,6 +316,11 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 		cable->pause &= ~stream;
 		loopback_timer_start(dpcm);
 		spin_unlock(&cable->lock);
+<<<<<<< HEAD
+=======
+		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+			loopback_active_notify(dpcm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		return -EINVAL;
@@ -306,6 +328,7 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void params_change_substream(struct loopback_pcm *dpcm,
 				    struct snd_pcm_runtime *runtime)
 {
@@ -319,6 +342,8 @@ static void params_change_substream(struct loopback_pcm *dpcm,
 	dst_runtime->hw = dpcm->cable->hw;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void params_change(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -330,10 +355,13 @@ static void params_change(struct snd_pcm_substream *substream)
 	cable->hw.rate_max = runtime->rate;
 	cable->hw.channels_min = runtime->channels;
 	cable->hw.channels_max = runtime->channels;
+<<<<<<< HEAD
 	params_change_substream(cable->streams[SNDRV_PCM_STREAM_PLAYBACK],
 				runtime);
 	params_change_substream(cable->streams[SNDRV_PCM_STREAM_CAPTURE],
 				runtime);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int loopback_prepare(struct snd_pcm_substream *substream)
@@ -343,6 +371,11 @@ static int loopback_prepare(struct snd_pcm_substream *substream)
 	struct loopback_cable *cable = dpcm->cable;
 	int bps, salign;
 
+<<<<<<< HEAD
+=======
+	loopback_timer_stop_sync(dpcm);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	salign = (snd_pcm_format_width(runtime->format) *
 						runtime->channels) / 8;
 	bps = salign * runtime->rate;
@@ -621,6 +654,7 @@ static unsigned int get_cable_index(struct snd_pcm_substream *substream)
 static int rule_format(struct snd_pcm_hw_params *params,
 		       struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 
 	struct snd_pcm_hardware *hw = rule->private;
 	struct snd_mask *maskp = hw_param_mask(params, rule->var);
@@ -631,16 +665,39 @@ static int rule_format(struct snd_pcm_hw_params *params,
 	if (! maskp->bits[0] && ! maskp->bits[1])
 		return -EINVAL;
 	return 0;
+=======
+	struct loopback_pcm *dpcm = rule->private;
+	struct loopback_cable *cable = dpcm->cable;
+	struct snd_mask m;
+
+	snd_mask_none(&m);
+	mutex_lock(&dpcm->loopback->cable_lock);
+	m.bits[0] = (u_int32_t)cable->hw.formats;
+	m.bits[1] = (u_int32_t)(cable->hw.formats >> 32);
+	mutex_unlock(&dpcm->loopback->cable_lock);
+	return snd_mask_refine(hw_param_mask(params, rule->var), &m);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int rule_rate(struct snd_pcm_hw_params *params,
 		     struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 	struct snd_pcm_hardware *hw = rule->private;
 	struct snd_interval t;
 
         t.min = hw->rate_min;
         t.max = hw->rate_max;
+=======
+	struct loopback_pcm *dpcm = rule->private;
+	struct loopback_cable *cable = dpcm->cable;
+	struct snd_interval t;
+
+	mutex_lock(&dpcm->loopback->cable_lock);
+	t.min = cable->hw.rate_min;
+	t.max = cable->hw.rate_max;
+	mutex_unlock(&dpcm->loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         t.openmin = t.openmax = 0;
         t.integer = 0;
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
@@ -649,22 +706,61 @@ static int rule_rate(struct snd_pcm_hw_params *params,
 static int rule_channels(struct snd_pcm_hw_params *params,
 			 struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 	struct snd_pcm_hardware *hw = rule->private;
 	struct snd_interval t;
 
         t.min = hw->channels_min;
         t.max = hw->channels_max;
+=======
+	struct loopback_pcm *dpcm = rule->private;
+	struct loopback_cable *cable = dpcm->cable;
+	struct snd_interval t;
+
+	mutex_lock(&dpcm->loopback->cable_lock);
+	t.min = cable->hw.channels_min;
+	t.max = cable->hw.channels_max;
+	mutex_unlock(&dpcm->loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         t.openmin = t.openmax = 0;
         t.integer = 0;
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
 }
 
+<<<<<<< HEAD
+=======
+static void free_cable(struct snd_pcm_substream *substream)
+{
+	struct loopback *loopback = substream->private_data;
+	int dev = get_cable_index(substream);
+	struct loopback_cable *cable;
+
+	cable = loopback->cables[substream->number][dev];
+	if (!cable)
+		return;
+	if (cable->streams[!substream->stream]) {
+		/* other stream is still alive */
+		spin_lock_irq(&cable->lock);
+		cable->streams[substream->stream] = NULL;
+		spin_unlock_irq(&cable->lock);
+	} else {
+		/* free the cable */
+		loopback->cables[substream->number][dev] = NULL;
+		kfree(cable);
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int loopback_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct loopback *loopback = substream->private_data;
 	struct loopback_pcm *dpcm;
+<<<<<<< HEAD
 	struct loopback_cable *cable;
+=======
+	struct loopback_cable *cable = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err = 0;
 	int dev = get_cable_index(substream);
 
@@ -683,7 +779,10 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	if (!cable) {
 		cable = kzalloc(sizeof(*cable), GFP_KERNEL);
 		if (!cable) {
+<<<<<<< HEAD
 			kfree(dpcm);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = -ENOMEM;
 			goto unlock;
 		}
@@ -692,7 +791,10 @@ static int loopback_open(struct snd_pcm_substream *substream)
 		loopback->cables[substream->number][dev] = cable;
 	}
 	dpcm->cable = cable;
+<<<<<<< HEAD
 	cable->streams[substream->stream] = dpcm;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 
@@ -701,19 +803,31 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	/* are cached -> they do not reflect the actual state */
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_FORMAT,
+<<<<<<< HEAD
 				  rule_format, &runtime->hw,
+=======
+				  rule_format, dpcm,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  SNDRV_PCM_HW_PARAM_FORMAT, -1);
 	if (err < 0)
 		goto unlock;
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_RATE,
+<<<<<<< HEAD
 				  rule_rate, &runtime->hw,
+=======
+				  rule_rate, dpcm,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  SNDRV_PCM_HW_PARAM_RATE, -1);
 	if (err < 0)
 		goto unlock;
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_CHANNELS,
+<<<<<<< HEAD
 				  rule_channels, &runtime->hw,
+=======
+				  rule_channels, dpcm,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  SNDRV_PCM_HW_PARAM_CHANNELS, -1);
 	if (err < 0)
 		goto unlock;
@@ -724,7 +838,20 @@ static int loopback_open(struct snd_pcm_substream *substream)
 		runtime->hw = loopback_pcm_hardware;
 	else
 		runtime->hw = cable->hw;
+<<<<<<< HEAD
  unlock:
+=======
+
+	spin_lock_irq(&cable->lock);
+	cable->streams[substream->stream] = dpcm;
+	spin_unlock_irq(&cable->lock);
+
+ unlock:
+	if (err < 0) {
+		free_cable(substream);
+		kfree(dpcm);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&loopback->cable_lock);
 	return err;
 }
@@ -733,6 +860,7 @@ static int loopback_close(struct snd_pcm_substream *substream)
 {
 	struct loopback *loopback = substream->private_data;
 	struct loopback_pcm *dpcm = substream->runtime->private_data;
+<<<<<<< HEAD
 	struct loopback_cable *cable;
 	int dev = get_cable_index(substream);
 
@@ -747,6 +875,12 @@ static int loopback_close(struct snd_pcm_substream *substream)
 		loopback->cables[substream->number][dev] = NULL;
 		kfree(cable);
 	}
+=======
+
+	loopback_timer_stop_sync(dpcm);
+	mutex_lock(&loopback->cable_lock);
+	free_cable(substream);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&loopback->cable_lock);
 	return 0;
 }
@@ -814,9 +948,17 @@ static int loopback_rate_shift_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].rate_shift;
+=======
+	mutex_lock(&loopback->cable_lock);
+	ucontrol->value.integer.value[0] =
+		loopback->setup[kcontrol->id.subdevice]
+			       [kcontrol->id.device].rate_shift;
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -848,9 +990,17 @@ static int loopback_notify_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].notify;
+=======
+	mutex_lock(&loopback->cable_lock);
+	ucontrol->value.integer.value[0] =
+		loopback->setup[kcontrol->id.subdevice]
+			       [kcontrol->id.device].notify;
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -862,12 +1012,20 @@ static int loopback_notify_put(struct snd_kcontrol *kcontrol,
 	int change = 0;
 
 	val = ucontrol->value.integer.value[0] ? 1 : 0;
+<<<<<<< HEAD
+=======
+	mutex_lock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (val != loopback->setup[kcontrol->id.subdevice]
 				[kcontrol->id.device].notify) {
 		loopback->setup[kcontrol->id.subdevice]
 			[kcontrol->id.device].notify = val;
 		change = 1;
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return change;
 }
 
@@ -875,6 +1033,7 @@ static int loopback_active_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	struct loopback_cable *cable = loopback->cables
 			[kcontrol->id.subdevice][kcontrol->id.device ^ 1];
 	unsigned int val = 0;
@@ -882,6 +1041,20 @@ static int loopback_active_get(struct snd_kcontrol *kcontrol,
 	if (cable != NULL)
 		val = (cable->running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) ?
 									1 : 0;
+=======
+	struct loopback_cable *cable;
+
+	unsigned int val = 0;
+
+	mutex_lock(&loopback->cable_lock);
+	cable = loopback->cables[kcontrol->id.subdevice][kcontrol->id.device ^ 1];
+	if (cable != NULL) {
+		unsigned int running = cable->running ^ cable->pause;
+
+		val = (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) ? 1 : 0;
+	}
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ucontrol->value.integer.value[0] = val;
 	return 0;
 }
@@ -924,9 +1097,17 @@ static int loopback_rate_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].rate;
+=======
+	mutex_lock(&loopback->cable_lock);
+	ucontrol->value.integer.value[0] =
+		loopback->setup[kcontrol->id.subdevice]
+			       [kcontrol->id.device].rate;
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -946,9 +1127,17 @@ static int loopback_channels_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].channels;
+=======
+	mutex_lock(&loopback->cable_lock);
+	ucontrol->value.integer.value[0] =
+		loopback->setup[kcontrol->id.subdevice]
+			       [kcontrol->id.device].channels;
+	mutex_unlock(&loopback->cable_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1029,6 +1218,17 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 					return -ENOMEM;
 				kctl->id.device = dev;
 				kctl->id.subdevice = substr;
+<<<<<<< HEAD
+=======
+
+				/* Add the control before copying the id so that
+				 * the numid field of the id is set in the copy.
+				 */
+				err = snd_ctl_add(card, kctl);
+				if (err < 0)
+					return err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				switch (idx) {
 				case ACTIVE_IDX:
 					setup->active_id = kctl->id;
@@ -1045,9 +1245,12 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 				default:
 					break;
 				}
+<<<<<<< HEAD
 				err = snd_ctl_add(card, kctl);
 				if (err < 0)
 					return err;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 	}

@@ -15,7 +15,11 @@
  * of and an antecedent to, SMBIOS, which stands for System
  * Management BIOS.  See further: http://www.dmtf.org/standards
  */
+<<<<<<< HEAD
 static const char dmi_empty_string[] = "        ";
+=======
+static const char dmi_empty_string[] = "";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static u16 __initdata dmi_ver;
 /*
@@ -36,6 +40,7 @@ static int dmi_memdev_nr;
 static const char * __init dmi_string_nosave(const struct dmi_header *dm, u8 s)
 {
 	const u8 *bp = ((u8 *) dm) + dm->length;
+<<<<<<< HEAD
 
 	if (s) {
 		s--;
@@ -55,6 +60,23 @@ static const char * __init dmi_string_nosave(const struct dmi_header *dm, u8 s)
 	}
 
 	return "";
+=======
+	const u8 *nsp;
+
+	if (s) {
+		while (--s > 0 && *bp)
+			bp += strlen(bp) + 1;
+
+		/* Strings containing only spaces are considered empty */
+		nsp = bp;
+		while (*nsp == ' ')
+			nsp++;
+		if (*nsp != '\0')
+			return bp;
+	}
+
+	return dmi_empty_string;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const char * __init dmi_string(const struct dmi_header *dm, u8 s)
@@ -93,6 +115,15 @@ static void dmi_table(u8 *buf, int len, int num,
 		const struct dmi_header *dm = (const struct dmi_header *)data;
 
 		/*
+<<<<<<< HEAD
+=======
+		 * 7.45 End-of-Table (Type 127) [SMBIOS reference spec v3.0.0]
+		 */
+		if (dm->type == DMI_ENTRY_END_OF_TABLE)
+			break;
+
+		/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 *  We want to know the total length (formatted area and
 		 *  strings) before decoding to make sure we won't run off the
 		 *  table in dmi_decode or dmi_string
@@ -107,7 +138,11 @@ static void dmi_table(u8 *buf, int len, int num,
 	}
 }
 
+<<<<<<< HEAD
 static u32 dmi_base;
+=======
+static phys_addr_t dmi_base;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static u16 dmi_len;
 static u16 dmi_num;
 
@@ -467,7 +502,11 @@ static int __init dmi_present(const u8 *buf)
 
 	if (memcmp(buf, "_SM_", 4) == 0 &&
 	    buf[5] < 32 && dmi_checksum(buf, buf[5])) {
+<<<<<<< HEAD
 		smbios_ver = (buf[6] << 8) + buf[7];
+=======
+		smbios_ver = get_unaligned_be16(buf + 6);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Some BIOS report weird SMBIOS version, fix that up */
 		switch (smbios_ver) {
@@ -493,10 +532,16 @@ static int __init dmi_present(const u8 *buf)
 			dmi_ver = smbios_ver;
 		else
 			dmi_ver = (buf[14] & 0xF0) << 4 | (buf[14] & 0x0F);
+<<<<<<< HEAD
 		dmi_num = (buf[13] << 8) | buf[12];
 		dmi_len = (buf[7] << 8) | buf[6];
 		dmi_base = (buf[11] << 24) | (buf[10] << 16) |
 			(buf[9] << 8) | buf[8];
+=======
+		dmi_num = get_unaligned_le16(buf + 12);
+		dmi_len = get_unaligned_le16(buf + 6);
+		dmi_base = get_unaligned_le32(buf + 8);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (dmi_walk_early(dmi_decode) == 0) {
 			if (smbios_ver) {
@@ -515,12 +560,78 @@ static int __init dmi_present(const u8 *buf)
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Check for the SMBIOS 3.0 64-bit entry point signature. Unlike the legacy
+ * 32-bit entry point, there is no embedded DMI header (_DMI_) in here.
+ */
+static int __init dmi_smbios3_present(const u8 *buf)
+{
+	if (memcmp(buf, "_SM3_", 5) == 0 &&
+	    buf[6] < 32 && dmi_checksum(buf, buf[6])) {
+		dmi_ver = get_unaligned_be16(buf + 7);
+		dmi_len = get_unaligned_le32(buf + 12);
+		dmi_base = get_unaligned_le64(buf + 16);
+
+		/*
+		 * The 64-bit SMBIOS 3.0 entry point no longer has a field
+		 * containing the number of structures present in the table.
+		 * Instead, it defines the table size as a maximum size, and
+		 * relies on the end-of-table structure type (#127) to be used
+		 * to signal the end of the table.
+		 * So let's define dmi_num as an upper bound as well: each
+		 * structure has a 4 byte header, so dmi_len / 4 is an upper
+		 * bound for the number of structures in the table.
+		 */
+		dmi_num = dmi_len / 4;
+
+		if (dmi_walk_early(dmi_decode) == 0) {
+			pr_info("SMBIOS %d.%d present.\n",
+				dmi_ver >> 8, dmi_ver & 0xFF);
+			dmi_format_ids(dmi_ids_string, sizeof(dmi_ids_string));
+			pr_debug("DMI: %s\n", dmi_ids_string);
+			return 0;
+		}
+	}
+	return 1;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __init dmi_scan_machine(void)
 {
 	char __iomem *p, *q;
 	char buf[32];
 
 	if (efi_enabled(EFI_CONFIG_TABLES)) {
+<<<<<<< HEAD
+=======
+		/*
+		 * According to the DMTF SMBIOS reference spec v3.0.0, it is
+		 * allowed to define both the 64-bit entry point (smbios3) and
+		 * the 32-bit entry point (smbios), in which case they should
+		 * either both point to the same SMBIOS structure table, or the
+		 * table pointed to by the 64-bit entry point should contain a
+		 * superset of the table contents pointed to by the 32-bit entry
+		 * point (section 5.2)
+		 * This implies that the 64-bit entry point should have
+		 * precedence if it is defined and supported by the OS. If we
+		 * have the 64-bit entry point, but fail to decode it, fall
+		 * back to the legacy one (if available)
+		 */
+		if (efi.smbios3 != EFI_INVALID_TABLE_ADDR) {
+			p = dmi_early_remap(efi.smbios3, 32);
+			if (p == NULL)
+				goto error;
+			memcpy_fromio(buf, p, 32);
+			dmi_early_unmap(p, 32);
+
+			if (!dmi_smbios3_present(buf)) {
+				dmi_available = 1;
+				goto out;
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (efi.smbios == EFI_INVALID_TABLE_ADDR)
 			goto error;
 
@@ -553,7 +664,11 @@ void __init dmi_scan_machine(void)
 		memset(buf, 0, 16);
 		for (q = p; q < p + 0x10000; q += 16) {
 			memcpy_fromio(buf + 16, q, 16);
+<<<<<<< HEAD
 			if (!dmi_present(buf)) {
+=======
+			if (!dmi_smbios3_present(buf) || !dmi_present(buf)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				dmi_available = 1;
 				dmi_early_unmap(p, 0x10000);
 				goto out;

@@ -70,8 +70,19 @@ ip_set_timeout_set(unsigned long *timeout, u32 t)
 static inline u32
 ip_set_timeout_get(unsigned long *timeout)
 {
+<<<<<<< HEAD
 	return *timeout == IPSET_ELEM_PERMANENT ? 0 :
 		jiffies_to_msecs(*timeout - jiffies)/1000;
+=======
+	u32 t;
+
+	if (*timeout == IPSET_ELEM_PERMANENT)
+		return 0;
+
+	t = jiffies_to_msecs(*timeout - jiffies)/MSEC_PER_SEC;
+	/* Zero value in userspace means no timeout */
+	return t == 0 ? 1 : t;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif	/* __KERNEL__ */

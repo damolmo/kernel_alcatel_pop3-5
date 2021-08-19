@@ -48,10 +48,20 @@
 #include "cifs_unicode.h"
 #include "cifs_debug.h"
 #include "cifs_fs_sb.h"
+<<<<<<< HEAD
+=======
+#include "dns_resolve.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "ntlmssp.h"
 #include "nterr.h"
 #include "rfc1002pdu.h"
 #include "fscache.h"
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CIFS_SMB2
+#include "smb2proto.h"
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define CIFS_PORT 445
 #define RFC1001_PORT 139
@@ -290,6 +300,56 @@ static int cifs_setup_volume_info(struct smb_vol *volume_info, char *mount_data,
 					const char *devname);
 
 /*
+<<<<<<< HEAD
+=======
+ * Resolve hostname and set ip addr in tcp ses. Useful for hostnames that may
+ * get their ip addresses changed at some point.
+ *
+ * This should be called with server->srv_mutex held.
+ */
+#ifdef CONFIG_CIFS_DFS_UPCALL
+static int reconn_set_ipaddr(struct TCP_Server_Info *server)
+{
+	int rc;
+	int len;
+	char *unc, *ipaddr = NULL;
+
+	if (!server->hostname)
+		return -EINVAL;
+
+	len = strlen(server->hostname) + 3;
+
+	unc = kmalloc(len, GFP_KERNEL);
+	if (!unc) {
+		cifs_dbg(FYI, "%s: failed to create UNC path\n", __func__);
+		return -ENOMEM;
+	}
+	snprintf(unc, len, "\\\\%s", server->hostname);
+
+	rc = dns_resolve_server_name_to_ip(unc, &ipaddr);
+	kfree(unc);
+
+	if (rc < 0) {
+		cifs_dbg(FYI, "%s: failed to resolve server part of %s to IP: %d\n",
+			 __func__, server->hostname, rc);
+		return rc;
+	}
+
+	rc = cifs_convert_address((struct sockaddr *)&server->dstaddr, ipaddr,
+				  strlen(ipaddr));
+	kfree(ipaddr);
+
+	return !rc ? -1 : 0;
+}
+#else
+static inline int reconn_set_ipaddr(struct TCP_Server_Info *server)
+{
+	return 0;
+}
+#endif
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * cifs tcp session reconnection
  *
  * mark tcp session as reconnecting so temporarily locked
@@ -357,7 +417,10 @@ cifs_reconnect(struct TCP_Server_Info *server)
 	server->session_key.response = NULL;
 	server->session_key.len = 0;
 	server->lstrp = jiffies;
+<<<<<<< HEAD
 	mutex_unlock(&server->srv_mutex);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* mark submitted MIDs for retry and issue callback */
 	INIT_LIST_HEAD(&retry_list);
@@ -370,6 +433,10 @@ cifs_reconnect(struct TCP_Server_Info *server)
 		list_move(&mid_entry->qhead, &retry_list);
 	}
 	spin_unlock(&GlobalMid_Lock);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&server->srv_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cifs_dbg(FYI, "%s: issuing mid callbacks\n", __func__);
 	list_for_each_safe(tmp, tmp2, &retry_list) {
@@ -386,6 +453,14 @@ cifs_reconnect(struct TCP_Server_Info *server)
 		rc = generic_ip_connect(server);
 		if (rc) {
 			cifs_dbg(FYI, "reconnect error %d\n", rc);
+<<<<<<< HEAD
+=======
+			rc = reconn_set_ipaddr(server);
+			if (rc) {
+				cifs_dbg(FYI, "%s: failed to resolve hostname: %d\n",
+					 __func__, rc);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			msleep(3000);
 		} else {
 			atomic_inc(&tcpSesReconnectCount);
@@ -397,6 +472,12 @@ cifs_reconnect(struct TCP_Server_Info *server)
 		mutex_unlock(&server->srv_mutex);
 	} while (server->tcpStatus == CifsNeedReconnect);
 
+<<<<<<< HEAD
+=======
+	if (server->tcpStatus == CifsNeedNegotiate)
+		mod_delayed_work(cifsiod_wq, &server->echo, 0);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -406,6 +487,7 @@ cifs_echo_request(struct work_struct *work)
 	int rc;
 	struct TCP_Server_Info *server = container_of(work,
 					struct TCP_Server_Info, echo.work);
+<<<<<<< HEAD
 
 	/*
 	 * We cannot send an echo if it is disabled or until the
@@ -416,6 +498,29 @@ cifs_echo_request(struct work_struct *work)
 	if (!server->ops->need_neg || server->ops->need_neg(server) ||
 	    (server->ops->can_echo && !server->ops->can_echo(server)) ||
 	    time_before(jiffies, server->lstrp + SMB_ECHO_INTERVAL - HZ))
+=======
+	unsigned long echo_interval;
+
+	/*
+	 * If we need to renegotiate, set echo interval to zero to
+	 * immediately call echo service where we can renegotiate.
+	 */
+	if (server->tcpStatus == CifsNeedNegotiate)
+		echo_interval = 0;
+	else
+		echo_interval = SMB_ECHO_INTERVAL;
+
+	/*
+	 * We cannot send an echo if it is disabled.
+	 * Also, no need to ping if we got a response recently.
+	 */
+
+	if (server->tcpStatus == CifsNeedReconnect ||
+	    server->tcpStatus == CifsExiting ||
+	    server->tcpStatus == CifsNew ||
+	    (server->ops->can_echo && !server->ops->can_echo(server)) ||
+	    time_before(jiffies, server->lstrp + echo_interval - HZ))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto requeue_echo;
 
 	rc = server->ops->echo ? server->ops->echo(server) : -ENOSYS;
@@ -464,20 +569,35 @@ static bool
 server_unresponsive(struct TCP_Server_Info *server)
 {
 	/*
+<<<<<<< HEAD
 	 * We need to wait 2 echo intervals to make sure we handle such
 	 * situations right:
 	 * 1s  client sends a normal SMB request
 	 * 2s  client gets a response
+=======
+	 * We need to wait 3 echo intervals to make sure we handle such
+	 * situations right:
+	 * 1s  client sends a normal SMB request
+	 * 3s  client gets a response
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * 30s echo workqueue job pops, and decides we got a response recently
 	 *     and don't need to send another
 	 * ...
 	 * 65s kernel_recvmsg times out, and we see that we haven't gotten
 	 *     a response in >60s.
 	 */
+<<<<<<< HEAD
 	if (server->tcpStatus == CifsGood &&
 	    time_after(jiffies, server->lstrp + 2 * SMB_ECHO_INTERVAL)) {
 		cifs_dbg(VFS, "Server %s has not responded in %d seconds. Reconnecting...\n",
 			 server->hostname, (2 * SMB_ECHO_INTERVAL) / HZ);
+=======
+	if ((server->tcpStatus == CifsGood ||
+	    server->tcpStatus == CifsNeedNegotiate) &&
+	    time_after(jiffies, server->lstrp + 3 * SMB_ECHO_INTERVAL)) {
+		cifs_dbg(VFS, "Server %s has not responded in %d seconds. Reconnecting...\n",
+			 server->hostname, (3 * SMB_ECHO_INTERVAL) / HZ);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cifs_reconnect(server);
 		wake_up(&server->response_q);
 		return true;
@@ -698,6 +818,11 @@ static void clean_demultiplex_info(struct TCP_Server_Info *server)
 	list_del_init(&server->tcp_ses_list);
 	spin_unlock(&cifs_tcp_ses_lock);
 
+<<<<<<< HEAD
+=======
+	cancel_delayed_work_sync(&server->echo);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(&GlobalMid_Lock);
 	server->tcpStatus = CifsExiting;
 	spin_unlock(&GlobalMid_Lock);
@@ -822,6 +947,16 @@ standard_receive3(struct TCP_Server_Info *server, struct mid_q_entry *mid)
 		cifs_dump_mem("Bad SMB: ", buf,
 			min_t(unsigned int, server->total_read, 48));
 
+<<<<<<< HEAD
+=======
+	if (server->ops->is_session_expired &&
+	    server->ops->is_session_expired(buf)) {
+		cifs_reconnect(server);
+		wake_up(&server->response_q);
+		return -1;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (server->ops->is_status_pending &&
 	    server->ops->is_status_pending(buf, server, length))
 		return -1;
@@ -852,6 +987,10 @@ cifs_demultiplex_thread(void *p)
 				GFP_KERNEL);
 
 	set_freezable();
+<<<<<<< HEAD
+=======
+	allow_kernel_signal(SIGKILL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (server->tcpStatus != CifsExiting) {
 		if (try_to_freeze())
 			continue;
@@ -909,10 +1048,26 @@ cifs_demultiplex_thread(void *p)
 
 		server->lstrp = jiffies;
 		if (mid_entry != NULL) {
+<<<<<<< HEAD
 			if (!mid_entry->multiRsp || mid_entry->multiEnd)
 				mid_entry->callback(mid_entry);
 		} else if (!server->ops->is_oplock_break ||
 			   !server->ops->is_oplock_break(buf, server)) {
+=======
+			if ((mid_entry->mid_flags & MID_WAIT_CANCELLED) &&
+			     mid_entry->mid_state == MID_RESPONSE_RECEIVED &&
+					server->ops->handle_cancelled_mid)
+				server->ops->handle_cancelled_mid(
+							mid_entry->resp_buf,
+							server);
+
+			if (!mid_entry->multiRsp || mid_entry->multiEnd)
+				mid_entry->callback(mid_entry);
+		} else if (server->ops->is_oplock_break &&
+			   server->ops->is_oplock_break(buf, server)) {
+			cifs_dbg(FYI, "Received oplock break\n");
+		} else {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cifs_dbg(VFS, "No task to wake, unknown frame received! NumMids %d\n",
 				 atomic_read(&midCount));
 			cifs_dump_mem("Received Data is: ", buf,
@@ -1153,6 +1308,14 @@ cifs_parse_devname(const char *devname, struct smb_vol *vol)
 	const char *delims = "/\\";
 	size_t len;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(!devname || !*devname)) {
+		cifs_dbg(VFS, "Device name not specified.\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* make sure we have a valid UNC double delimiter prefix */
 	len = strspn(devname, delims);
 	if (len != 2)
@@ -1466,9 +1629,13 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 			vol->seal = 1;
 			break;
 		case Opt_noac:
+<<<<<<< HEAD
 			printk(KERN_WARNING "CIFS: Mount option noac not "
 				"supported. Instead set "
 				"/proc/fs/cifs/LookupCacheEnabled to 0\n");
+=======
+			pr_warn("CIFS: Mount option noac not supported. Instead set /proc/fs/cifs/LookupCacheEnabled to 0\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case Opt_fsc:
 #ifndef CONFIG_CIFS_FSCACHE
@@ -1598,7 +1765,11 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 
 			if (strnlen(string, CIFS_MAX_USERNAME_LEN) >
 							CIFS_MAX_USERNAME_LEN) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: username too long\n");
+=======
+				pr_warn("CIFS: username too long\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 			vol->username = kstrdup(string, GFP_KERNEL);
@@ -1619,7 +1790,11 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 			tmp_end++;
 			if (!(tmp_end < end && tmp_end[1] == delim)) {
 				/* No it is not. Set the password to NULL */
+<<<<<<< HEAD
 				kfree(vol->password);
+=======
+				kzfree(vol->password);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				vol->password = NULL;
 				break;
 			}
@@ -1657,13 +1832,21 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 					options = end;
 			}
 
+<<<<<<< HEAD
 			kfree(vol->password);
+=======
+			kzfree(vol->password);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* Now build new password string */
 			temp_len = strlen(value);
 			vol->password = kzalloc(temp_len+1, GFP_KERNEL);
 			if (vol->password == NULL) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: no memory "
 						    "for password\n");
+=======
+				pr_warn("CIFS: no memory for password\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 
@@ -1687,8 +1870,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 
 			if (!cifs_convert_address(dstaddr, string,
 					strlen(string))) {
+<<<<<<< HEAD
 				printk(KERN_ERR "CIFS: bad ip= option (%s).\n",
 					string);
+=======
+				pr_err("CIFS: bad ip= option (%s).\n", string);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 			got_ip = true;
@@ -1700,15 +1887,23 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 
 			if (strnlen(string, CIFS_MAX_DOMAINNAME_LEN)
 					== CIFS_MAX_DOMAINNAME_LEN) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: domain name too"
 						    " long\n");
+=======
+				pr_warn("CIFS: domain name too long\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 
 			vol->domainname = kstrdup(string, GFP_KERNEL);
 			if (!vol->domainname) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: no memory "
 						    "for domainname\n");
+=======
+				pr_warn("CIFS: no memory for domainname\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 			cifs_dbg(FYI, "Domain name set\n");
@@ -1721,8 +1916,13 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 			if (!cifs_convert_address(
 					(struct sockaddr *)&vol->srcaddr,
 					string, strlen(string))) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS:  Could not parse"
 						    " srcaddr: %s\n", string);
+=======
+				pr_warn("CIFS: Could not parse srcaddr: %s\n",
+					string);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 			break;
@@ -1732,8 +1932,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 				goto out_nomem;
 
 			if (strnlen(string, 1024) >= 65) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: iocharset name "
 						    "too long.\n");
+=======
+				pr_warn("CIFS: iocharset name too long.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto cifs_parse_mount_err;
 			}
 
@@ -1741,8 +1945,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 				vol->iocharset = kstrdup(string,
 							 GFP_KERNEL);
 				if (!vol->iocharset) {
+<<<<<<< HEAD
 					printk(KERN_WARNING "CIFS: no memory"
 							    "for charset\n");
+=======
+					pr_warn("CIFS: no memory for charset\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					goto cifs_parse_mount_err;
 				}
 			}
@@ -1773,9 +1981,13 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 			 * set at top of the function
 			 */
 			if (i == RFC1001_NAME_LEN && string[i] != 0)
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: netbiosname"
 				       " longer than 15 truncated.\n");
 
+=======
+				pr_warn("CIFS: netbiosname longer than 15 truncated.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case Opt_servern:
 			/* servernetbiosname specified override *SMBSERVER */
@@ -1801,8 +2013,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 			/* The string has 16th byte zero still from
 			   set at top of the function  */
 			if (i == RFC1001_NAME_LEN && string[i] != 0)
+<<<<<<< HEAD
 				printk(KERN_WARNING "CIFS: server net"
 				       "biosname longer than 15 truncated.\n");
+=======
+				pr_warn("CIFS: server netbiosname longer than 15 truncated.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case Opt_ver:
 			string = match_strdup(args);
@@ -1814,8 +2030,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 				break;
 			}
 			/* For all other value, error */
+<<<<<<< HEAD
 			printk(KERN_WARNING "CIFS: Invalid version"
 					    " specified\n");
+=======
+			pr_warn("CIFS: Invalid version specified\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto cifs_parse_mount_err;
 		case Opt_vers:
 			string = match_strdup(args);
@@ -1856,7 +2076,11 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 	}
 
 	if (!sloppy && invalid) {
+<<<<<<< HEAD
 		printk(KERN_ERR "CIFS: Unknown mount option \"%s\"\n", invalid);
+=======
+		pr_err("CIFS: Unknown mount option \"%s\"\n", invalid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto cifs_parse_mount_err;
 	}
 
@@ -1882,8 +2106,12 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 		/* No ip= option specified? Try to get it from UNC */
 		if (!cifs_convert_address(dstaddr, &vol->UNC[2],
 						strlen(&vol->UNC[2]))) {
+<<<<<<< HEAD
 			printk(KERN_ERR "Unable to determine destination "
 					"address.\n");
+=======
+			pr_err("Unable to determine destination address.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto cifs_parse_mount_err;
 		}
 	}
@@ -1894,20 +2122,32 @@ cifs_parse_mount_options(const char *mountdata, const char *devname,
 	if (uid_specified)
 		vol->override_uid = override_uid;
 	else if (override_uid == 1)
+<<<<<<< HEAD
 		printk(KERN_NOTICE "CIFS: ignoring forceuid mount option "
 				   "specified with no uid= option.\n");
+=======
+		pr_notice("CIFS: ignoring forceuid mount option specified with no uid= option.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (gid_specified)
 		vol->override_gid = override_gid;
 	else if (override_gid == 1)
+<<<<<<< HEAD
 		printk(KERN_NOTICE "CIFS: ignoring forcegid mount option "
 				   "specified with no gid= option.\n");
+=======
+		pr_notice("CIFS: ignoring forcegid mount option specified with no gid= option.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree(mountdata_copy);
 	return 0;
 
 out_nomem:
+<<<<<<< HEAD
 	printk(KERN_WARNING "Could not allocate temporary buffer\n");
+=======
+	pr_warn("Could not allocate temporary buffer\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cifs_parse_mount_err:
 	kfree(string);
 	kfree(mountdata_copy);
@@ -2079,8 +2319,13 @@ cifs_find_tcp_session(struct smb_vol *vol)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void
 cifs_put_tcp_session(struct TCP_Server_Info *server)
+=======
+void
+cifs_put_tcp_session(struct TCP_Server_Info *server, int from_reconnect)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct task_struct *task;
 
@@ -2097,6 +2342,22 @@ cifs_put_tcp_session(struct TCP_Server_Info *server)
 
 	cancel_delayed_work_sync(&server->echo);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CIFS_SMB2
+	if (from_reconnect)
+		/*
+		 * Avoid deadlock here: reconnect work calls
+		 * cifs_put_tcp_session() at its end. Need to be sure
+		 * that reconnect work does nothing with server pointer after
+		 * that step.
+		 */
+		cancel_delayed_work(&server->reconnect);
+	else
+		cancel_delayed_work_sync(&server->reconnect);
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(&GlobalMid_Lock);
 	server->tcpStatus = CifsExiting;
 	spin_unlock(&GlobalMid_Lock);
@@ -2110,7 +2371,11 @@ cifs_put_tcp_session(struct TCP_Server_Info *server)
 
 	task = xchg(&server->tsk, NULL);
 	if (task)
+<<<<<<< HEAD
 		force_sig(SIGKILL, task);
+=======
+		send_sig(SIGKILL, task, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct TCP_Server_Info *
@@ -2161,6 +2426,13 @@ cifs_get_tcp_session(struct smb_vol *volume_info)
 	INIT_LIST_HEAD(&tcp_ses->tcp_ses_list);
 	INIT_LIST_HEAD(&tcp_ses->smb_ses_list);
 	INIT_DELAYED_WORK(&tcp_ses->echo, cifs_echo_request);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CIFS_SMB2
+	INIT_DELAYED_WORK(&tcp_ses->reconnect, smb2_reconnect_server);
+	mutex_init(&tcp_ses->reconnect_mutex);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(&tcp_ses->srcaddr, &volume_info->srcaddr,
 	       sizeof(tcp_ses->srcaddr));
 	memcpy(&tcp_ses->dstaddr, &volume_info->dstaddr,
@@ -2313,7 +2585,11 @@ cifs_put_smb_ses(struct cifs_ses *ses)
 	spin_unlock(&cifs_tcp_ses_lock);
 
 	sesInfoFree(ses);
+<<<<<<< HEAD
 	cifs_put_tcp_session(server);
+=======
+	cifs_put_tcp_session(server, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_KEYS
@@ -2326,6 +2602,10 @@ static int
 cifs_set_cifscreds(struct smb_vol *vol, struct cifs_ses *ses)
 {
 	int rc = 0;
+<<<<<<< HEAD
+=======
+	int is_domain = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char *desc, *delim, *payload;
 	ssize_t len;
 	struct key *key;
@@ -2372,6 +2652,10 @@ cifs_set_cifscreds(struct smb_vol *vol, struct cifs_ses *ses)
 			rc = PTR_ERR(key);
 			goto out_err;
 		}
+<<<<<<< HEAD
+=======
+		is_domain = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	down_read(&key->sem);
@@ -2429,6 +2713,29 @@ cifs_set_cifscreds(struct smb_vol *vol, struct cifs_ses *ses)
 		goto out_key_put;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If we have a domain key then we must set the domainName in the
+	 * for the request.
+	 */
+	if (is_domain && ses->domainName) {
+		vol->domainname = kstrndup(ses->domainName,
+					   strlen(ses->domainName),
+					   GFP_KERNEL);
+		if (!vol->domainname) {
+			cifs_dbg(FYI, "Unable to allocate %zd bytes for "
+				 "domain\n", len);
+			rc = -ENOMEM;
+			kfree(vol->username);
+			vol->username = NULL;
+			kzfree(vol->password);
+			vol->password = NULL;
+			goto out_key_put;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_key_put:
 	up_read(&key->sem);
 	key_put(key);
@@ -2486,7 +2793,11 @@ cifs_get_smb_ses(struct TCP_Server_Info *server, struct smb_vol *volume_info)
 		mutex_unlock(&ses->session_mutex);
 
 		/* existing SMB ses has a server reference already */
+<<<<<<< HEAD
 		cifs_put_tcp_session(server);
+=======
+		cifs_put_tcp_session(server, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		free_xid(xid);
 		return ses;
 	}
@@ -2576,7 +2887,11 @@ cifs_find_tcon(struct cifs_ses *ses, const char *unc)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void
+=======
+void
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 cifs_put_tcon(struct cifs_tcon *tcon)
 {
 	unsigned int xid;
@@ -3203,7 +3518,11 @@ void cifs_setup_cifs_sb(struct smb_vol *pvolume_info,
 	cifs_sb->mnt_gid = pvolume_info->linux_gid;
 	cifs_sb->mnt_file_mode = pvolume_info->file_mode;
 	cifs_sb->mnt_dir_mode = pvolume_info->dir_mode;
+<<<<<<< HEAD
 	cifs_dbg(FYI, "file mode: 0x%hx  dir mode: 0x%hx\n",
+=======
+	cifs_dbg(FYI, "file mode: %04ho  dir mode: %04ho\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 cifs_sb->mnt_file_mode, cifs_sb->mnt_dir_mode);
 
 	cifs_sb->actimeo = pvolume_info->actimeo;
@@ -3447,6 +3766,47 @@ cifs_get_volume_info(char *mount_data, const char *devname)
 	return volume_info;
 }
 
+<<<<<<< HEAD
+=======
+static int
+cifs_are_all_path_components_accessible(struct TCP_Server_Info *server,
+					unsigned int xid,
+					struct cifs_tcon *tcon,
+					struct cifs_sb_info *cifs_sb,
+					char *full_path)
+{
+	int rc;
+	char *s;
+	char sep, tmp;
+
+	sep = CIFS_DIR_SEP(cifs_sb);
+	s = full_path;
+
+	rc = server->ops->is_path_accessible(xid, tcon, cifs_sb, "");
+	while (rc == 0) {
+		/* skip separators */
+		while (*s == sep)
+			s++;
+		if (!*s)
+			break;
+		/* next separator */
+		while (*s && *s != sep)
+			s++;
+
+		/*
+		 * temporarily null-terminate the path at the end of
+		 * the current component
+		 */
+		tmp = *s;
+		*s = 0;
+		rc = server->ops->is_path_accessible(xid, tcon, cifs_sb,
+						     full_path);
+		*s = tmp;
+	}
+	return rc;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int
 cifs_mount(struct cifs_sb_info *cifs_sb, struct smb_vol *volume_info)
 {
@@ -3507,6 +3867,12 @@ try_mount_again:
 	if (IS_ERR(tcon)) {
 		rc = PTR_ERR(tcon);
 		tcon = NULL;
+<<<<<<< HEAD
+=======
+		if (rc == -EACCES)
+			goto mount_fail_check;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto remote_path_check;
 	}
 
@@ -3573,6 +3939,21 @@ remote_path_check:
 			kfree(full_path);
 			goto mount_fail_check;
 		}
+<<<<<<< HEAD
+=======
+
+		if (rc != -EREMOTE) {
+			rc = cifs_are_all_path_components_accessible(server,
+							     xid, tcon, cifs_sb,
+							     full_path);
+			if (rc != 0) {
+				cifs_dbg(VFS, "cannot query dirs between root and final path, "
+					 "enabling CIFS_MOUNT_USE_PREFIX_PATH\n");
+				cifs_sb->mnt_cifs_flags |= CIFS_MOUNT_USE_PREFIX_PATH;
+				rc = 0;
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(full_path);
 	}
 
@@ -3636,7 +4017,11 @@ mount_fail_check:
 		else if (ses)
 			cifs_put_smb_ses(ses);
 		else
+<<<<<<< HEAD
 			cifs_put_tcp_session(server);
+=======
+			cifs_put_tcp_session(server, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		bdi_destroy(&cifs_sb->bdi);
 	}
 
@@ -3836,6 +4221,10 @@ cifs_umount(struct cifs_sb_info *cifs_sb)
 
 	bdi_destroy(&cifs_sb->bdi);
 	kfree(cifs_sb->mountdata);
+<<<<<<< HEAD
+=======
+	kfree(cifs_sb->prepath);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	call_rcu(&cifs_sb->rcu, delayed_free);
 }
 
@@ -3881,6 +4270,17 @@ cifs_setup_session(const unsigned int xid, struct cifs_ses *ses,
 	cifs_dbg(FYI, "Security Mode: 0x%x Capabilities: 0x%x TimeAdjust: %d\n",
 		 server->sec_mode, server->capabilities, server->timeAdj);
 
+<<<<<<< HEAD
+=======
+	if (ses->auth_key.response) {
+		cifs_dbg(VFS, "Free previous auth_key.response = %p\n",
+			 ses->auth_key.response);
+		kfree(ses->auth_key.response);
+		ses->auth_key.response = NULL;
+		ses->auth_key.len = 0;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (server->ops->sess_setup)
 		rc = server->ops->sess_setup(xid, ses, nls_info);
 
@@ -3925,6 +4325,10 @@ cifs_construct_tcon(struct cifs_sb_info *cifs_sb, kuid_t fsuid)
 	vol_info->no_linux_ext = !master_tcon->unix_ext;
 	vol_info->sectype = master_tcon->ses->sectype;
 	vol_info->sign = master_tcon->ses->sign;
+<<<<<<< HEAD
+=======
+	vol_info->seal = master_tcon->seal;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rc = cifs_set_vol_auth(vol_info, master_tcon->ses);
 	if (rc) {
@@ -3940,7 +4344,11 @@ cifs_construct_tcon(struct cifs_sb_info *cifs_sb, kuid_t fsuid)
 	ses = cifs_get_smb_ses(master_tcon->ses->server, vol_info);
 	if (IS_ERR(ses)) {
 		tcon = (struct cifs_tcon *)ses;
+<<<<<<< HEAD
 		cifs_put_tcp_session(master_tcon->ses->server);
+=======
+		cifs_put_tcp_session(master_tcon->ses->server, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	}
 
@@ -3954,7 +4362,11 @@ cifs_construct_tcon(struct cifs_sb_info *cifs_sb, kuid_t fsuid)
 		reset_cifs_unix_caps(0, tcon, NULL, vol_info);
 out:
 	kfree(vol_info->username);
+<<<<<<< HEAD
 	kfree(vol_info->password);
+=======
+	kzfree(vol_info->password);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(vol_info);
 
 	return tcon;

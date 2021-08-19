@@ -80,12 +80,21 @@ static struct attribute_group amd_iommu_format_group = {
  * sysfs events attributes
  *---------------------------------------------*/
 struct amd_iommu_event_desc {
+<<<<<<< HEAD
 	struct kobj_attribute attr;
 	const char *event;
 };
 
 static ssize_t _iommu_event_show(struct kobject *kobj,
 				struct kobj_attribute *attr, char *buf)
+=======
+	struct device_attribute attr;
+	const char *event;
+};
+
+static ssize_t _iommu_event_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct amd_iommu_event_desc *event =
 		container_of(attr, struct amd_iommu_event_desc, attr);

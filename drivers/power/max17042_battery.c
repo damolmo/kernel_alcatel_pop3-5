@@ -295,6 +295,7 @@ static inline void max17042_write_model_data(struct max17042_chip *chip,
 }
 
 static inline void max17042_read_model_data(struct max17042_chip *chip,
+<<<<<<< HEAD
 					u8 addr, u32 *data, int size)
 {
 	struct regmap *map = chip->regmap;
@@ -302,6 +303,18 @@ static inline void max17042_read_model_data(struct max17042_chip *chip,
 
 	for (i = 0; i < size; i++)
 		regmap_read(map, addr + i, &data[i]);
+=======
+					u8 addr, u16 *data, int size)
+{
+	struct regmap *map = chip->regmap;
+	int i;
+	u32 tmp;
+
+	for (i = 0; i < size; i++) {
+		regmap_read(map, addr + i, &tmp);
+		data[i] = (u16)tmp;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int max17042_model_data_compare(struct max17042_chip *chip,
@@ -324,7 +337,11 @@ static int max17042_init_model(struct max17042_chip *chip)
 {
 	int ret;
 	int table_size = ARRAY_SIZE(chip->pdata->config_data->cell_char_tbl);
+<<<<<<< HEAD
 	u32 *temp_data;
+=======
+	u16 *temp_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	temp_data = kcalloc(table_size, sizeof(*temp_data), GFP_KERNEL);
 	if (!temp_data)
@@ -339,7 +356,11 @@ static int max17042_init_model(struct max17042_chip *chip)
 	ret = max17042_model_data_compare(
 		chip,
 		chip->pdata->config_data->cell_char_tbl,
+<<<<<<< HEAD
 		(u16 *)temp_data,
+=======
+		temp_data,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		table_size);
 
 	max10742_lock_model(chip);
@@ -352,7 +373,11 @@ static int max17042_verify_model_lock(struct max17042_chip *chip)
 {
 	int i;
 	int table_size = ARRAY_SIZE(chip->pdata->config_data->cell_char_tbl);
+<<<<<<< HEAD
 	u32 *temp_data;
+=======
+	u16 *temp_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	temp_data = kcalloc(table_size, sizeof(*temp_data), GFP_KERNEL);

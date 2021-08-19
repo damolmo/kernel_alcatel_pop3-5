@@ -722,7 +722,11 @@ start_here:
 	tovirt(r6,r6)
 	lis	r5, abatron_pteptrs@h
 	ori	r5, r5, abatron_pteptrs@l
+<<<<<<< HEAD
 	stw	r5, 0xf0(r0)	/* Must match your Abatron config file */
+=======
+	stw	r5, 0xf0(0)	/* Must match your Abatron config file */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tophys(r5,r5)
 	stw	r6, 0(r5)
 

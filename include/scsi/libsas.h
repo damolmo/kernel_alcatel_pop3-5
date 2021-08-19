@@ -170,11 +170,18 @@ enum ata_command_set {
 
 struct sata_device {
         enum   ata_command_set command_set;
+<<<<<<< HEAD
         struct smp_resp        rps_resp; /* report_phy_sata_resp */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         u8     port_no;        /* port number, if this is a PM (Port) */
 
 	struct ata_port *ap;
 	struct ata_host ata_host;
+<<<<<<< HEAD
+=======
+	struct smp_resp rps_resp ____cacheline_aligned; /* report_phy_sata_resp */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8     fis[ATA_RESP_FIS_SIZE];
 };
 

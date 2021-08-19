@@ -36,12 +36,16 @@
 #include <linux/mtd/ubi.h>
 #include <linux/pagemap.h>
 #include <linux/backing-dev.h>
+<<<<<<< HEAD
 #include <linux/security.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "ubifs-media.h"
 
 /* Version of this UBIFS implementation */
 #define UBIFS_VERSION 1
 
+<<<<<<< HEAD
 #define CONFIG_UBIFS_SHARE_BUFFER
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 extern struct mutex ubifs_sbuf_mutex;
@@ -55,6 +59,8 @@ extern atomic_long_t ubifs_sbuf_lock_count;
 /* Backward compatible Enable using log LEB fully */
 #define CONFIG_UBIFS_FS_FULL_USE_LOG_BACKWARD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Normal UBIFS messages */
 #define ubifs_msg(fmt, ...) pr_notice("UBIFS: " fmt "\n", ##__VA_ARGS__)
 /* UBIFS error messages */
@@ -182,11 +188,14 @@ extern atomic_long_t ubifs_sbuf_lock_count;
 /* Maximum number of data nodes to bulk-read */
 #define UBIFS_MAX_BULK_READ 32
 
+<<<<<<< HEAD
 #if defined(CONFIG_MT_ENG_BUILD)
 /* MTK: UBIFS performance log */
 #define FEATURE_UBIFS_PERF_INDEX
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Lockdep classes for UBIFS inode @ui_mutex.
  */
@@ -719,7 +728,10 @@ struct ubifs_wbuf {
 	unsigned int need_sync:1;
 	int next_ino;
 	ino_t *inodes;
+<<<<<<< HEAD
 	uint64_t w_count;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -1476,7 +1488,11 @@ struct ubifs_info {
 	struct ubifs_mst_node *rcvrd_mst_node;
 	struct rb_root size_tree;
 	struct ubifs_mount_opts mount_opts;
+<<<<<<< HEAD
 	int host_wcount;
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ubifs_debug_info *dbg;
 };
 
@@ -1485,7 +1501,10 @@ extern spinlock_t ubifs_infos_lock;
 extern atomic_long_t ubifs_clean_zn_cnt;
 extern struct kmem_cache *ubifs_inode_slab;
 extern const struct super_operations ubifs_super_operations;
+<<<<<<< HEAD
 extern const struct xattr_handler *ubifs_xattr_handlers[];
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern const struct address_space_operations ubifs_file_address_operations;
 extern const struct file_operations ubifs_file_operations;
 extern const struct inode_operations ubifs_file_inode_operations;
@@ -1569,10 +1588,13 @@ int ubifs_jnl_delete_xattr(struct ubifs_info *c, const struct inode *host,
 			   const struct inode *inode, const struct qstr *nm);
 int ubifs_jnl_change_xattr(struct ubifs_info *c, const struct inode *inode1,
 			   const struct inode *inode2);
+<<<<<<< HEAD
 #if defined(FEATURE_UBIFS_PERF_INDEX)
 void ubifs_perf_lwcount(unsigned long long usage, unsigned int len);
 void ubifs_perf_lrcount(unsigned long long usage, unsigned int len);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* budget.c */
 int ubifs_budget_space(struct ubifs_info *c, struct ubifs_budget_req *req);
@@ -1775,8 +1797,11 @@ int ubifs_getattr(struct vfsmount *mnt, struct dentry *dentry,
 /* xattr.c */
 int ubifs_setxattr(struct dentry *dentry, const char *name,
 		   const void *value, size_t size, int flags);
+<<<<<<< HEAD
 int ubifs_init_security(struct inode *dentry, struct inode *inode,
 	 const struct qstr *qstr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 		       size_t size);
 ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size);

@@ -93,9 +93,14 @@ static void hsr_check_announce(struct net_device *hsr_dev,
 	if ((hsr_dev->operstate == IF_OPER_UP) && (old_operstate != IF_OPER_UP)) {
 		/* Went up */
 		hsr->announce_count = 0;
+<<<<<<< HEAD
 		hsr->announce_timer.expires = jiffies +
 				msecs_to_jiffies(HSR_ANNOUNCE_INTERVAL);
 		add_timer(&hsr->announce_timer);
+=======
+		mod_timer(&hsr->announce_timer,
+			  jiffies + msecs_to_jiffies(HSR_ANNOUNCE_INTERVAL));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if ((hsr_dev->operstate != IF_OPER_UP) && (old_operstate == IF_OPER_UP))
@@ -290,6 +295,11 @@ static void send_hsr_supervision_frame(struct hsr_port *master, u8 type)
 			    skb->dev->dev_addr, skb->len) <= 0)
 		goto out;
 	skb_reset_mac_header(skb);
+<<<<<<< HEAD
+=======
+	skb_reset_network_header(skb);
+	skb_reset_transport_header(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	hsr_stag = (typeof(hsr_stag)) skb_put(skb, sizeof(*hsr_stag));
 
@@ -323,6 +333,10 @@ static void hsr_announce(unsigned long data)
 {
 	struct hsr_priv *hsr;
 	struct hsr_port *master;
+<<<<<<< HEAD
+=======
+	unsigned long interval;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	hsr = (struct hsr_priv *) data;
 
@@ -337,6 +351,7 @@ static void hsr_announce(unsigned long data)
 	}
 
 	if (hsr->announce_count < 3)
+<<<<<<< HEAD
 		hsr->announce_timer.expires = jiffies +
 				msecs_to_jiffies(HSR_ANNOUNCE_INTERVAL);
 	else
@@ -345,6 +360,14 @@ static void hsr_announce(unsigned long data)
 
 	if (is_admin_up(master->dev))
 		add_timer(&hsr->announce_timer);
+=======
+		interval = msecs_to_jiffies(HSR_ANNOUNCE_INTERVAL);
+	else
+		interval = msecs_to_jiffies(HSR_LIFE_CHECK_INTERVAL);
+
+	if (is_admin_up(master->dev))
+		mod_timer(&hsr->announce_timer, jiffies + interval);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_read_unlock();
 }
@@ -474,7 +497,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
 
 	res = hsr_add_port(hsr, hsr_dev, HSR_PT_MASTER);
 	if (res)
+<<<<<<< HEAD
 		return res;
+=======
+		goto err_add_port;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	res = register_netdevice(hsr_dev);
 	if (res)
@@ -495,6 +522,11 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
 fail:
 	hsr_for_each_port(hsr, port)
 		hsr_del_port(port);
+<<<<<<< HEAD
+=======
+err_add_port:
+	hsr_del_node(&hsr->self_node_db);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return res;
 }

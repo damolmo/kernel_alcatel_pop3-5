@@ -117,6 +117,10 @@ static void round_robin_cpu(unsigned int tsk_index)
 		cpumask_andnot(tmp, cpu_online_mask, pad_busy_cpus);
 	if (cpumask_empty(tmp)) {
 		mutex_unlock(&round_robin_lock);
+<<<<<<< HEAD
+=======
+		free_cpumask_var(tmp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	}
 	for_each_cpu(cpu, tmp) {
@@ -134,6 +138,11 @@ static void round_robin_cpu(unsigned int tsk_index)
 	mutex_unlock(&round_robin_lock);
 
 	set_cpus_allowed_ptr(current, cpumask_of(preferred_cpu));
+<<<<<<< HEAD
+=======
+
+	free_cpumask_var(tmp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void exit_round_robin(unsigned int tsk_index)

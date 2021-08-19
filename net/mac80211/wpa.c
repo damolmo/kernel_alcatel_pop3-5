@@ -16,6 +16,10 @@
 #include <asm/unaligned.h>
 #include <net/mac80211.h>
 #include <crypto/aes.h>
+<<<<<<< HEAD
+=======
+#include <crypto/algapi.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "ieee80211_i.h"
 #include "michael.h"
@@ -150,7 +154,11 @@ ieee80211_rx_h_michael_mic_verify(struct ieee80211_rx_data *rx)
 	data_len = skb->len - hdrlen - MICHAEL_MIC_LEN;
 	key = &rx->key->conf.key[NL80211_TKIP_DATA_OFFSET_RX_MIC_KEY];
 	michael_mic(key, hdr, data, data_len, mic);
+<<<<<<< HEAD
 	if (memcmp(mic, data + data_len, MICHAEL_MIC_LEN) != 0)
+=======
+	if (crypto_memneq(mic, data + data_len, MICHAEL_MIC_LEN))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto mic_fail;
 
 	/* remove Michael MIC from payload */
@@ -294,7 +302,12 @@ ieee80211_crypto_tkip_decrypt(struct ieee80211_rx_data *rx)
 		return RX_DROP_UNUSABLE;
 
 	/* Trim ICV */
+<<<<<<< HEAD
 	skb_trim(skb, skb->len - IEEE80211_TKIP_ICV_LEN);
+=======
+	if (!(status->flag & RX_FLAG_ICV_STRIPPED))
+		skb_trim(skb, skb->len - IEEE80211_TKIP_ICV_LEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Remove IV */
 	memmove(skb->data + IEEE80211_TKIP_IV_LEN, skb->data, hdrlen);
@@ -771,7 +784,11 @@ ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx)
 		bip_aad(skb, aad);
 		ieee80211_aes_cmac(key->u.aes_cmac.tfm, aad,
 				   skb->data + 24, skb->len - 24, mic);
+<<<<<<< HEAD
 		if (memcmp(mic, mmie->mic, sizeof(mmie->mic)) != 0) {
+=======
+		if (crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			key->u.aes_cmac.icverrors++;
 			return RX_DROP_UNUSABLE;
 		}

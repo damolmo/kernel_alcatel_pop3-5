@@ -480,7 +480,11 @@ void usb_stor_adjust_quirks(struct usb_device *udev, unsigned long *fflags)
 			US_FL_NO_READ_DISC_INFO | US_FL_NO_READ_CAPACITY_16 |
 			US_FL_INITIAL_READ10 | US_FL_WRITE_CACHE |
 			US_FL_NO_ATA_1X | US_FL_NO_REPORT_OPCODES |
+<<<<<<< HEAD
 			US_FL_MAX_SECTORS_240);
+=======
+			US_FL_MAX_SECTORS_240 | US_FL_NO_REPORT_LUNS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	p = quirks;
 	while (*p) {
@@ -530,6 +534,12 @@ void usb_stor_adjust_quirks(struct usb_device *udev, unsigned long *fflags)
 		case 'i':
 			f |= US_FL_IGNORE_DEVICE;
 			break;
+<<<<<<< HEAD
+=======
+		case 'j':
+			f |= US_FL_NO_REPORT_LUNS;
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case 'l':
 			f |= US_FL_NOT_LOCKABLE;
 			break;

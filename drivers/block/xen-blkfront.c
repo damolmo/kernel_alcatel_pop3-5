@@ -1099,8 +1099,15 @@ static void blkif_completion(struct blk_shadow *s, struct blkfront_info *info,
 				 * Add the used indirect page back to the list of
 				 * available pages for indirect grefs.
 				 */
+<<<<<<< HEAD
 				indirect_page = pfn_to_page(s->indirect_grants[i]->pfn);
 				list_add(&indirect_page->lru, &info->indirect_pages);
+=======
+				if (!info->feature_persistent) {
+					indirect_page = pfn_to_page(s->indirect_grants[i]->pfn);
+					list_add(&indirect_page->lru, &info->indirect_pages);
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				s->indirect_grants[i]->gref = GRANT_INVALID_REF;
 				list_add_tail(&s->indirect_grants[i]->node, &info->grants);
 			}
@@ -1909,7 +1916,12 @@ static void blkback_changed(struct xenbus_device *dev,
 			break;
 		/* Missed the backend's Closing state -- fallthrough */
 	case XenbusStateClosing:
+<<<<<<< HEAD
 		blkfront_closing(info);
+=======
+		if (info)
+			blkfront_closing(info);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 }

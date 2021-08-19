@@ -1008,7 +1008,11 @@ int be_cmd_pmac_add(struct be_adapter *adapter, u8 *mac_addr,
 err:
 	spin_unlock_bh(&adapter->mcc_lock);
 
+<<<<<<< HEAD
 	 if (status == MCC_STATUS_UNAUTHORIZED_REQUEST)
+=======
+	 if (base_status(status) == MCC_STATUS_UNAUTHORIZED_REQUEST)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status = -EPERM;
 
 	return status;

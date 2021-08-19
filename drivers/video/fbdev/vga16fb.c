@@ -243,7 +243,11 @@ static void vga16fb_update_fix(struct fb_info *info)
 }
 
 static void vga16fb_clock_chip(struct vga16fb_par *par,
+<<<<<<< HEAD
 			       unsigned int pixclock,
+=======
+			       unsigned int *pixclock,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       const struct fb_info *info,
 			       int mul, int div)
 {
@@ -259,14 +263,24 @@ static void vga16fb_clock_chip(struct vga16fb_par *par,
 		{     0 /* bad */,    0x00, 0x00}};
 	int err;
 
+<<<<<<< HEAD
 	pixclock = (pixclock * mul) / div;
 	best = vgaclocks;
 	err = pixclock - best->pixclock;
+=======
+	*pixclock = (*pixclock * mul) / div;
+	best = vgaclocks;
+	err = *pixclock - best->pixclock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err < 0) err = -err;
 	for (ptr = vgaclocks + 1; ptr->pixclock; ptr++) {
 		int tmp;
 
+<<<<<<< HEAD
 		tmp = pixclock - ptr->pixclock;
+=======
+		tmp = *pixclock - ptr->pixclock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (tmp < 0) tmp = -tmp;
 		if (tmp < err) {
 			err = tmp;
@@ -275,7 +289,11 @@ static void vga16fb_clock_chip(struct vga16fb_par *par,
 	}
 	par->misc |= best->misc;
 	par->clkdiv = best->seq_clock_mode;
+<<<<<<< HEAD
 	pixclock = (best->pixclock * div) / mul;		
+=======
+	*pixclock = (best->pixclock * div) / mul;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 			       
 #define FAIL(X) return -EINVAL
@@ -497,10 +515,17 @@ static int vga16fb_check_var(struct fb_var_screeninfo *var,
 
 	if (mode & MODE_8BPP)
 		/* pixel clock == vga clock / 2 */
+<<<<<<< HEAD
 		vga16fb_clock_chip(par, var->pixclock, info, 1, 2);
 	else
 		/* pixel clock == vga clock */
 		vga16fb_clock_chip(par, var->pixclock, info, 1, 1);
+=======
+		vga16fb_clock_chip(par, &var->pixclock, info, 1, 2);
+	else
+		/* pixel clock == vga clock */
+		vga16fb_clock_chip(par, &var->pixclock, info, 1, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	var->red.offset = var->green.offset = var->blue.offset = 
 	var->transp.offset = 0;
@@ -1122,7 +1147,11 @@ static void vga_8planes_imageblit(struct fb_info *info, const struct fb_image *i
         char oldop = setop(0);
         char oldsr = setsr(0);
         char oldmask = selectmask();
+<<<<<<< HEAD
         const char *cdat = image->data;
+=======
+	const unsigned char *cdat = image->data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 dx = image->dx;
         char __iomem *where;
         int y;

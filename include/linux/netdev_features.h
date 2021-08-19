@@ -11,6 +11,10 @@
 #define _LINUX_NETDEV_FEATURES_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 typedef u64 netdev_features_t;
 

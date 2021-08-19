@@ -35,6 +35,11 @@
  */
 #define HW_BROADWAY_ICR		0x00
 #define HW_BROADWAY_IMR		0x04
+<<<<<<< HEAD
+=======
+#define HW_STARLET_ICR		0x08
+#define HW_STARLET_IMR		0x0c
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 /*
@@ -74,6 +79,12 @@ static void hlwd_pic_unmask(struct irq_data *d)
 	void __iomem *io_base = irq_data_get_irq_chip_data(d);
 
 	setbits32(io_base + HW_BROADWAY_IMR, 1 << irq);
+<<<<<<< HEAD
+=======
+
+	/* Make sure the ARM (aka. Starlet) doesn't handle this interrupt. */
+	clrbits32(io_base + HW_STARLET_IMR, 1 << irq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

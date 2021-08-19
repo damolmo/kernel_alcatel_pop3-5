@@ -5,10 +5,13 @@
 #include <linux/stringify.h>
 #include <asm/feature-fixups.h>
 
+<<<<<<< HEAD
 #if defined(__powerpc64__) || defined(CONFIG_PPC_E500MC)
 #define __SUBARCH_HAS_LWSYNC
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifndef __ASSEMBLY__
 extern unsigned int __start___lwsync_fixup, __stop___lwsync_fixup;
 extern void do_lwsync_fixups(unsigned long value, void *fixup_start,

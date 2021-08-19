@@ -281,9 +281,18 @@ struct svc_rqst {
 						 * to prevent encrypting page
 						 * cache pages */
 	struct task_struct	*rq_task;	/* service thread */
+<<<<<<< HEAD
 };
 
 #define SVC_NET(svc_rqst)	(svc_rqst->rq_xprt->xpt_net)
+=======
+	struct net		*rq_bc_net;	/* pointer to backchannel's
+						 * net namespace
+						 */
+};
+
+#define SVC_NET(rqst) (rqst->rq_xprt ? rqst->rq_xprt->xpt_net : rqst->rq_bc_net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Rigorous type checking on sockaddr type conversions

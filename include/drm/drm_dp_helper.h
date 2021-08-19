@@ -226,6 +226,10 @@
 # define DP_PSR_MAIN_LINK_ACTIVE	    (1 << 1)
 # define DP_PSR_CRC_VERIFICATION	    (1 << 2)
 # define DP_PSR_FRAME_CAPTURE		    (1 << 3)
+<<<<<<< HEAD
+=======
+# define DP_PSR_ENABLE_PSR2		    (1 << 6) /* eDP 1.4a */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DP_ADAPTER_CTRL			    0x1a0
 # define DP_ADAPTER_CTRL_FORCE_LOAD_SENSE   (1 << 0)
@@ -303,8 +307,12 @@
 #define DP_TEST_CRC_B_CB		    0x244
 
 #define DP_TEST_SINK_MISC		    0x246
+<<<<<<< HEAD
 # define DP_TEST_CRC_SUPPORTED		    (1 << 5)
 # define DP_TEST_COUNT_MASK		    0x7
+=======
+#define DP_TEST_CRC_SUPPORTED		    (1 << 5)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DP_TEST_RESPONSE		    0x260
 # define DP_TEST_ACK			    (1 << 0)
@@ -314,7 +322,11 @@
 #define DP_TEST_EDID_CHECKSUM		    0x261
 
 #define DP_TEST_SINK			    0x270
+<<<<<<< HEAD
 # define DP_TEST_SINK_START		    (1 << 0)
+=======
+#define DP_TEST_SINK_START	    (1 << 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DP_PAYLOAD_TABLE_UPDATE_STATUS      0x2c0   /* 1.2 MST */
 # define DP_PAYLOAD_TABLE_UPDATED           (1 << 0)
@@ -551,7 +563,10 @@ struct drm_dp_aux {
 	struct mutex hw_mutex;
 	ssize_t (*transfer)(struct drm_dp_aux *aux,
 			    struct drm_dp_aux_msg *msg);
+<<<<<<< HEAD
 	unsigned i2c_nack_count, i2c_defer_count;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 ssize_t drm_dp_dpcd_read(struct drm_dp_aux *aux, unsigned int offset,
@@ -611,6 +626,7 @@ int drm_dp_link_configure(struct drm_dp_aux *aux, struct drm_dp_link *link);
 int drm_dp_aux_register(struct drm_dp_aux *aux);
 void drm_dp_aux_unregister(struct drm_dp_aux *aux);
 
+<<<<<<< HEAD
 #define DP_PS8617_OUI 0x1cf8
 
 static inline bool drm_dp_branch_is_ps8617(const u8 buf[3])
@@ -621,4 +637,6 @@ static inline bool drm_dp_branch_is_ps8617(const u8 buf[3])
 		return true;
 	return false;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _DRM_DP_HELPER_H_ */

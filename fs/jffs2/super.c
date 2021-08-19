@@ -47,7 +47,14 @@ static struct inode *jffs2_alloc_inode(struct super_block *sb)
 static void jffs2_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
+<<<<<<< HEAD
 	kmem_cache_free(jffs2_inode_cachep, JFFS2_INODE_INFO(inode));
+=======
+	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
+
+	kfree(f->target);
+	kmem_cache_free(jffs2_inode_cachep, f);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void jffs2_destroy_inode(struct inode *inode)
@@ -101,7 +108,12 @@ static int jffs2_sync_fs(struct super_block *sb, int wait)
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
 
 #ifdef CONFIG_JFFS2_FS_WRITEBUFFER
+<<<<<<< HEAD
 	cancel_delayed_work_sync(&c->wbuf_dwork);
+=======
+	if (jffs2_is_writebuffered(c))
+		cancel_delayed_work_sync(&c->wbuf_dwork);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	mutex_lock(&c->alloc_sem);
@@ -285,10 +297,15 @@ static int jffs2_fill_super(struct super_block *sb, void *data, int silent)
 	sb->s_fs_info = c;
 
 	ret = jffs2_parse_options(c, data);
+<<<<<<< HEAD
 	if (ret) {
 		kfree(c);
 		return -EINVAL;
 	}
+=======
+	if (ret)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Initialize JFFS2 superblock locks, the further initialization will
 	 * be done later */
@@ -345,7 +362,11 @@ static void jffs2_put_super (struct super_block *sb)
 static void jffs2_kill_sb(struct super_block *sb)
 {
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY))
+=======
+	if (c && !(sb->s_flags & MS_RDONLY))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		jffs2_stop_garbage_collect_thread(c);
 	kill_mtd_super(sb);
 	kfree(c);

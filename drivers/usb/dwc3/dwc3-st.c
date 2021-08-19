@@ -227,7 +227,11 @@ static int st_dwc3_probe(struct platform_device *pdev)
 
 	dwc3_data->syscfg_reg_off = res->start;
 
+<<<<<<< HEAD
 	dev_vdbg(&pdev->dev, "glue-logic addr 0x%p, syscfg-reg offset 0x%x\n",
+=======
+	dev_vdbg(&pdev->dev, "glue-logic addr 0x%pK, syscfg-reg offset 0x%x\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 dwc3_data->glue_base, dwc3_data->syscfg_reg_off);
 
 	dwc3_data->rstc_pwrdn = devm_reset_control_get(dev, "powerdown");

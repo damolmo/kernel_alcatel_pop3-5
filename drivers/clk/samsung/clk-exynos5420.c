@@ -167,12 +167,26 @@ static unsigned long exynos5x_clk_regs[] __initdata = {
 	GATE_BUS_CPU,
 	GATE_SCLK_CPU,
 	CLKOUT_CMU_CPU,
+<<<<<<< HEAD
+=======
+	APLL_CON0,
+	KPLL_CON0,
+	CPLL_CON0,
+	DPLL_CON0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	EPLL_CON0,
 	EPLL_CON1,
 	EPLL_CON2,
 	RPLL_CON0,
 	RPLL_CON1,
 	RPLL_CON2,
+<<<<<<< HEAD
+=======
+	IPLL_CON0,
+	SPLL_CON0,
+	VPLL_CON0,
+	MPLL_CON0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SRC_TOP0,
 	SRC_TOP1,
 	SRC_TOP2,
@@ -273,6 +287,10 @@ static const struct samsung_clk_reg_dump exynos5420_set_clksrc[] = {
 	{ .offset = SRC_MASK_ISP,		.value = 0x11111000, },
 	{ .offset = GATE_BUS_DISP1,		.value = 0xffffffff, },
 	{ .offset = GATE_IP_PERIC,		.value = 0xffffffff, },
+<<<<<<< HEAD
+=======
+	{ .offset = GATE_IP_PERIS,		.value = 0xffffffff, },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static int exynos5420_clk_suspend(void)

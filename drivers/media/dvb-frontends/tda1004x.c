@@ -903,9 +903,24 @@ static int tda1004x_get_fe(struct dvb_frontend *fe)
 {
 	struct dtv_frontend_properties *fe_params = &fe->dtv_property_cache;
 	struct tda1004x_state* state = fe->demodulator_priv;
+<<<<<<< HEAD
 
 	dprintk("%s\n", __func__);
 
+=======
+	int status;
+
+	dprintk("%s\n", __func__);
+
+	status = tda1004x_read_byte(state, TDA1004X_STATUS_CD);
+	if (status == -1)
+		return -EIO;
+
+	/* Only update the properties cache if device is locked */
+	if (!(status & 8))
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	// inversion status
 	fe_params->inversion = INVERSION_OFF;
 	if (tda1004x_read_byte(state, TDA1004X_CONFC1) & 0x20)

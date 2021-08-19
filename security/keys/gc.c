@@ -46,7 +46,11 @@ static unsigned long key_gc_flags;
  * immediately unlinked.
  */
 struct key_type key_type_dead = {
+<<<<<<< HEAD
 	.name = "dead",
+=======
+	.name = ".dead",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -129,11 +133,23 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 	while (!list_empty(keys)) {
 		struct key *key =
 			list_entry(keys->next, struct key, graveyard_link);
+<<<<<<< HEAD
+=======
+		short state = key->state;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		list_del(&key->graveyard_link);
 
 		kdebug("- %u", key->serial);
 		key_check(key);
 
+<<<<<<< HEAD
+=======
+		/* Throw away the key data if the key is instantiated */
+		if (state == KEY_IS_POSITIVE && key->type->destroy)
+			key->type->destroy(key);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		security_key_free(key);
 
 		/* deal with the user's key tracking and quota */
@@ -145,6 +161,7 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 		}
 
 		atomic_dec(&key->user->nkeys);
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
 			atomic_dec(&key->user->nikeys);
 
@@ -152,6 +169,11 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 		if (key->type->destroy)
 			key->type->destroy(key);
 
+=======
+		if (state != KEY_IS_UNINSTANTIATED)
+			atomic_dec(&key->user->nikeys);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		key_user_put(key->user);
 
 		kfree(key->description);

@@ -23,27 +23,43 @@
 #include <sound/core.h>
 #include "seq_lock.h"
 
+<<<<<<< HEAD
 #if defined(CONFIG_SMP) || defined(CONFIG_SND_DEBUG)
 
 /* wait until all locks are released */
 void snd_use_lock_sync_helper(snd_use_lock_t *lockp, const char *file, int line)
 {
 	int max_count = 5 * HZ;
+=======
+/* wait until all locks are released */
+void snd_use_lock_sync_helper(snd_use_lock_t *lockp, const char *file, int line)
+{
+	int warn_count = 5 * HZ;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (atomic_read(lockp) < 0) {
 		pr_warn("ALSA: seq_lock: lock trouble [counter = %d] in %s:%d\n", atomic_read(lockp), file, line);
 		return;
 	}
 	while (atomic_read(lockp) > 0) {
+<<<<<<< HEAD
 		if (max_count == 0) {
 			pr_warn("ALSA: seq_lock: timeout [%d left] in %s:%d\n", atomic_read(lockp), file, line);
 			break;
 		}
 		schedule_timeout_uninterruptible(1);
 		max_count--;
+=======
+		if (warn_count-- == 0)
+			pr_warn("ALSA: seq_lock: waiting [%d left] in %s:%d\n", atomic_read(lockp), file, line);
+		schedule_timeout_uninterruptible(1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
 EXPORT_SYMBOL(snd_use_lock_sync_helper);
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

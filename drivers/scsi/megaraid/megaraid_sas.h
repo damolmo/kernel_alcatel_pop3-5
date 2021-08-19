@@ -269,6 +269,19 @@ enum MFI_STAT {
 	MFI_STAT_INVALID_STATUS = 0xFF
 };
 
+<<<<<<< HEAD
+=======
+enum mfi_evt_class {
+	MFI_EVT_CLASS_DEBUG =           -2,
+	MFI_EVT_CLASS_PROGRESS =        -1,
+	MFI_EVT_CLASS_INFO =            0,
+	MFI_EVT_CLASS_WARNING =         1,
+	MFI_EVT_CLASS_CRITICAL =        2,
+	MFI_EVT_CLASS_FATAL =           3,
+	MFI_EVT_CLASS_DEAD =            4
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Crash dump related defines
  */
@@ -1823,7 +1836,11 @@ struct megasas_instance_template {
 };
 
 #define MEGASAS_IS_LOGICAL(scp)						\
+<<<<<<< HEAD
 	(scp->device->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1
+=======
+	((scp->device->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define MEGASAS_DEV_INDEX(inst, scp)					\
 	((scp->device->channel % 2) * MEGASAS_MAX_DEV_PER_CHANNEL) + 	\

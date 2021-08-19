@@ -177,7 +177,11 @@ int aix_partition(struct parsed_partitions *state)
 	u32 vgda_sector = 0;
 	u32 vgda_len = 0;
 	int numlvs = 0;
+<<<<<<< HEAD
 	struct pvd *pvd;
+=======
+	struct pvd *pvd = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct lv_info {
 		unsigned short pps_per_lv;
 		unsigned short pps_found;
@@ -231,10 +235,18 @@ int aix_partition(struct parsed_partitions *state)
 				if (lvip[i].pps_per_lv)
 					foundlvs += 1;
 			}
+<<<<<<< HEAD
 		}
 		put_dev_sector(sect);
 	}
 	pvd = alloc_pvd(state, vgda_sector + 17);
+=======
+			/* pvd loops depend on n[].name and lvip[].pps_per_lv */
+			pvd = alloc_pvd(state, vgda_sector + 17);
+		}
+		put_dev_sector(sect);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pvd) {
 		int numpps = be16_to_cpu(pvd->pp_count);
 		int psn_part1 = be32_to_cpu(pvd->psn_part1);
@@ -281,10 +293,21 @@ int aix_partition(struct parsed_partitions *state)
 				next_lp_ix += 1;
 		}
 		for (i = 0; i < state->limit; i += 1)
+<<<<<<< HEAD
 			if (lvip[i].pps_found && !lvip[i].lv_is_contiguous)
 				pr_warn("partition %s (%u pp's found) is "
 					"not contiguous\n",
 					n[i].name, lvip[i].pps_found);
+=======
+			if (lvip[i].pps_found && !lvip[i].lv_is_contiguous) {
+				char tmp[sizeof(n[i].name) + 1]; // null char
+
+				snprintf(tmp, sizeof(tmp), "%s", n[i].name);
+				pr_warn("partition %s (%u pp's found) is "
+					"not contiguous\n",
+					tmp, lvip[i].pps_found);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(pvd);
 	}
 	kfree(n);

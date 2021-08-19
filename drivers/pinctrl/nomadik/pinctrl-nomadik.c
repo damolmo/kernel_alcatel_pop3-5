@@ -1025,7 +1025,11 @@ static void nmk_gpio_dbg_show_one(struct seq_file *s,
 		int pullidx = 0;
 
 		if (pull)
+<<<<<<< HEAD
 			pullidx = data_out ? 1 : 2;
+=======
+			pullidx = data_out ? 2 : 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		seq_printf(s, " gpio-%-3d (%-20.20s) in  %s %s",
 			   gpio,

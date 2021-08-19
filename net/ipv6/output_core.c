@@ -9,6 +9,40 @@
 #include <net/addrconf.h>
 #include <net/secure_seq.h>
 
+<<<<<<< HEAD
+=======
+static u32 __ipv6_select_ident(struct net *net,
+			       const struct in6_addr *dst,
+			       const struct in6_addr *src)
+{
+	const struct {
+		struct in6_addr dst;
+		struct in6_addr src;
+	} __aligned(SIPHASH_ALIGNMENT) combined = {
+		.dst = *dst,
+		.src = *src,
+	};
+	u32 hash, id;
+
+	/* Note the following code is not safe, but this is okay. */
+	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
+		get_random_bytes(&net->ipv4.ip_id_key,
+				 sizeof(net->ipv4.ip_id_key));
+
+	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
+
+	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
+	 * set the hight order instead thus minimizing possible future
+	 * collisions.
+	 */
+	id = ip_idents_reserve(hash, 1);
+	if (unlikely(!id))
+		id = 1 << 31;
+
+	return id;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* This function exists only for tap drivers that must support broken
  * clients requesting UFO without specifying an IPv6 fragment ID.
  *
@@ -17,12 +51,20 @@
  *
  * The network header must be set before calling this.
  */
+<<<<<<< HEAD
 void ipv6_proxy_select_ident(struct sk_buff *skb)
 {
 	static u32 ip6_proxy_idents_hashrnd __read_mostly;
 	struct in6_addr buf[2];
 	struct in6_addr *addrs;
 	u32 hash, id;
+=======
+void ipv6_proxy_select_ident(struct net *net, struct sk_buff *skb)
+{
+	struct in6_addr buf[2];
+	struct in6_addr *addrs;
+	u32 id;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	addrs = skb_header_pointer(skb,
 				   skb_network_offset(skb) +
@@ -31,6 +73,7 @@ void ipv6_proxy_select_ident(struct sk_buff *skb)
 	if (!addrs)
 		return;
 
+<<<<<<< HEAD
 	net_get_random_once(&ip6_proxy_idents_hashrnd,
 			    sizeof(ip6_proxy_idents_hashrnd));
 
@@ -38,21 +81,46 @@ void ipv6_proxy_select_ident(struct sk_buff *skb)
 	hash = __ipv6_addr_jhash(&addrs[0], hash);
 
 	id = ip_idents_reserve(hash, 1);
+=======
+	id = __ipv6_select_ident(net, &addrs[1], &addrs[0]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	skb_shinfo(skb)->ip6_frag_id = htonl(id);
 }
 EXPORT_SYMBOL_GPL(ipv6_proxy_select_ident);
 
+<<<<<<< HEAD
 int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
 {
 	u16 offset = sizeof(struct ipv6hdr);
 	struct ipv6_opt_hdr *exthdr =
 				(struct ipv6_opt_hdr *)(ipv6_hdr(skb) + 1);
+=======
+__be32 ipv6_select_ident(struct net *net,
+			 const struct in6_addr *daddr,
+			 const struct in6_addr *saddr)
+{
+	u32 id;
+
+	id = __ipv6_select_ident(net, daddr, saddr);
+	return htonl(id);
+}
+EXPORT_SYMBOL(ipv6_select_ident);
+
+int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+{
+	unsigned int offset = sizeof(struct ipv6hdr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int packet_len = skb_tail_pointer(skb) -
 		skb_network_header(skb);
 	int found_rhdr = 0;
 	*nexthdr = &ipv6_hdr(skb)->nexthdr;
 
+<<<<<<< HEAD
 	while (offset + 1 <= packet_len) {
+=======
+	while (offset <= packet_len) {
+		struct ipv6_opt_hdr *exthdr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		switch (**nexthdr) {
 
@@ -73,6 +141,7 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
 			return offset;
 		}
 
+<<<<<<< HEAD
 		offset += ipv6_optlen(exthdr);
 		*nexthdr = &exthdr->nexthdr;
 		exthdr = (struct ipv6_opt_hdr *)(skb_network_header(skb) +
@@ -80,6 +149,20 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
 	}
 
 	return offset;
+=======
+		if (offset + sizeof(struct ipv6_opt_hdr) > packet_len)
+			return -EINVAL;
+
+		exthdr = (struct ipv6_opt_hdr *)(skb_network_header(skb) +
+						 offset);
+		offset += ipv6_optlen(exthdr);
+		if (offset > IPV6_MAXPLEN)
+			return -EINVAL;
+		*nexthdr = &exthdr->nexthdr;
+	}
+
+	return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(ip6_find_1stfragopt);
 
@@ -114,6 +197,11 @@ int __ip6_local_out(struct sk_buff *skb)
 	ipv6_hdr(skb)->payload_len = htons(len);
 	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
 
+<<<<<<< HEAD
+=======
+	skb->protocol = htons(ETH_P_IPV6);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return nf_hook(NFPROTO_IPV6, NF_INET_LOCAL_OUT, skb, NULL,
 		       skb_dst(skb)->dev, dst_output);
 }

@@ -1059,7 +1059,12 @@ static int uvesafb_setcmap(struct fb_cmap *cmap, struct fb_info *info)
 		    info->cmap.len || cmap->start < info->cmap.start)
 			return -EINVAL;
 
+<<<<<<< HEAD
 		entries = kmalloc(sizeof(*entries) * cmap->len, GFP_KERNEL);
+=======
+		entries = kmalloc_array(cmap->len, sizeof(*entries),
+					GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!entries)
 			return -ENOMEM;
 

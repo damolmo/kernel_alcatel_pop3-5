@@ -5,7 +5,10 @@ config CPU_IDLE
 	default y if ACPI || PPC_PSERIES
 	select CPU_IDLE_GOV_LADDER if (!NO_HZ && !NO_HZ_IDLE)
 	select CPU_IDLE_GOV_MENU if (NO_HZ || NO_HZ_IDLE)
+<<<<<<< HEAD
 	select CPU_IDLE_GOV_MTK if (NO_HZ || NO_HZ_IDLE)
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  CPU idle is a generic framework for supporting software-controlled
 	  idle processor power management.  It includes modular cross-platform
@@ -26,6 +29,7 @@ config CPU_IDLE_GOV_MENU
 	bool "Menu governor (for tickless system)"
 	default y
 
+<<<<<<< HEAD
 config CPU_IDLE_GOV_MTK
 	bool "MTK governor (for MediaTek SoCs)"
 	default y
@@ -35,6 +39,8 @@ config CPU_IDLE_GOV_MTK
 	  MTK governor is specified for MTK SoCs.
 	  MTK CPUidle drivers should be paired with MTK governer.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config DT_IDLE_STATES
 	bool
 

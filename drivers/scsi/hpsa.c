@@ -103,7 +103,10 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1922},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1923},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1924},
+<<<<<<< HEAD
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1925},
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1926},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1928},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1929},
@@ -149,6 +152,10 @@ static struct board_type products[] = {
 	{0x3249103C, "Smart Array P812", &SA5_access},
 	{0x324A103C, "Smart Array P712m", &SA5_access},
 	{0x324B103C, "Smart Array P711m", &SA5_access},
+<<<<<<< HEAD
+=======
+	{0x3233103C, "HP StorageWorks 1210m", &SA5_access}, /* alias of 333f */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{0x3350103C, "Smart Array P222", &SA5_access},
 	{0x3351103C, "Smart Array P420", &SA5_access},
 	{0x3352103C, "Smart Array P421", &SA5_access},
@@ -1551,6 +1558,11 @@ static int handle_ioaccel_mode2_error(struct ctlr_info *h,
 	case IOACCEL2_SERV_RESPONSE_COMPLETE:
 		switch (c2->error_data.status) {
 		case IOACCEL2_STATUS_SR_TASK_COMP_GOOD:
+<<<<<<< HEAD
+=======
+			if (cmd)
+				cmd->result = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case IOACCEL2_STATUS_SR_TASK_COMP_CHK_COND:
 			dev_warn(&h->pdev->dev,
@@ -1644,6 +1656,10 @@ static void process_ioaccel2_completion(struct ctlr_info *h,
 	/* check for good status */
 	if (likely(c2->error_data.serv_response == 0 &&
 			c2->error_data.status == 0)) {
+<<<<<<< HEAD
+=======
+		cmd->result = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cmd_free(h, c);
 		cmd->scsi_done(cmd);
 		return;
@@ -3999,6 +4015,15 @@ static int hpsa_scsi_queue_command_lck(struct scsi_cmnd *cmd,
 	c->cmd_type = CMD_SCSI;
 	c->scsi_cmd = cmd;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * This is necessary because the SML doesn't zero out this field during
+	 * error recovery.
+	 */
+	cmd->result = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Call alternate submit routine for I/O accelerated commands.
 	 * Retries always go down the normal I/O path.
 	 */

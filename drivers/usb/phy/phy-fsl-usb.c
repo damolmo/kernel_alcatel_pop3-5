@@ -913,6 +913,10 @@ int usb_otg_start(struct platform_device *pdev)
 	if (pdata->init && pdata->init(pdev) != 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC32
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pdata->big_endian_mmio) {
 		_fsl_readl = _fsl_readl_be;
 		_fsl_writel = _fsl_writel_be;
@@ -920,6 +924,10 @@ int usb_otg_start(struct platform_device *pdev)
 		_fsl_readl = _fsl_readl_le;
 		_fsl_writel = _fsl_writel_le;
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* request irq */
 	p_otg->irq = platform_get_irq(pdev, 0);
@@ -1010,7 +1018,11 @@ int usb_otg_start(struct platform_device *pdev)
 /*
  * state file in sysfs
  */
+<<<<<<< HEAD
 static int show_fsl_usb2_otg_state(struct device *dev,
+=======
+static ssize_t show_fsl_usb2_otg_state(struct device *dev,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				   struct device_attribute *attr, char *buf)
 {
 	struct otg_fsm *fsm = &fsl_otg_dev->fsm;

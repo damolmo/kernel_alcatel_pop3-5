@@ -812,6 +812,7 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 	}
 
 	/* We now decide whether we can put our special header into the sk_buff */
+<<<<<<< HEAD
 	if (skb_cloned(skb) || skb_headroom(skb) < 2) {
 		/* no such luck - we make our own */
 		struct sk_buff *copied_skb;
@@ -824,6 +825,14 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 			spin_unlock_irq(&kaweth->device_lock);
 			return NETDEV_TX_OK;
 		}
+=======
+	if (skb_cow_head(skb, 2)) {
+		kaweth->stats.tx_errors++;
+		netif_start_queue(net);
+		spin_unlock_irq(&kaweth->device_lock);
+		dev_kfree_skb_any(skb);
+		return NETDEV_TX_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	private_header = (__le16 *)__skb_push(skb, 2);
@@ -1009,6 +1018,10 @@ static int kaweth_probe(
 	struct net_device *netdev;
 	const eth_addr_t bcast_addr = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 	int result = 0;
+<<<<<<< HEAD
+=======
+	int rv = -EIO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev_dbg(dev,
 		"Kawasaki Device Probe (Device number:%d): 0x%4.4x:0x%4.4x:0x%4.4x\n",
@@ -1029,6 +1042,10 @@ static int kaweth_probe(
 	kaweth = netdev_priv(netdev);
 	kaweth->dev = udev;
 	kaweth->net = netdev;
+<<<<<<< HEAD
+=======
+	kaweth->intf = intf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_init(&kaweth->device_lock);
 	init_waitqueue_head(&kaweth->term_wait);
@@ -1048,6 +1065,13 @@ static int kaweth_probe(
 		/* Download the firmware */
 		dev_info(dev, "Downloading firmware...\n");
 		kaweth->firmware_buf = (__u8 *)__get_free_page(GFP_KERNEL);
+<<<<<<< HEAD
+=======
+		if (!kaweth->firmware_buf) {
+			rv = -ENOMEM;
+			goto err_free_netdev;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if ((result = kaweth_download_firmware(kaweth,
 						      "kaweth/new_code.bin",
 						      100,
@@ -1139,8 +1163,11 @@ err_fw:
 
 	dev_dbg(dev, "Initializing net device.\n");
 
+<<<<<<< HEAD
 	kaweth->intf = intf;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kaweth->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!kaweth->tx_urb)
 		goto err_free_netdev;
@@ -1210,7 +1237,11 @@ err_only_tx:
 err_free_netdev:
 	free_netdev(netdev);
 
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return rv;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /****************************************************************

@@ -98,8 +98,13 @@ BOOL visor_periodic_work_nextperiod(struct periodic_work *pw)
 		pw->want_to_stop = FALSE;
 		rc = TRUE;  /* yes, TRUE; see visor_periodic_work_stop() */
 		goto unlock;
+<<<<<<< HEAD
 	} else if (queue_delayed_work(pw->workqueue, &pw->work,
 				      pw->jiffy_interval) < 0) {
+=======
+	} else if (!queue_delayed_work(pw->workqueue, &pw->work,
+				       pw->jiffy_interval)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ERRDEV(pw->devnam, "queue_delayed_work failed!");
 		pw->is_scheduled = FALSE;
 		rc = FALSE;
@@ -134,8 +139,13 @@ BOOL visor_periodic_work_start(struct periodic_work *pw)
 		goto unlock;
 	}
 	INIT_DELAYED_WORK(&pw->work, &periodic_work_func);
+<<<<<<< HEAD
 	if (queue_delayed_work(pw->workqueue, &pw->work,
 			       pw->jiffy_interval) < 0) {
+=======
+	if (!queue_delayed_work(pw->workqueue, &pw->work,
+				pw->jiffy_interval)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ERRDEV(pw->devnam, "%s queue_delayed_work failed!", __func__);
 		rc = FALSE;
 		goto unlock;

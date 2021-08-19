@@ -101,7 +101,11 @@ extern int s3c_i2sv2_probe(struct snd_soc_dai *dai,
  * soc core.
  */
 extern int s3c_i2sv2_register_component(struct device *dev, int id,
+<<<<<<< HEAD
 					struct snd_soc_component_driver *cmp_drv,
+=======
+					const struct snd_soc_component_driver *cmp_drv,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					struct snd_soc_dai_driver *dai_drv);
 
 #endif /* __SND_SOC_S3C24XX_S3C_I2SV2_I2S_H */

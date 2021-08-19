@@ -536,8 +536,16 @@ static int bcma_device_probe(struct device *dev)
 					       drv);
 	int err = 0;
 
+<<<<<<< HEAD
 	if (adrv->probe)
 		err = adrv->probe(core);
+=======
+	get_device(dev);
+	if (adrv->probe)
+		err = adrv->probe(core);
+	if (err)
+		put_device(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return err;
 }
@@ -550,6 +558,10 @@ static int bcma_device_remove(struct device *dev)
 
 	if (adrv->remove)
 		adrv->remove(core);
+<<<<<<< HEAD
+=======
+	put_device(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

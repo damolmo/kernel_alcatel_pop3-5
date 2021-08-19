@@ -197,6 +197,10 @@ struct kretprobe_instance {
 	struct kretprobe *rp;
 	kprobe_opcode_t *ret_addr;
 	struct task_struct *task;
+<<<<<<< HEAD
+=======
+	void *fp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char data[0];
 };
 
@@ -327,7 +331,13 @@ extern int proc_kprobes_optimization_handler(struct ctl_table *table,
 					     int write, void __user *buffer,
 					     size_t *length, loff_t *ppos);
 #endif
+<<<<<<< HEAD
 
+=======
+extern void wait_for_kprobe_optimizer(void);
+#else
+static inline void wait_for_kprobe_optimizer(void) { }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_OPTPROBES */
 #ifdef CONFIG_KPROBES_ON_FTRACE
 extern void kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,
@@ -359,6 +369,13 @@ static inline struct kprobe_ctlblk *get_kprobe_ctlblk(void)
 	return this_cpu_ptr(&kprobe_ctlblk);
 }
 
+<<<<<<< HEAD
+=======
+extern struct kprobe kprobe_busy;
+void kprobe_busy_begin(void);
+void kprobe_busy_end(void);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int register_kprobe(struct kprobe *p);
 void unregister_kprobe(struct kprobe *p);
 int register_kprobes(struct kprobe **kps, int num);

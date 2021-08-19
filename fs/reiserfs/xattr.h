@@ -46,7 +46,11 @@ void reiserfs_security_free(struct reiserfs_security_handle *sec);
 
 static inline int reiserfs_xattrs_initialized(struct super_block *sb)
 {
+<<<<<<< HEAD
 	return REISERFS_SB(sb)->priv_root != NULL;
+=======
+	return REISERFS_SB(sb)->priv_root && REISERFS_SB(sb)->xattr_root;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define xattr_size(size) ((size) + sizeof(struct reiserfs_xattr_header))

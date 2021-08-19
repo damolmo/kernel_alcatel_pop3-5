@@ -29,8 +29,11 @@
 #include <net/sch_generic.h>
 #include <net/pkt_sched.h>
 #include <net/dst.h>
+<<<<<<< HEAD
 #include <net/ip.h>
 #include <net/ipv6.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Qdisc to use by default */
 const struct Qdisc_ops *default_qdisc_ops = &pfifo_fast_ops;
@@ -51,6 +54,10 @@ static inline int dev_requeue_skb(struct sk_buff *skb, struct Qdisc *q)
 {
 	q->gso_skb = skb;
 	q->qstats.requeues++;
+<<<<<<< HEAD
+=======
+	qdisc_qstats_backlog_inc(q, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	q->q.qlen++;	/* it's still part of the queue */
 	__netif_schedule(q);
 
@@ -94,6 +101,10 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
 		txq = skb_get_tx_queue(txq->dev, skb);
 		if (!netif_xmit_frozen_or_stopped(txq)) {
 			q->gso_skb = NULL;
+<<<<<<< HEAD
+=======
+			qdisc_qstats_backlog_dec(q, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			q->q.qlen--;
 		} else
 			skb = NULL;
@@ -161,12 +172,17 @@ int sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
 	if (validate)
 		skb = validate_xmit_skb_list(skb, dev);
 
+<<<<<<< HEAD
 	if (skb) {
+=======
+	if (likely(skb)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		HARD_TX_LOCK(dev, txq, smp_processor_id());
 		if (!netif_xmit_frozen_or_stopped(txq))
 			skb = dev_hard_start_xmit(skb, dev, txq, &ret);
 
 		HARD_TX_UNLOCK(dev, txq);
+<<<<<<< HEAD
 	}
 
 	#ifdef CONFIG_MTK_NET_LOGGING
@@ -183,6 +199,12 @@ int sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
 	}
 	#endif
 
+=======
+	} else {
+		spin_lock(root_lock);
+		return qdisc_qlen(q);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(root_lock);
 
 	if (dev_xmit_complete(ret)) {
@@ -341,6 +363,10 @@ void __netdev_watchdog_up(struct net_device *dev)
 			dev_hold(dev);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(__netdev_watchdog_up);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void dev_watchdog_up(struct net_device *dev)
 {
@@ -498,6 +524,7 @@ static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc *qdisc)
 {
 	if (skb_queue_len(&qdisc->q) < qdisc_dev(qdisc)->tx_queue_len) {
 		int band = prio2band[skb->priority & TC_PRIO_MAX];
+<<<<<<< HEAD
 		struct pfifo_fast_priv *priv;
 		struct sk_buff_head *list;
 
@@ -525,6 +552,10 @@ static int pfifo_fast_enqueue(struct sk_buff *skb, struct Qdisc *qdisc)
 
 		priv = qdisc_priv(qdisc);
 		list = band2list(priv, band);
+=======
+		struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
+		struct sk_buff_head *list = band2list(priv, band);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		priv->bitmap |= (1 << band);
 		qdisc->q.qlen++;
@@ -671,18 +702,31 @@ struct Qdisc *qdisc_create_dflt(struct netdev_queue *dev_queue,
 	struct Qdisc *sch;
 
 	if (!try_module_get(ops->owner))
+<<<<<<< HEAD
 		goto errout;
 
 	sch = qdisc_alloc(dev_queue, ops);
 	if (IS_ERR(sch))
 		goto errout;
+=======
+		return NULL;
+
+	sch = qdisc_alloc(dev_queue, ops);
+	if (IS_ERR(sch)) {
+		module_put(ops->owner);
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sch->parent = parentid;
 
 	if (!ops->init || ops->init(sch, NULL) == 0)
 		return sch;
 
 	qdisc_destroy(sch);
+<<<<<<< HEAD
 errout:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NULL;
 }
 EXPORT_SYMBOL(qdisc_create_dflt);
@@ -708,15 +752,30 @@ static void qdisc_rcu_free(struct rcu_head *head)
 {
 	struct Qdisc *qdisc = container_of(head, struct Qdisc, rcu_head);
 
+<<<<<<< HEAD
 	if (qdisc_is_percpu_stats(qdisc))
 		free_percpu(qdisc->cpu_bstats);
+=======
+	if (qdisc_is_percpu_stats(qdisc)) {
+		free_percpu(qdisc->cpu_bstats);
+		free_percpu(qdisc->cpu_qstats);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kfree((char *) qdisc - qdisc->padded);
 }
 
 void qdisc_destroy(struct Qdisc *qdisc)
 {
+<<<<<<< HEAD
 	const struct Qdisc_ops  *ops = qdisc->ops;
+=======
+	const struct Qdisc_ops *ops;
+
+	if (!qdisc)
+		return;
+	ops = qdisc->ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (qdisc->flags & TCQ_F_BUILTIN ||
 	    !atomic_dec_and_test(&qdisc->refcnt))
@@ -832,10 +891,17 @@ void dev_activate(struct net_device *dev)
 	int need_watchdog;
 
 	/* No queueing discipline is attached to device;
+<<<<<<< HEAD
 	* create default one for devices, which need queueing
 	* and noqueue_qdisc for virtual interfaces
 	*/
 	pr_debug("[mtk net][sched]dev activate dev = %s\n", dev->name);
+=======
+	 * create default one for devices, which need queueing
+	 * and noqueue_qdisc for virtual interfaces
+	 */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dev->qdisc == &noop_qdisc)
 		attach_default_qdiscs(dev);
 
@@ -888,6 +954,7 @@ static bool some_qdisc_is_busy(struct net_device *dev)
 
 		dev_queue = netdev_get_tx_queue(dev, i);
 		q = dev_queue->qdisc_sleeping;
+<<<<<<< HEAD
 
 		/*MTK_NET_CHANGES*/
 		if (q == NULL) {
@@ -895,6 +962,8 @@ static bool some_qdisc_is_busy(struct net_device *dev)
 			BUG_ON(q == NULL);
 		}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		root_lock = qdisc_lock(q);
 
 		spin_lock_bh(root_lock);
@@ -949,10 +1018,15 @@ void dev_deactivate_many(struct list_head *head)
 void dev_deactivate(struct net_device *dev)
 {
 	LIST_HEAD(single);
+<<<<<<< HEAD
 	list_add(&dev->close_list, &single);
 
 	pr_debug("[mtk net][sched]dev deactivate dev = %s\n", dev->name);
 
+=======
+
+	list_add(&dev->close_list, &single);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev_deactivate_many(&single);
 	list_del(&single);
 }

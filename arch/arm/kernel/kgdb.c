@@ -12,8 +12,17 @@
 #include <linux/irq.h>
 #include <linux/kdebug.h>
 #include <linux/kgdb.h>
+<<<<<<< HEAD
 #include <asm/traps.h>
 
+=======
+#include <linux/uaccess.h>
+
+#include <asm/traps.h>
+
+#include "patch.h"
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
 {
 	{ "r0", 4, offsetof(struct pt_regs, ARM_r0)},
@@ -248,6 +257,36 @@ void kgdb_arch_exit(void)
 	unregister_die_notifier(&kgdb_notifier);
 }
 
+<<<<<<< HEAD
+=======
+int kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt)
+{
+	int err;
+
+	/* patch_text() only supports int-sized breakpoints */
+	BUILD_BUG_ON(sizeof(int) != BREAK_INSTR_SIZE);
+
+	err = probe_kernel_read(bpt->saved_instr, (char *)bpt->bpt_addr,
+				BREAK_INSTR_SIZE);
+	if (err)
+		return err;
+
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr,
+		     *(unsigned int *)arch_kgdb_ops.gdb_bpt_instr);
+
+	return err;
+}
+
+int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
+{
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr, *(unsigned int *)bpt->saved_instr);
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Register our undef instruction hooks with ARM undef core.
  * We regsiter a hook specifically looking for the KGB break inst

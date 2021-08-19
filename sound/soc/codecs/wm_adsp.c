@@ -246,7 +246,11 @@ static int wm_adsp_fw_get(struct snd_kcontrol *kcontrol,
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	struct wm_adsp *adsp = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	ucontrol->value.integer.value[0] = adsp[e->shift_l].fw;
+=======
+	ucontrol->value.enumerated.item[0] = adsp[e->shift_l].fw;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -258,16 +262,27 @@ static int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
 	struct wm_adsp *adsp = snd_soc_codec_get_drvdata(codec);
 
+<<<<<<< HEAD
 	if (ucontrol->value.integer.value[0] == adsp[e->shift_l].fw)
 		return 0;
 
 	if (ucontrol->value.integer.value[0] >= WM_ADSP_NUM_FW)
+=======
+	if (ucontrol->value.enumerated.item[0] == adsp[e->shift_l].fw)
+		return 0;
+
+	if (ucontrol->value.enumerated.item[0] >= WM_ADSP_NUM_FW)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	if (adsp[e->shift_l].running)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	adsp[e->shift_l].fw = ucontrol->value.integer.value[0];
+=======
+	adsp[e->shift_l].fw = ucontrol->value.enumerated.item[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -532,7 +547,11 @@ static int wm_adsp_load(struct wm_adsp *dsp)
 	const struct wmfw_region *region;
 	const struct wm_adsp_region *mem;
 	const char *region_name;
+<<<<<<< HEAD
 	char *file, *text;
+=======
+	char *file, *text = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct wm_adsp_buf *buf;
 	unsigned int reg;
 	int regions = 0;
@@ -677,10 +696,27 @@ static int wm_adsp_load(struct wm_adsp *dsp)
 			 regions, le32_to_cpu(region->len), offset,
 			 region_name);
 
+<<<<<<< HEAD
+=======
+		if ((pos + le32_to_cpu(region->len) + sizeof(*region)) >
+		    firmware->size) {
+			adsp_err(dsp,
+				 "%s.%d: %s region len %d bytes exceeds file length %zu\n",
+				 file, regions, region_name,
+				 le32_to_cpu(region->len), firmware->size);
+			ret = -EINVAL;
+			goto out_fw;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (text) {
 			memcpy(text, region->data, le32_to_cpu(region->len));
 			adsp_info(dsp, "%s: %s\n", file, text);
 			kfree(text);
+<<<<<<< HEAD
+=======
+			text = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (reg) {
@@ -737,6 +773,10 @@ out_fw:
 	regmap_async_complete(regmap);
 	wm_adsp_buf_free(&buf_list);
 	release_firmware(firmware);
+<<<<<<< HEAD
+=======
+	kfree(text);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	kfree(file);
 
@@ -1316,6 +1356,20 @@ static int wm_adsp_load_coeff(struct wm_adsp *dsp)
 		}
 
 		if (reg) {
+<<<<<<< HEAD
+=======
+			if ((pos + le32_to_cpu(blk->len) + sizeof(*blk)) >
+			    firmware->size) {
+				adsp_err(dsp,
+					 "%s.%d: %s region len %d bytes exceeds file length %zu\n",
+					 file, blocks, region_name,
+					 le32_to_cpu(blk->len),
+					 firmware->size);
+				ret = -EINVAL;
+				goto out_fw;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			buf = wm_adsp_buf_alloc(blk->data,
 						le32_to_cpu(blk->len),
 						&buf_list);

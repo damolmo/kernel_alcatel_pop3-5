@@ -1058,6 +1058,10 @@ process_filter(struct event_format *event, struct filter_arg **parg,
 					*parg = current_op;
 				else
 					*parg = current_exp;
+<<<<<<< HEAD
+=======
+				free(token);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return PEVENT_ERRNO__UNBALANCED_PAREN;
 			}
 			break;
@@ -1163,11 +1167,20 @@ process_filter(struct event_format *event, struct filter_arg **parg,
 		current_op = current_exp;
 
 	ret = collapse_tree(current_op, parg, error_str);
+<<<<<<< HEAD
 	if (ret < 0)
 		goto fail;
 
 	*parg = current_op;
 
+=======
+	/* collapse_tree() may free current_op, and updates parg accordingly */
+	current_op = NULL;
+	if (ret < 0)
+		goto fail;
+
+	free(token);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
  fail_alloc:
@@ -1482,8 +1495,15 @@ static int copy_filter_type(struct event_filter *filter,
 	if (strcmp(str, "TRUE") == 0 || strcmp(str, "FALSE") == 0) {
 		/* Add trivial event */
 		arg = allocate_arg();
+<<<<<<< HEAD
 		if (arg == NULL)
 			return -1;
+=======
+		if (arg == NULL) {
+			free(str);
+			return -1;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		arg->type = FILTER_ARG_BOOLEAN;
 		if (strcmp(str, "TRUE") == 0)
@@ -1492,8 +1512,16 @@ static int copy_filter_type(struct event_filter *filter,
 			arg->boolean.value = 0;
 
 		filter_type = add_filter_type(filter, event->id);
+<<<<<<< HEAD
 		if (filter_type == NULL)
 			return -1;
+=======
+		if (filter_type == NULL) {
+			free(str);
+			free_arg(arg);
+			return -1;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		filter_type->filter = arg;
 
@@ -1865,17 +1893,35 @@ static const char *get_field_str(struct filter_arg *arg, struct pevent_record *r
 	struct pevent *pevent;
 	unsigned long long addr;
 	const char *val = NULL;
+<<<<<<< HEAD
+=======
+	unsigned int size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char hex[64];
 
 	/* If the field is not a string convert it */
 	if (arg->str.field->flags & FIELD_IS_STRING) {
 		val = record->data + arg->str.field->offset;
+<<<<<<< HEAD
+=======
+		size = arg->str.field->size;
+
+		if (arg->str.field->flags & FIELD_IS_DYNAMIC) {
+			addr = *(unsigned int *)val;
+			val = record->data + (addr & 0xffff);
+			size = addr >> 16;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * We need to copy the data since we can't be sure the field
 		 * is null terminated.
 		 */
+<<<<<<< HEAD
 		if (*(val + arg->str.field->size - 1)) {
+=======
+		if (*(val + size - 1)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* copy it */
 			memcpy(arg->str.buffer, val, arg->str.field->size);
 			/* the buffer is already NULL terminated */

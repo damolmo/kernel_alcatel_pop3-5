@@ -11,11 +11,19 @@
 #define CP0_EBASE $15, 1
 
 	.macro  kernel_entry_setup
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mfc0	t0, CP0_EBASE
 	andi	t0, t0, 0x3ff		# CPUNum
 	beqz	t0, 1f
 	# CPUs other than zero goto smp_bootstrap
 	j	smp_bootstrap
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_SMP */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 1:
 	.endm

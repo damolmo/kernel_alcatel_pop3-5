@@ -47,8 +47,15 @@ p_end:		.long	_end
 p_pstack:	.long	_platform_stack_top
 #endif
 
+<<<<<<< HEAD
 	.weak	_zimage_start
 	.globl	_zimage_start
+=======
+	.globl	_zimage_start
+	/* Clang appears to require the .weak directive to be after the symbol
+	 * is defined. See https://bugs.llvm.org/show_bug.cgi?id=38921  */
+	.weak	_zimage_start
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 _zimage_start:
 	.globl	_zimage_start_lib
 _zimage_start_lib:

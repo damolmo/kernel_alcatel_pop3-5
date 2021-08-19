@@ -67,7 +67,12 @@ struct kmem_cache {
 	int size;		/* The size of an object including meta data */
 	int object_size;	/* The size of an object without meta data */
 	int offset;		/* Free pointer offset. */
+<<<<<<< HEAD
 	int cpu_partial;	/* Number of per cpu partial objects to keep around */
+=======
+	/* Number of per cpu partial objects to keep around */
+	unsigned int cpu_partial;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct kmem_cache_order_objects oo;
 
 	/* Allocation and freeing of slabs */
@@ -81,6 +86,10 @@ struct kmem_cache {
 	int reserved;		/* Reserved bytes at the end of slabs */
 	const char *name;	/* Name (only for display!) */
 	struct list_head list;	/* List of slab caches */
+<<<<<<< HEAD
+=======
+	int red_left_pad;	/* Left redzone padding size */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_SYSFS
 	struct kobject kobj;	/* For sysfs */
 #endif

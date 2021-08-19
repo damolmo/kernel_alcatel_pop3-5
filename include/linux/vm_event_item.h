@@ -24,7 +24,11 @@
 enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		FOR_ALL_ZONES(PGALLOC),
 		PGFREE, PGACTIVATE, PGDEACTIVATE,
+<<<<<<< HEAD
 		PGFAULT, PGMAJFAULT, PGFMFAULT,
+=======
+		PGFAULT, PGMAJFAULT,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		FOR_ALL_ZONES(PGREFILL),
 		FOR_ALL_ZONES(PGSTEAL_KSWAPD),
 		FOR_ALL_ZONES(PGSTEAL_DIRECT),
@@ -80,10 +84,15 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #endif
 #endif
 #ifdef CONFIG_DEBUG_TLBFLUSH
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 		NR_TLB_REMOTE_FLUSH,	/* cpu tried to flush others' tlbs */
 		NR_TLB_REMOTE_FLUSH_RECEIVED,/* cpu received ipi for flush */
 #endif /* CONFIG_SMP */
+=======
+		NR_TLB_REMOTE_FLUSH,	/* cpu tried to flush others' tlbs */
+		NR_TLB_REMOTE_FLUSH_RECEIVED,/* cpu received ipi for flush */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		NR_TLB_LOCAL_FLUSH_ALL,
 		NR_TLB_LOCAL_FLUSH_ONE,
 #endif /* CONFIG_DEBUG_TLBFLUSH */

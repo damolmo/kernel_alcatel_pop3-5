@@ -1304,8 +1304,14 @@ static void handle_irq_ucode_debug(struct b43legacy_wldev *dev)
 }
 
 /* Interrupt handler bottom-half */
+<<<<<<< HEAD
 static void b43legacy_interrupt_tasklet(struct b43legacy_wldev *dev)
 {
+=======
+static void b43legacy_interrupt_tasklet(unsigned long data)
+{
+	struct b43legacy_wldev *dev = (struct b43legacy_wldev *)data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 reason;
 	u32 dma_reason[ARRAY_SIZE(dev->dma_reason)];
 	u32 merged_dma_reason = 0;
@@ -3779,7 +3785,11 @@ static int b43legacy_one_core_attach(struct ssb_device *dev,
 	b43legacy_set_status(wldev, B43legacy_STAT_UNINIT);
 	wldev->bad_frames_preempt = modparam_bad_frames_preempt;
 	tasklet_init(&wldev->isr_tasklet,
+<<<<<<< HEAD
 		     (void (*)(unsigned long))b43legacy_interrupt_tasklet,
+=======
+		     b43legacy_interrupt_tasklet,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		     (unsigned long)wldev);
 	if (modparam_pio)
 		wldev->__using_pio = true;
@@ -3837,7 +3847,13 @@ static int b43legacy_wireless_init(struct ssb_device *dev)
 
 	/* fill hw info */
 	hw->flags = IEEE80211_HW_RX_INCLUDES_FCS |
+<<<<<<< HEAD
 		    IEEE80211_HW_SIGNAL_DBM;
+=======
+		    IEEE80211_HW_SIGNAL_DBM |
+		    IEEE80211_HW_MFP_CAPABLE; /* Allow WPA3 in software */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hw->wiphy->interface_modes =
 		BIT(NL80211_IFTYPE_AP) |
 		BIT(NL80211_IFTYPE_STATION) |

@@ -958,6 +958,10 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 	const struct edt_ft5x06_platform_data *pdata =
 						dev_get_platdata(&client->dev);
 	struct edt_ft5x06_ts_data *tsdata;
+<<<<<<< HEAD
+=======
+	u8 buf[2] = { 0xfc, 0x00 };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct input_dev *input;
 	int error;
 	char fw_version[EDT_NAME_LEN];
@@ -1015,6 +1019,15 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 		return error;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Dummy read access. EP0700MLP1 returns bogus data on the first
+	 * register read access and ignores writes.
+	 */
+	edt_ft5x06_ts_readwrite(tsdata->client, 2, buf, 2, buf);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	edt_ft5x06_ts_set_regs(tsdata);
 
 	if (!pdata)

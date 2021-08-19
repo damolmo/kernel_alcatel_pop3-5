@@ -263,6 +263,10 @@ struct header_ops {
 	void	(*cache_update)(struct hh_cache *hh,
 				const struct net_device *dev,
 				const unsigned char *haddr);
+<<<<<<< HEAD
+=======
+	bool	(*validate)(const char *ll_header, unsigned int len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* These flag bits are private to the generic network queueing
@@ -495,7 +499,10 @@ static inline void napi_enable(struct napi_struct *n)
 	clear_bit(NAPI_STATE_SCHED, &n->state);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	napi_synchronize - wait until NAPI is not running
  *	@n: napi context
@@ -506,12 +513,21 @@ static inline void napi_enable(struct napi_struct *n)
  */
 static inline void napi_synchronize(const struct napi_struct *n)
 {
+<<<<<<< HEAD
 	while (test_bit(NAPI_STATE_SCHED, &n->state))
 		msleep(1);
 }
 #else
 # define napi_synchronize(n)	barrier()
 #endif
+=======
+	if (IS_ENABLED(CONFIG_SMP))
+		while (test_bit(NAPI_STATE_SCHED, &n->state))
+			msleep(1);
+	else
+		barrier();
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 enum netdev_queue_state_t {
 	__QUEUE_STATE_DRV_XOFF,
@@ -859,6 +875,14 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
  * int (*ndo_set_vf_link_state)(struct net_device *dev, int vf, int link_state);
  * int (*ndo_set_vf_port)(struct net_device *dev, int vf,
  *			  struct nlattr *port[]);
+<<<<<<< HEAD
+=======
+ *
+ *      Enable or disable the VF ability to query its RSS Redirection Table and
+ *      Hash Key. This is needed since on some devices VF share this information
+ *      with PF and querying it may adduce a theoretical security risk.
+ * int (*ndo_set_vf_rss_query_en)(struct net_device *dev, int vf, bool setting);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * int (*ndo_get_vf_port)(struct net_device *dev, int vf, struct sk_buff *skb);
  * int (*ndo_setup_tc)(struct net_device *dev, u8 tc)
  * 	Called to setup 'tc' number of traffic classes in the net device. This
@@ -1071,6 +1095,12 @@ struct net_device_ops {
 						   struct nlattr *port[]);
 	int			(*ndo_get_vf_port)(struct net_device *dev,
 						   int vf, struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+	int			(*ndo_set_vf_rss_query_en)(
+						   struct net_device *dev,
+						   int vf, bool setting);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int			(*ndo_setup_tc)(struct net_device *dev, u8 tc);
 #if IS_ENABLED(CONFIG_FCOE)
 	int			(*ndo_fcoe_enable)(struct net_device *dev);
@@ -1321,7 +1351,12 @@ enum netdev_priv_flags {
  *	@dma:		DMA channel
  *	@mtu:		Interface MTU value
  *	@type:		Interface hardware type
+<<<<<<< HEAD
  *	@hard_header_len: Hardware header length
+=======
+ *	@hard_header_len: Maximum hardware header length.
+ *	@min_header_len:  Minimum hardware header length
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  *	@needed_headroom: Extra headroom the hardware may need, but not in all
  *			  cases can this be guaranteed
@@ -1529,9 +1564,21 @@ struct net_device {
 	unsigned char		if_port;
 	unsigned char		dma;
 
+<<<<<<< HEAD
 	unsigned int		mtu;
 	unsigned short		type;
 	unsigned short		hard_header_len;
+=======
+	/* Note : dev->mtu is often read without holding a lock.
+	 * Writers usually hold RTNL.
+	 * It is recommended to use READ_ONCE() to annotate the reads,
+	 * and to use WRITE_ONCE() to annotate the writes.
+	 */
+	unsigned int		mtu;
+	unsigned short		type;
+	unsigned short		hard_header_len;
+	unsigned short		min_header_len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned short		needed_headroom;
 	unsigned short		needed_tailroom;
@@ -1880,6 +1927,7 @@ struct napi_gro_cb {
 	/* Number of segments aggregated. */
 	u16	count;
 
+<<<<<<< HEAD
 	/* This is non-zero if the packet may be of the same flow. */
 	u8	same_flow;
 
@@ -1888,14 +1936,24 @@ struct napi_gro_cb {
 #define NAPI_GRO_FREE		  1
 #define NAPI_GRO_FREE_STOLEN_HEAD 2
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* jiffies when first packet was created/queued */
 	unsigned long age;
 
 	/* Used in ipv6_gro_receive() and foo-over-udp */
 	u16	proto;
 
+<<<<<<< HEAD
 	/* Used in udp_gro_receive */
 	u8	udp_mark:1;
+=======
+	/* This is non-zero if the packet may be of the same flow. */
+	u8	same_flow:1;
+
+	/* Used in tunnel GRO receive */
+	u8	encap_mark:1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* GRO checksum is valid */
 	u8	csum_valid:1;
@@ -1903,9 +1961,25 @@ struct napi_gro_cb {
 	/* Number of checksums via CHECKSUM_UNNECESSARY */
 	u8	csum_cnt:3;
 
+<<<<<<< HEAD
 	/* Used in foo-over-udp, set in udp[46]_gro_receive */
 	u8	is_ipv6:1;
 
+=======
+	/* Free the skb? */
+	u8	free:2;
+#define NAPI_GRO_FREE		  1
+#define NAPI_GRO_FREE_STOLEN_HEAD 2
+
+	/* Used in foo-over-udp, set in udp[46]_gro_receive */
+	u8	is_ipv6:1;
+
+	/* Used in GRE, set in fou/gue_gro_receive */
+	u8	is_fou:1;
+
+	/* 6 bit hole */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
 	__wsum	csum;
 
@@ -2161,14 +2235,27 @@ static inline int skb_gro_header_hard(struct sk_buff *skb, unsigned int hlen)
 	return NAPI_GRO_CB(skb)->frag0_len < hlen;
 }
 
+<<<<<<< HEAD
+=======
+static inline void skb_gro_frag0_invalidate(struct sk_buff *skb)
+{
+	NAPI_GRO_CB(skb)->frag0 = NULL;
+	NAPI_GRO_CB(skb)->frag0_len = 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void *skb_gro_header_slow(struct sk_buff *skb, unsigned int hlen,
 					unsigned int offset)
 {
 	if (!pskb_may_pull(skb, hlen))
 		return NULL;
 
+<<<<<<< HEAD
 	NAPI_GRO_CB(skb)->frag0 = NULL;
 	NAPI_GRO_CB(skb)->frag0_len = 0;
+=======
+	skb_gro_frag0_invalidate(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return skb->data + offset;
 }
 
@@ -2302,6 +2389,29 @@ static inline int dev_rebuild_header(struct sk_buff *skb)
 	return dev->header_ops->rebuild(skb);
 }
 
+<<<<<<< HEAD
+=======
+/* ll_header must have at least hard_header_len allocated */
+static inline bool dev_validate_header(const struct net_device *dev,
+				       char *ll_header, int len)
+{
+	if (likely(len >= dev->hard_header_len))
+		return true;
+	if (len < dev->min_header_len)
+		return false;
+
+	if (capable(CAP_SYS_RAWIO)) {
+		memset(ll_header + len, 0, dev->hard_header_len - len);
+		return true;
+	}
+
+	if (dev->header_ops && dev->header_ops->validate)
+		return dev->header_ops->validate(ll_header, len);
+
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef int gifconf_func_t(struct net_device * dev, char __user * bufptr, int len);
 int register_gifconf(unsigned int family, gifconf_func_t *gifconf);
 static inline int unregister_gifconf(unsigned int family)
@@ -2853,6 +2963,10 @@ static inline void napi_free_frags(struct napi_struct *napi)
 	napi->skb = NULL;
 }
 
+<<<<<<< HEAD
+=======
+bool netdev_is_rx_handler_busy(struct net_device *dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int netdev_rx_handler_register(struct net_device *dev,
 			       rx_handler_func_t *rx_handler,
 			       void *rx_handler_data);
@@ -3057,7 +3171,11 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
 	if (debug_value == 0)	/* no output */
 		return 0;
 	/* set low N bits */
+<<<<<<< HEAD
 	return (1 << debug_value) - 1;
+=======
+	return (1U << debug_value) - 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void __netif_tx_lock(struct netdev_queue *txq, int cpu)
@@ -3179,6 +3297,10 @@ static inline void netif_tx_disable(struct net_device *dev)
 
 	local_bh_disable();
 	cpu = smp_processor_id();
+<<<<<<< HEAD
+=======
+	spin_lock(&dev->tx_global_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < dev->num_tx_queues; i++) {
 		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
 
@@ -3186,6 +3308,10 @@ static inline void netif_tx_disable(struct net_device *dev)
 		netif_tx_stop_queue(txq);
 		__netif_tx_unlock(txq);
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock(&dev->tx_global_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_bh_enable();
 }
 
@@ -3235,6 +3361,12 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 				    unsigned char name_assign_type,
 				    void (*setup)(struct net_device *),
 				    unsigned int txqs, unsigned int rxqs);
+<<<<<<< HEAD
+=======
+int dev_get_valid_name(struct net *net, struct net_device *dev,
+		       const char *name);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define alloc_netdev(sizeof_priv, name, name_assign_type, setup) \
 	alloc_netdev_mqs(sizeof_priv, name, name_assign_type, setup, 1, 1)
 

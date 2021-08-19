@@ -128,10 +128,20 @@ static int sun4i_mdio_probe(struct platform_device *pdev)
 
 	data->regulator = devm_regulator_get(&pdev->dev, "phy");
 	if (IS_ERR(data->regulator)) {
+<<<<<<< HEAD
 		if (PTR_ERR(data->regulator) == -EPROBE_DEFER)
 			return -EPROBE_DEFER;
 
 		dev_info(&pdev->dev, "no regulator found\n");
+=======
+		if (PTR_ERR(data->regulator) == -EPROBE_DEFER) {
+			ret = -EPROBE_DEFER;
+			goto err_out_free_mdiobus;
+		}
+
+		dev_info(&pdev->dev, "no regulator found\n");
+		data->regulator = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		ret = regulator_enable(data->regulator);
 		if (ret)
@@ -147,7 +157,12 @@ static int sun4i_mdio_probe(struct platform_device *pdev)
 	return 0;
 
 err_out_disable_regulator:
+<<<<<<< HEAD
 	regulator_disable(data->regulator);
+=======
+	if (data->regulator)
+		regulator_disable(data->regulator);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_out_free_mdiobus:
 	mdiobus_free(bus);
 	return ret;

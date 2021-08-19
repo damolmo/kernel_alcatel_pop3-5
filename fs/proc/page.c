@@ -12,11 +12,14 @@
 #include <asm/uaccess.h>
 #include "internal.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_SWAP
 #include <linux/swap.h>
 #include <linux/swapops.h>
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define KPMSIZE sizeof(u64)
 #define KPMMASK (KPMSIZE - 1)
 
@@ -32,14 +35,21 @@ static ssize_t kpagecount_read(struct file *file, char __user *buf,
 	struct page *ppage;
 	unsigned long src = *ppos;
 	unsigned long pfn;
+<<<<<<< HEAD
 	unsigned long max_pfn_kpmsize = max_pfn * KPMSIZE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ssize_t ret = 0;
 	u64 pcount;
 
 	pfn = src / KPMSIZE;
+<<<<<<< HEAD
 	if (src != max_pfn_kpmsize)
 		count = min_t(size_t, count, max_pfn_kpmsize - src);
 
+=======
+	count = min_t(size_t, count, (max_pfn * KPMSIZE) - src);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (src & KPMMASK || count & KPMMASK)
 		return -EINVAL;
 
@@ -74,6 +84,7 @@ static const struct file_operations proc_kpagecount_operations = {
 	.read = kpagecount_read,
 };
 
+<<<<<<< HEAD
 /* M for pswap interface */
 #ifdef CONFIG_SWAP
 static inline unsigned char swap_count(unsigned char ent)
@@ -135,6 +146,8 @@ static const struct file_operations proc_kpageswapn_operations = {
 };
 #endif /* CONFIG_SWAP*/
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* /proc/kpageflags - an array exposing page flags
  *
  * Each entry is a u64 representing the corresponding
@@ -250,6 +263,7 @@ static ssize_t kpageflags_read(struct file *file, char __user *buf,
 	struct page *ppage;
 	unsigned long src = *ppos;
 	unsigned long pfn;
+<<<<<<< HEAD
 	unsigned long max_pfn_kpmsize = max_pfn * KPMSIZE;
 	ssize_t ret = 0;
 
@@ -257,6 +271,12 @@ static ssize_t kpageflags_read(struct file *file, char __user *buf,
 	if (src != max_pfn_kpmsize)
 		count = min_t(unsigned long, count, max_pfn_kpmsize - src);
 
+=======
+	ssize_t ret = 0;
+
+	pfn = src / KPMSIZE;
+	count = min_t(unsigned long, count, (max_pfn * KPMSIZE) - src);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (src & KPMMASK || count & KPMMASK)
 		return -EINVAL;
 
@@ -290,9 +310,12 @@ static const struct file_operations proc_kpageflags_operations = {
 static int __init proc_page_init(void)
 {
 	proc_create("kpagecount", S_IRUSR, NULL, &proc_kpagecount_operations);
+<<<<<<< HEAD
 #ifdef CONFIG_SWAP /* M for pswap interface */
 	proc_create("kpageswapn", S_IRUSR, NULL, &proc_kpageswapn_operations);
 #endif /* CONFIG_SWAP*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	proc_create("kpageflags", S_IRUSR, NULL, &proc_kpageflags_operations);
 	return 0;
 }

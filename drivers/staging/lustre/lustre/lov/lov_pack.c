@@ -420,11 +420,15 @@ int lov_getstripe(struct obd_export *exp, struct lov_stripe_md *lsm,
 	struct lov_mds_md *lmmk = NULL;
 	int rc, lmm_size;
 	int lum_size;
+<<<<<<< HEAD
 	mm_segment_t seg;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!lsm)
 		return -ENODATA;
 
+<<<<<<< HEAD
 	/*
 	 * "Switch to kernel segment" to allow copying from kernel space by
 	 * copy_{to,from}_user().
@@ -432,6 +436,8 @@ int lov_getstripe(struct obd_export *exp, struct lov_stripe_md *lsm,
 	seg = get_fs();
 	set_fs(KERNEL_DS);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* we only need the header part from user space to get lmm_magic and
 	 * lmm_stripe_count, (the header part is common to v1 and v3) */
 	lum_size = sizeof(struct lov_user_md_v1);
@@ -507,6 +513,9 @@ int lov_getstripe(struct obd_export *exp, struct lov_stripe_md *lsm,
 
 	obd_free_diskmd(exp, &lmmk);
 out_set:
+<<<<<<< HEAD
 	set_fs(seg);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }

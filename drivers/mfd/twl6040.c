@@ -97,12 +97,25 @@ static struct reg_default twl6040_patch[] = {
 };
 
 
+<<<<<<< HEAD
 static bool twl6040_has_vibra(struct device_node *node)
 {
 #ifdef CONFIG_OF
 	if (of_find_node_by_name(node, "vibra"))
 		return true;
 #endif
+=======
+static bool twl6040_has_vibra(struct device_node *parent)
+{
+	struct device_node *node;
+
+	node = of_get_child_by_name(parent, "vibra");
+	if (node) {
+		of_node_put(node);
+		return true;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return false;
 }
 
@@ -312,8 +325,24 @@ int twl6040_power(struct twl6040 *twl6040, int on)
 			}
 		}
 
+<<<<<<< HEAD
 		/* Sync with the HW */
 		regcache_sync(twl6040->regmap);
+=======
+		/*
+		 * Register access can produce errors after power-up unless we
+		 * wait at least 8ms based on measurements on duovero.
+		 */
+		usleep_range(10000, 12000);
+
+		/* Sync with the HW */
+		ret = regcache_sync(twl6040->regmap);
+		if (ret) {
+			dev_err(twl6040->dev, "Failed to sync with the HW: %i\n",
+				ret);
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Default PLL configuration after power up */
 		twl6040->pll = TWL6040_SYSCLK_SEL_LPPLL;

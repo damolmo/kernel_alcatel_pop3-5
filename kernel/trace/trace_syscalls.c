@@ -523,7 +523,11 @@ unsigned long __init __weak arch_syscall_addr(int nr)
 	return (unsigned long)sys_call_table[nr];
 }
 
+<<<<<<< HEAD
 static int __init init_ftrace_syscalls(void)
+=======
+void __init init_ftrace_syscalls(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct syscall_metadata *meta;
 	unsigned long addr;
@@ -533,7 +537,11 @@ static int __init init_ftrace_syscalls(void)
 				    GFP_KERNEL);
 	if (!syscalls_metadata) {
 		WARN_ON(1);
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	for (i = 0; i < NR_syscalls; i++) {
@@ -545,10 +553,14 @@ static int __init init_ftrace_syscalls(void)
 		meta->syscall_nr = i;
 		syscalls_metadata[i] = meta;
 	}
+<<<<<<< HEAD
 
 	return 0;
 }
 early_initcall(init_ftrace_syscalls);
+=======
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_PERF_EVENTS
 
@@ -586,7 +598,11 @@ static void perf_syscall_enter(void *ignore, struct pt_regs *regs, long id)
 	size -= sizeof(u32);
 
 	rec = (struct syscall_trace_enter *)perf_trace_buf_prepare(size,
+<<<<<<< HEAD
 				sys_data->enter_event->event.type, regs, &rctx);
+=======
+				sys_data->enter_event->event.type, NULL, &rctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!rec)
 		return;
 
@@ -659,7 +675,11 @@ static void perf_syscall_exit(void *ignore, struct pt_regs *regs, long ret)
 	size -= sizeof(u32);
 
 	rec = (struct syscall_trace_exit *)perf_trace_buf_prepare(size,
+<<<<<<< HEAD
 				sys_data->exit_event->event.type, regs, &rctx);
+=======
+				sys_data->exit_event->event.type, NULL, &rctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!rec)
 		return;
 

@@ -34,6 +34,7 @@
 void
 cifs_dump_mem(char *label, void *data, int length)
 {
+<<<<<<< HEAD
 	int i, j;
 	int *intptr = data;
 	char *charptr = data;
@@ -55,6 +56,11 @@ cifs_dump_mem(char *label, void *data, int length)
 		}
 		printk(KERN_DEBUG "%s\n", line);
 	}
+=======
+	pr_debug("%s: dump of %d bytes of data at 0x%p\n", label, length, data);
+	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 16, 4,
+		       data, length, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_CIFS_DEBUG
@@ -68,7 +74,11 @@ void cifs_vfs_err(const char *fmt, ...)
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
+<<<<<<< HEAD
 	printk(KERN_ERR "CIFS VFS: %pV", &vaf);
+=======
+	pr_err_ratelimited("CIFS VFS: %pV", &vaf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	va_end(args);
 }
@@ -141,6 +151,7 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
 	seq_printf(m, "CIFS Version %s\n", CIFS_VERSION);
 	seq_printf(m, "Features:");
 #ifdef CONFIG_CIFS_DFS_UPCALL
+<<<<<<< HEAD
 	seq_printf(m, " dfs");
 #endif
 #ifdef CONFIG_CIFS_FSCACHE
@@ -160,6 +171,43 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
 #endif
 #ifdef CONFIG_CIFS_ACL
 	seq_printf(m, " acl");
+=======
+	seq_printf(m, " DFS");
+#endif
+#ifdef CONFIG_CIFS_FSCACHE
+	seq_printf(m, ",FSCACHE");
+#endif
+#ifdef CONFIG_CIFS_SMB_DIRECT
+	seq_printf(m, ",SMB_DIRECT");
+#endif
+#ifdef CONFIG_CIFS_STATS2
+	seq_printf(m, ",STATS2");
+#elif defined(CONFIG_CIFS_STATS)
+	seq_printf(m, ",STATS");
+#endif
+#ifdef CONFIG_CIFS_DEBUG2
+	seq_printf(m, ",DEBUG2");
+#elif defined(CONFIG_CIFS_DEBUG)
+	seq_printf(m, ",DEBUG");
+#endif
+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+	seq_printf(m, ",ALLOW_INSECURE_LEGACY");
+#endif
+#ifdef CONFIG_CIFS_WEAK_PW_HASH
+	seq_printf(m, ",WEAK_PW_HASH");
+#endif
+#ifdef CONFIG_CIFS_POSIX
+	seq_printf(m, ",CIFS_POSIX");
+#endif
+#ifdef CONFIG_CIFS_UPCALL
+	seq_printf(m, ",UPCALL(SPNEGO)");
+#endif
+#ifdef CONFIG_CIFS_XATTR
+	seq_printf(m, ",XATTR");
+#endif
+#ifdef CONFIG_CIFS_ACL
+	seq_printf(m, ",ACL");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	seq_putc(m, '\n');
 	seq_printf(m, "Active VFS Requests: %d\n", GlobalTotalActiveXid);
@@ -170,6 +218,10 @@ static int cifs_debug_data_proc_show(struct seq_file *m, void *v)
 	list_for_each(tmp1, &cifs_tcp_ses_list) {
 		server = list_entry(tmp1, struct TCP_Server_Info,
 				    tcp_ses_list);
+<<<<<<< HEAD
+=======
+		seq_printf(m, "\nNumber of credits: %d", server->credits);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		i++;
 		list_for_each(tmp2, &server->smb_ses_list) {
 			ses = list_entry(tmp2, struct cifs_ses,
@@ -289,6 +341,16 @@ static ssize_t cifs_stats_proc_write(struct file *file,
 		atomic_set(&totBufAllocCount, 0);
 		atomic_set(&totSmBufAllocCount, 0);
 #endif /* CONFIG_CIFS_STATS2 */
+<<<<<<< HEAD
+=======
+		atomic_set(&tcpSesReconnectCount, 0);
+		atomic_set(&tconInfoReconnectCount, 0);
+
+		spin_lock(&GlobalMid_Lock);
+		GlobalMaxActiveXid = 0;
+		GlobalCurrentXid = 0;
+		spin_unlock(&GlobalMid_Lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock(&cifs_tcp_ses_lock);
 		list_for_each(tmp1, &cifs_tcp_ses_list) {
 			server = list_entry(tmp1, struct TCP_Server_Info,
@@ -301,6 +363,13 @@ static ssize_t cifs_stats_proc_write(struct file *file,
 							  struct cifs_tcon,
 							  tcon_list);
 					atomic_set(&tcon->num_smbs_sent, 0);
+<<<<<<< HEAD
+=======
+					spin_lock(&tcon->stat_lock);
+					tcon->bytes_read = 0;
+					tcon->bytes_written = 0;
+					spin_unlock(&tcon->stat_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					if (server->ops->clear_stats)
 						server->ops->clear_stats(tcon);
 				}

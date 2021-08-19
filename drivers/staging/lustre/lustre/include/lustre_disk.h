@@ -210,6 +210,10 @@ static inline int server_make_name(__u32 flags, __u16 index, char *fs,
    everything as string options */
 
 #define LMD_MAGIC    0xbdacbd03
+<<<<<<< HEAD
+=======
+#define LMD_PARAMS_MAXLEN	4096
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* gleaned from the mount command - no persistent info here */
 struct lustre_mount_data {

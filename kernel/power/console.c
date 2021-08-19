@@ -138,7 +138,10 @@ int pm_prepare_console(void)
 	orig_kmsg = vt_kmsg_redirect(SUSPEND_CONSOLE);
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pm_prepare_console);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void pm_restore_console(void)
 {
@@ -150,4 +153,7 @@ void pm_restore_console(void)
 		vt_kmsg_redirect(orig_kmsg);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pm_restore_console);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

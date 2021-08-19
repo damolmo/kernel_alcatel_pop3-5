@@ -161,7 +161,11 @@ static void flctl_setup_dma(struct sh_flctl *flctl)
 	memset(&cfg, 0, sizeof(cfg));
 	cfg.slave_id = pdata->slave_id_fifo0_tx;
 	cfg.direction = DMA_MEM_TO_DEV;
+<<<<<<< HEAD
 	cfg.dst_addr = (dma_addr_t)FLDTFIFO(flctl);
+=======
+	cfg.dst_addr = flctl->fifo;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cfg.src_addr = 0;
 	ret = dmaengine_slave_config(flctl->chan_fifo0_tx, &cfg);
 	if (ret < 0)
@@ -178,7 +182,11 @@ static void flctl_setup_dma(struct sh_flctl *flctl)
 	cfg.slave_id = pdata->slave_id_fifo0_rx;
 	cfg.direction = DMA_DEV_TO_MEM;
 	cfg.dst_addr = 0;
+<<<<<<< HEAD
 	cfg.src_addr = (dma_addr_t)FLDTFIFO(flctl);
+=======
+	cfg.src_addr = flctl->fifo;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = dmaengine_slave_config(flctl->chan_fifo0_rx, &cfg);
 	if (ret < 0)
 		goto err;
@@ -430,7 +438,11 @@ static void read_fiforeg(struct sh_flctl *flctl, int rlen, int offset)
 
 	/* initiate DMA transfer */
 	if (flctl->chan_fifo0_rx && rlen >= 32 &&
+<<<<<<< HEAD
 		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_DEV_TO_MEM) > 0)
+=======
+		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_FROM_DEVICE) > 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto convert;	/* DMA success */
 
 	/* do polling transfer */
@@ -489,7 +501,11 @@ static void write_ec_fiforeg(struct sh_flctl *flctl, int rlen,
 
 	/* initiate DMA transfer */
 	if (flctl->chan_fifo0_tx && rlen >= 32 &&
+<<<<<<< HEAD
 		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_MEM_TO_DEV) > 0)
+=======
+		flctl_dma_fifo0_transfer(flctl, buf, rlen, DMA_TO_DEVICE) > 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return;	/* DMA success */
 
 	/* do polling transfer */
@@ -1097,6 +1113,10 @@ static int flctl_probe(struct platform_device *pdev)
 	flctl->reg = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(flctl->reg))
 		return PTR_ERR(flctl->reg);
+<<<<<<< HEAD
+=======
+	flctl->fifo = res->start + 0x24; /* FLDTFIFO */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {

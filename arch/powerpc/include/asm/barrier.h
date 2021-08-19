@@ -39,7 +39,12 @@
 
 #ifdef CONFIG_SMP
 
+<<<<<<< HEAD
 #ifdef __SUBARCH_HAS_LWSYNC
+=======
+/* The sub-arch has lwsync */
+#if defined(__powerpc64__) || defined(CONFIG_PPC_E500MC)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #    define SMPWMB      LWSYNC
 #else
 #    define SMPWMB      eieio

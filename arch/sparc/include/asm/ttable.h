@@ -589,8 +589,13 @@ user_rtt_fill_64bit:					\
 	 restored;					\
 	nop; nop; nop; nop; nop; nop;			\
 	nop; nop; nop; nop; nop;			\
+<<<<<<< HEAD
 	ba,a,pt	%xcc, user_rtt_fill_fixup;		\
 	ba,a,pt	%xcc, user_rtt_fill_fixup;		\
+=======
+	ba,a,pt	%xcc, user_rtt_fill_fixup_dax;		\
+	ba,a,pt	%xcc, user_rtt_fill_fixup_mna;		\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ba,a,pt	%xcc, user_rtt_fill_fixup;
 
 
@@ -652,8 +657,13 @@ user_rtt_fill_32bit:					\
 	 restored;					\
 	nop; nop; nop; nop; nop;			\
 	nop; nop; nop;					\
+<<<<<<< HEAD
 	ba,a,pt	%xcc, user_rtt_fill_fixup;		\
 	ba,a,pt	%xcc, user_rtt_fill_fixup;		\
+=======
+	ba,a,pt	%xcc, user_rtt_fill_fixup_dax;		\
+	ba,a,pt	%xcc, user_rtt_fill_fixup_mna;		\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ba,a,pt	%xcc, user_rtt_fill_fixup;
 
 

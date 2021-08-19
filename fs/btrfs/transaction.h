@@ -88,7 +88,10 @@ struct btrfs_trans_handle {
 	u64 qgroup_reserved;
 	unsigned long use_count;
 	unsigned long blocks_reserved;
+<<<<<<< HEAD
 	unsigned long blocks_used;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long delayed_ref_updates;
 	struct btrfs_transaction *transaction;
 	struct btrfs_block_rsv *block_rsv;
@@ -98,6 +101,10 @@ struct btrfs_trans_handle {
 	bool allocating_chunk;
 	bool reloc_reserved;
 	bool sync;
+<<<<<<< HEAD
+=======
+	bool dirty;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int type;
 	/*
 	 * this root is only needed to validate that the root passed to

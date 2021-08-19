@@ -33,17 +33,29 @@ static int is_io_mapping_possible(resource_size_t base, unsigned long size)
 
 int iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot)
 {
+<<<<<<< HEAD
 	unsigned long flag = _PAGE_CACHE_WC;
+=======
+	enum page_cache_mode pcm = _PAGE_CACHE_MODE_WC;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 
 	if (!is_io_mapping_possible(base, size))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = io_reserve_memtype(base, base + size, &flag);
 	if (ret)
 		return ret;
 
 	*prot = __pgprot(__PAGE_KERNEL | flag);
+=======
+	ret = io_reserve_memtype(base, base + size, &pcm);
+	if (ret)
+		return ret;
+
+	*prot = __pgprot(__PAGE_KERNEL | cachemode2protval(pcm));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL_GPL(iomap_create_wc);
@@ -82,8 +94,15 @@ iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
 	 * MTRR is UC or WC.  UC_MINUS gets the real intention, of the
 	 * user, which is "WC if the MTRR is WC, UC if you can't do that."
 	 */
+<<<<<<< HEAD
 	if (!pat_enabled && pgprot_val(prot) == pgprot_val(PAGE_KERNEL_WC))
 		prot = PAGE_KERNEL_UC_MINUS;
+=======
+	if (!pat_enabled && pgprot_val(prot) ==
+	    (__PAGE_KERNEL | cachemode2protval(_PAGE_CACHE_MODE_WC)))
+		prot = __pgprot(__PAGE_KERNEL |
+				cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return (void __force __iomem *) kmap_atomic_prot_pfn(pfn, prot);
 }

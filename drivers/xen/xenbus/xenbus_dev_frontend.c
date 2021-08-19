@@ -316,16 +316,31 @@ static int xenbus_write_transaction(unsigned msg_type,
 			rc = -ENOMEM;
 			goto out;
 		}
+<<<<<<< HEAD
+=======
+	} else if (u->u.msg.tx_id != 0) {
+		list_for_each_entry(trans, &u->transactions, list)
+			if (trans->handle.id == u->u.msg.tx_id)
+				break;
+		if (&trans->list == &u->transactions)
+			return -ESRCH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	reply = xenbus_dev_request_and_reply(&u->u.msg);
 	if (IS_ERR(reply)) {
+<<<<<<< HEAD
 		kfree(trans);
+=======
+		if (msg_type == XS_TRANSACTION_START)
+			kfree(trans);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rc = PTR_ERR(reply);
 		goto out;
 	}
 
 	if (msg_type == XS_TRANSACTION_START) {
+<<<<<<< HEAD
 		trans->handle.id = simple_strtoul(reply, NULL, 0);
 
 		list_add(&trans->list, &u->transactions);
@@ -336,6 +351,16 @@ static int xenbus_write_transaction(unsigned msg_type,
 		BUG_ON(&trans->list == &u->transactions);
 		list_del(&trans->list);
 
+=======
+		if (u->u.msg.type == XS_ERROR)
+			kfree(trans);
+		else {
+			trans->handle.id = simple_strtoul(reply, NULL, 0);
+			list_add(&trans->list, &u->transactions);
+		}
+	} else if (u->u.msg.type == XS_TRANSACTION_END) {
+		list_del(&trans->list);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(trans);
 	}
 
@@ -531,7 +556,11 @@ static int xenbus_file_open(struct inode *inode, struct file *filp)
 	if (xen_store_evtchn == 0)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	nonseekable_open(inode, filp);
+=======
+	stream_open(inode, filp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	u = kzalloc(sizeof(*u), GFP_KERNEL);
 	if (u == NULL)

@@ -34,6 +34,11 @@ void nft_reject_ipv6_eval(const struct nft_expr *expr,
 	case NFT_REJECT_TCP_RST:
 		nf_send_reset6(net, pkt->skb, pkt->ops->hooknum);
 		break;
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	data[NFT_REG_VERDICT].verdict = NF_DROP;

@@ -135,7 +135,11 @@ static void (*handlers[_NSIG])(int sig, struct siginfo *si, mcontext_t *mc) = {
 
 static void hard_handler(int sig, siginfo_t *si, void *p)
 {
+<<<<<<< HEAD
 	struct ucontext *uc = p;
+=======
+	ucontext_t *uc = p;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mcontext_t *mc = &uc->uc_mcontext;
 	unsigned long pending = 1UL << sig;
 

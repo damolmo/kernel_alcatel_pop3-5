@@ -130,10 +130,13 @@ static const struct smb_to_posix_error mapping_table_ERRSRV[] = {
 	{0, 0}
 };
 
+<<<<<<< HEAD
 static const struct smb_to_posix_error mapping_table_ERRHRD[] = {
 	{0, 0}
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Convert a string containing text IPv4 or IPv6 address to binary form.
  *
@@ -926,6 +929,10 @@ cifs_NTtimeToUnix(__le64 ntutc)
 
 	/* Subtract the NTFS time offset, then convert to 1s intervals. */
 	s64 t = le64_to_cpu(ntutc) - NTFS_TIME_OFFSET;
+<<<<<<< HEAD
+=======
+	u64 abs_t;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Unfortunately can not use normal 64 bit division on 32 bit arch, but
@@ -933,6 +940,7 @@ cifs_NTtimeToUnix(__le64 ntutc)
 	 * to special case them
 	 */
 	if (t < 0) {
+<<<<<<< HEAD
 		t = -t;
 		ts.tv_nsec = (long)(do_div(t, 10000000) * 100);
 		ts.tv_nsec = -ts.tv_nsec;
@@ -940,6 +948,16 @@ cifs_NTtimeToUnix(__le64 ntutc)
 	} else {
 		ts.tv_nsec = (long)do_div(t, 10000000) * 100;
 		ts.tv_sec = t;
+=======
+		abs_t = -t;
+		ts.tv_nsec = (long)(do_div(abs_t, 10000000) * 100);
+		ts.tv_nsec = -ts.tv_nsec;
+		ts.tv_sec = -abs_t;
+	} else {
+		abs_t = t;
+		ts.tv_nsec = (long)do_div(abs_t, 10000000) * 100;
+		ts.tv_sec = abs_t;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return ts;
@@ -978,10 +996,17 @@ struct timespec cnvrtDosUnixTm(__le16 le_date, __le16 le_time, int offset)
 		cifs_dbg(VFS, "illegal hours %d\n", st->Hours);
 	days = sd->Day;
 	month = sd->Month;
+<<<<<<< HEAD
 	if ((days > 31) || (month > 12)) {
 		cifs_dbg(VFS, "illegal date, month %d day: %d\n", month, days);
 		if (month > 12)
 			month = 12;
+=======
+	if (days < 1 || days > 31 || month < 1 || month > 12) {
+		cifs_dbg(VFS, "illegal date, month %d day: %d\n", month, days);
+		days = clamp(days, 1, 31);
+		month = clamp(month, 1, 12);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	month -= 1;
 	days += total_days_of_prev_months[month];

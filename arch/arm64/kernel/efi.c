@@ -11,6 +11,7 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/efi.h>
 #include <linux/export.h>
 #include <linux/memblock.h>
@@ -19,11 +20,29 @@
 #include <linux/of_fdt.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+=======
+#include <linux/atomic.h>
+#include <linux/dmi.h>
+#include <linux/efi.h>
+#include <linux/export.h>
+#include <linux/memblock.h>
+#include <linux/mm_types.h>
+#include <linux/bootmem.h>
+#include <linux/of.h>
+#include <linux/of_fdt.h>
+#include <linux/preempt.h>
+#include <linux/rbtree.h>
+#include <linux/rwsem.h>
+#include <linux/sched.h>
+#include <linux/slab.h>
+#include <linux/spinlock.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/cacheflush.h>
 #include <asm/efi.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
 
 struct efi_memory_map memmap;
 
@@ -31,6 +50,27 @@ static efi_runtime_services_t *runtime;
 
 static u64 efi_system_table;
 
+=======
+#include <asm/mmu.h>
+#include <asm/pgtable.h>
+
+struct efi_memory_map memmap;
+
+static u64 efi_system_table;
+
+static pgd_t efi_pgd[PTRS_PER_PGD] __page_aligned_bss;
+
+static struct mm_struct efi_mm = {
+	.mm_rb			= RB_ROOT,
+	.pgd			= efi_pgd,
+	.mm_users		= ATOMIC_INIT(2),
+	.mm_count		= ATOMIC_INIT(1),
+	.mmap_sem		= __RWSEM_INITIALIZER(efi_mm.mmap_sem),
+	.page_table_lock	= __SPIN_LOCK_UNLOCKED(efi_mm.page_table_lock),
+	.mmlist			= LIST_HEAD_INIT(efi_mm.mmlist),
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int uefi_debug __initdata;
 static int __init uefi_debug_setup(char *str)
 {
@@ -47,6 +87,7 @@ static int __init is_normal_ram(efi_memory_desc_t *md)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init efi_setup_idmap(void)
 {
 	struct memblock_region *r;
@@ -66,11 +107,38 @@ static void __init efi_setup_idmap(void)
 		size = npages << PAGE_SHIFT;
 		create_id_mapping(paddr, size, 1);
 	}
+=======
+/*
+ * Translate a EFI virtual address into a physical address: this is necessary,
+ * as some data members of the EFI system table are virtually remapped after
+ * SetVirtualAddressMap() has been called.
+ */
+static phys_addr_t efi_to_phys(unsigned long addr)
+{
+	efi_memory_desc_t *md;
+
+	for_each_efi_memory_desc(&memmap, md) {
+		if (!(md->attribute & EFI_MEMORY_RUNTIME))
+			continue;
+		if (md->virt_addr == 0)
+			/* no virtual mapping has been installed by the stub */
+			break;
+		if (md->virt_addr <= addr &&
+		    (addr - md->virt_addr) < (md->num_pages << EFI_PAGE_SHIFT))
+			return md->phys_addr + addr - md->virt_addr;
+	}
+	return addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __init uefi_init(void)
 {
 	efi_char16_t *c16;
+<<<<<<< HEAD
+=======
+	void *config_tables;
+	u64 table_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char vendor[100] = "unknown";
 	int i, retval;
 
@@ -98,7 +166,11 @@ static int __init uefi_init(void)
 			efi.systab->hdr.revision & 0xffff);
 
 	/* Show what we know for posterity */
+<<<<<<< HEAD
 	c16 = early_memremap(efi.systab->fw_vendor,
+=======
+	c16 = early_memremap(efi_to_phys(efi.systab->fw_vendor),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			     sizeof(vendor));
 	if (c16) {
 		for (i = 0; i < (int) sizeof(vendor) - 1 && *c16; ++i)
@@ -111,10 +183,21 @@ static int __init uefi_init(void)
 		efi.systab->hdr.revision >> 16,
 		efi.systab->hdr.revision & 0xffff, vendor);
 
+<<<<<<< HEAD
 	retval = efi_config_init(NULL);
 	if (retval == 0)
 		set_bit(EFI_CONFIG_TABLES, &efi.flags);
 
+=======
+	table_size = sizeof(efi_config_table_64_t) * efi.systab->nr_tables;
+	config_tables = early_memremap(efi_to_phys(efi.systab->tables),
+				       table_size);
+
+	retval = efi_config_parse_tables(config_tables, efi.systab->nr_tables,
+					 sizeof(efi_config_table_64_t), NULL);
+
+	early_memunmap(config_tables, table_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	early_memunmap(efi.systab,  sizeof(efi_system_table_t));
 	return retval;
@@ -125,6 +208,7 @@ out:
  */
 static __init int is_reserve_region(efi_memory_desc_t *md)
 {
+<<<<<<< HEAD
 	if (!is_normal_ram(md))
 		return 0;
 
@@ -136,6 +220,19 @@ static __init int is_reserve_region(efi_memory_desc_t *md)
 		return 1;
 
 	return 0;
+=======
+	switch (md->type) {
+	case EFI_LOADER_CODE:
+	case EFI_LOADER_DATA:
+	case EFI_BOOT_SERVICES_CODE:
+	case EFI_BOOT_SERVICES_DATA:
+	case EFI_CONVENTIONAL_MEMORY:
+		return 0;
+	default:
+		break;
+	}
+	return is_normal_ram(md);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static __init void reserve_regions(void)
@@ -164,9 +261,13 @@ static __init void reserve_regions(void)
 		if (is_normal_ram(md))
 			early_init_dt_add_memory_arch(paddr, size);
 
+<<<<<<< HEAD
 		if (is_reserve_region(md) ||
 		    md->type == EFI_BOOT_SERVICES_CODE ||
 		    md->type == EFI_BOOT_SERVICES_DATA) {
+=======
+		if (is_reserve_region(md)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			memblock_reserve(paddr, size);
 			if (uefi_debug)
 				pr_cont("*");
@@ -179,6 +280,7 @@ static __init void reserve_regions(void)
 	set_bit(EFI_MEMMAP, &efi.flags);
 }
 
+<<<<<<< HEAD
 
 static u64 __init free_one_region(u64 start, u64 end)
 {
@@ -296,6 +398,8 @@ static void __init free_boot_services(void)
 			total_freed);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __init efi_init(void)
 {
 	struct efi_fdt_params params;
@@ -318,6 +422,7 @@ void __init efi_init(void)
 		return;
 
 	reserve_regions();
+<<<<<<< HEAD
 }
 
 void __init efi_idmap_init(void)
@@ -375,20 +480,78 @@ static int __init arm64_enter_virtual_mode(void)
 	u64 mapsize;
 	int count = 0;
 	unsigned long flags;
+=======
+	early_memunmap(memmap.map, params.mmap_size);
+}
+
+static bool __init efi_virtmap_init(void)
+{
+	efi_memory_desc_t *md;
+
+	init_new_context(NULL, &efi_mm);
+
+	for_each_efi_memory_desc(&memmap, md) {
+		u64 paddr, npages, size;
+		pgprot_t prot;
+
+		if (!(md->attribute & EFI_MEMORY_RUNTIME))
+			continue;
+		if (md->virt_addr == 0)
+			return false;
+
+		paddr = md->phys_addr;
+		npages = md->num_pages;
+		memrange_efi_to_native(&paddr, &npages);
+		size = npages << PAGE_SHIFT;
+
+		pr_info("  EFI remap 0x%016llx => %p\n",
+			md->phys_addr, (void *)md->virt_addr);
+
+		/*
+		 * Only regions of type EFI_RUNTIME_SERVICES_CODE need to be
+		 * executable, everything else can be mapped with the XN bits
+		 * set.
+		 */
+		if (!is_normal_ram(md))
+			prot = __pgprot(PROT_DEVICE_nGnRE);
+		else if (md->type == EFI_RUNTIME_SERVICES_CODE)
+			prot = PAGE_KERNEL_EXEC;
+		else
+			prot = PAGE_KERNEL;
+
+		create_pgd_mapping(&efi_mm, paddr, md->virt_addr, size,
+				   __pgprot(pgprot_val(prot) | PTE_NG));
+	}
+	return true;
+}
+
+/*
+ * Enable the UEFI Runtime Services if all prerequisites are in place, i.e.,
+ * non-early mapping of the UEFI system table and virtual mappings for all
+ * EFI_MEMORY_RUNTIME regions.
+ */
+static int __init arm64_enable_runtime_services(void)
+{
+	u64 mapsize;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!efi_enabled(EFI_BOOT)) {
 		pr_info("EFI services will not be available.\n");
 		return -1;
 	}
 
+<<<<<<< HEAD
 	mapsize = memmap.map_end - memmap.map;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (efi_runtime_disabled()) {
 		pr_info("EFI runtime services will be disabled.\n");
 		return -1;
 	}
 
 	pr_info("Remapping and enabling EFI services.\n");
+<<<<<<< HEAD
 	/* replace early memmap mapping with permanent mapping */
 	memmap.map = (__force void *)ioremap_cache((phys_addr_t)memmap.phys_map,
 						   mapsize);
@@ -449,17 +612,44 @@ static int __init arm64_enter_virtual_mode(void)
 	if (status != EFI_SUCCESS) {
 		pr_err("Failed to set EFI virtual address map! [%lx]\n",
 			status);
+=======
+
+	mapsize = memmap.map_end - memmap.map;
+	memmap.map = (__force void *)ioremap_cache((phys_addr_t)memmap.phys_map,
+						   mapsize);
+	if (!memmap.map) {
+		pr_err("Failed to remap EFI memory map\n");
+		return -1;
+	}
+	memmap.map_end = memmap.map + mapsize;
+	efi.memmap = &memmap;
+
+	efi.systab = (__force void *)ioremap_cache(efi_system_table,
+						   sizeof(efi_system_table_t));
+	if (!efi.systab) {
+		pr_err("Failed to remap EFI System Table\n");
+		return -1;
+	}
+	set_bit(EFI_SYSTEM_TABLES, &efi.flags);
+
+	if (!efi_virtmap_init()) {
+		pr_err("No UEFI virtual mapping was installed -- runtime services will not be available\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -1;
 	}
 
 	/* Set up runtime services function pointers */
+<<<<<<< HEAD
 	runtime = efi.systab->runtime;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	efi_native_runtime_setup();
 	set_bit(EFI_RUNTIME_SERVICES, &efi.flags);
 
 	efi.runtime_version = efi.systab->hdr.revision;
 
 	return 0;
+<<<<<<< HEAD
 
 err_unmap:
 	/* unmap all mappings that succeeded: there are 'count' of those */
@@ -471,3 +661,63 @@ err_unmap:
 	return -1;
 }
 early_initcall(arm64_enter_virtual_mode);
+=======
+}
+early_initcall(arm64_enable_runtime_services);
+
+static int __init arm64_dmi_init(void)
+{
+	/*
+	 * On arm64, DMI depends on UEFI, and dmi_scan_machine() needs to
+	 * be called early because dmi_id_init(), which is an arch_initcall
+	 * itself, depends on dmi_scan_machine() having been called already.
+	 */
+	dmi_scan_machine();
+	if (dmi_available)
+		dmi_set_dump_stack_arch_desc();
+	return 0;
+}
+core_initcall(arm64_dmi_init);
+
+static void efi_set_pgd(struct mm_struct *mm)
+{
+	__switch_mm(mm);
+
+	if (system_uses_ttbr0_pan()) {
+		if (mm != current->active_mm) {
+			/*
+			 * Update the current thread's saved ttbr0 since it is
+			 * restored as part of a return from exception. Enable
+			 * access to the valid TTBR0_EL1 and invoke the errata
+			 * workaround directly since there is no return from
+			 * exception when invoking the EFI run-time services.
+			 */
+			update_saved_ttbr0(current, mm);
+			uaccess_ttbr0_enable();
+			post_ttbr_update_workaround();
+		} else {
+			/*
+			 * Defer the switch to the current thread's TTBR0_EL1
+			 * until uaccess_enable(). Restore the current
+			 * thread's saved ttbr0 corresponding to its active_mm
+			 * (if different from init_mm).
+			 */
+			uaccess_ttbr0_disable();
+			if (current->active_mm != &init_mm)
+				update_saved_ttbr0(current, current->active_mm);
+		}
+	}
+}
+
+void efi_virtmap_load(void)
+{
+	preempt_disable();
+	efi_set_pgd(&efi_mm);
+}
+
+void efi_virtmap_unload(void)
+{
+	efi_set_pgd(current->active_mm);
+	preempt_enable();
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

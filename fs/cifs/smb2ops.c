@@ -50,9 +50,19 @@ change_conf(struct TCP_Server_Info *server)
 		break;
 	default:
 		server->echoes = true;
+<<<<<<< HEAD
 		server->oplocks = true;
 		server->echo_credits = 1;
 		server->oplock_credits = 1;
+=======
+		if (enable_oplocks) {
+			server->oplocks = true;
+			server->oplock_credits = 1;
+		} else
+			server->oplocks = false;
+
+		server->echo_credits = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	server->credits -= server->echo_credits + server->oplock_credits;
 	return 0;
@@ -139,14 +149,23 @@ smb2_wait_mtu_credits(struct TCP_Server_Info *server, unsigned int size,
 
 			scredits = server->credits;
 			/* can deadlock with reopen */
+<<<<<<< HEAD
 			if (scredits == 1) {
+=======
+			if (scredits <= 8) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				*num = SMB2_MAX_BUFFER_SIZE;
 				*credits = 0;
 				break;
 			}
 
+<<<<<<< HEAD
 			/* leave one credit for a possible reopen */
 			scredits--;
+=======
+			/* leave some credits for reopen and other ops */
+			scredits -= 8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*num = min_t(unsigned int, size,
 				     scredits * SMB2_MAX_BUFFER_SIZE);
 
@@ -613,6 +632,11 @@ smb2_clone_range(const unsigned int xid,
 			cpu_to_le32(min_t(u32, len, tcon->max_bytes_chunk));
 
 		/* Request server copy to target from src identified by key */
+<<<<<<< HEAD
+=======
+		kfree(retbuf);
+		retbuf = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rc = SMB2_ioctl(xid, tcon, trgtfile->fid.persistent_fid,
 			trgtfile->fid.volatile_fid, FSCTL_SRV_COPYCHUNK_WRITE,
 			true /* is_fsctl */, (char *)pcchunk,
@@ -838,17 +862,29 @@ smb2_query_dir_first(const unsigned int xid, struct cifs_tcon *tcon,
 	rc = SMB2_open(xid, &oparms, utf16_path, &oplock, NULL, NULL);
 	kfree(utf16_path);
 	if (rc) {
+<<<<<<< HEAD
 		cifs_dbg(VFS, "open dir failed\n");
+=======
+		cifs_dbg(FYI, "open dir failed rc=%d\n", rc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return rc;
 	}
 
 	srch_inf->entries_in_buffer = 0;
+<<<<<<< HEAD
 	srch_inf->index_of_last_entry = 0;
+=======
+	srch_inf->index_of_last_entry = 2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rc = SMB2_query_directory(xid, tcon, fid->persistent_fid,
 				  fid->volatile_fid, 0, srch_inf);
 	if (rc) {
+<<<<<<< HEAD
 		cifs_dbg(VFS, "query directory failed\n");
+=======
+		cifs_dbg(FYI, "query directory failed rc=%d\n", rc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		SMB2_close(xid, tcon, fid->persistent_fid, fid->volatile_fid);
 	}
 	return rc;
@@ -892,6 +928,21 @@ smb2_is_status_pending(char *buf, struct TCP_Server_Info *server, int length)
 	return true;
 }
 
+<<<<<<< HEAD
+=======
+static bool
+smb2_is_session_expired(char *buf)
+{
+	struct smb2_hdr *hdr = (struct smb2_hdr *)buf;
+
+	if (hdr->Status != STATUS_NETWORK_SESSION_EXPIRED)
+		return false;
+
+	cifs_dbg(FYI, "Session expired\n");
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int
 smb2_oplock_response(struct cifs_tcon *tcon, struct cifs_fid *fid,
 		     struct cifsInodeInfo *cinode)
@@ -968,6 +1019,12 @@ smb2_new_lease_key(struct cifs_fid *fid)
 	get_random_bytes(fid->lease_key, SMB2_LEASE_KEY_SIZE);
 }
 
+<<<<<<< HEAD
+=======
+#define SMB2_SYMLINK_STRUCT_SIZE \
+	(sizeof(struct smb2_err_rsp) - 1 + sizeof(struct smb2_symlink_err_rsp))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int
 smb2_query_symlink(const unsigned int xid, struct cifs_tcon *tcon,
 		   const char *full_path, char **target_path,
@@ -980,7 +1037,14 @@ smb2_query_symlink(const unsigned int xid, struct cifs_tcon *tcon,
 	struct cifs_fid fid;
 	struct smb2_err_rsp *err_buf = NULL;
 	struct smb2_symlink_err_rsp *symlink;
+<<<<<<< HEAD
 	unsigned int sub_len, sub_offset;
+=======
+	unsigned int sub_len;
+	unsigned int sub_offset;
+	unsigned int print_len;
+	unsigned int print_offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cifs_dbg(FYI, "%s: path: %s\n", __func__, full_path);
 
@@ -1001,11 +1065,39 @@ smb2_query_symlink(const unsigned int xid, struct cifs_tcon *tcon,
 		kfree(utf16_path);
 		return -ENOENT;
 	}
+<<<<<<< HEAD
+=======
+
+	if (le32_to_cpu(err_buf->ByteCount) < sizeof(struct smb2_symlink_err_rsp) ||
+	    get_rfc1002_length(err_buf) + 4 < SMB2_SYMLINK_STRUCT_SIZE) {
+		kfree(utf16_path);
+		return -ENOENT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* open must fail on symlink - reset rc */
 	rc = 0;
 	symlink = (struct smb2_symlink_err_rsp *)err_buf->ErrorData;
 	sub_len = le16_to_cpu(symlink->SubstituteNameLength);
 	sub_offset = le16_to_cpu(symlink->SubstituteNameOffset);
+<<<<<<< HEAD
+=======
+	print_len = le16_to_cpu(symlink->PrintNameLength);
+	print_offset = le16_to_cpu(symlink->PrintNameOffset);
+
+	if (get_rfc1002_length(err_buf) + 4 <
+			SMB2_SYMLINK_STRUCT_SIZE + sub_offset + sub_len) {
+		kfree(utf16_path);
+		return -ENOENT;
+	}
+
+	if (get_rfc1002_length(err_buf) + 4 <
+			SMB2_SYMLINK_STRUCT_SIZE + print_offset + print_len) {
+		kfree(utf16_path);
+		return -ENOENT;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*target_path = cifs_strndup_from_utf16(
 				(char *)symlink->PathBuffer + sub_offset,
 				sub_len, true, cifs_sb->local_nls);
@@ -1034,6 +1126,15 @@ static long smb3_zero_range(struct file *file, struct cifs_tcon *tcon,
 	inode = cfile->dentry->d_inode;
 	cifsi = CIFS_I(inode);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We zero the range through ioctl, so we need remove the page caches
+	 * first, otherwise the data may be inconsistent with the server.
+	 */
+	truncate_pagecache_range(inode, offset, offset + len - 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* if file not oplocked can't be sure whether asking to extend size */
 	if (!CIFS_CACHE_READ(cifsi))
 		if (keep_size == false)
@@ -1090,6 +1191,15 @@ static long smb3_punch_hole(struct file *file, struct cifs_tcon *tcon,
 	if (!smb2_set_sparse(xid, tcon, cfile, inode, set_sparse))
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We implement the punch hole through ioctl, so we need remove the page
+	 * caches first, otherwise the data may be inconsistent with the server.
+	 */
+	truncate_pagecache_range(inode, offset, offset + len - 1);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cifs_dbg(FYI, "offset %lld len %lld", offset, len);
 
 	fsctl_buf.FileOffset = cpu_to_le64(offset);
@@ -1157,11 +1267,16 @@ smb21_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
 		       unsigned int epoch, bool *purge_cache)
 {
 	char message[5] = {0};
+<<<<<<< HEAD
+=======
+	unsigned int new_oplock = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	oplock &= 0xFF;
 	if (oplock == SMB2_OPLOCK_LEVEL_NOCHANGE)
 		return;
 
+<<<<<<< HEAD
 	cinode->oplock = 0;
 	if (oplock & SMB2_LEASE_READ_CACHING_HE) {
 		cinode->oplock |= CIFS_CACHE_READ_FLG;
@@ -1177,6 +1292,29 @@ smb21_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
 	}
 	if (!cinode->oplock)
 		strcat(message, "None");
+=======
+	/* Check if the server granted an oplock rather than a lease */
+	if (oplock & SMB2_OPLOCK_LEVEL_EXCLUSIVE)
+		return smb2_set_oplock_level(cinode, oplock, epoch,
+					     purge_cache);
+
+	if (oplock & SMB2_LEASE_READ_CACHING_HE) {
+		new_oplock |= CIFS_CACHE_READ_FLG;
+		strcat(message, "R");
+	}
+	if (oplock & SMB2_LEASE_HANDLE_CACHING_HE) {
+		new_oplock |= CIFS_CACHE_HANDLE_FLG;
+		strcat(message, "H");
+	}
+	if (oplock & SMB2_LEASE_WRITE_CACHING_HE) {
+		new_oplock |= CIFS_CACHE_WRITE_FLG;
+		strcat(message, "W");
+	}
+	if (!new_oplock)
+		strncpy(message, "None", sizeof(message));
+
+	cinode->oplock = new_oplock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cifs_dbg(FYI, "%s Lease granted on inode %p\n", message,
 		 &cinode->vfs_inode);
 }
@@ -1351,6 +1489,10 @@ struct smb_version_operations smb20_operations = {
 	.clear_stats = smb2_clear_stats,
 	.print_stats = smb2_print_stats,
 	.is_oplock_break = smb2_is_valid_oplock_break,
+<<<<<<< HEAD
+=======
+	.handle_cancelled_mid = smb2_handle_cancelled_mid,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.downgrade_oplock = smb2_downgrade_oplock,
 	.need_neg = smb2_need_neg,
 	.negotiate = smb2_negotiate,
@@ -1391,6 +1533,10 @@ struct smb_version_operations smb20_operations = {
 	.close_dir = smb2_close_dir,
 	.calc_smb_size = smb2_calc_size,
 	.is_status_pending = smb2_is_status_pending,
+<<<<<<< HEAD
+=======
+	.is_session_expired = smb2_is_session_expired,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.oplock_response = smb2_oplock_response,
 	.queryfs = smb2_queryfs,
 	.mand_lock = smb2_mand_lock,
@@ -1429,6 +1575,10 @@ struct smb_version_operations smb21_operations = {
 	.clear_stats = smb2_clear_stats,
 	.print_stats = smb2_print_stats,
 	.is_oplock_break = smb2_is_valid_oplock_break,
+<<<<<<< HEAD
+=======
+	.handle_cancelled_mid = smb2_handle_cancelled_mid,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.downgrade_oplock = smb2_downgrade_oplock,
 	.need_neg = smb2_need_neg,
 	.negotiate = smb2_negotiate,
@@ -1471,6 +1621,10 @@ struct smb_version_operations smb21_operations = {
 	.close_dir = smb2_close_dir,
 	.calc_smb_size = smb2_calc_size,
 	.is_status_pending = smb2_is_status_pending,
+<<<<<<< HEAD
+=======
+	.is_session_expired = smb2_is_session_expired,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.oplock_response = smb2_oplock_response,
 	.queryfs = smb2_queryfs,
 	.mand_lock = smb2_mand_lock,
@@ -1510,6 +1664,10 @@ struct smb_version_operations smb30_operations = {
 	.print_stats = smb2_print_stats,
 	.dump_share_caps = smb2_dump_share_caps,
 	.is_oplock_break = smb2_is_valid_oplock_break,
+<<<<<<< HEAD
+=======
+	.handle_cancelled_mid = smb2_handle_cancelled_mid,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.downgrade_oplock = smb2_downgrade_oplock,
 	.need_neg = smb2_need_neg,
 	.negotiate = smb2_negotiate,
@@ -1552,6 +1710,10 @@ struct smb_version_operations smb30_operations = {
 	.close_dir = smb2_close_dir,
 	.calc_smb_size = smb2_calc_size,
 	.is_status_pending = smb2_is_status_pending,
+<<<<<<< HEAD
+=======
+	.is_session_expired = smb2_is_session_expired,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.oplock_response = smb2_oplock_response,
 	.queryfs = smb2_queryfs,
 	.mand_lock = smb2_mand_lock,

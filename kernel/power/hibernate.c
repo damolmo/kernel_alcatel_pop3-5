@@ -30,7 +30,11 @@
 #include <linux/genhd.h>
 #include <trace/events/power.h>
 
+<<<<<<< HEAD
 #include "tuxonice.h"
+=======
+#include "power.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 static int nocompress;
@@ -38,8 +42,12 @@ static int noresume;
 static int nohibernate;
 static int resume_wait;
 static unsigned int resume_delay;
+<<<<<<< HEAD
 char resume_file[256] = CONFIG_PM_STD_PARTITION;
 EXPORT_SYMBOL_GPL(resume_file);
+=======
+static char resume_file[256] = CONFIG_PM_STD_PARTITION;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 dev_t swsusp_resume_device;
 sector_t swsusp_resume_block;
 __visible int in_suspend __nosavedata;
@@ -123,23 +131,37 @@ static int hibernation_test(int level) { return 0; }
  * platform_begin - Call platform to start hibernation.
  * @platform_mode: Whether or not to use the platform driver.
  */
+<<<<<<< HEAD
 int platform_begin(int platform_mode)
+=======
+static int platform_begin(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return (platform_mode && hibernation_ops) ?
 		hibernation_ops->begin() : 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_begin);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_end - Call platform to finish transition to the working state.
  * @platform_mode: Whether or not to use the platform driver.
  */
+<<<<<<< HEAD
 void platform_end(int platform_mode)
+=======
+static void platform_end(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (platform_mode && hibernation_ops)
 		hibernation_ops->end();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_end);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_pre_snapshot - Call platform to prepare the machine for hibernation.
@@ -149,12 +171,19 @@ EXPORT_SYMBOL_GPL(platform_end);
  * if so configured, and return an error code if that fails.
  */
 
+<<<<<<< HEAD
 int platform_pre_snapshot(int platform_mode)
+=======
+static int platform_pre_snapshot(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return (platform_mode && hibernation_ops) ?
 		hibernation_ops->pre_snapshot() : 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_pre_snapshot);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_leave - Call platform to prepare a transition to the working state.
@@ -165,12 +194,19 @@ EXPORT_SYMBOL_GPL(platform_pre_snapshot);
  *
  * This routine is called on one CPU with interrupts disabled.
  */
+<<<<<<< HEAD
 void platform_leave(int platform_mode)
+=======
+static void platform_leave(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (platform_mode && hibernation_ops)
 		hibernation_ops->leave();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_leave);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_finish - Call platform to switch the system to the working state.
@@ -181,12 +217,19 @@ EXPORT_SYMBOL_GPL(platform_leave);
  *
  * This routine must be called after platform_prepare().
  */
+<<<<<<< HEAD
 void platform_finish(int platform_mode)
+=======
+static void platform_finish(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (platform_mode && hibernation_ops)
 		hibernation_ops->finish();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_finish);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_pre_restore - Prepare for hibernate image restoration.
@@ -198,12 +241,19 @@ EXPORT_SYMBOL_GPL(platform_finish);
  * If the restore fails after this function has been called,
  * platform_restore_cleanup() must be called.
  */
+<<<<<<< HEAD
 int platform_pre_restore(int platform_mode)
+=======
+static int platform_pre_restore(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return (platform_mode && hibernation_ops) ?
 		hibernation_ops->pre_restore() : 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_pre_restore);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_restore_cleanup - Switch to the working state after failing restore.
@@ -216,23 +266,37 @@ EXPORT_SYMBOL_GPL(platform_pre_restore);
  * function must be called too, regardless of the result of
  * platform_pre_restore().
  */
+<<<<<<< HEAD
 void platform_restore_cleanup(int platform_mode)
+=======
+static void platform_restore_cleanup(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (platform_mode && hibernation_ops)
 		hibernation_ops->restore_cleanup();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_restore_cleanup);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * platform_recover - Recover from a failure to suspend devices.
  * @platform_mode: Whether or not to use the platform driver.
  */
+<<<<<<< HEAD
 void platform_recover(int platform_mode)
+=======
+static void platform_recover(int platform_mode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (platform_mode && hibernation_ops && hibernation_ops->recover)
 		hibernation_ops->recover();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(platform_recover);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * swsusp_show_speed - Print time elapsed between two events during hibernation.
@@ -310,12 +374,20 @@ static int create_image(int platform_mode)
 	save_processor_state();
 	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, true);
 	error = swsusp_arch_suspend();
+<<<<<<< HEAD
+=======
+	/* Restore control flow magically appears here */
+	restore_processor_state();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, false);
 	if (error)
 		printk(KERN_ERR "PM: Error %d creating hibernation image\n",
 			error);
+<<<<<<< HEAD
 	/* Restore control flow magically appears here */
 	restore_processor_state();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!in_suspend)
 		events_check_enabled = false;
 
@@ -596,7 +668,10 @@ int hibernation_platform_enter(void)
 
 	return error;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(hibernation_platform_enter);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * power_down - Shut the machine down for hibernation.
@@ -656,12 +731,16 @@ static void power_down(void)
  */
 int hibernate(void)
 {
+<<<<<<< HEAD
 	int error;
 
 	hib_log("entering hibernate()\n");
 
 	if (test_action_state(TOI_REPLACE_SWSUSP))
 		return try_tuxonice_hibernate();
+=======
+	int error, nr_calls = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!hibernation_available()) {
 		pr_debug("PM: Hibernation not available.\n");
@@ -676,9 +755,17 @@ int hibernate(void)
 	}
 
 	pm_prepare_console();
+<<<<<<< HEAD
 	error = pm_notifier_call_chain(PM_HIBERNATION_PREPARE);
 	if (error)
 		goto Exit;
+=======
+	error = __pm_notifier_call_chain(PM_HIBERNATION_PREPARE, -1, &nr_calls);
+	if (error) {
+		nr_calls--;
+		goto Exit;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	printk(KERN_INFO "PM: Syncing filesystems ... ");
 	sys_sync();
@@ -728,7 +815,11 @@ int hibernate(void)
 	/* Don't bother checking whether freezer_test_done is true */
 	freezer_test_done = false;
  Exit:
+<<<<<<< HEAD
 	pm_notifier_call_chain(PM_POST_HIBERNATION);
+=======
+	__pm_notifier_call_chain(PM_POST_HIBERNATION, nr_calls, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_restore_console();
 	atomic_inc(&snapshot_device_available);
  Unlock:
@@ -752,6 +843,7 @@ int hibernate(void)
  * attempts to recover gracefully and make the kernel return to the normal mode
  * of operation.
  */
+<<<<<<< HEAD
 int software_resume(void)
 {
 	int error;
@@ -765,6 +857,13 @@ int software_resume(void)
 	 */
 	try_tuxonice_resume();
 
+=======
+static int software_resume(void)
+{
+	int error, nr_calls = 0;
+	unsigned int flags;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * If the user said "noresume".. bail out early.
 	 */
@@ -801,6 +900,7 @@ int software_resume(void)
 
 	/* Check if the device is there */
 	swsusp_resume_device = name_to_dev_t(resume_file);
+<<<<<<< HEAD
 
 	/*
 	 * name_to_dev_t is ineffective to verify parition if resume_file is in
@@ -812,6 +912,8 @@ int software_resume(void)
 			msleep(10);
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!swsusp_resume_device) {
 		/*
 		 * Some device discovery might still be in progress; we need
@@ -849,9 +951,17 @@ int software_resume(void)
 	}
 
 	pm_prepare_console();
+<<<<<<< HEAD
 	error = pm_notifier_call_chain(PM_RESTORE_PREPARE);
 	if (error)
 		goto Close_Finish;
+=======
+	error = __pm_notifier_call_chain(PM_RESTORE_PREPARE, -1, &nr_calls);
+	if (error) {
+		nr_calls--;
+		goto Close_Finish;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_debug("PM: Preparing processes for restore.\n");
 	error = freeze_processes();
@@ -877,7 +987,11 @@ int software_resume(void)
 	unlock_device_hotplug();
 	thaw_processes();
  Finish:
+<<<<<<< HEAD
 	pm_notifier_call_chain(PM_POST_RESTORE);
+=======
+	__pm_notifier_call_chain(PM_POST_RESTORE, nr_calls, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_restore_console();
 	atomic_inc(&snapshot_device_available);
 	/* For success case, the suspend path will release the lock */
@@ -890,10 +1004,14 @@ int software_resume(void)
 	goto Finish;
 }
 
+<<<<<<< HEAD
 #if !defined(CONFIG_MTK_HIBERNATION)
 /* IPO-H, move to kernel_init() @ kernel/init/main.c */
 late_initcall(software_resume);
 #endif
+=======
+late_initcall_sync(software_resume);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 static const char * const hibernation_modes[] = {
@@ -1154,7 +1272,10 @@ static int __init hibernate_setup(char *str)
 static int __init noresume_setup(char *str)
 {
 	noresume = 1;
+<<<<<<< HEAD
 	set_toi_state(TOI_NORESUME_SPECIFIED);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 

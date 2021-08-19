@@ -138,6 +138,12 @@ enum {
 #define MLX4_EN_TX_COAL_PKTS	16
 #define MLX4_EN_TX_COAL_TIME	0x10
 
+<<<<<<< HEAD
+=======
+#define MLX4_EN_MAX_COAL_PKTS	U16_MAX
+#define MLX4_EN_MAX_COAL_TIME	U16_MAX
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define MLX4_EN_RX_RATE_LOW		400000
 #define MLX4_EN_RX_COAL_TIME_LOW	0
 #define MLX4_EN_RX_RATE_HIGH		450000
@@ -408,7 +414,10 @@ struct mlx4_en_dev {
 	struct cyclecounter	cycles;
 	struct timecounter	clock;
 	unsigned long		last_overflow_check;
+<<<<<<< HEAD
 	unsigned long		overflow_period;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ptp_clock	*ptp_clock;
 	struct ptp_clock_info	ptp_clock_info;
 };
@@ -509,6 +518,13 @@ enum {
 #define MLX4_EN_MAC_HASH_SIZE (1 << BITS_PER_BYTE)
 #define MLX4_EN_MAC_HASH_IDX 5
 
+<<<<<<< HEAD
+=======
+enum {
+	MLX4_EN_STATE_FLAG_RESTARTING,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct mlx4_en_priv {
 	struct mlx4_en_dev *mdev;
 	struct mlx4_en_port_profile *prof;
@@ -535,8 +551,13 @@ struct mlx4_en_priv {
 	u16 rx_usecs_low;
 	u32 pkt_rate_high;
 	u16 rx_usecs_high;
+<<<<<<< HEAD
 	u16 sample_interval;
 	u16 adaptive_rx_coal;
+=======
+	u32 sample_interval;
+	u32 adaptive_rx_coal;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 msg_enable;
 	u32 loopback_ok;
 	u32 validate_loopback;
@@ -574,7 +595,11 @@ struct mlx4_en_priv {
 	struct mlx4_en_cq *rx_cq[MAX_RX_RINGS];
 	struct mlx4_qp drop_qp;
 	struct work_struct rx_mode_task;
+<<<<<<< HEAD
 	struct work_struct watchdog_task;
+=======
+	struct work_struct restart_task;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct work_struct linkstate_task;
 	struct delayed_work stats_task;
 	struct delayed_work service_task;
@@ -611,6 +636,10 @@ struct mlx4_en_priv {
 	__be16 vxlan_port;
 
 	u32 pflags;
+<<<<<<< HEAD
+=======
+	unsigned long state;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 enum mlx4_en_wol {

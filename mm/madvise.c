@@ -75,7 +75,11 @@ static long madvise_behavior(struct vm_area_struct *vma,
 		new_flags |= VM_DONTDUMP;
 		break;
 	case MADV_DODUMP:
+<<<<<<< HEAD
 		if (new_flags & VM_SPECIAL) {
+=======
+		if (!is_vm_hugetlb_page(vma) && new_flags & VM_SPECIAL) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			error = -EINVAL;
 			goto out;
 		}
@@ -222,9 +226,15 @@ static long madvise_willneed(struct vm_area_struct *vma,
 {
 	struct file *file = vma->vm_file;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SWAP
 	if (!file || mapping_cap_swap_backed(file->f_mapping)) {
 		*prev = vma;
+=======
+	*prev = vma;
+#ifdef CONFIG_SWAP
+	if (!file || mapping_cap_swap_backed(file->f_mapping)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!file)
 			force_swapin_readahead(vma, start, end);
 		else
@@ -242,7 +252,10 @@ static long madvise_willneed(struct vm_area_struct *vma,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	*prev = vma;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	start = ((start - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
 	if (end > vma->vm_end)
 		end = vma->vm_end;

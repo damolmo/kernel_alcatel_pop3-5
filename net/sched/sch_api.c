@@ -387,7 +387,12 @@ struct qdisc_rate_table *qdisc_get_rtab(struct tc_ratespec *r, struct nlattr *ta
 {
 	struct qdisc_rate_table *rtab;
 
+<<<<<<< HEAD
 	if (tab == NULL || r->rate == 0 || r->cell_log == 0 ||
+=======
+	if (tab == NULL || r->rate == 0 ||
+	    r->cell_log == 0 || r->cell_log >= 32 ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    nla_len(tab) != TC_RTAB_SIZE)
 		return NULL;
 
@@ -740,14 +745,23 @@ static u32 qdisc_alloc_handle(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 void qdisc_tree_decrease_qlen(struct Qdisc *sch, unsigned int n)
+=======
+void qdisc_tree_reduce_backlog(struct Qdisc *sch, unsigned int n,
+			       unsigned int len)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	const struct Qdisc_class_ops *cops;
 	unsigned long cl;
 	u32 parentid;
 	int drops;
 
+<<<<<<< HEAD
 	if (n == 0)
+=======
+	if (n == 0 && len == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	drops = max_t(int, n, 0);
 	while ((parentid = sch->parent)) {
@@ -766,10 +780,18 @@ void qdisc_tree_decrease_qlen(struct Qdisc *sch, unsigned int n)
 			cops->put(sch, cl);
 		}
 		sch->q.qlen -= n;
+<<<<<<< HEAD
 		__qdisc_qstats_drop(sch, drops);
 	}
 }
 EXPORT_SYMBOL(qdisc_tree_decrease_qlen);
+=======
+		sch->qstats.backlog -= len;
+		__qdisc_qstats_drop(sch, drops);
+	}
+}
+EXPORT_SYMBOL(qdisc_tree_reduce_backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void notify_and_destroy(struct net *net, struct sk_buff *skb,
 			       struct nlmsghdr *n, u32 clid,
@@ -993,6 +1015,12 @@ qdisc_create(struct net_device *dev, struct netdev_queue *dev_queue,
 
 		return sch;
 	}
+<<<<<<< HEAD
+=======
+	/* ops->init() failed, we call ->destroy() like qdisc_create_dflt() */
+	if (ops->destroy)
+		ops->destroy(sch);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_out3:
 	dev_put(dev);
 	kfree((char *) sch - sch->padded);
@@ -1809,10 +1837,18 @@ done:
 int tc_classify_compat(struct sk_buff *skb, const struct tcf_proto *tp,
 		       struct tcf_result *res)
 {
+<<<<<<< HEAD
 	__be16 protocol = skb->protocol;
 	int err;
 
 	for (; tp; tp = rcu_dereference_bh(tp->next)) {
+=======
+	int err;
+
+	for (; tp; tp = rcu_dereference_bh(tp->next)) {
+		__be16 protocol = skb->protocol;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (tp->protocol != protocol &&
 		    tp->protocol != htons(ETH_P_ALL))
 			continue;

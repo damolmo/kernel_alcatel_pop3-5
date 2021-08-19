@@ -7,6 +7,7 @@
 #include <linux/mutex.h>
 #include <linux/cpumask.h>
 #include <linux/nodemask.h>
+<<<<<<< HEAD
 
 struct seq_operations;
 struct file;
@@ -14,6 +15,12 @@ struct path;
 struct inode;
 struct dentry;
 struct user_namespace;
+=======
+#include <linux/fs.h>
+#include <linux/cred.h>
+
+struct seq_operations;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct seq_file {
 	char *buf;
@@ -27,9 +34,13 @@ struct seq_file {
 	struct mutex lock;
 	const struct seq_operations *op;
 	int poll_event;
+<<<<<<< HEAD
 #ifdef CONFIG_USER_NS
 	struct user_namespace *user_ns;
 #endif
+=======
+	const struct file *file;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void *private;
 };
 
@@ -151,13 +162,37 @@ int seq_put_decimal_ll(struct seq_file *m, char delimiter,
 static inline struct user_namespace *seq_user_ns(struct seq_file *seq)
 {
 #ifdef CONFIG_USER_NS
+<<<<<<< HEAD
 	return seq->user_ns;
+=======
+	return seq->file->f_cred->user_ns;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 	extern struct user_namespace init_user_ns;
 	return &init_user_ns;
 #endif
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * seq_show_options - display mount options with appropriate escapes.
+ * @m: the seq_file handle
+ * @name: the mount option name
+ * @value: the mount option name's value, can be NULL
+ */
+static inline void seq_show_option(struct seq_file *m, const char *name,
+				   const char *value)
+{
+	seq_putc(m, ',');
+	seq_escape(m, name, ",= \t\n\\");
+	if (value) {
+		seq_putc(m, '=');
+		seq_escape(m, value, ", \t\n\\");
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define SEQ_START_TOKEN ((void *)1)
 /*
  * Helpers for iteration over list_head-s in seq_files

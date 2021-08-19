@@ -135,6 +135,49 @@ xfs_inode_free(
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * If we are allocating a new inode, then check what was returned is
+ * actually a free, empty inode. If we are not allocating an inode,
+ * then check we didn't find a free inode.
+ *
+ * Returns:
+ *	0		if the inode free state matches the lookup context
+ *	-ENOENT		if the inode is free and we are not allocating
+ *	-EFSCORRUPTED	if there is any state mismatch at all
+ */
+static int
+xfs_iget_check_free_state(
+	struct xfs_inode	*ip,
+	int			flags)
+{
+	if (flags & XFS_IGET_CREATE) {
+		/* should be a free inode */
+		if (ip->i_d.di_mode != 0) {
+			xfs_warn(ip->i_mount,
+"Corruption detected! Free inode 0x%llx not marked free! (mode 0x%x)",
+				ip->i_ino, ip->i_d.di_mode);
+			return -EFSCORRUPTED;
+		}
+
+		if (ip->i_d.di_nblocks != 0) {
+			xfs_warn(ip->i_mount,
+"Corruption detected! Free inode 0x%llx has blocks allocated!",
+				ip->i_ino);
+			return -EFSCORRUPTED;
+		}
+		return 0;
+	}
+
+	/* should be an allocated inode */
+	if (ip->i_d.di_mode == 0)
+		return -ENOENT;
+
+	return 0;
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Check the validity of the inode we just found it the cache
  */
 static int
@@ -183,12 +226,21 @@ xfs_iget_cache_hit(
 	}
 
 	/*
+<<<<<<< HEAD
 	 * If lookup is racing with unlink return an error immediately.
 	 */
 	if (ip->i_d.di_mode == 0 && !(flags & XFS_IGET_CREATE)) {
 		error = -ENOENT;
 		goto out_error;
 	}
+=======
+	 * Check the inode free state is valid. This also detects lookup
+	 * racing with unlinks.
+	 */
+	error = xfs_iget_check_free_state(ip, flags);
+	if (error)
+		goto out_error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If IRECLAIMABLE is set, we've torn down the VFS inode already.
@@ -210,14 +262,25 @@ xfs_iget_cache_hit(
 
 		error = inode_init_always(mp->m_super, inode);
 		if (error) {
+<<<<<<< HEAD
+=======
+			bool wake;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/*
 			 * Re-initializing the inode failed, and we are in deep
 			 * trouble.  Try to re-add it to the reclaim list.
 			 */
 			rcu_read_lock();
 			spin_lock(&ip->i_flags_lock);
+<<<<<<< HEAD
 
 			ip->i_flags &= ~(XFS_INEW | XFS_IRECLAIM);
+=======
+			wake = !!__xfs_iflags_test(ip, XFS_INEW);
+			ip->i_flags &= ~(XFS_INEW | XFS_IRECLAIM);
+			if (wake)
+				wake_up_bit(&ip->i_flags, __XFS_INEW_BIT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ASSERT(ip->i_flags & XFS_IRECLAIMABLE);
 			trace_xfs_iget_reclaim_fail(ip);
 			goto out_error;
@@ -295,10 +358,21 @@ xfs_iget_cache_miss(
 
 	trace_xfs_iget_miss(ip);
 
+<<<<<<< HEAD
 	if ((ip->i_d.di_mode == 0) && !(flags & XFS_IGET_CREATE)) {
 		error = -ENOENT;
 		goto out_destroy;
 	}
+=======
+
+	/*
+	 * Check the inode free state is valid. This also detects lookup
+	 * racing with unlinks.
+	 */
+	error = xfs_iget_check_free_state(ip, flags);
+	if (error)
+		goto out_destroy;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Preload the radix tree so we can insert safely under the
@@ -363,6 +437,25 @@ out_destroy:
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static void
+xfs_inew_wait(
+	struct xfs_inode	*ip)
+{
+	wait_queue_head_t *wq = bit_waitqueue(&ip->i_flags, __XFS_INEW_BIT);
+	DEFINE_WAIT_BIT(wait, &ip->i_flags, __XFS_INEW_BIT);
+
+	do {
+		prepare_to_wait(wq, &wait.wait, TASK_UNINTERRUPTIBLE);
+		if (!xfs_iflags_test(ip, XFS_INEW))
+			break;
+		schedule();
+	} while (true);
+	finish_wait(wq, &wait.wait);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Look up an inode by number in the given file system.
  * The inode is looked up in the cache held in each AG.
@@ -465,9 +558,17 @@ out_error_or_again:
 
 STATIC int
 xfs_inode_ag_walk_grab(
+<<<<<<< HEAD
 	struct xfs_inode	*ip)
 {
 	struct inode		*inode = VFS_I(ip);
+=======
+	struct xfs_inode	*ip,
+	int			flags)
+{
+	struct inode		*inode = VFS_I(ip);
+	bool			newinos = !!(flags & XFS_AGITER_INEW_WAIT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ASSERT(rcu_read_lock_held());
 
@@ -485,7 +586,12 @@ xfs_inode_ag_walk_grab(
 		goto out_unlock_noent;
 
 	/* avoid new or reclaimable inodes. Leave for reclaim code to flush */
+<<<<<<< HEAD
 	if (__xfs_iflags_test(ip, XFS_INEW | XFS_IRECLAIMABLE | XFS_IRECLAIM))
+=======
+	if ((!newinos && __xfs_iflags_test(ip, XFS_INEW)) ||
+	    __xfs_iflags_test(ip, XFS_IRECLAIMABLE | XFS_IRECLAIM))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_unlock_noent;
 	spin_unlock(&ip->i_flags_lock);
 
@@ -513,7 +619,12 @@ xfs_inode_ag_walk(
 					   void *args),
 	int			flags,
 	void			*args,
+<<<<<<< HEAD
 	int			tag)
+=======
+	int			tag,
+	int			iter_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	uint32_t		first_index;
 	int			last_error = 0;
@@ -555,7 +666,11 @@ restart:
 		for (i = 0; i < nr_found; i++) {
 			struct xfs_inode *ip = batch[i];
 
+<<<<<<< HEAD
 			if (done || xfs_inode_ag_walk_grab(ip))
+=======
+			if (done || xfs_inode_ag_walk_grab(ip, iter_flags))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				batch[i] = NULL;
 
 			/*
@@ -583,6 +698,12 @@ restart:
 		for (i = 0; i < nr_found; i++) {
 			if (!batch[i])
 				continue;
+<<<<<<< HEAD
+=======
+			if ((iter_flags & XFS_AGITER_INEW_WAIT) &&
+			    xfs_iflags_test(batch[i], XFS_INEW))
+				xfs_inew_wait(batch[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			error = execute(batch[i], flags, args);
 			IRELE(batch[i]);
 			if (error == -EAGAIN) {
@@ -635,12 +756,21 @@ xfs_eofblocks_worker(
 }
 
 int
+<<<<<<< HEAD
 xfs_inode_ag_iterator(
+=======
+xfs_inode_ag_iterator_flags(
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct xfs_mount	*mp,
 	int			(*execute)(struct xfs_inode *ip, int flags,
 					   void *args),
 	int			flags,
+<<<<<<< HEAD
 	void			*args)
+=======
+	void			*args,
+	int			iter_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct xfs_perag	*pag;
 	int			error = 0;
@@ -650,7 +780,12 @@ xfs_inode_ag_iterator(
 	ag = 0;
 	while ((pag = xfs_perag_get(mp, ag))) {
 		ag = pag->pag_agno + 1;
+<<<<<<< HEAD
 		error = xfs_inode_ag_walk(mp, pag, execute, flags, args, -1);
+=======
+		error = xfs_inode_ag_walk(mp, pag, execute, flags, args, -1,
+					  iter_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		xfs_perag_put(pag);
 		if (error) {
 			last_error = error;
@@ -662,6 +797,20 @@ xfs_inode_ag_iterator(
 }
 
 int
+<<<<<<< HEAD
+=======
+xfs_inode_ag_iterator(
+	struct xfs_mount	*mp,
+	int			(*execute)(struct xfs_inode *ip, int flags,
+					   void *args),
+	int			flags,
+	void			*args)
+{
+	return xfs_inode_ag_iterator_flags(mp, execute, flags, args, 0);
+}
+
+int
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 xfs_inode_ag_iterator_tag(
 	struct xfs_mount	*mp,
 	int			(*execute)(struct xfs_inode *ip, int flags,
@@ -678,7 +827,12 @@ xfs_inode_ag_iterator_tag(
 	ag = 0;
 	while ((pag = xfs_perag_get_tag(mp, ag, tag))) {
 		ag = pag->pag_agno + 1;
+<<<<<<< HEAD
 		error = xfs_inode_ag_walk(mp, pag, execute, flags, args, tag);
+=======
+		error = xfs_inode_ag_walk(mp, pag, execute, flags, args, tag,
+					  0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		xfs_perag_put(pag);
 		if (error) {
 			last_error = error;

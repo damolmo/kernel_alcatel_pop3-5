@@ -40,12 +40,17 @@ static void xt_rateest_hash_insert(struct xt_rateest *est)
 	hlist_add_head(&est->list, &rateest_hash[h]);
 }
 
+<<<<<<< HEAD
 struct xt_rateest *xt_rateest_lookup(const char *name)
+=======
+static struct xt_rateest *__xt_rateest_lookup(const char *name)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct xt_rateest *est;
 	unsigned int h;
 
 	h = xt_rateest_hash(name);
+<<<<<<< HEAD
 	mutex_lock(&xt_rateest_mutex);
 	hlist_for_each_entry(est, &rateest_hash[h], list) {
 		if (strcmp(est->name, name) == 0) {
@@ -57,6 +62,27 @@ struct xt_rateest *xt_rateest_lookup(const char *name)
 	mutex_unlock(&xt_rateest_mutex);
 	return NULL;
 }
+=======
+	hlist_for_each_entry(est, &rateest_hash[h], list) {
+		if (strcmp(est->name, name) == 0) {
+			est->refcnt++;
+			return est;
+		}
+	}
+
+	return NULL;
+}
+
+struct xt_rateest *xt_rateest_lookup(const char *name)
+{
+	struct xt_rateest *est;
+
+	mutex_lock(&xt_rateest_mutex);
+	est = __xt_rateest_lookup(name);
+	mutex_unlock(&xt_rateest_mutex);
+	return est;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL_GPL(xt_rateest_lookup);
 
 void xt_rateest_put(struct xt_rateest *est)
@@ -99,13 +125,26 @@ static int xt_rateest_tg_checkentry(const struct xt_tgchk_param *par)
 	} cfg;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (strnlen(info->name, sizeof(est->name)) >= sizeof(est->name))
+		return -ENAMETOOLONG;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (unlikely(!rnd_inited)) {
 		get_random_bytes(&jhash_rnd, sizeof(jhash_rnd));
 		rnd_inited = true;
 	}
 
+<<<<<<< HEAD
 	est = xt_rateest_lookup(info->name);
 	if (est) {
+=======
+	mutex_lock(&xt_rateest_mutex);
+	est = __xt_rateest_lookup(info->name);
+	if (est) {
+		mutex_unlock(&xt_rateest_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * If estimator parameters are specified, they must match the
 		 * existing estimator.
@@ -143,11 +182,19 @@ static int xt_rateest_tg_checkentry(const struct xt_tgchk_param *par)
 
 	info->est = est;
 	xt_rateest_hash_insert(est);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&xt_rateest_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 err2:
 	kfree(est);
 err1:
+<<<<<<< HEAD
+=======
+	mutex_unlock(&xt_rateest_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

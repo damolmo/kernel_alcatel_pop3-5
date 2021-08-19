@@ -1268,7 +1268,11 @@ int cx231xx_g_register(struct file *file, void *priv,
 		ret = cx231xx_read_ctrl_reg(dev, VRT_GET_REGISTER,
 				(u16)reg->reg, value, 4);
 		reg->val = value[0] | value[1] << 8 |
+<<<<<<< HEAD
 			value[2] << 16 | value[3] << 24;
+=======
+			value[2] << 16 | (u32)value[3] << 24;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		reg->size = 4;
 		break;
 	case 1:	/* AFE - read byte */

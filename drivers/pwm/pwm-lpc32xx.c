@@ -24,9 +24,13 @@ struct lpc32xx_pwm_chip {
 	void __iomem *base;
 };
 
+<<<<<<< HEAD
 #define PWM_ENABLE	(1 << 31)
 #define PWM_RELOADV(x)	(((x) & 0xFF) << 8)
 #define PWM_DUTY(x)	((x) & 0xFF)
+=======
+#define PWM_ENABLE	BIT(31)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define to_lpc32xx_pwm_chip(_chip) \
 	container_of(_chip, struct lpc32xx_pwm_chip, chip)
@@ -38,6 +42,7 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long long c;
 	int period_cycles, duty_cycles;
 	u32 val;
+<<<<<<< HEAD
 
 	c = clk_get_rate(lpc32xx->clk) / 256;
 	c = c * period_ns;
@@ -72,6 +77,29 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
 	val &= ~0xFFFF;
 	val |= PWM_RELOADV(period_cycles) | PWM_DUTY(duty_cycles);
+=======
+	c = clk_get_rate(lpc32xx->clk);
+
+	/* The highest acceptable divisor is 256, which is represented by 0 */
+	period_cycles = div64_u64(c * period_ns,
+			       (unsigned long long)NSEC_PER_SEC * 256);
+	if (!period_cycles)
+		period_cycles = 1;
+	if (period_cycles > 255)
+		period_cycles = 0;
+
+	/* Compute 256 x #duty/period value and care for corner cases */
+	duty_cycles = div64_u64((unsigned long long)(period_ns - duty_ns) * 256,
+				period_ns);
+	if (!duty_cycles)
+		duty_cycles = 1;
+	if (duty_cycles > 255)
+		duty_cycles = 255;
+
+	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
+	val &= ~0xFFFF;
+	val |= (period_cycles << 8) | duty_cycles;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
 
 	return 0;
@@ -134,7 +162,11 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
 
 	lpc32xx->chip.dev = &pdev->dev;
 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
+<<<<<<< HEAD
 	lpc32xx->chip.npwm = 2;
+=======
+	lpc32xx->chip.npwm = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	lpc32xx->chip.base = -1;
 
 	ret = pwmchip_add(&lpc32xx->chip);

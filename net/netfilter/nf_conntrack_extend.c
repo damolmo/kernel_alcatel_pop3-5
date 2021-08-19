@@ -53,7 +53,15 @@ nf_ct_ext_create(struct nf_ct_ext **ext, enum nf_ct_ext_id id,
 
 	rcu_read_lock();
 	t = rcu_dereference(nf_ct_ext_types[id]);
+<<<<<<< HEAD
 	BUG_ON(t == NULL);
+=======
+	if (!t) {
+		rcu_read_unlock();
+		return NULL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	off = ALIGN(sizeof(struct nf_ct_ext), t->align);
 	len = off + t->len + var_alloc_len;
 	alloc_size = t->alloc_size + var_alloc_len;
@@ -88,7 +96,14 @@ void *__nf_ct_ext_add_length(struct nf_conn *ct, enum nf_ct_ext_id id,
 
 	rcu_read_lock();
 	t = rcu_dereference(nf_ct_ext_types[id]);
+<<<<<<< HEAD
 	BUG_ON(t == NULL);
+=======
+	if (!t) {
+		rcu_read_unlock();
+		return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	newoff = ALIGN(old->len, t->align);
 	newlen = newoff + t->len + var_alloc_len;
@@ -186,6 +201,10 @@ void nf_ct_extend_unregister(struct nf_ct_ext_type *type)
 	RCU_INIT_POINTER(nf_ct_ext_types[type->id], NULL);
 	update_alloc_size(type);
 	mutex_unlock(&nf_ct_ext_type_mutex);
+<<<<<<< HEAD
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
+=======
+	synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(nf_ct_extend_unregister);

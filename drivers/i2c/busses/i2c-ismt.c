@@ -339,6 +339,14 @@ static int ismt_process_desc(const struct ismt_desc *desc,
 			data->word = dma_buffer[0] | (dma_buffer[1] << 8);
 			break;
 		case I2C_SMBUS_BLOCK_DATA:
+<<<<<<< HEAD
+=======
+			if (desc->rxbytes != dma_buffer[0] + 1)
+				return -EMSGSIZE;
+
+			memcpy(data->block, dma_buffer, desc->rxbytes);
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case I2C_SMBUS_I2C_BLOCK_DATA:
 			memcpy(&data->block[1], dma_buffer, desc->rxbytes);
 			data->block[0] = desc->rxbytes;
@@ -582,7 +590,11 @@ static int ismt_access(struct i2c_adapter *adap, u16 addr,
 
 	/* unmap the data buffer */
 	if (dma_size != 0)
+<<<<<<< HEAD
 		dma_unmap_single(&adap->dev, dma_addr, dma_size, dma_direction);
+=======
+		dma_unmap_single(dev, dma_addr, dma_size, dma_direction);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(!ret)) {
 		dev_err(dev, "completion wait timed out\n");

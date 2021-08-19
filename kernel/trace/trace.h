@@ -333,7 +333,11 @@ struct tracer_flags {
 
 
 /**
+<<<<<<< HEAD
  * struct tracer - a specific tracer and its callbacks to interact with debugfs
+=======
+ * struct tracer - a specific tracer and its callbacks to interact with tracefs
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @name: the name chosen to select it on the available_tracers file
  * @init: called when one switches to this tracer (echo name > current_tracer)
  * @reset: called when one switches to another tracer
@@ -442,6 +446,10 @@ enum {
 
 	TRACE_CONTROL_BIT,
 
+<<<<<<< HEAD
+=======
+	TRACE_BRANCH_BIT,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Abuse of the trace_recursion.
  * As we need a way to maintain state if we are tracing the function
@@ -450,6 +458,15 @@ enum {
  * can only be modified by current, we can reuse trace_recursion.
  */
 	TRACE_IRQ_BIT,
+<<<<<<< HEAD
+=======
+
+	/*
+	 * When transitioning between context, the preempt_count() may
+	 * not be correct. Allow for a single recursion to cover this case.
+	 */
+	TRACE_TRANSITION_BIT,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define trace_recursion_set(bit)	do { (current)->trace_recursion |= (1<<(bit)); } while (0)
@@ -494,14 +511,36 @@ static __always_inline int trace_test_and_set_recursion(int start, int max)
 		return 0;
 
 	bit = trace_get_context_bit() + start;
+<<<<<<< HEAD
 	if (unlikely(val & (1 << bit)))
 		return -1;
+=======
+	if (unlikely(val & (1 << bit))) {
+		/*
+		 * It could be that preempt_count has not been updated during
+		 * a switch between contexts. Allow for a single recursion.
+		 */
+		bit = TRACE_TRANSITION_BIT;
+		if (trace_recursion_test(bit))
+			return -1;
+		trace_recursion_set(bit);
+		barrier();
+		return bit + 1;
+	}
+
+	/* Normal check passed, clear the transition to allow it again */
+	trace_recursion_clear(TRACE_TRANSITION_BIT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	val |= 1 << bit;
 	current->trace_recursion = val;
 	barrier();
 
+<<<<<<< HEAD
 	return bit;
+=======
+	return bit + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static __always_inline void trace_clear_recursion(int bit)
@@ -511,6 +550,10 @@ static __always_inline void trace_clear_recursion(int bit)
 	if (!bit)
 		return;
 
+<<<<<<< HEAD
+=======
+	bit--;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bit = 1 << bit;
 	val &= ~bit;
 
@@ -540,7 +583,10 @@ struct dentry *trace_create_file(const char *name,
 				 void *data,
 				 const struct file_operations *fops);
 
+<<<<<<< HEAD
 struct dentry *tracing_init_dentry_tr(struct trace_array *tr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct dentry *tracing_init_dentry(void);
 
 struct ring_buffer_event;
@@ -1312,4 +1358,38 @@ int perf_ftrace_event_register(struct ftrace_event_call *call,
 #define perf_ftrace_event_register NULL
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FTRACE_SYSCALLS
+void init_ftrace_syscalls(void);
+#else
+static inline void init_ftrace_syscalls(void) { }
+#endif
+
+#ifdef CONFIG_EVENT_TRACING
+void trace_event_init(void);
+#else
+static inline void __init trace_event_init(void) { }
+#endif
+
+
+/*
+ * Reset the state of the trace_iterator so that it can read consumed data.
+ * Normally, the trace_iterator is used for reading the data when it is not
+ * consumed, and must retain state.
+ */
+static __always_inline void trace_iterator_reset(struct trace_iterator *iter)
+{
+	const size_t offset = offsetof(struct trace_iterator, seq);
+
+	/*
+	 * Keep gcc from complaining about overwriting more than just one
+	 * member in the structure.
+	 */
+	memset((char *)iter + offset, 0, sizeof(struct trace_iterator) - offset);
+
+	iter->pos = -1;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _LINUX_KERNEL_TRACE_H */

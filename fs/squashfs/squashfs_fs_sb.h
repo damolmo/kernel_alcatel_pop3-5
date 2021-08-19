@@ -49,7 +49,11 @@ struct squashfs_cache_entry {
 	int			num_waiters;
 	wait_queue_head_t	wait_queue;
 	struct squashfs_cache	*cache;
+<<<<<<< HEAD
 	void			**data;
+=======
+	struct page		**page;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct squashfs_page_actor	*actor;
 };
 
@@ -75,6 +79,12 @@ struct squashfs_sb_info {
 	unsigned short				block_log;
 	long long				bytes_used;
 	unsigned int				inodes;
+<<<<<<< HEAD
 	int					xattr_ids;
+=======
+	unsigned int				fragments;
+	int					xattr_ids;
+	unsigned int				ids;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 #endif

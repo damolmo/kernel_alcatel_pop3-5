@@ -439,7 +439,11 @@ out_no_rpciod:
 	return ERR_PTR(err);
 }
 
+<<<<<<< HEAD
 struct rpc_clnt *rpc_create_xprt(struct rpc_create_args *args,
+=======
+static struct rpc_clnt *rpc_create_xprt(struct rpc_create_args *args,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					struct rpc_xprt *xprt)
 {
 	struct rpc_clnt *clnt = NULL;
@@ -471,7 +475,10 @@ struct rpc_clnt *rpc_create_xprt(struct rpc_create_args *args,
 
 	return clnt;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(rpc_create_xprt);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * rpc_create - create an RPC client and transport with one call
@@ -497,6 +504,18 @@ struct rpc_clnt *rpc_create(struct rpc_create_args *args)
 	};
 	char servername[48];
 
+<<<<<<< HEAD
+=======
+	if (args->bc_xprt) {
+		WARN_ON(args->protocol != XPRT_TRANSPORT_BC_TCP);
+		xprt = args->bc_xprt->xpt_bc_xprt;
+		if (xprt) {
+			xprt_get(xprt);
+			return rpc_create_xprt(args, xprt);
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (args->flags & RPC_CLNT_CREATE_INFINITE_SLOTS)
 		xprtargs.flags |= XPRT_CREATE_INFINITE_SLOTS;
 	if (args->flags & RPC_CLNT_CREATE_NO_IDLE_TIMEOUT)
@@ -1814,6 +1833,17 @@ call_connect_status(struct rpc_task *task)
 	task->tk_status = 0;
 	switch (status) {
 	case -ECONNREFUSED:
+<<<<<<< HEAD
+=======
+		/* A positive refusal suggests a rebind is needed. */
+		if (RPC_IS_SOFTCONN(task))
+			break;
+		if (clnt->cl_autobind) {
+			rpc_force_rebind(clnt);
+			task->tk_action = call_bind;
+			return;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -ECONNRESET:
 	case -ECONNABORTED:
 	case -ENETUNREACH:

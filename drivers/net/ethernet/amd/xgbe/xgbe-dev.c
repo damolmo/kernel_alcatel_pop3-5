@@ -2469,8 +2469,15 @@ static int xgbe_init(struct xgbe_prv_data *pdata)
 
 	/* Flush Tx queues */
 	ret = xgbe_flush_tx_queues(pdata);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
+=======
+	if (ret) {
+		netdev_err(pdata->netdev, "error flushing TX queues\n");
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Initialize DMA related features

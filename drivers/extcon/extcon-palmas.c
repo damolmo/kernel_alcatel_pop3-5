@@ -150,6 +150,14 @@ static int palmas_usb_probe(struct platform_device *pdev)
 	struct palmas_usb *palmas_usb;
 	int status;
 
+<<<<<<< HEAD
+=======
+	if (!palmas) {
+		dev_err(&pdev->dev, "failed to get valid parent\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	palmas_usb = devm_kzalloc(&pdev->dev, sizeof(*palmas_usb), GFP_KERNEL);
 	if (!palmas_usb)
 		return -ENOMEM;

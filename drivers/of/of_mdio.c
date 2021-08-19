@@ -262,7 +262,12 @@ EXPORT_SYMBOL(of_phy_attach);
 bool of_phy_is_fixed_link(struct device_node *np)
 {
 	struct device_node *dn;
+<<<<<<< HEAD
 	int len;
+=======
+	int len, err;
+	const char *managed;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* New binding */
 	dn = of_get_child_by_name(np, "fixed-link");
@@ -271,6 +276,13 @@ bool of_phy_is_fixed_link(struct device_node *np)
 		return true;
 	}
 
+<<<<<<< HEAD
+=======
+	err = of_property_read_string(np, "managed", &managed);
+	if (err == 0 && strcmp(managed, "auto") != 0)
+		return true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Old binding */
 	if (of_get_property(np, "fixed-link", &len) &&
 	    len == (5 * sizeof(__be32)))
@@ -285,8 +297,23 @@ int of_phy_register_fixed_link(struct device_node *np)
 	struct fixed_phy_status status = {};
 	struct device_node *fixed_link_node;
 	const __be32 *fixed_link_prop;
+<<<<<<< HEAD
 	int len;
 	struct phy_device *phy;
+=======
+	int len, err;
+	struct phy_device *phy;
+	const char *managed;
+
+	err = of_property_read_string(np, "managed", &managed);
+	if (err == 0) {
+		if (strcmp(managed, "in-band-status") == 0) {
+			/* status is zeroed, namely its .link member */
+			phy = fixed_phy_register(PHY_POLL, &status, np);
+			return IS_ERR(phy) ? PTR_ERR(phy) : 0;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* New binding */
 	fixed_link_node = of_get_child_by_name(np, "fixed-link");
@@ -294,8 +321,16 @@ int of_phy_register_fixed_link(struct device_node *np)
 		status.link = 1;
 		status.duplex = of_property_read_bool(fixed_link_node,
 						      "full-duplex");
+<<<<<<< HEAD
 		if (of_property_read_u32(fixed_link_node, "speed", &status.speed))
 			return -EINVAL;
+=======
+		if (of_property_read_u32(fixed_link_node, "speed",
+					 &status.speed)) {
+			of_node_put(fixed_link_node);
+			return -EINVAL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		status.pause = of_property_read_bool(fixed_link_node, "pause");
 		status.asym_pause = of_property_read_bool(fixed_link_node,
 							  "asym-pause");

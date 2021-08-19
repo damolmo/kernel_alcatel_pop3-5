@@ -546,12 +546,24 @@ static int cm109_input_open(struct input_dev *idev)
 	dev->ctl_data->byte[HID_OR2] = dev->keybit;
 	dev->ctl_data->byte[HID_OR3] = 0x00;
 
+<<<<<<< HEAD
 	error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
 	if (error)
 		dev_err(&dev->intf->dev, "%s: usb_submit_urb (urb_ctl) failed %d\n",
 			__func__, error);
 	else
 		dev->open = 1;
+=======
+	dev->ctl_urb_pending = 1;
+	error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
+	if (error) {
+		dev->ctl_urb_pending = 0;
+		dev_err(&dev->intf->dev, "%s: usb_submit_urb (urb_ctl) failed %d\n",
+			__func__, error);
+	} else {
+		dev->open = 1;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_unlock(&dev->pm_mutex);
 
@@ -675,6 +687,13 @@ static int cm109_usb_probe(struct usb_interface *intf,
 	int error = -ENOMEM;
 
 	interface = intf->cur_altsetting;
+<<<<<<< HEAD
+=======
+
+	if (interface->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	endpoint = &interface->endpoint[0].desc;
 
 	if (!usb_endpoint_is_int_in(endpoint))

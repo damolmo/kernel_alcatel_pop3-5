@@ -145,6 +145,14 @@ enum {
 	MTIP_PF_SR_CLEANUP_BIT      = 7,
 	MTIP_PF_SVC_THD_STOP_BIT    = 8,
 
+<<<<<<< HEAD
+=======
+	MTIP_PF_SVC_THD_WORK	= ((1 << MTIP_PF_EH_ACTIVE_BIT) |
+				  (1 << MTIP_PF_ISSUE_CMDS_BIT) |
+				  (1 << MTIP_PF_REBUILD_BIT) |
+				  (1 << MTIP_PF_SVC_THD_STOP_BIT)),
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* below are bit numbers in 'dd_flag' defined in driver_data */
 	MTIP_DDF_SEC_LOCK_BIT	    = 0,
 	MTIP_DDF_REMOVE_PENDING_BIT = 1,
@@ -155,6 +163,10 @@ enum {
 	MTIP_DDF_RESUME_BIT         = 6,
 	MTIP_DDF_INIT_DONE_BIT      = 7,
 	MTIP_DDF_REBUILD_FAILED_BIT = 8,
+<<<<<<< HEAD
+=======
+	MTIP_DDF_REMOVAL_BIT	    = 9,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	MTIP_DDF_STOP_IO      = ((1 << MTIP_DDF_REMOVE_PENDING_BIT) |
 				(1 << MTIP_DDF_SEC_LOCK_BIT) |

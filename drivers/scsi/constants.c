@@ -1335,9 +1335,16 @@ static const char * const snstext[] = {
 
 /* Get sense key string or NULL if not available */
 const char *
+<<<<<<< HEAD
 scsi_sense_key_string(unsigned char key) {
 #ifdef CONFIG_SCSI_CONSTANTS
 	if (key <= 0xE)
+=======
+scsi_sense_key_string(unsigned char key)
+{
+#ifdef CONFIG_SCSI_CONSTANTS
+	if (key < ARRAY_SIZE(snstext))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return snstext[key];
 #endif
 	return NULL;

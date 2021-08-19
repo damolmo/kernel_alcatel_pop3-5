@@ -38,10 +38,23 @@ enum {
 	REMAIN_ON_CHANNEL_COMPLETE_EVENT_ID      = BIT(18),
 	DFS_CHANNELS_CONFIG_COMPLETE_EVENT       = BIT(19),
 	PERIODIC_SCAN_REPORT_EVENT_ID            = BIT(20),
+<<<<<<< HEAD
+=======
+	RX_BA_WIN_SIZE_CHANGE_EVENT_ID           = BIT(21),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SMART_CONFIG_SYNC_EVENT_ID		 = BIT(22),
 	SMART_CONFIG_DECODE_EVENT_ID		 = BIT(23),
 };
 
+<<<<<<< HEAD
+=======
+enum wl18xx_radar_types {
+	RADAR_TYPE_NONE,
+	RADAR_TYPE_REGULAR,
+	RADAR_TYPE_CHIRP
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct wl18xx_event_mailbox {
 	__le32 events_vector;
 
@@ -83,13 +96,26 @@ struct wl18xx_event_mailbox {
 	u8 sc_token_len;
 	u8 padding1;
 	u8 sc_ssid[32];
+<<<<<<< HEAD
 	u8 sc_pwd[32];
+=======
+	u8 sc_pwd[64];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 sc_token[32];
 
 	/* smart config sync channel */
 	u8 sc_sync_channel;
 	u8 sc_sync_band;
 	u8 padding2[2];
+<<<<<<< HEAD
+=======
+
+	/* radar detect */
+	u8 radar_channel;
+	u8 radar_type;
+
+	u8 padding3[2];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } __packed;
 
 int wl18xx_wait_for_event(struct wl1271 *wl, enum wlcore_wait_event event,

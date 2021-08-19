@@ -807,7 +807,11 @@ _ctl_do_mpt_command(struct MPT3SAS_ADAPTER *ioc, struct mpt3_ioctl_command karg,
 		    tm_request->DevHandle));
 		ioc->build_sg_mpi(ioc, psge, data_out_dma, data_out_sz,
 		    data_in_dma, data_in_sz);
+<<<<<<< HEAD
 		mpt3sas_base_put_smid_hi_priority(ioc, smid);
+=======
+		mpt3sas_base_put_smid_hi_priority(ioc, smid, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 	case MPI2_FUNCTION_SMP_PASSTHROUGH:
@@ -1436,7 +1440,12 @@ _ctl_diag_register_2(struct MPT3SAS_ADAPTER *ioc,
 			    " for diag buffers, requested size(%d)\n",
 			    ioc->name, __func__, request_data_sz);
 			mpt3sas_base_free_smid(ioc, smid);
+<<<<<<< HEAD
 			return -ENOMEM;
+=======
+			rc = -ENOMEM;
+			goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		ioc->diag_buffer[buffer_type] = request_data;
 		ioc->diag_buffer_sz[buffer_type] = request_data_sz;

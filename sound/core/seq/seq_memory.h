@@ -66,7 +66,12 @@ struct snd_seq_pool {
 void snd_seq_cell_free(struct snd_seq_event_cell *cell);
 
 int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
+<<<<<<< HEAD
 		      struct snd_seq_event_cell **cellp, int nonblock, struct file *file);
+=======
+		      struct snd_seq_event_cell **cellp, int nonblock,
+		      struct file *file, struct mutex *mutexp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* return number of unused (free) cells */
 static inline int snd_seq_unused_cells(struct snd_seq_pool *pool)
@@ -84,6 +89,10 @@ static inline int snd_seq_total_cells(struct snd_seq_pool *pool)
 int snd_seq_pool_init(struct snd_seq_pool *pool);
 
 /* done pool - free events */
+<<<<<<< HEAD
+=======
+void snd_seq_pool_mark_closing(struct snd_seq_pool *pool);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int snd_seq_pool_done(struct snd_seq_pool *pool);
 
 /* create pool */

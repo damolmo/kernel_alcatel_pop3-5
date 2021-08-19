@@ -437,7 +437,11 @@ transfer_failed:
 
 	info.si_signo	= SIGSEGV;
 	info.si_errno	= 0;
+<<<<<<< HEAD
 	info.si_code	= 0;
+=======
+	info.si_code	= SEGV_MAPERR;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	info.si_addr	= (void *) regs->pc;
 	force_sig_info(SIGSEGV, &info, current);
 	return;

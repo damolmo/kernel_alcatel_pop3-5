@@ -274,7 +274,12 @@ static void named_purge_publ(struct publication *publ)
 		       publ->key);
 	}
 
+<<<<<<< HEAD
 	kfree(p);
+=======
+	if (p)
+		kfree(p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

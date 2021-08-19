@@ -24,6 +24,10 @@
    (c) 2013  Wolfram Sang <wsa@the-dreams.de>
    I2C ACPI code Copyright (C) 2014 Intel Corp
    Author: Lan Tianyu <tianyu.lan@intel.com>
+<<<<<<< HEAD
+=======
+   I2C slave support (c) 2014 by Wolfram Sang <wsa@sang-engineering.com>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 
 #include <linux/module.h>
@@ -1833,6 +1837,10 @@ int i2c_register_driver(struct module *owner, struct i2c_driver *driver)
 	/* add the driver to the list of i2c drivers in the driver core */
 	driver->driver.owner = owner;
 	driver->driver.bus = &i2c_bus_type;
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&driver->clients);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* When registration returns, the driver core
 	 * will have called probe() for all matching-but-unbound devices.
@@ -1851,7 +1859,10 @@ int i2c_register_driver(struct module *owner, struct i2c_driver *driver)
 
 	pr_debug("i2c-core: driver [%s] registered\n", driver->driver.name);
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&driver->clients);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Walk the adapters that are already present */
 	i2c_for_each_dev(driver, __process_new_driver);
 
@@ -1993,6 +2004,7 @@ module_exit(i2c_exit);
  * ----------------------------------------------------
  */
 
+<<<<<<< HEAD
 /* Check if val is exceeding the quirk IFF quirk is non 0 */
 #define i2c_quirk_exceeded(val, quirk) ((quirk) && ((val) > (quirk)))
 
@@ -2052,6 +2064,8 @@ static int i2c_check_for_quirks(struct i2c_adapter *adap, struct i2c_msg *msgs, 
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * __i2c_transfer - unlocked flavor of i2c_transfer
  * @adap: Handle to I2C bus
@@ -2069,9 +2083,12 @@ int __i2c_transfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	unsigned long orig_jiffies;
 	int ret, try;
 
+<<<<<<< HEAD
 	if (adap->quirks && i2c_check_for_quirks(adap, msgs, num))
 		return -EOPNOTSUPP;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* i2c_trace_msg gets enabled when tracepoint i2c_transfer gets
 	 * enabled.  This is an efficient way of keeping the for-loop from
 	 * being executed when not needed.
@@ -2188,10 +2205,13 @@ int i2c_master_send(const struct i2c_client *client, const char *buf, int count)
 	msg.flags = client->flags & I2C_M_TEN;
 	msg.len = count;
 	msg.buf = (char *)buf;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_I2C_EXTENSION
 	msg.timing = client->timing;
 	msg.ext_flag = client->ext_flag;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = i2c_transfer(adap, &msg, 1);
 
@@ -2222,10 +2242,13 @@ int i2c_master_recv(const struct i2c_client *client, char *buf, int count)
 	msg.flags |= I2C_M_RD;
 	msg.len = count;
 	msg.buf = buf;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_I2C_EXTENSION
 	msg.timing = client->timing;
 	msg.ext_flag = client->ext_flag;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = i2c_transfer(adap, &msg, 1);
 
@@ -2832,16 +2855,28 @@ static s32 i2c_smbus_xfer_emulated(struct i2c_adapter *adapter, u16 addr,
 				   the underlying bus driver */
 		break;
 	case I2C_SMBUS_I2C_BLOCK_DATA:
+<<<<<<< HEAD
+=======
+		if (data->block[0] > I2C_SMBUS_BLOCK_MAX) {
+			dev_err(&adapter->dev, "Invalid block %s size %d\n",
+				read_write == I2C_SMBUS_READ ? "read" : "write",
+				data->block[0]);
+			return -EINVAL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (read_write == I2C_SMBUS_READ) {
 			msg[1].len = data->block[0];
 		} else {
 			msg[0].len = data->block[0] + 1;
+<<<<<<< HEAD
 			if (msg[0].len > I2C_SMBUS_BLOCK_MAX + 1) {
 				dev_err(&adapter->dev,
 					"Invalid block write size %d\n",
 					data->block[0]);
 				return -EINVAL;
 			}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			for (i = 1; i <= data->block[0]; i++)
 				msgbuf0[i] = data->block[i];
 		}
@@ -2972,6 +3007,57 @@ trace:
 }
 EXPORT_SYMBOL(i2c_smbus_xfer);
 
+<<<<<<< HEAD
+=======
+int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
+{
+	int ret;
+
+	if (!client || !slave_cb)
+		return -EINVAL;
+
+	if (!(client->flags & I2C_CLIENT_TEN)) {
+		/* Enforce stricter address checking */
+		ret = i2c_check_addr_validity(client->addr);
+		if (ret)
+			return ret;
+	}
+
+	if (!client->adapter->algo->reg_slave)
+		return -EOPNOTSUPP;
+
+	client->slave_cb = slave_cb;
+
+	i2c_lock_adapter(client->adapter);
+	ret = client->adapter->algo->reg_slave(client);
+	i2c_unlock_adapter(client->adapter);
+
+	if (ret)
+		client->slave_cb = NULL;
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(i2c_slave_register);
+
+int i2c_slave_unregister(struct i2c_client *client)
+{
+	int ret;
+
+	if (!client->adapter->algo->unreg_slave)
+		return -EOPNOTSUPP;
+
+	i2c_lock_adapter(client->adapter);
+	ret = client->adapter->algo->unreg_slave(client);
+	i2c_unlock_adapter(client->adapter);
+
+	if (ret == 0)
+		client->slave_cb = NULL;
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(i2c_slave_unregister);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_AUTHOR("Simon G. Vogl <simon@tk.uni-linz.ac.at>");
 MODULE_DESCRIPTION("I2C-Bus main module");
 MODULE_LICENSE("GPL");

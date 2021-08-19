@@ -562,7 +562,11 @@ static void el3_common_remove (struct net_device *dev)
 }
 
 #ifdef CONFIG_EISA
+<<<<<<< HEAD
 static int __init el3_eisa_probe (struct device *device)
+=======
+static int el3_eisa_probe(struct device *device)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	short i;
 	int ioaddr, irq, if_port;

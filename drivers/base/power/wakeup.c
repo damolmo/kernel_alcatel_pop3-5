@@ -24,7 +24,10 @@
  * if wakeup events are registered during or immediately before the transition.
  */
 bool events_check_enabled __read_mostly;
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(events_check_enabled);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* If set and the system is suspending, terminate the suspend. */
 static bool pm_abort_suspend __read_mostly;
@@ -104,7 +107,10 @@ void wakeup_source_drop(struct wakeup_source *ws)
 	if (!ws)
 		return;
 
+<<<<<<< HEAD
 	del_timer_sync(&ws->timer);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__pm_relax(ws);
 }
 EXPORT_SYMBOL_GPL(wakeup_source_drop);
@@ -163,6 +169,16 @@ void wakeup_source_remove(struct wakeup_source *ws)
 	list_del_rcu(&ws->entry);
 	spin_unlock_irqrestore(&events_lock, flags);
 	synchronize_rcu();
+<<<<<<< HEAD
+=======
+
+	del_timer_sync(&ws->timer);
+	/*
+	 * Clear timer.function to make wakeup_source_not_registered() treat
+	 * this wakeup source as not registered.
+	 */
+	ws->timer.function = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(wakeup_source_remove);
 
@@ -678,7 +694,11 @@ void pm_get_active_wakeup_sources(char *pending_wakeup_source, size_t max)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
+<<<<<<< HEAD
 		if (ws->active) {
+=======
+		if (ws->active && len < max) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!active)
 				len += scnprintf(pending_wakeup_source, max,
 						"Pending Wakeup Sources: ");
@@ -768,7 +788,10 @@ void pm_wakeup_clear(void)
 {
 	pm_abort_suspend = false;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(pm_wakeup_pending);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * pm_get_wakeup_count - Read the number of registered wakeup events.
@@ -899,7 +922,11 @@ static int print_wakeup_source_stats(struct seq_file *m,
 		active_time = ktime_set(0, 0);
 	}
 
+<<<<<<< HEAD
 	ret = seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"
+=======
+	ret = seq_printf(m, "%-32s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			"%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",
 			ws->name, active_count, ws->event_count,
 			ws->wakeup_count, ws->expire_count,
@@ -920,7 +947,11 @@ static int wakeup_sources_stats_show(struct seq_file *m, void *unused)
 {
 	struct wakeup_source *ws;
 
+<<<<<<< HEAD
 	seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"
+=======
+	seq_puts(m, "name\t\t\t\t\tactive_count\tevent_count\twakeup_count\t"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		"expire_count\tactive_since\ttotal_time\tmax_time\t"
 		"last_change\tprevent_suspend_time\n");
 

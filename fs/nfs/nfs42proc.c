@@ -65,5 +65,12 @@ loff_t nfs42_proc_llseek(struct file *filep, loff_t offset, int whence)
 	if (status)
 		return status;
 
+<<<<<<< HEAD
 	return vfs_setpos(filep, res.sr_offset, inode->i_sb->s_maxbytes);
+=======
+	if (whence == SEEK_DATA && res.sr_eof)
+		return -NFS4ERR_NXIO;
+	else
+		return vfs_setpos(filep, res.sr_offset, inode->i_sb->s_maxbytes);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

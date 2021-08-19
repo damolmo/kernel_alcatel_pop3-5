@@ -103,8 +103,13 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
 	rcar_du_group_write(rcrtc->group, rcrtc->index % 2 ? OTAR2 : OTAR, 0);
 
 	/* Signal polarities */
+<<<<<<< HEAD
 	value = ((mode->flags & DRM_MODE_FLAG_PVSYNC) ? 0 : DSMR_VSL)
 	      | ((mode->flags & DRM_MODE_FLAG_PHSYNC) ? 0 : DSMR_HSL)
+=======
+	value = ((mode->flags & DRM_MODE_FLAG_PVSYNC) ? DSMR_VSL : 0)
+	      | ((mode->flags & DRM_MODE_FLAG_PHSYNC) ? DSMR_HSL : 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	      | DSMR_DIPM_DE;
 	rcar_du_crtc_write(rcrtc, DSMR, value);
 
@@ -123,7 +128,11 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
 					mode->vsync_start - 1);
 	rcar_du_crtc_write(rcrtc, VCR,  mode->vtotal - 1);
 
+<<<<<<< HEAD
 	rcar_du_crtc_write(rcrtc, DESR,  mode->htotal - mode->hsync_start);
+=======
+	rcar_du_crtc_write(rcrtc, DESR,  mode->htotal - mode->hsync_start - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rcar_du_crtc_write(rcrtc, DEWR,  mode->hdisplay);
 }
 
@@ -435,6 +444,7 @@ static const struct drm_crtc_helper_funcs crtc_helper_funcs = {
 	.disable = rcar_du_crtc_disable,
 };
 
+<<<<<<< HEAD
 void rcar_du_crtc_cancel_page_flip(struct rcar_du_crtc *rcrtc,
 				   struct drm_file *file)
 {
@@ -455,6 +465,8 @@ void rcar_du_crtc_cancel_page_flip(struct rcar_du_crtc *rcrtc,
 	spin_unlock_irqrestore(&dev->event_lock, flags);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void rcar_du_crtc_finish_page_flip(struct rcar_du_crtc *rcrtc)
 {
 	struct drm_pending_vblank_event *event;

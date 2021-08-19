@@ -38,6 +38,7 @@ obj-$(CONFIG_IRQ_CROSSBAR)		+= irq-crossbar.o
 obj-$(CONFIG_BRCMSTB_L2_IRQ)		+= irq-brcmstb-l2.o \
 					   irq-bcm7120-l2.o
 obj-$(CONFIG_KEYSTONE_IRQ)		+= irq-keystone.o
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_MEDIATEK)		+= irq-mtk-sysirq.o
 
 # Mediatek solution: GIC & EIC
@@ -53,3 +54,5 @@ ifeq ($(CONFIG_MT_ENG_BUILD),y)
 CFLAGS_irq-mt-gic.o := -DDEBUG
 CFLAGS_irq-mt-eic.o := -DDEBUG
 endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -1232,6 +1232,15 @@ static void atc_free_chan_resources(struct dma_chan *chan)
 	atchan->status = 0;
 	atchan->remain_desc = 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Free atslave allocated in at_dma_xlate()
+	 */
+	kfree(chan->private);
+	chan->private = NULL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev_vdbg(chan2dev(chan), "free_chan_resources: done\n");
 }
 
@@ -1262,11 +1271,20 @@ static struct dma_chan *at_dma_xlate(struct of_phandle_args *dma_spec,
 		return NULL;
 
 	dmac_pdev = of_find_device_by_node(dma_spec->np);
+<<<<<<< HEAD
+=======
+	if (!dmac_pdev)
+		return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
+<<<<<<< HEAD
 	atslave = devm_kzalloc(&dmac_pdev->dev, sizeof(*atslave), GFP_KERNEL);
+=======
+	atslave = kzalloc(sizeof(*atslave), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!atslave)
 		return NULL;
 
@@ -1559,6 +1577,11 @@ static int at_dma_remove(struct platform_device *pdev)
 	struct resource		*io;
 
 	at_dma_off(atdma);
+<<<<<<< HEAD
+=======
+	if (pdev->dev.of_node)
+		of_dma_controller_free(pdev->dev.of_node);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dma_async_device_unregister(&atdma->dma_common);
 
 	dma_pool_destroy(atdma->dma_desc_pool);

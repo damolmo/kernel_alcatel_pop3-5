@@ -27,6 +27,13 @@
 #error KEXEC_CONTROL_MEMORY_LIMIT not defined
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef KEXEC_CONTROL_MEMORY_GFP
+#define KEXEC_CONTROL_MEMORY_GFP GFP_KERNEL
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifndef KEXEC_CONTROL_PAGE_SIZE
 #error KEXEC_CONTROL_PAGE_SIZE not defined
 #endif
@@ -307,6 +314,20 @@ int crash_shrink_memory(unsigned long new_size);
 size_t crash_get_memory_size(void);
 void crash_free_reserved_phys_range(unsigned long begin, unsigned long end);
 
+<<<<<<< HEAD
+=======
+int __weak arch_kexec_kernel_image_probe(struct kimage *image, void *buf,
+					 unsigned long buf_len);
+void * __weak arch_kexec_kernel_image_load(struct kimage *image);
+int __weak arch_kimage_file_post_load_cleanup(struct kimage *image);
+int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
+					unsigned long buf_len);
+int __weak arch_kexec_apply_relocations_add(const Elf_Ehdr *ehdr,
+					Elf_Shdr *sechdrs, unsigned int relsec);
+int __weak arch_kexec_apply_relocations(const Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
+					unsigned int relsec);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else /* !CONFIG_KEXEC */
 struct pt_regs;
 struct task_struct;

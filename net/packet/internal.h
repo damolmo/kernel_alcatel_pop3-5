@@ -100,10 +100,19 @@ struct packet_sock {
 	int			copy_thresh;
 	spinlock_t		bind_lock;
 	struct mutex		pg_vec_lock;
+<<<<<<< HEAD
 	unsigned int		running:1,	/* prot_hook is attached*/
 				auxdata:1,
 				origdev:1,
 				has_vnet_hdr:1;
+=======
+	unsigned int		running;	/* bind_lock must be held */
+	unsigned int		auxdata:1,	/* writer must hold sock lock */
+				origdev:1,
+				has_vnet_hdr:1,
+				tp_loss:1,
+				tp_tx_has_off:1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int			ifindex;	/* bound device		*/
 	__be16			num;
 	struct packet_mclist	*mclist;
@@ -111,8 +120,11 @@ struct packet_sock {
 	enum tpacket_versions	tp_version;
 	unsigned int		tp_hdrlen;
 	unsigned int		tp_reserve;
+<<<<<<< HEAD
 	unsigned int		tp_loss:1;
 	unsigned int		tp_tx_has_off:1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int		tp_tstamp;
 	struct net_device __rcu	*cached_dev;
 	int			(*xmit)(struct sk_buff *skb);

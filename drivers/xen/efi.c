@@ -294,6 +294,10 @@ static const struct efi efi_xen __initconst = {
 	.acpi                     = EFI_INVALID_TABLE_ADDR,
 	.acpi20                   = EFI_INVALID_TABLE_ADDR,
 	.smbios                   = EFI_INVALID_TABLE_ADDR,
+<<<<<<< HEAD
+=======
+	.smbios3                  = EFI_INVALID_TABLE_ADDR,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.sal_systab               = EFI_INVALID_TABLE_ADDR,
 	.boot_info                = EFI_INVALID_TABLE_ADDR,
 	.hcdp                     = EFI_INVALID_TABLE_ADDR,

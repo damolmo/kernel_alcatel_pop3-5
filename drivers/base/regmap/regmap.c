@@ -1101,7 +1101,11 @@ static int dev_get_regmap_match(struct device *dev, void *res, void *data)
 
 	/* If the user didn't specify a name match any */
 	if (data)
+<<<<<<< HEAD
 		return (*r)->name == data;
+=======
+		return !strcmp((*r)->name, data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		return 1;
 }
@@ -1353,6 +1357,11 @@ int _regmap_raw_write(struct regmap *map, unsigned int reg,
 					     map->format.reg_bytes +
 					     map->format.pad_bytes,
 					     val, val_len);
+<<<<<<< HEAD
+=======
+	else
+		ret = -ENOTSUPP;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* If that didn't work fall back on linearising by hand. */
 	if (ret == -ENOTSUPP) {

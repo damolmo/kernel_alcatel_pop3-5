@@ -1360,7 +1360,13 @@ static int rockchip_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 	if (!bank->domain)
 		return -ENXIO;
 
+<<<<<<< HEAD
 	virq = irq_create_mapping(bank->domain, offset);
+=======
+	clk_enable(bank->clk);
+	virq = irq_create_mapping(bank->domain, offset);
+	clk_disable(bank->clk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return (virq) ? : -ENXIO;
 }
@@ -1675,6 +1681,10 @@ static int rockchip_get_bank_data(struct rockchip_pin_bank *bank,
 						    base,
 						    &rockchip_regmap_config);
 		}
+<<<<<<< HEAD
+=======
+		of_node_put(node);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	bank->irq = irq_of_parse_and_map(bank->of_node, 0);

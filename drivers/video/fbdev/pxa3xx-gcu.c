@@ -626,8 +626,13 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
 	/* request the IRQ */
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "no IRQ defined\n");
 		return -ENODEV;
+=======
+		dev_err(dev, "no IRQ defined: %d\n", irq);
+		return irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = devm_request_irq(dev, irq, pxa3xx_gcu_handle_irq,

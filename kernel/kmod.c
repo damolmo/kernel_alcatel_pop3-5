@@ -28,6 +28,10 @@
 #include <linux/cred.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
+<<<<<<< HEAD
+=======
+#include <linux/fs_struct.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/workqueue.h>
 #include <linux/security.h>
 #include <linux/mount.h>
@@ -127,7 +131,11 @@ out:
  * they requested is now available not blindly invoke it.
  *
  * If module auto-loading support is disabled then this function
+<<<<<<< HEAD
  * becomes a no-operation.
+=======
+ * simply returns -ENOENT.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 int __request_module(bool wait, const char *fmt, ...)
 {
@@ -148,7 +156,11 @@ int __request_module(bool wait, const char *fmt, ...)
 	WARN_ON_ONCE(wait && current_is_async());
 
 	if (!modprobe_path[0])
+<<<<<<< HEAD
 		return 0;
+=======
+		return -ENOENT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	va_start(args, fmt);
 	ret = vsnprintf(module_name, MODULE_NAME_LEN, fmt, args);
@@ -235,6 +247,17 @@ static int ____call_usermodehelper(void *data)
 	set_cpus_allowed_ptr(current, cpu_all_mask);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Initial kernel threads share ther FS with init, in order to
+	 * get the init root directory. But we've now created a new
+	 * thread that is going to execve a user process and has its own
+	 * 'struct fs_struct'. Reset umask to the default.
+	 */
+	current->fs->umask = 0022;
+
+	/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * Our parent is keventd, which runs with elevated scheduling priority.
 	 * Avoid propagating that into the userspace child.
 	 */
@@ -451,7 +474,10 @@ void __usermodehelper_set_disable_depth(enum umh_disable_depth depth)
 	wake_up(&usermodehelper_disabled_waitq);
 	up_write(&umhelper_sem);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(__usermodehelper_set_disable_depth);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * __usermodehelper_disable - Prevent new helpers from being started.
@@ -485,7 +511,10 @@ int __usermodehelper_disable(enum umh_disable_depth depth)
 	__usermodehelper_set_disable_depth(UMH_ENABLED);
 	return -EAGAIN;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(__usermodehelper_disable);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void helper_lock(void)
 {

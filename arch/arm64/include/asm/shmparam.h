@@ -21,7 +21,11 @@
  * alignment value. Since we don't have aliasing D-caches, the rest of
  * the time we can safely use PAGE_SIZE.
  */
+<<<<<<< HEAD
 #define COMPAT_SHMLBA	0x4000
+=======
+#define COMPAT_SHMLBA	(4 * PAGE_SIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm-generic/shmparam.h>
 

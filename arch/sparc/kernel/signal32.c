@@ -138,19 +138,42 @@ int copy_siginfo_from_user32(siginfo_t *to, compat_siginfo_t __user *from)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* Checks if the fp is valid.  We always build signal frames which are
+ * 16-byte aligned, therefore we can always enforce that the restore
+ * frame has that property as well.
+ */
+static bool invalid_frame_pointer(void __user *fp, int fplen)
+{
+	if ((((unsigned long) fp) & 15) ||
+	    ((unsigned long)fp) > 0x100000000ULL - fplen)
+		return true;
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void do_sigreturn32(struct pt_regs *regs)
 {
 	struct signal_frame32 __user *sf;
 	compat_uptr_t fpu_save;
 	compat_uptr_t rwin_save;
+<<<<<<< HEAD
 	unsigned int psr;
+=======
+	unsigned int psr, ufp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned pc, npc;
 	sigset_t set;
 	compat_sigset_t seta;
 	int err, i;
 	
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	synchronize_user_stack();
 
@@ -158,11 +181,24 @@ void do_sigreturn32(struct pt_regs *regs)
 	sf = (struct signal_frame32 __user *) regs->u_regs[UREG_FP];
 
 	/* 1. Make sure we are not getting garbage from the user */
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, sf, sizeof(*sf)) ||
 	    (((unsigned long) sf) & 3))
 		goto segv;
 
 	if (get_user(pc, &sf->info.si_regs.pc) ||
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+		goto segv;
+
+	if (get_user(ufp, &sf->info.si_regs.u_regs[UREG_FP]))
+		goto segv;
+
+	if (ufp & 0x7)
+		goto segv;
+
+	if (__get_user(pc, &sf->info.si_regs.pc) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    __get_user(npc, &sf->info.si_regs.npc))
 		goto segv;
 
@@ -227,7 +263,11 @@ segv:
 asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 {
 	struct rt_signal_frame32 __user *sf;
+<<<<<<< HEAD
 	unsigned int psr, pc, npc;
+=======
+	unsigned int psr, pc, npc, ufp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	compat_uptr_t fpu_save;
 	compat_uptr_t rwin_save;
 	sigset_t set;
@@ -235,18 +275,35 @@ asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 	int err, i;
 	
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	synchronize_user_stack();
 	regs->u_regs[UREG_FP] &= 0x00000000ffffffffUL;
 	sf = (struct rt_signal_frame32 __user *) regs->u_regs[UREG_FP];
 
 	/* 1. Make sure we are not getting garbage from the user */
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, sf, sizeof(*sf)) ||
 	    (((unsigned long) sf) & 3))
 		goto segv;
 
 	if (get_user(pc, &sf->regs.pc) || 
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+		goto segv;
+
+	if (get_user(ufp, &sf->regs.u_regs[UREG_FP]))
+		goto segv;
+
+	if (ufp & 0x7)
+		goto segv;
+
+	if (__get_user(pc, &sf->regs.pc) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    __get_user(npc, &sf->regs.npc))
 		goto segv;
 
@@ -307,6 +364,7 @@ segv:
 	force_sig(SIGSEGV, current);
 }
 
+<<<<<<< HEAD
 /* Checks if the fp is valid */
 static int invalid_frame_pointer(void __user *fp, int fplen)
 {
@@ -315,6 +373,8 @@ static int invalid_frame_pointer(void __user *fp, int fplen)
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void __user *get_sigframe(struct ksignal *ksig, struct pt_regs *regs, unsigned long framesize)
 {
 	unsigned long sp;

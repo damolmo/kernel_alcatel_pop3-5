@@ -1071,7 +1071,11 @@ static int pcs_parse_pinconf(struct pcs_device *pcs, struct device_node *np,
 
 	/* If pinconf isn't supported, don't parse properties in below. */
 	if (!PCS_HAS_PINCONF)
+<<<<<<< HEAD
 		return 0;
+=======
+		return -ENOTSUPP;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* cacluate how much properties are supported in current node */
 	for (i = 0; i < ARRAY_SIZE(prop2); i++) {
@@ -1083,7 +1087,11 @@ static int pcs_parse_pinconf(struct pcs_device *pcs, struct device_node *np,
 			nconfs++;
 	}
 	if (!nconfs)
+<<<<<<< HEAD
 		return 0;
+=======
+		return -ENOTSUPP;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	func->conf = devm_kzalloc(pcs->dev,
 				  sizeof(struct pcs_conf_vals) * nconfs,
@@ -1196,9 +1204,18 @@ static int pcs_parse_one_pinctrl_entry(struct pcs_device *pcs,
 
 	if (PCS_HAS_PINCONF) {
 		res = pcs_parse_pinconf(pcs, np, function, map);
+<<<<<<< HEAD
 		if (res)
 			goto free_pingroups;
 		*num_maps = 2;
+=======
+		if (res == 0)
+			*num_maps = 2;
+		else if (res == -ENOTSUPP)
+			*num_maps = 1;
+		else
+			goto free_pingroups;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		*num_maps = 1;
 	}
@@ -1273,9 +1290,15 @@ static int pcs_parse_bits_in_pinctrl_entry(struct pcs_device *pcs,
 
 		/* Parse pins in each row from LSB */
 		while (mask) {
+<<<<<<< HEAD
 			bit_pos = ffs(mask);
 			pin_num_from_lsb = bit_pos / pcs->bits_per_pin;
 			mask_pos = ((pcs->fmask) << (bit_pos - 1));
+=======
+			bit_pos = __ffs(mask);
+			pin_num_from_lsb = bit_pos / pcs->bits_per_pin;
+			mask_pos = ((pcs->fmask) << bit_pos);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			val_pos = val & mask_pos;
 			submask = mask & mask_pos;
 
@@ -1576,6 +1599,12 @@ static inline void pcs_irq_set(struct pcs_soc_data *pcs_soc,
 		else
 			mask &= ~soc_mask;
 		pcs->write(mask, pcswi->reg);
+<<<<<<< HEAD
+=======
+
+		/* flush posted write */
+		mask = pcs->read(pcswi->reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		raw_spin_unlock(&pcs->lock);
 	}
 
@@ -1851,7 +1880,11 @@ static int pcs_probe(struct platform_device *pdev)
 	ret = of_property_read_u32(np, "pinctrl-single,function-mask",
 				   &pcs->fmask);
 	if (!ret) {
+<<<<<<< HEAD
 		pcs->fshift = ffs(pcs->fmask) - 1;
+=======
+		pcs->fshift = __ffs(pcs->fmask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pcs->fmax = pcs->fmask >> pcs->fshift;
 	} else {
 		/* If mask property doesn't exist, function mux is invalid. */

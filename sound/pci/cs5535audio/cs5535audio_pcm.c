@@ -158,8 +158,13 @@ static int cs5535audio_build_dma_packets(struct cs5535audio *cs5535au,
 	lastdesc->addr = cpu_to_le32((u32) dma->desc_buf.addr);
 	lastdesc->size = 0;
 	lastdesc->ctlreserved = cpu_to_le16(PRD_JMP);
+<<<<<<< HEAD
 	jmpprd_addr = cpu_to_le32(lastdesc->addr +
 				  (sizeof(struct cs5535audio_dma_desc)*periods));
+=======
+	jmpprd_addr = (u32)dma->desc_buf.addr +
+		sizeof(struct cs5535audio_dma_desc) * periods;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dma->substream = substream;
 	dma->period_bytes = period_bytes;

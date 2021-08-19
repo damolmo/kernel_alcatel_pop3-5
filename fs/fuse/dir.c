@@ -250,7 +250,12 @@ static int fuse_dentry_revalidate(struct dentry *entry, unsigned int flags)
 			spin_unlock(&fc->lock);
 		}
 		kfree(forget);
+<<<<<<< HEAD
 		if (err || (outarg.attr.mode ^ inode->i_mode) & S_IFMT)
+=======
+		if (ret || fuse_invalid_attr(&outarg.attr) ||
+		    (outarg.attr.mode ^ inode->i_mode) & S_IFMT)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto invalid;
 
 		fuse_change_attributes(inode, &outarg.attr,
@@ -277,6 +282,53 @@ invalid:
 	goto out;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Get the canonical path. Since we must translate to a path, this must be done
+ * in the context of the userspace daemon, however, the userspace daemon cannot
+ * look up paths on its own. Instead, we handle the lookup as a special case
+ * inside of the write request.
+ */
+static void fuse_dentry_canonical_path(const struct path *path, struct path *canonical_path) {
+	struct inode *inode = path->dentry->d_inode;
+	struct fuse_conn *fc = get_fuse_conn(inode);
+	struct fuse_req *req;
+	int err;
+	char *path_name;
+
+	req = fuse_get_req(fc, 1);
+	err = PTR_ERR(req);
+	if (IS_ERR(req))
+		goto default_path;
+
+	path_name = (char*)__get_free_page(GFP_KERNEL);
+	if (!path_name) {
+		fuse_put_request(fc, req);
+		goto default_path;
+	}
+
+	req->in.h.opcode = FUSE_CANONICAL_PATH;
+	req->in.h.nodeid = get_node_id(inode);
+	req->in.numargs = 0;
+	req->out.numargs = 1;
+	req->out.args[0].size = PATH_MAX;
+	req->out.args[0].value = path_name;
+	req->canonical_path = canonical_path;
+	req->out.argvar = 1;
+	fuse_request_send(fc, req);
+	err = req->out.h.error;
+	fuse_put_request(fc, req);
+	free_page((unsigned long)path_name);
+	if (!err)
+		return;
+default_path:
+	canonical_path->dentry = path->dentry;
+	canonical_path->mnt = path->mnt;
+	path_get(canonical_path);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int invalid_nodeid(u64 nodeid)
 {
 	return !nodeid || nodeid == FUSE_ROOT_ID;
@@ -284,6 +336,10 @@ static int invalid_nodeid(u64 nodeid)
 
 const struct dentry_operations fuse_dentry_operations = {
 	.d_revalidate	= fuse_dentry_revalidate,
+<<<<<<< HEAD
+=======
+	.d_canonical_path = fuse_dentry_canonical_path,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 int fuse_valid_type(int m)
@@ -292,6 +348,15 @@ int fuse_valid_type(int m)
 		S_ISBLK(m) || S_ISFIFO(m) || S_ISSOCK(m);
 }
 
+<<<<<<< HEAD
+=======
+bool fuse_invalid_attr(struct fuse_attr *attr)
+{
+	return !fuse_valid_type(attr->mode) ||
+		attr->size > LLONG_MAX;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int fuse_lookup_name(struct super_block *sb, u64 nodeid, struct qstr *name,
 		     struct fuse_entry_out *outarg, struct inode **inode)
 {
@@ -331,7 +396,11 @@ int fuse_lookup_name(struct super_block *sb, u64 nodeid, struct qstr *name,
 	err = -EIO;
 	if (!outarg->nodeid)
 		goto out_put_forget;
+<<<<<<< HEAD
 	if (!fuse_valid_type(outarg->attr.mode))
+=======
+	if (fuse_invalid_attr(&outarg->attr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_put_forget;
 
 	*inode = fuse_iget(sb, outarg->nodeid, outarg->generation,
@@ -461,7 +530,12 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
 		goto out_free_ff;
 
 	err = -EIO;
+<<<<<<< HEAD
 	if (!S_ISREG(outentry.attr.mode) || invalid_nodeid(outentry.nodeid))
+=======
+	if (!S_ISREG(outentry.attr.mode) || invalid_nodeid(outentry.nodeid) ||
+	    fuse_invalid_attr(&outentry.attr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_free_ff;
 
 	fuse_put_request(fc, req);
@@ -577,7 +651,11 @@ static int create_new_entry(struct fuse_conn *fc, struct fuse_req *req,
 		goto out_put_forget_req;
 
 	err = -EIO;
+<<<<<<< HEAD
 	if (invalid_nodeid(outarg.nodeid))
+=======
+	if (invalid_nodeid(outarg.nodeid) || fuse_invalid_attr(&outarg.attr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_put_forget_req;
 
 	if ((outarg.attr.mode ^ mode) & S_IFMT)
@@ -873,7 +951,12 @@ static int fuse_link(struct dentry *entry, struct inode *newdir,
 
 		spin_lock(&fc->lock);
 		fi->attr_version = ++fc->attr_version;
+<<<<<<< HEAD
 		inc_nlink(inode);
+=======
+		if (likely(inode->i_nlink < UINT_MAX))
+			inc_nlink(inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock(&fc->lock);
 		fuse_invalidate_attr(inode);
 		fuse_update_ctime(inode);
@@ -962,7 +1045,12 @@ static int fuse_do_getattr(struct inode *inode, struct kstat *stat,
 	err = req->out.h.error;
 	fuse_put_request(fc, req);
 	if (!err) {
+<<<<<<< HEAD
 		if ((inode->i_mode ^ outarg.attr.mode) & S_IFMT) {
+=======
+		if (fuse_invalid_attr(&outarg.attr) ||
+		    (inode->i_mode ^ outarg.attr.mode) & S_IFMT) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			make_bad_inode(inode);
 			err = -EIO;
 		} else {
@@ -1002,8 +1090,40 @@ int fuse_update_attributes(struct inode *inode, struct kstat *stat,
 	return err;
 }
 
+<<<<<<< HEAD
 int fuse_reverse_inval_entry_child(int err, struct dentry *entry, u64 child_nodeid)
 {
+=======
+int fuse_reverse_inval_entry(struct super_block *sb, u64 parent_nodeid,
+			     u64 child_nodeid, struct qstr *name)
+{
+	int err = -ENOTDIR;
+	struct inode *parent;
+	struct dentry *dir;
+	struct dentry *entry;
+
+	parent = ilookup5(sb, parent_nodeid, fuse_inode_eq, &parent_nodeid);
+	if (!parent)
+		return -ENOENT;
+
+	mutex_lock(&parent->i_mutex);
+	if (!S_ISDIR(parent->i_mode))
+		goto unlock;
+
+	err = -ENOENT;
+	dir = d_find_alias(parent);
+	if (!dir)
+		goto unlock;
+
+	entry = d_lookup(dir, name);
+	dput(dir);
+	if (!entry)
+		goto unlock;
+
+	fuse_invalidate_attr(parent);
+	fuse_invalidate_entry(entry);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (child_nodeid != 0 && entry->d_inode) {
 		mutex_lock(&entry->d_inode->i_mutex);
 		if (get_node_id(entry->d_inode) != child_nodeid) {
@@ -1033,6 +1153,7 @@ int fuse_reverse_inval_entry_child(int err, struct dentry *entry, u64 child_node
 		err = 0;
 	}
 	dput(entry);
+<<<<<<< HEAD
 	return err;
 }
 
@@ -1070,6 +1191,11 @@ int fuse_reverse_inval_entry(struct super_block *sb, u64 parent_nodeid,
  unlock:
 	mutex_unlock(&parent->i_mutex);
 	lockdep_on();
+=======
+
+ unlock:
+	mutex_unlock(&parent->i_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iput(parent);
 	return err;
 }
@@ -1280,7 +1406,11 @@ static int fuse_direntplus_link(struct file *file,
 
 	if (invalid_nodeid(o->nodeid))
 		return -EIO;
+<<<<<<< HEAD
 	if (!fuse_valid_type(o->attr.mode))
+=======
+	if (fuse_invalid_attr(&o->attr))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EIO;
 
 	fc = get_fuse_conn(dir);
@@ -1378,7 +1508,12 @@ static int parse_dirplusfile(char *buf, size_t nbytes, struct file *file,
 			*/
 			over = !dir_emit(ctx, dirent->name, dirent->namelen,
 				       dirent->ino, dirent->type);
+<<<<<<< HEAD
 			ctx->pos = dirent->off;
+=======
+			if (!over)
+				ctx->pos = dirent->off;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		buf += reclen;
@@ -1700,9 +1835,16 @@ int fuse_flush_times(struct inode *inode, struct fuse_file *ff)
  * vmtruncate() doesn't allow for this case, so do the rlimit checking
  * and the actual truncation by hand.
  */
+<<<<<<< HEAD
 int fuse_do_setattr(struct inode *inode, struct iattr *attr,
 		    struct file *file)
 {
+=======
+int fuse_do_setattr(struct dentry *dentry, struct iattr *attr,
+		    struct file *file)
+{
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct fuse_conn *fc = get_fuse_conn(inode);
 	struct fuse_inode *fi = get_fuse_inode(inode);
 	struct fuse_req *req;
@@ -1722,8 +1864,24 @@ int fuse_do_setattr(struct inode *inode, struct iattr *attr,
 		return err;
 
 	if (attr->ia_valid & ATTR_OPEN) {
+<<<<<<< HEAD
 		if (fc->atomic_o_trunc)
 			return 0;
+=======
+		/* This is coming from open(..., ... | O_TRUNC); */
+		WARN_ON(!(attr->ia_valid & ATTR_SIZE));
+		WARN_ON(attr->ia_size != 0);
+		if (fc->atomic_o_trunc) {
+			/*
+			 * No need to send request to userspace, since actual
+			 * truncation has already been done by OPEN.  But still
+			 * need to truncate page cache.
+			 */
+			i_size_write(inode, 0);
+			truncate_pagecache(inode, 0);
+			return 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		file = NULL;
 	}
 
@@ -1734,6 +1892,22 @@ int fuse_do_setattr(struct inode *inode, struct iattr *attr,
 	if (IS_ERR(req))
 		return PTR_ERR(req);
 
+<<<<<<< HEAD
+=======
+	/* Flush dirty data/metadata before non-truncate SETATTR */
+	if (is_wb && S_ISREG(inode->i_mode) &&
+	    attr->ia_valid &
+			(ATTR_MODE | ATTR_UID | ATTR_GID | ATTR_MTIME_SET |
+			 ATTR_TIMES_SET)) {
+		err = write_inode_now(inode, true);
+		if (err)
+			return err;
+
+		fuse_set_nowrite(inode);
+		fuse_release_nowrite(inode);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (is_truncate) {
 		fuse_set_nowrite(inode);
 		set_bit(FUSE_I_SIZE_UNSTABLE, &fi->state);
@@ -1764,7 +1938,12 @@ int fuse_do_setattr(struct inode *inode, struct iattr *attr,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	if ((inode->i_mode ^ outarg.attr.mode) & S_IFMT) {
+=======
+	if (fuse_invalid_attr(&outarg.attr) ||
+	    (inode->i_mode ^ outarg.attr.mode) & S_IFMT) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		make_bad_inode(inode);
 		err = -EIO;
 		goto error;
@@ -1817,14 +1996,56 @@ error:
 static int fuse_setattr(struct dentry *entry, struct iattr *attr)
 {
 	struct inode *inode = entry->d_inode;
+<<<<<<< HEAD
+=======
+	struct file *file = (attr->ia_valid & ATTR_FILE) ? attr->ia_file : NULL;
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!fuse_allow_current_process(get_fuse_conn(inode)))
 		return -EACCES;
 
+<<<<<<< HEAD
 	if (attr->ia_valid & ATTR_FILE)
 		return fuse_do_setattr(inode, attr, attr->ia_file);
 	else
 		return fuse_do_setattr(inode, attr, NULL);
+=======
+	if (attr->ia_valid & (ATTR_KILL_SUID | ATTR_KILL_SGID)) {
+		int kill;
+
+		attr->ia_valid &= ~(ATTR_KILL_SUID | ATTR_KILL_SGID |
+				    ATTR_MODE);
+		/*
+		 * ia_mode calculation may have used stale i_mode.  Refresh and
+		 * recalculate.
+		 */
+		ret = fuse_do_getattr(inode, NULL, file);
+		if (ret)
+			return ret;
+
+		attr->ia_mode = inode->i_mode;
+		kill = should_remove_suid(entry);
+		if (kill & ATTR_KILL_SUID) {
+			attr->ia_valid |= ATTR_MODE;
+			attr->ia_mode &= ~S_ISUID;
+		}
+		if (kill & ATTR_KILL_SGID) {
+			attr->ia_valid |= ATTR_MODE;
+			attr->ia_mode &= ~S_ISGID;
+		}
+	}
+	if (!attr->ia_valid)
+		return 0;
+
+	ret = fuse_do_setattr(entry, attr, file);
+	if (!ret) {
+		/* Directory mode changed, may need to revalidate access */
+		if (d_is_dir(entry) && (attr->ia_valid & ATTR_MODE))
+			fuse_invalidate_entry_cache(entry);
+	}
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int fuse_getattr(struct vfsmount *mnt, struct dentry *entry,

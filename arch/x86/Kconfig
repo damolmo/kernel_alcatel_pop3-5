@@ -41,6 +41,12 @@ config X86
 	select ARCH_DISCARD_MEMBLOCK
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARCH_WANT_FRAME_POINTERS
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_HARDENED_USERCOPY
+	select HAVE_ARCH_WITHIN_STACK_FRAMES
+	select GENERIC_CPU_VULNERABILITIES
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select HAVE_DMA_ATTRS
 	select HAVE_DMA_CONTIGUOUS
 	select HAVE_KRETPROBES
@@ -103,6 +109,11 @@ config X86
 	select DCACHE_WORD_ACCESS
 	select GENERIC_SMP_IDLE_THREAD
 	select ARCH_WANT_IPC_PARSE_VERSION if X86_32
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_MMAP_RND_BITS		if MMU
+	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	select HAVE_ARCH_SECCOMP_FILTER
 	select BUILDTIME_EXTABLE_SORT
 	select GENERIC_CMOS_UPDATE
@@ -168,6 +179,23 @@ config HAVE_LATENCYTOP_SUPPORT
 config MMU
 	def_bool y
 
+<<<<<<< HEAD
+=======
+config ARCH_MMAP_RND_BITS_MIN
+	default 28 if 64BIT
+	default 8
+
+config ARCH_MMAP_RND_BITS_MAX
+	default 32 if 64BIT
+	default 16
+
+config ARCH_MMAP_RND_COMPAT_BITS_MIN
+	default 8
+
+config ARCH_MMAP_RND_COMPAT_BITS_MAX
+	default 16
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config SBUS
 	bool
 
@@ -275,6 +303,12 @@ config ARCH_SUPPORTS_UPROBES
 config FIX_EARLYCON_MEM
 	def_bool y
 
+<<<<<<< HEAD
+=======
+config DEBUG_RODATA
+	def_bool y
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 source "init/Kconfig"
 source "kernel/Kconfig.freezer"
 
@@ -358,6 +392,22 @@ config GOLDFISH
        def_bool y
        depends on X86_GOLDFISH
 
+<<<<<<< HEAD
+=======
+config RETPOLINE
+	bool "Avoid speculative indirect branches in kernel"
+	default y
+	---help---
+	  Compile kernel with the retpoline compiler options to guard against
+	  kernel-to-user data leaks by avoiding speculative indirect
+	  branches. Requires a compiler with -mindirect-branch=thunk-extern
+	  support for full protection. The kernel may run slower.
+
+	  Without compiler support, at least indirect branches in assembler
+	  code are eliminated. Since this includes the syscall entry path,
+	  it is not entirely pointless.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 if X86_32
 config X86_EXTENDED_PLATFORM
 	bool "Support for extended (non-PC) x86 platforms"
@@ -954,7 +1004,11 @@ config X86_MCE_THRESHOLD
 	def_bool y
 
 config X86_MCE_INJECT
+<<<<<<< HEAD
 	depends on X86_MCE
+=======
+	depends on X86_MCE && X86_LOCAL_APIC
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tristate "Machine check injector support"
 	---help---
 	  Provide support for injecting machine checks for testing purposes.
@@ -1846,6 +1900,7 @@ config PHYSICAL_ALIGN
 	  Don't change this unless you know what you are doing.
 
 config HOTPLUG_CPU
+<<<<<<< HEAD
 	bool "Support for hot-pluggable CPUs"
 	depends on SMP
 	---help---
@@ -1854,6 +1909,10 @@ config HOTPLUG_CPU
 	  ( Note: power management support will enable this option
 	    automatically on SMP systems. )
 	  Say N if you want to disable CPU hotplug.
+=======
+	def_bool y
+	depends on SMP
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 config BOOTPARAM_HOTPLUG_CPU0
 	bool "Set default setting of cpu0_hotpluggable"
@@ -2471,10 +2530,13 @@ config COMPAT_FOR_U64_ALIGNMENT
 config SYSVIPC_COMPAT
 	def_bool y
 	depends on SYSVIPC
+<<<<<<< HEAD
 
 config KEYS_COMPAT
 	def_bool y
 	depends on KEYS
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif
 
 endmenu

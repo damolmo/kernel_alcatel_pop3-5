@@ -25,7 +25,11 @@ static int max7301_spi_write(struct device *dev, unsigned int reg,
 	struct spi_device *spi = to_spi_device(dev);
 	u16 word = ((reg & 0x7F) << 8) | (val & 0xFF);
 
+<<<<<<< HEAD
 	return spi_write(spi, (const u8 *)&word, sizeof(word));
+=======
+	return spi_write_then_read(spi, &word, sizeof(word), NULL, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* A read from the MAX7301 means two transfers; here, one message each */
@@ -37,6 +41,7 @@ static int max7301_spi_read(struct device *dev, unsigned int reg)
 	struct spi_device *spi = to_spi_device(dev);
 
 	word = 0x8000 | (reg << 8);
+<<<<<<< HEAD
 	ret = spi_write(spi, (const u8 *)&word, sizeof(word));
 	if (ret)
 		return ret;
@@ -45,6 +50,10 @@ static int max7301_spi_read(struct device *dev, unsigned int reg)
 	 * zero bytes (=NOOP for MAX7301)
 	 */
 	ret = spi_read(spi, (u8 *)&word, sizeof(word));
+=======
+	ret = spi_write_then_read(spi, &word, sizeof(word), &word,
+				  sizeof(word));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		return ret;
 	return word & 0xff;

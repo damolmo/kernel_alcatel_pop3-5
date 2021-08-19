@@ -27,6 +27,10 @@
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static DEFINE_MUTEX(compass_mutex);
 
@@ -50,6 +54,10 @@ static int compass_store(struct device *dev, const char *buf, size_t count,
 		return ret;
 	if (val >= strlen(map))
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	val = array_index_nospec(val, strlen(map));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&compass_mutex);
 	ret = compass_command(c, map[val]);
 	mutex_unlock(&compass_mutex);

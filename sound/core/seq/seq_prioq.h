@@ -44,14 +44,22 @@ void snd_seq_prioq_delete(struct snd_seq_prioq **fifo);
 int snd_seq_prioq_cell_in(struct snd_seq_prioq *f, struct snd_seq_event_cell *cell);
 
 /* dequeue cell from prioq */ 
+<<<<<<< HEAD
 struct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f);
+=======
+struct snd_seq_event_cell *snd_seq_prioq_cell_out(struct snd_seq_prioq *f,
+						  void *current_time);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* return number of events available in prioq */
 int snd_seq_prioq_avail(struct snd_seq_prioq *f);
 
+<<<<<<< HEAD
 /* peek at cell at the head of the prioq */
 struct snd_seq_event_cell *snd_seq_prioq_cell_peek(struct snd_seq_prioq *f);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* client left queue */
 void snd_seq_prioq_leave(struct snd_seq_prioq *f, int client, int timestamp);        
 

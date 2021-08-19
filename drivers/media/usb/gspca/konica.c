@@ -127,6 +127,14 @@ static void reg_r(struct gspca_dev *gspca_dev, u16 value, u16 index)
 	if (ret < 0) {
 		pr_err("reg_r err %d\n", ret);
 		gspca_dev->usb_err = ret;
+<<<<<<< HEAD
+=======
+		/*
+		 * Make sure the buffer is zeroed to avoid uninitialized
+		 * values.
+		 */
+		memset(gspca_dev->usb_buf, 0, 2);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -188,6 +196,12 @@ static int sd_start(struct gspca_dev *gspca_dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (alt->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 
 	n = gspca_dev->cam.cam_mode[gspca_dev->curr_mode].priv;
@@ -243,7 +257,11 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 static void sd_stopN(struct gspca_dev *gspca_dev)
 {
+<<<<<<< HEAD
 	struct sd *sd = (struct sd *) gspca_dev;
+=======
+	struct sd *sd __maybe_unused = (struct sd *) gspca_dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	konica_stream_off(gspca_dev);
 #if IS_ENABLED(CONFIG_INPUT)

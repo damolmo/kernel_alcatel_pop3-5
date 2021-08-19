@@ -101,6 +101,10 @@ static int raw_eth_ioctl(struct net_device *dev, struct ifreq *ifr)
 		old_qlen = dev->tx_queue_len;
 		ether_setup(dev);
 		dev->tx_queue_len = old_qlen;
+<<<<<<< HEAD
+=======
+		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		eth_hw_addr_random(dev);
 		netif_dormant_off(dev);
 		return 0;

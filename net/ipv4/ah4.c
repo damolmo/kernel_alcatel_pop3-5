@@ -220,7 +220,13 @@ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
 	ah->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.low);
 
 	sg_init_table(sg, nfrags + sglists);
+<<<<<<< HEAD
 	skb_to_sgvec_nomark(skb, sg, 0, skb->len);
+=======
+	err = skb_to_sgvec_nomark(skb, sg, 0, skb->len);
+	if (unlikely(err < 0))
+		goto out_free;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (x->props.flags & XFRM_STATE_ESN) {
 		/* Attach seqhi sg right after packet payload */
@@ -270,6 +276,12 @@ static void ah_input_done(struct crypto_async_request *base, int err)
 	int ihl = ip_hdrlen(skb);
 	int ah_hlen = (ah->hdrlen + 2) << 2;
 
+<<<<<<< HEAD
+=======
+	if (err)
+		goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	work_iph = AH_SKB_CB(skb)->tmp;
 	auth_data = ah_tmp_auth(work_iph, ihl);
 	icv = ah_tmp_icv(ahp->ahash, auth_data, ahp->icv_trunc_len);
@@ -388,7 +400,13 @@ static int ah_input(struct xfrm_state *x, struct sk_buff *skb)
 	skb_push(skb, ihl);
 
 	sg_init_table(sg, nfrags + sglists);
+<<<<<<< HEAD
 	skb_to_sgvec_nomark(skb, sg, 0, skb->len);
+=======
+	err = skb_to_sgvec_nomark(skb, sg, 0, skb->len);
+	if (unlikely(err < 0))
+		goto out_free;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (x->props.flags & XFRM_STATE_ESN) {
 		/* Attach seqhi sg right after packet payload */

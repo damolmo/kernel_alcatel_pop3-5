@@ -150,6 +150,11 @@ void snd_ctl_notify(struct snd_card *card, unsigned int mask,
 	
 	if (snd_BUG_ON(!card || !id))
 		return;
+<<<<<<< HEAD
+=======
+	if (card->shutdown)
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	read_lock(&card->ctl_files_rwlock);
 #if IS_ENABLED(CONFIG_SND_MIXER_OSS)
 	card->mixer_oss_change_count++;
@@ -1085,7 +1090,11 @@ static int snd_ctl_elem_user_tlv(struct snd_kcontrol *kcontrol,
 		mutex_lock(&ue->card->user_ctl_lock);
 		change = ue->tlv_data_size != size;
 		if (!change)
+<<<<<<< HEAD
 			change = memcmp(ue->tlv_data, new_data, size);
+=======
+			change = memcmp(ue->tlv_data, new_data, size) != 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(ue->tlv_data);
 		ue->tlv_data = new_data;
 		ue->tlv_data_size = size;
@@ -1324,6 +1333,11 @@ static int snd_ctl_tlv_ioctl(struct snd_ctl_file *file,
 		return -EFAULT;
 	if (tlv.length < sizeof(unsigned int) * 2)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (!tlv.numid)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	down_read(&card->controls_rwsem);
 	kctl = snd_ctl_find_numid(card, tlv.numid);
 	if (kctl == NULL) {

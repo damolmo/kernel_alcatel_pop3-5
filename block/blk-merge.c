@@ -1,9 +1,12 @@
 /*
  * Functions related to segment and merge handling
  */
+<<<<<<< HEAD
 #if defined(CONFIG_MT_ENG_BUILD)
 #define DEBUG 1
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/bio.h>
@@ -100,6 +103,7 @@ void blk_recalc_rq_segments(struct request *rq)
 
 void blk_recount_segments(struct request_queue *q, struct bio *bio)
 {
+<<<<<<< HEAD
 	unsigned short seg_cnt;
 
 	/* estimate segment number by bi_vcnt for non-cloned bio */
@@ -107,6 +111,9 @@ void blk_recount_segments(struct request_queue *q, struct bio *bio)
 		seg_cnt = bio_segments(bio);
 	else
 		seg_cnt = bio->bi_vcnt;
+=======
+	unsigned short seg_cnt = bio_segments(bio);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (test_bit(QUEUE_FLAG_NO_SG_MERGE, &q->queue_flags) &&
 			(seg_cnt < queue_max_segments(q)))
@@ -208,9 +215,12 @@ static int __blk_bios_map_sg(struct request_queue *q, struct bio *bio,
 	struct bio_vec bvec, bvprv = { NULL };
 	struct bvec_iter iter;
 	int nsegs, cluster;
+<<<<<<< HEAD
 #if defined(FEATURE_STORAGE_PID_LOGGER)
 	struct page_pid_logger *prev_logger = 0;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	nsegs = 0;
 	cluster = blk_queue_cluster(q);
@@ -239,6 +249,7 @@ single_segment:
 	}
 
 	for_each_bio(bio)
+<<<<<<< HEAD
 		bio_for_each_segment(bvec, bio, iter) {
 			__blk_segment_map_sg(q, &bvec, sglist, &bvprv, sg,
 					     &nsegs, &cluster);
@@ -342,6 +353,11 @@ single_segment:
 #endif
 
 			}
+=======
+		bio_for_each_segment(bvec, bio, iter)
+			__blk_segment_map_sg(q, &bvec, sglist, &bvprv, sg,
+					     &nsegs, &cluster);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return nsegs;
 }

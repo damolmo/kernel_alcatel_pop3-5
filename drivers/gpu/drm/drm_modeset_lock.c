@@ -75,7 +75,11 @@ int __drm_modeset_lock_all(struct drm_device *dev,
 	int ret;
 
 	ctx = kzalloc(sizeof(*ctx),
+<<<<<<< HEAD
 		      trylock ? GFP_ATOMIC : GFP_KERNEL);
+=======
+		      trylock ? GFP_ATOMIC : GFP_KERNEL | __GFP_NOFAIL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ctx)
 		return -ENOMEM;
 
@@ -157,6 +161,7 @@ void drm_modeset_unlock_all(struct drm_device *dev)
 EXPORT_SYMBOL(drm_modeset_unlock_all);
 
 /**
+<<<<<<< HEAD
  * drm_modeset_lock_crtc - lock crtc with hidden acquire ctx for a plane update
  * @crtc: DRM CRTC
  * @plane: DRM plane to be updated on @crtc
@@ -171,6 +176,16 @@ EXPORT_SYMBOL(drm_modeset_unlock_all);
  */
 void drm_modeset_lock_crtc(struct drm_crtc *crtc,
 			   struct drm_plane *plane)
+=======
+ * drm_modeset_lock_crtc - lock crtc with hidden acquire ctx
+ * @crtc: drm crtc
+ *
+ * This function locks the given crtc using a hidden acquire context. This is
+ * necessary so that drivers internally using the atomic interfaces can grab
+ * further locks with the lock acquire context.
+ */
+void drm_modeset_lock_crtc(struct drm_crtc *crtc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct drm_modeset_acquire_ctx *ctx;
 	int ret;
@@ -186,6 +201,7 @@ retry:
 	if (ret)
 		goto fail;
 
+<<<<<<< HEAD
 	if (plane) {
 		ret = drm_modeset_lock(&plane->mutex, ctx);
 		if (ret)
@@ -198,6 +214,8 @@ retry:
 		}
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	WARN_ON(crtc->acquire_ctx);
 
 	/* now we hold the locks, so now that it is safe, stash the
@@ -455,14 +473,24 @@ void drm_modeset_unlock(struct drm_modeset_lock *lock)
 }
 EXPORT_SYMBOL(drm_modeset_unlock);
 
+<<<<<<< HEAD
 /* In some legacy codepaths it's convenient to just grab all the crtc and plane
  * related locks. */
+=======
+/* Temporary.. until we have sufficiently fine grained locking, there
+ * are a couple scenarios where it is convenient to grab all crtc locks.
+ * It is planned to remove this:
+ */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int drm_modeset_lock_all_crtcs(struct drm_device *dev,
 		struct drm_modeset_acquire_ctx *ctx)
 {
 	struct drm_mode_config *config = &dev->mode_config;
 	struct drm_crtc *crtc;
+<<<<<<< HEAD
 	struct drm_plane *plane;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = 0;
 
 	list_for_each_entry(crtc, &config->crtc_list, head) {
@@ -471,12 +499,15 @@ int drm_modeset_lock_all_crtcs(struct drm_device *dev,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry(plane, &config->plane_list, head) {
 		ret = drm_modeset_lock(&plane->mutex, ctx);
 		if (ret)
 			return ret;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(drm_modeset_lock_all_crtcs);

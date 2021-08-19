@@ -148,7 +148,11 @@ static int uio_pdrv_genirq_probe(struct platform_device *pdev)
 	if (!uioinfo->irq) {
 		ret = platform_get_irq(pdev, 0);
 		uioinfo->irq = ret;
+<<<<<<< HEAD
 		if (ret == -ENXIO && pdev->dev.of_node)
+=======
+		if (ret == -ENXIO)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			uioinfo->irq = UIO_IRQ_NONE;
 		else if (ret < 0) {
 			dev_err(&pdev->dev, "failed to get IRQ\n");

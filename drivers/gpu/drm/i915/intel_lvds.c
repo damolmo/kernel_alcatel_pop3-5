@@ -745,6 +745,17 @@ static const struct dmi_system_id intel_no_lvds[] = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "D525MW"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{
+		.callback = intel_no_lvds_dmi_callback,
+		.ident = "Radiant P845",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Radiant Systems Inc"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "P845"),
+		},
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	{ }	/* terminating entry */
 };

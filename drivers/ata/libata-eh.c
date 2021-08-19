@@ -174,8 +174,13 @@ static void ata_eh_handle_port_resume(struct ata_port *ap)
 { }
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static void __ata_ehi_pushv_desc(struct ata_eh_info *ehi, const char *fmt,
 				 va_list args)
+=======
+static __printf(2, 0) void __ata_ehi_pushv_desc(struct ata_eh_info *ehi,
+				 const char *fmt, va_list args)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	ehi->desc_len += vscnprintf(ehi->desc + ehi->desc_len,
 				     ATA_EH_DESC_LEN - ehi->desc_len,
@@ -605,7 +610,11 @@ void ata_scsi_error(struct Scsi_Host *host)
 	ata_scsi_port_error_handler(host, ap);
 
 	/* finish or retry handled scmd's and clean up */
+<<<<<<< HEAD
 	WARN_ON(host->host_failed || !list_empty(&eh_work_q));
+=======
+	WARN_ON(!list_empty(&eh_work_q));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	DPRINTK("EXIT\n");
 }
@@ -2173,12 +2182,25 @@ static void ata_eh_link_autopsy(struct ata_link *link)
 		if (qc->err_mask & ~AC_ERR_OTHER)
 			qc->err_mask &= ~AC_ERR_OTHER;
 
+<<<<<<< HEAD
 		/* SENSE_VALID trumps dev/unknown error and revalidation */
 		if (qc->flags & ATA_QCFLAG_SENSE_VALID)
 			qc->err_mask &= ~(AC_ERR_DEV | AC_ERR_OTHER);
 
 		/* determine whether the command is worth retrying */
 		if (ata_eh_worth_retry(qc))
+=======
+		/*
+		 * SENSE_VALID trumps dev/unknown error and revalidation. Upper
+		 * layers will determine whether the command is worth retrying
+		 * based on the sense data and device class/type. Otherwise,
+		 * determine directly if the command is worth retrying using its
+		 * error mask and flags.
+		 */
+		if (qc->flags & ATA_QCFLAG_SENSE_VALID)
+			qc->err_mask &= ~(AC_ERR_DEV | AC_ERR_OTHER);
+		else if (ata_eh_worth_retry(qc))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			qc->flags |= ATA_QCFLAG_RETRY;
 
 		/* accumulate error info */

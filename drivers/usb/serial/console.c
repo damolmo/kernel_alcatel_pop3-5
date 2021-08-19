@@ -187,6 +187,10 @@ static int usb_console_setup(struct console *co, char *options)
 	tty_kref_put(tty);
  reset_open_count:
 	port->port.count = 0;
+<<<<<<< HEAD
+=======
+	info->port = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_autopm_put_interface(serial->interface);
  error_get_interface:
 	usb_serial_put(serial);

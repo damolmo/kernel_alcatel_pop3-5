@@ -47,17 +47,29 @@ static void smp_task_timedout(unsigned long _task)
 	unsigned long flags;
 
 	spin_lock_irqsave(&task->task_state_lock, flags);
+<<<<<<< HEAD
 	if (!(task->task_state_flags & SAS_TASK_STATE_DONE))
 		task->task_state_flags |= SAS_TASK_STATE_ABORTED;
 	spin_unlock_irqrestore(&task->task_state_lock, flags);
 
 	complete(&task->slow_task->completion);
+=======
+	if (!(task->task_state_flags & SAS_TASK_STATE_DONE)) {
+		task->task_state_flags |= SAS_TASK_STATE_ABORTED;
+		complete(&task->slow_task->completion);
+	}
+	spin_unlock_irqrestore(&task->task_state_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void smp_task_done(struct sas_task *task)
 {
+<<<<<<< HEAD
 	if (!del_timer(&task->slow_task->timer))
 		return;
+=======
+	del_timer(&task->slow_task->timer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	complete(&task->slow_task->completion);
 }
 
@@ -282,6 +294,10 @@ static void sas_set_ex_phy(struct domain_device *dev, int phy_id, void *rsp)
 	phy->phy->minimum_linkrate = dr->pmin_linkrate;
 	phy->phy->maximum_linkrate = dr->pmax_linkrate;
 	phy->phy->negotiated_linkrate = phy->linkrate;
+<<<<<<< HEAD
+=======
+	phy->phy->enabled = (phy->linkrate != SAS_PHY_DISABLED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
  skip:
 	if (new_phy)
@@ -603,7 +619,18 @@ int sas_smp_phy_control(struct domain_device *dev, int phy_id,
 	}
 
 	res = smp_execute_task(dev, pc_req, PC_REQ_SIZE, pc_resp,PC_RESP_SIZE);
+<<<<<<< HEAD
 
+=======
+	if (res) {
+		pr_err("ex %016llx phy%02d PHY control failed: %d\n",
+		       SAS_ADDR(dev->sas_addr), phy_id, res);
+	} else if (pc_resp[2] != SMP_RESP_FUNC_ACC) {
+		pr_err("ex %016llx phy%02d PHY control failed: function result 0x%x\n",
+		       SAS_ADDR(dev->sas_addr), phy_id, pc_resp[2]);
+		res = pc_resp[2];
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(pc_resp);
 	kfree(pc_req);
 	return res;
@@ -675,7 +702,11 @@ int sas_smp_get_phy_events(struct sas_phy *phy)
 	res = smp_execute_task(dev, req, RPEL_REQ_SIZE,
 			            resp, RPEL_RESP_SIZE);
 
+<<<<<<< HEAD
 	if (!res)
+=======
+	if (res)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	phy->invalid_dword_count = scsi_to_u32(&resp[12]);
@@ -684,6 +715,10 @@ int sas_smp_get_phy_events(struct sas_phy *phy)
 	phy->phy_reset_problem_count = scsi_to_u32(&resp[24]);
 
  out:
+<<<<<<< HEAD
+=======
+	kfree(req);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(resp);
 	return res;
 
@@ -805,6 +840,29 @@ static struct domain_device *sas_ex_discover_end_dev(
 
 #ifdef CONFIG_SCSI_SAS_ATA
 	if ((phy->attached_tproto & SAS_PROTOCOL_STP) || phy->attached_sata_dev) {
+<<<<<<< HEAD
+=======
+		if (child->linkrate > parent->min_linkrate) {
+			struct sas_phy_linkrates rates = {
+				.maximum_linkrate = parent->min_linkrate,
+				.minimum_linkrate = parent->min_linkrate,
+			};
+			int ret;
+
+			pr_notice("ex %016llx phy%02d SATA device linkrate > min pathway connection rate, attempting to lower device linkrate\n",
+				   SAS_ADDR(child->sas_addr), phy_id);
+			ret = sas_smp_phy_control(parent, phy_id,
+						  PHY_FUNC_LINK_RESET, &rates);
+			if (ret) {
+				pr_err("ex %016llx phy%02d SATA device could not set linkrate (%d)\n",
+				       SAS_ADDR(child->sas_addr), phy_id, ret);
+				goto out_free;
+			}
+			pr_notice("ex %016llx phy%02d SATA device set linkrate successfully\n",
+				  SAS_ADDR(child->sas_addr), phy_id);
+			child->linkrate = child->min_linkrate;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		res = sas_get_ata_info(child, phy);
 		if (res)
 			goto out_free;
@@ -816,6 +874,10 @@ static struct domain_device *sas_ex_discover_end_dev(
 		rphy = sas_end_device_alloc(phy->port);
 		if (!rphy)
 			goto out_free;
+<<<<<<< HEAD
+=======
+		rphy->identify.phy_identifier = phy_id;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		child->rphy = rphy;
 		get_device(&rphy->dev);
@@ -843,6 +905,10 @@ static struct domain_device *sas_ex_discover_end_dev(
 
 		child->rphy = rphy;
 		get_device(&rphy->dev);
+<<<<<<< HEAD
+=======
+		rphy->identify.phy_identifier = phy_id;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sas_fill_in_rphy(child, rphy);
 
 		list_add_tail(&child->disco_list_node, &parent->port->disco_list);
@@ -975,6 +1041,11 @@ static struct domain_device *sas_ex_discover_expander(
 		list_del(&child->dev_list_node);
 		spin_unlock_irq(&parent->port->dev_list_lock);
 		sas_put_device(child);
+<<<<<<< HEAD
+=======
+		sas_port_delete(phy->port);
+		phy->port = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 	}
 	list_add_tail(&child->siblings, &parent->ex_dev.children);
@@ -2024,6 +2095,14 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id, bool last)
 	if ((SAS_ADDR(sas_addr) == 0) || (res == -ECOMM)) {
 		phy->phy_state = PHY_EMPTY;
 		sas_unregister_devs_sas_addr(dev, phy_id, last);
+<<<<<<< HEAD
+=======
+		/*
+		 * Even though the PHY is empty, for convenience we discover
+		 * the PHY to update the PHY info, like negotiated linkrate.
+		 */
+		sas_ex_phy_discover(dev, phy_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return res;
 	} else if (SAS_ADDR(sas_addr) == SAS_ADDR(phy->attached_sas_addr) &&
 		   dev_type_flutter(type, phy->attached_dev_type)) {
@@ -2039,6 +2118,7 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id, bool last)
 		return res;
 	}
 
+<<<<<<< HEAD
 	/* delete the old link */
 	if (SAS_ADDR(phy->attached_sas_addr) &&
 	    SAS_ADDR(sas_addr) != SAS_ADDR(phy->attached_sas_addr)) {
@@ -2047,6 +2127,13 @@ static int sas_rediscover_dev(struct domain_device *dev, int phy_id, bool last)
 			    SAS_ADDR(phy->attached_sas_addr));
 		sas_unregister_devs_sas_addr(dev, phy_id, last);
 	}
+=======
+	/* we always have to delete the old device when we went here */
+	SAS_DPRINTK("ex %016llx phy 0x%x replace %016llx\n",
+		    SAS_ADDR(dev->sas_addr), phy_id,
+		    SAS_ADDR(phy->attached_sas_addr));
+	sas_unregister_devs_sas_addr(dev, phy_id, last);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return sas_discover_new(dev, phy_id);
 }

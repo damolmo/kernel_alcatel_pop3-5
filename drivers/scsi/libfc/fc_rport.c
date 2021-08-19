@@ -121,12 +121,22 @@ static struct fc_rport_priv *fc_rport_create(struct fc_lport *lport,
 					     u32 port_id)
 {
 	struct fc_rport_priv *rdata;
+<<<<<<< HEAD
+=======
+	size_t rport_priv_size = sizeof(*rdata);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rdata = lport->tt.rport_lookup(lport, port_id);
 	if (rdata)
 		return rdata;
 
+<<<<<<< HEAD
 	rdata = kzalloc(sizeof(*rdata) + lport->rport_priv_size, GFP_KERNEL);
+=======
+	if (lport->rport_priv_size > 0)
+		rport_priv_size = lport->rport_priv_size;
+	rdata = kzalloc(rport_priv_size, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!rdata)
 		return NULL;
 

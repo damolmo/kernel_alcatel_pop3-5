@@ -32,12 +32,15 @@
 #define MPIDR_AFFINITY_LEVEL(mpidr, level) \
 	((mpidr >> MPIDR_LEVEL_SHIFT(level)) & MPIDR_LEVEL_MASK)
 
+<<<<<<< HEAD
 #define read_cpuid(reg) ({						\
 	u64 __val;							\
 	asm("mrs	%0, " #reg : "=r" (__val));			\
 	__val;								\
 })
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define MIDR_REVISION_MASK	0xf
 #define MIDR_REVISION(midr)	((midr) & MIDR_REVISION_MASK)
 #define MIDR_PARTNUM_SHIFT	4
@@ -68,11 +71,15 @@
 #define ARM_CPU_PART_AEM_V8	0xD0F
 #define ARM_CPU_PART_FOUNDATION	0xD00
 #define ARM_CPU_PART_CORTEX_A57	0xD07
+<<<<<<< HEAD
 #define ARM_CPU_PART_CORTEX_A72	0xD08
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ARM_CPU_PART_CORTEX_A53	0xD03
 
 #define APM_CPU_PART_POTENZA	0x000
 
+<<<<<<< HEAD
 #define ID_AA64MMFR0_BIGENDEL0_SHIFT	16
 #define ID_AA64MMFR0_BIGENDEL0_MASK	(0xf << ID_AA64MMFR0_BIGENDEL0_SHIFT)
 #define ID_AA64MMFR0_BIGENDEL0(mmfr0)	\
@@ -86,6 +93,17 @@
 #define SCTLR_EL1_SED		(0x1 << 8)
 
 #ifndef __ASSEMBLY__
+=======
+#ifndef __ASSEMBLY__
+
+#include <asm/sysreg.h>
+
+#define read_cpuid(reg) ({						\
+	u64 __val;							\
+	asm("mrs_s	%0, " __stringify(reg) : "=r" (__val));		\
+	__val;								\
+})
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * The CPU ID never changes at run time, so we might as well tell the
@@ -94,12 +112,20 @@
  */
 static inline u32 __attribute_const__ read_cpuid_id(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(MIDR_EL1);
+=======
+	return read_cpuid(SYS_MIDR_EL1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline u64 __attribute_const__ read_cpuid_mpidr(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(MPIDR_EL1);
+=======
+	return read_cpuid(SYS_MPIDR_EL1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline unsigned int __attribute_const__ read_cpuid_implementor(void)
@@ -114,6 +140,7 @@ static inline unsigned int __attribute_const__ read_cpuid_part_number(void)
 
 static inline u32 __attribute_const__ read_cpuid_cachetype(void)
 {
+<<<<<<< HEAD
 	return read_cpuid(CTR_EL0);
 }
 
@@ -121,6 +148,9 @@ static inline bool id_aa64mmfr0_mixed_endian_el0(u64 mmfr0)
 {
 	return (ID_AA64MMFR0_BIGEND(mmfr0) == 0x1) ||
 		(ID_AA64MMFR0_BIGENDEL0(mmfr0) == 0x1);
+=======
+	return read_cpuid(SYS_CTR_EL0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif /* __ASSEMBLY__ */
 

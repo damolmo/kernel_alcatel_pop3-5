@@ -420,6 +420,7 @@ void bpf_jit_compile(struct bpf_prog *fp)
 		}
 		emit_reg_move(O7, r_saved_O7);
 
+<<<<<<< HEAD
 		switch (filter[0].code) {
 		case BPF_RET | BPF_K:
 		case BPF_LD | BPF_W | BPF_LEN:
@@ -436,6 +437,11 @@ void bpf_jit_compile(struct bpf_prog *fp)
 			 */
 			emit_clear(r_A); /* A = 0 */
 		}
+=======
+		/* Make sure we dont leak kernel information to the user. */
+		if (bpf_needs_clear_a(&filter[0]))
+			emit_clear(r_A); /* A = 0 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		for (i = 0; i < flen; i++) {
 			unsigned int K = filter[i].k;

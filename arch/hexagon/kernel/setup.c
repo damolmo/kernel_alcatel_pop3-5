@@ -19,6 +19,10 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/bootmem.h>
 #include <linux/mmzone.h>
 #include <linux/mm.h>

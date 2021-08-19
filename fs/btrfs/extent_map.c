@@ -76,7 +76,11 @@ void free_extent_map(struct extent_map *em)
 		WARN_ON(extent_map_in_tree(em));
 		WARN_ON(!list_empty(&em->list));
 		if (test_bit(EXTENT_FLAG_FS_MAPPING, &em->flags))
+<<<<<<< HEAD
 			kfree(em->bdev);
+=======
+			kfree(em->map_lookup);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kmem_cache_free(extent_map_cache, em);
 	}
 }
@@ -227,6 +231,20 @@ static void try_merge_map(struct extent_map_tree *tree, struct extent_map *em)
 	struct extent_map *merge = NULL;
 	struct rb_node *rb;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We can't modify an extent map that is in the tree and that is being
+	 * used by another task, as it can cause that other task to see it in
+	 * inconsistent state during the merging. We always have 1 reference for
+	 * the tree and 1 for this task (which is unpinning the extent map or
+	 * clearing the logging flag), so anything > 2 means it's being used by
+	 * other tasks too.
+	 */
+	if (atomic_read(&em->refs) > 2)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (em->start != 0) {
 		rb = rb_prev(&em->rb_node);
 		if (rb)

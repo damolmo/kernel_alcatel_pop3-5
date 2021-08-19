@@ -508,7 +508,11 @@ static int pcan_usb_pro_drv_loaded(struct peak_usb_device *dev, int loaded)
 	u8 *buffer;
 	int err;
 
+<<<<<<< HEAD
 	buffer = kmalloc(PCAN_USBPRO_FCT_DRVLD_REQ_LEN, GFP_KERNEL);
+=======
+	buffer = kzalloc(PCAN_USBPRO_FCT_DRVLD_REQ_LEN, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!buffer)
 		return -ENOMEM;
 

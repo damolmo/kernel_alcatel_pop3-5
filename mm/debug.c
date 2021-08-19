@@ -48,12 +48,15 @@ static const struct trace_print_flags pageflag_names[] = {
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	{1UL << PG_compound_lock,	"compound_lock"	},
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_TOI_INCREMENTAL
 	{1UL << PG_toi_ignore,		"toi_ignore"	},
 	{1UL << PG_toi_ro,		"toi_ro"	},
 	{1UL << PG_toi_cbw,		"toi_cbw"	},
 	{1UL << PG_toi_dirty,		"toi_dirty"	},
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static void dump_flags(unsigned long flags,
@@ -172,7 +175,11 @@ EXPORT_SYMBOL(dump_vma);
 
 void dump_mm(const struct mm_struct *mm)
 {
+<<<<<<< HEAD
 	pr_emerg("mm %p mmap %p seqnum %d task_size %lu\n"
+=======
+	pr_emerg("mm %p mmap %p seqnum %llu task_size %lu\n"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_MMU
 		"get_unmapped_area %p\n"
 #endif
@@ -202,7 +209,11 @@ void dump_mm(const struct mm_struct *mm)
 #endif
 		"%s",	/* This is here to hold the comma */
 
+<<<<<<< HEAD
 		mm, mm->mmap, mm->vmacache_seqnum, mm->task_size,
+=======
+		mm, mm->mmap, (long long) mm->vmacache_seqnum, mm->task_size,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_MMU
 		mm->get_unmapped_area,
 #endif

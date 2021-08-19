@@ -417,7 +417,11 @@ void set_sense_data(struct rtsx_chip *chip, unsigned int lun, u8 err_code,
 	sense->ascq = ascq;
 	if (sns_key_info0 != 0) {
 		sense->sns_key_info[0] = SKSV | sns_key_info0;
+<<<<<<< HEAD
 		sense->sns_key_info[1] = (sns_key_info1 & 0xf0) >> 8;
+=======
+		sense->sns_key_info[1] = (sns_key_info1 & 0xf0) >> 4;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sense->sns_key_info[2] = sns_key_info1 & 0x0f;
 	}
 }
@@ -539,7 +543,11 @@ static int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 
 	if (sendbytes > 8) {
 		memcpy(buf, inquiry_buf, 8);
+<<<<<<< HEAD
 		memcpy(buf + 8, inquiry_string,	sendbytes - 8);
+=======
+		strncpy(buf + 8, inquiry_string, sendbytes - 8);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (pro_formatter_flag) {
 			/* Additional Length */
 			buf[4] = 0x33;

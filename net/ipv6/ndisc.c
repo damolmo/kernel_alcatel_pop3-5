@@ -654,7 +654,13 @@ static void ndisc_solicit(struct neighbour *neigh, struct sk_buff *skb)
 	struct in6_addr *target = (struct in6_addr *)&neigh->primary_key;
 	int probes = atomic_read(&neigh->probes);
 
+<<<<<<< HEAD
 	if (skb && ipv6_chk_addr(dev_net(dev), &ipv6_hdr(skb)->saddr, dev, 1))
+=======
+	if (skb && ipv6_chk_addr_and_flags(dev_net(dev), &ipv6_hdr(skb)->saddr,
+					   dev, 1,
+					   IFA_F_TENTATIVE|IFA_F_OPTIMISTIC))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		saddr = &ipv6_hdr(skb)->saddr;
 
 	if ((probes -= NEIGH_VAR(neigh->parms, UCAST_PROBES)) < 0) {
@@ -1323,6 +1329,11 @@ skip_linkparms:
 			if (ri->prefix_len == 0 &&
 			    !in6_dev->cnf.accept_ra_defrtr)
 				continue;
+<<<<<<< HEAD
+=======
+			if (ri->prefix_len < in6_dev->cnf.accept_ra_rt_info_min_plen)
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (ri->prefix_len > in6_dev->cnf.accept_ra_rt_info_max_plen)
 				continue;
 			rt6_route_rcv(skb->dev, (u8 *)p, (p->nd_opt_len) << 3,
@@ -1372,6 +1383,7 @@ skip_routeinfo:
 			rt6_mtu_change(skb->dev, mtu);
 		}
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_DHCPV6C_WIFI
 	if (in6_dev->if_flags & IF_RA_OTHERCONF) {
 		pr_debug("receive RA with o bit!\n");
@@ -1382,12 +1394,16 @@ skip_routeinfo:
 		in6_dev->cnf.ra_info_flag = 2;
 	}
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ndopts.nd_useropts) {
 		struct nd_opt_hdr *p;
 		for (p = ndopts.nd_useropts;
 		     p;
 		     p = ndisc_next_useropt(p, ndopts.nd_useropts_end)) {
 			ndisc_ra_useropt(skb, p);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_DHCPV6C_WIFI
 			/* only clear ra_info_flag when O bit is set */
 			 if (p->nd_opt_type == ND_OPT_RDNSS && in6_dev->if_flags & IF_RA_OTHERCONF) {
@@ -1395,6 +1411,8 @@ skip_routeinfo:
 				in6_dev->cnf.ra_info_flag = 0;
 			}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -1459,7 +1477,12 @@ static void ndisc_fill_redirect_hdr_option(struct sk_buff *skb,
 	*(opt++) = (rd_len >> 3);
 	opt += 6;
 
+<<<<<<< HEAD
 	memcpy(opt, ipv6_hdr(orig_skb), rd_len - 8);
+=======
+	skb_copy_bits(orig_skb, skb_network_offset(orig_skb), opt,
+		      rd_len - 8);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void ndisc_send_redirect(struct sk_buff *skb, const struct in6_addr *target)
@@ -1511,7 +1534,11 @@ void ndisc_send_redirect(struct sk_buff *skb, const struct in6_addr *target)
 			  "Redirect: destination is not a neighbour\n");
 		goto release;
 	}
+<<<<<<< HEAD
 	peer = inet_getpeer_v6(net->ipv6.peers, &rt->rt6i_dst.addr, 1);
+=======
+	peer = inet_getpeer_v6(net->ipv6.peers, &ipv6_hdr(skb)->saddr, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = inet_peer_xrlim_allow(peer, 1*HZ);
 	if (peer)
 		inet_putpeer(peer);
@@ -1625,10 +1652,16 @@ int ndisc_rcv(struct sk_buff *skb)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	memset(NEIGH_CB(skb), 0, sizeof(struct neighbour_cb));
 
 	switch (msg->icmph.icmp6_type) {
 	case NDISC_NEIGHBOUR_SOLICITATION:
+=======
+	switch (msg->icmph.icmp6_type) {
+	case NDISC_NEIGHBOUR_SOLICITATION:
+		memset(NEIGH_CB(skb), 0, sizeof(struct neighbour_cb));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ndisc_recv_ns(skb);
 		break;
 
@@ -1662,6 +1695,11 @@ static int ndisc_netdev_event(struct notifier_block *this, unsigned long event, 
 	case NETDEV_CHANGEADDR:
 		neigh_changeaddr(&nd_tbl, dev);
 		fib6_run_gc(0, net, false);
+<<<<<<< HEAD
+=======
+		/* fallthrough */
+	case NETDEV_UP:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		idev = in6_dev_get(dev);
 		if (!idev)
 			break;

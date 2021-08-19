@@ -110,11 +110,14 @@
 #define i91u_MAXQUEUE		2
 #define i91u_REVID "Initio INI-9X00U/UW SCSI device driver; Revision: 1.04a"
 
+<<<<<<< HEAD
 #define I950_DEVICE_ID	0x9500	/* Initio's inic-950 product ID   */
 #define I940_DEVICE_ID	0x9400	/* Initio's inic-940 product ID   */
 #define I935_DEVICE_ID	0x9401	/* Initio's inic-935 product ID   */
 #define I920_DEVICE_ID	0x0002	/* Initio's other product ID      */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef DEBUG_i91u
 static unsigned int i91u_debug = DEBUG_DEFAULT;
 #endif
@@ -127,6 +130,7 @@ static int setup_debug = 0;
 
 static void i91uSCBPost(u8 * pHcb, u8 * pScb);
 
+<<<<<<< HEAD
 /* PCI Devices supported by this driver */
 static struct pci_device_id i91u_pci_devices[] = {
 	{ PCI_VENDOR_ID_INIT,  I950_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
@@ -138,6 +142,8 @@ static struct pci_device_id i91u_pci_devices[] = {
 };
 MODULE_DEVICE_TABLE(pci, i91u_pci_devices);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DEBUG_INTERRUPT 0
 #define DEBUG_QUEUE     0
 #define DEBUG_STATE     0

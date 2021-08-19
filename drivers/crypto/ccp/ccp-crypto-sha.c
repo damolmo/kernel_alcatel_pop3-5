@@ -193,6 +193,49 @@ static int ccp_sha_digest(struct ahash_request *req)
 	return ccp_sha_finup(req);
 }
 
+<<<<<<< HEAD
+=======
+static int ccp_sha_export(struct ahash_request *req, void *out)
+{
+	struct ccp_sha_req_ctx *rctx = ahash_request_ctx(req);
+	struct ccp_sha_exp_ctx state;
+
+	/* Don't let anything leak to 'out' */
+	memset(&state, 0, sizeof(state));
+
+	state.type = rctx->type;
+	state.msg_bits = rctx->msg_bits;
+	state.first = rctx->first;
+	memcpy(state.ctx, rctx->ctx, sizeof(state.ctx));
+	state.buf_count = rctx->buf_count;
+	memcpy(state.buf, rctx->buf, sizeof(state.buf));
+
+	/* 'out' may not be aligned so memcpy from local variable */
+	memcpy(out, &state, sizeof(state));
+
+	return 0;
+}
+
+static int ccp_sha_import(struct ahash_request *req, const void *in)
+{
+	struct ccp_sha_req_ctx *rctx = ahash_request_ctx(req);
+	struct ccp_sha_exp_ctx state;
+
+	/* 'in' may not be aligned so memcpy to local variable */
+	memcpy(&state, in, sizeof(state));
+
+	memset(rctx, 0, sizeof(*rctx));
+	rctx->type = state.type;
+	rctx->msg_bits = state.msg_bits;
+	rctx->first = state.first;
+	memcpy(rctx->ctx, state.ctx, sizeof(rctx->ctx));
+	rctx->buf_count = state.buf_count;
+	memcpy(rctx->buf, state.buf, sizeof(rctx->buf));
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ccp_sha_setkey(struct crypto_ahash *tfm, const u8 *key,
 			  unsigned int key_len)
 {
@@ -388,9 +431,18 @@ static int ccp_register_sha_alg(struct list_head *head,
 	alg->final = ccp_sha_final;
 	alg->finup = ccp_sha_finup;
 	alg->digest = ccp_sha_digest;
+<<<<<<< HEAD
 
 	halg = &alg->halg;
 	halg->digestsize = def->digest_size;
+=======
+	alg->export = ccp_sha_export;
+	alg->import = ccp_sha_import;
+
+	halg = &alg->halg;
+	halg->digestsize = def->digest_size;
+	halg->statesize = sizeof(struct ccp_sha_exp_ctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	base = &halg->base;
 	snprintf(base->cra_name, CRYPTO_MAX_ALG_NAME, "%s", def->name);

@@ -363,7 +363,11 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		if (delta > new_hw_ptr) {
 			/* check for double acknowledged interrupts */
 			hdelta = curr_jiffies - runtime->hw_ptr_jiffies;
+<<<<<<< HEAD
 			if (hdelta > runtime->hw_ptr_buffer_jiffies/2 + 1) {
+=======
+			if (hdelta > runtime->hw_ptr_buffer_jiffies/2) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				hw_base += runtime->buffer_size;
 				if (hw_base >= runtime->boundary) {
 					hw_base = 0;
@@ -501,8 +505,15 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 	}
 
  no_delta_check:
+<<<<<<< HEAD
 	if (runtime->status->hw_ptr == new_hw_ptr)
 		return 0;
+=======
+	if (runtime->status->hw_ptr == new_hw_ptr) {
+		runtime->hw_ptr_jiffies = curr_jiffies;
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
 	    runtime->silence_size > 0)
@@ -644,7 +655,10 @@ static inline unsigned int muldiv32(unsigned int a, unsigned int b,
 {
 	u_int64_t n = (u_int64_t) a * b;
 	if (c == 0) {
+<<<<<<< HEAD
 		snd_BUG_ON(!n);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*r = 0;
 		return UINT_MAX;
 	}
@@ -715,27 +729,51 @@ EXPORT_SYMBOL(snd_interval_refine);
 
 static int snd_interval_refine_first(struct snd_interval *i)
 {
+<<<<<<< HEAD
+=======
+	const unsigned int last_max = i->max;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (snd_BUG_ON(snd_interval_empty(i)))
 		return -EINVAL;
 	if (snd_interval_single(i))
 		return 0;
 	i->max = i->min;
+<<<<<<< HEAD
 	i->openmax = i->openmin;
 	if (i->openmax)
 		i->max++;
+=======
+	if (i->openmin)
+		i->max++;
+	/* only exclude max value if also excluded before refine */
+	i->openmax = (i->openmax && i->max >= last_max);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 
 static int snd_interval_refine_last(struct snd_interval *i)
 {
+<<<<<<< HEAD
+=======
+	const unsigned int last_min = i->min;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (snd_BUG_ON(snd_interval_empty(i)))
 		return -EINVAL;
 	if (snd_interval_single(i))
 		return 0;
 	i->min = i->max;
+<<<<<<< HEAD
 	i->openmin = i->openmax;
 	if (i->openmin)
 		i->min--;
+=======
+	if (i->openmax)
+		i->min--;
+	/* only exclude min value if also excluded before refine */
+	i->openmin = (i->openmin && i->min <= last_min);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 1;
 }
 
@@ -1633,7 +1671,11 @@ int snd_pcm_hw_param_first(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
+<<<<<<< HEAD
 		if (snd_BUG_ON(err < 0))
+=======
+		if (err < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
@@ -1680,7 +1722,11 @@ int snd_pcm_hw_param_last(struct snd_pcm_substream *pcm,
 		return changed;
 	if (params->rmask) {
 		int err = snd_pcm_hw_refine(pcm, params);
+<<<<<<< HEAD
 		if (snd_BUG_ON(err < 0))
+=======
+		if (err < 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return err;
 	}
 	return snd_pcm_hw_param_value(params, var, dir);
@@ -1813,8 +1859,11 @@ int snd_pcm_lib_ioctl(struct snd_pcm_substream *substream,
 		      unsigned int cmd, void *arg)
 {
 	switch (cmd) {
+<<<<<<< HEAD
 	case SNDRV_PCM_IOCTL1_INFO:
 		return 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case SNDRV_PCM_IOCTL1_RESET:
 		return snd_pcm_lib_ioctl_reset(substream, arg);
 	case SNDRV_PCM_IOCTL1_CHANNEL_INFO:
@@ -1843,6 +1892,7 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (PCM_RUNTIME_CHECK(substream))
 		return;
 	runtime = substream->runtime;
@@ -1851,6 +1901,16 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 		runtime->transfer_ack_begin(substream);
 
 	snd_pcm_stream_lock_irqsave(substream, flags);
+=======
+	if (snd_BUG_ON(!substream))
+		return;
+
+	snd_pcm_stream_lock_irqsave(substream, flags);
+	if (PCM_RUNTIME_CHECK(substream))
+		goto _unlock;
+	runtime = substream->runtime;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!snd_pcm_running(substream) ||
 	    snd_pcm_update_hw_ptr0(substream, 1) < 0)
 		goto _end;
@@ -1858,10 +1918,16 @@ void snd_pcm_period_elapsed(struct snd_pcm_substream *substream)
 	if (substream->timer_running)
 		snd_timer_interrupt(substream->timer, 1);
  _end:
+<<<<<<< HEAD
 	snd_pcm_stream_unlock_irqrestore(substream, flags);
 	if (runtime->transfer_ack_end)
 		runtime->transfer_ack_end(substream);
 	kill_fasync(&runtime->fasync, SIGIO, POLL_IN);
+=======
+	kill_fasync(&runtime->fasync, SIGIO, POLL_IN);
+ _unlock:
+	snd_pcm_stream_unlock_irqrestore(substream, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 EXPORT_SYMBOL(snd_pcm_period_elapsed);

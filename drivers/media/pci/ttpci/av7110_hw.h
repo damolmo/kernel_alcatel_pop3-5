@@ -377,14 +377,24 @@ extern int av7110_fw_request(struct av7110 *av7110, u16 *request_buf,
 
 /* DEBI (saa7146 data extension bus interface) access */
 extern int av7110_debiwrite(struct av7110 *av7110, u32 config,
+<<<<<<< HEAD
 			    int addr, u32 val, int count);
 extern u32 av7110_debiread(struct av7110 *av7110, u32 config,
 			   int addr, int count);
+=======
+			    int addr, u32 val, unsigned int count);
+extern u32 av7110_debiread(struct av7110 *av7110, u32 config,
+			   int addr, unsigned int count);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 /* DEBI during interrupt */
 /* single word writes */
+<<<<<<< HEAD
 static inline void iwdebi(struct av7110 *av7110, u32 config, int addr, u32 val, int count)
+=======
+static inline void iwdebi(struct av7110 *av7110, u32 config, int addr, u32 val, unsigned int count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	av7110_debiwrite(av7110, config, addr, val, count);
 }
@@ -397,7 +407,11 @@ static inline void mwdebi(struct av7110 *av7110, u32 config, int addr,
 	av7110_debiwrite(av7110, config, addr, 0, count);
 }
 
+<<<<<<< HEAD
 static inline u32 irdebi(struct av7110 *av7110, u32 config, int addr, u32 val, int count)
+=======
+static inline u32 irdebi(struct av7110 *av7110, u32 config, int addr, u32 val, unsigned int count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	u32 res;
 
@@ -408,7 +422,11 @@ static inline u32 irdebi(struct av7110 *av7110, u32 config, int addr, u32 val, i
 }
 
 /* DEBI outside interrupts, only for count <= 4! */
+<<<<<<< HEAD
 static inline void wdebi(struct av7110 *av7110, u32 config, int addr, u32 val, int count)
+=======
+static inline void wdebi(struct av7110 *av7110, u32 config, int addr, u32 val, unsigned int count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long flags;
 
@@ -417,7 +435,11 @@ static inline void wdebi(struct av7110 *av7110, u32 config, int addr, u32 val, i
 	spin_unlock_irqrestore(&av7110->debilock, flags);
 }
 
+<<<<<<< HEAD
 static inline u32 rdebi(struct av7110 *av7110, u32 config, int addr, u32 val, int count)
+=======
+static inline u32 rdebi(struct av7110 *av7110, u32 config, int addr, u32 val, unsigned int count)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned long flags;
 	u32 res;

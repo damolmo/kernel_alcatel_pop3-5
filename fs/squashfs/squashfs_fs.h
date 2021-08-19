@@ -30,6 +30,10 @@
 
 /* size of metadata (inode and directory) blocks */
 #define SQUASHFS_METADATA_SIZE		8192
+<<<<<<< HEAD
+=======
+#define SQUASHFS_BLOCK_OFFSET		2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* default size of block device I/O */
 #ifdef CONFIG_SQUASHFS_4K_DEVBLK_SIZE
@@ -129,6 +133,15 @@
 
 #define SQUASHFS_COMPRESSED_BLOCK(B)	(!((B) & SQUASHFS_COMPRESSED_BIT_BLOCK))
 
+<<<<<<< HEAD
+=======
+static inline int squashfs_block_size(__le32 raw)
+{
+	u32 size = le32_to_cpu(raw);
+	return (size >> 25) ? -EIO : size;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Inode number ops.  Inodes consist of a compressed block number, and an
  * uncompressed offset within that block

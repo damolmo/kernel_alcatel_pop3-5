@@ -31,6 +31,10 @@
 #define PPC_FEATURE_PSERIES_PERFMON_COMPAT \
 					0x00000040
 
+<<<<<<< HEAD
+=======
+/* Reserved - do not use		0x00000004 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define PPC_FEATURE_TRUE_LE		0x00000002
 #define PPC_FEATURE_PPC_LE		0x00000001
 

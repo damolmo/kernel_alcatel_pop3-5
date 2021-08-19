@@ -268,6 +268,11 @@ int register_virtio_device(struct virtio_device *dev)
 	/* device_register() causes the bus infrastructure to look for a
 	 * matching driver. */
 	err = device_register(&dev->dev);
+<<<<<<< HEAD
+=======
+	if (err)
+		ida_simple_remove(&virtio_index_ida, dev->index);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	if (err)
 		add_status(dev, VIRTIO_CONFIG_S_FAILED);

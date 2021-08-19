@@ -43,6 +43,10 @@ extern inline pmd_t *pmd_alloc_kernel(pgd_t *pgd, unsigned long address)
 static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t page,
 				  unsigned long address)
 {
+<<<<<<< HEAD
+=======
+	pgtable_page_dtor(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__free_page(page);
 }
 
@@ -73,8 +77,14 @@ static inline struct page *pte_alloc_one(struct mm_struct *mm,
 	return page;
 }
 
+<<<<<<< HEAD
 extern inline void pte_free(struct mm_struct *mm, struct page *page)
 {
+=======
+static inline void pte_free(struct mm_struct *mm, struct page *page)
+{
+	pgtable_page_dtor(page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__free_page(page);
 }
 

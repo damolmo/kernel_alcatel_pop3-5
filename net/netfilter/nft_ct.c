@@ -56,6 +56,11 @@ static void nft_ct_get_eval(const struct nft_expr *expr,
 			state = NF_CT_STATE_BIT(ctinfo);
 		dest->data[0] = state;
 		return;
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (ct == NULL)
@@ -117,6 +122,11 @@ static void nft_ct_get_eval(const struct nft_expr *expr,
 		return;
 	}
 #endif
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	tuple = &ct->tuplehash[priv->dir].tuple;
@@ -141,6 +151,11 @@ static void nft_ct_get_eval(const struct nft_expr *expr,
 	case NFT_CT_PROTO_DST:
 		dest->data[0] = (__force __u16)tuple->dst.u.all;
 		return;
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return;
 err:
@@ -172,6 +187,11 @@ static void nft_ct_set_eval(const struct nft_expr *expr,
 		}
 		break;
 #endif
+<<<<<<< HEAD
+=======
+	default:
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

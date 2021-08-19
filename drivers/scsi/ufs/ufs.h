@@ -45,6 +45,10 @@
 #define QUERY_DESC_MIN_SIZE       2
 #define QUERY_OSF_SIZE            (GENERAL_UPIU_REQUEST_SIZE - \
 					(sizeof(struct utp_upiu_header)))
+<<<<<<< HEAD
+=======
+#define RESPONSE_UPIU_SENSE_DATA_LENGTH	18
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define UPIU_HEADER_DWORD(byte3, byte2, byte1, byte0)\
 			cpu_to_be32((byte3 << 24) | (byte2 << 16) |\
@@ -383,7 +387,11 @@ struct utp_cmd_rsp {
 	__be32 residual_transfer_count;
 	__be32 reserved[4];
 	__be16 sense_data_len;
+<<<<<<< HEAD
 	u8 sense_data[18];
+=======
+	u8 sense_data[RESPONSE_UPIU_SENSE_DATA_LENGTH];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**

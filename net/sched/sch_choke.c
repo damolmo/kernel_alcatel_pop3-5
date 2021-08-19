@@ -18,7 +18,11 @@
 #include <net/pkt_sched.h>
 #include <net/inet_ecn.h>
 #include <net/red.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <net/flow_dissector.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
    CHOKe stateless AQM for fair bandwidth allocation
@@ -128,8 +132,13 @@ static void choke_drop_by_idx(struct Qdisc *sch, unsigned int idx)
 		choke_zap_tail_holes(q);
 
 	qdisc_qstats_backlog_dec(sch, skb);
+<<<<<<< HEAD
 	qdisc_drop(skb, sch);
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	qdisc_tree_reduce_backlog(sch, 1, qdisc_pkt_len(skb));
+	qdisc_drop(skb, sch);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	--sch->q.qlen;
 }
 
@@ -176,13 +185,21 @@ static bool choke_match_flow(struct sk_buff *skb1,
 
 	if (!choke_skb_cb(skb1)->keys_valid) {
 		choke_skb_cb(skb1)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb1, &temp);
+=======
+		skb_flow_dissect_flow_keys(skb1, &temp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(&choke_skb_cb(skb1)->keys, &temp, CHOKE_K_LEN);
 	}
 
 	if (!choke_skb_cb(skb2)->keys_valid) {
 		choke_skb_cb(skb2)->keys_valid = 1;
+<<<<<<< HEAD
 		skb_flow_dissect(skb2, &temp);
+=======
+		skb_flow_dissect_flow_keys(skb2, &temp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(&choke_skb_cb(skb2)->keys, &temp, CHOKE_K_LEN);
 	}
 
@@ -415,6 +432,10 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	struct sk_buff **old = NULL;
 	unsigned int mask;
 	u32 max_P;
+<<<<<<< HEAD
+=======
+	u8 *stab;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (opt == NULL)
 		return -EINVAL;
@@ -430,6 +451,12 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 	max_P = tb[TCA_CHOKE_MAX_P] ? nla_get_u32(tb[TCA_CHOKE_MAX_P]) : 0;
 
 	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
+<<<<<<< HEAD
+=======
+	stab = nla_data(tb[TCA_CHOKE_STAB]);
+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log, stab))
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ctl->limit > CHOKE_MAX_QUEUE)
 		return -EINVAL;
@@ -449,6 +476,10 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 		old = q->tab;
 		if (old) {
 			unsigned int oqlen = sch->q.qlen, tail = 0;
+<<<<<<< HEAD
+=======
+			unsigned dropped = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			while (q->head != q->tail) {
 				struct sk_buff *skb = q->tab[q->head];
@@ -460,11 +491,19 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 					ntab[tail++] = skb;
 					continue;
 				}
+<<<<<<< HEAD
+=======
+				dropped += qdisc_pkt_len(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				qdisc_qstats_backlog_dec(sch, skb);
 				--sch->q.qlen;
 				qdisc_drop(skb, sch);
 			}
+<<<<<<< HEAD
 			qdisc_tree_decrease_qlen(sch, oqlen - sch->q.qlen);
+=======
+			qdisc_tree_reduce_backlog(sch, oqlen - sch->q.qlen, dropped);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			q->head = 0;
 			q->tail = tail;
 		}
@@ -479,7 +518,11 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt)
 
 	red_set_parms(&q->parms, ctl->qth_min, ctl->qth_max, ctl->Wlog,
 		      ctl->Plog, ctl->Scell_log,
+<<<<<<< HEAD
 		      nla_data(tb[TCA_CHOKE_STAB]),
+=======
+		      stab,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		      max_P);
 	red_set_vars(&q->vars);
 

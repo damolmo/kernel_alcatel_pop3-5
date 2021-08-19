@@ -24,19 +24,31 @@
 #if defined(CONFIG_DEBUG_ICEDCC)
 
 #if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K) || defined(CONFIG_CPU_V7)
+<<<<<<< HEAD
 		.macro	loadsp, rb, tmp
+=======
+		.macro	loadsp, rb, tmp1, tmp2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.endm
 		.macro	writeb, ch, rb
 		mcr	p14, 0, \ch, c0, c5, 0
 		.endm
 #elif defined(CONFIG_CPU_XSCALE)
+<<<<<<< HEAD
 		.macro	loadsp, rb, tmp
+=======
+		.macro	loadsp, rb, tmp1, tmp2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.endm
 		.macro	writeb, ch, rb
 		mcr	p14, 0, \ch, c8, c0, 0
 		.endm
 #else
+<<<<<<< HEAD
 		.macro	loadsp, rb, tmp
+=======
+		.macro	loadsp, rb, tmp1, tmp2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.endm
 		.macro	writeb, ch, rb
 		mcr	p14, 0, \ch, c1, c0, 0
@@ -52,7 +64,11 @@
 		.endm
 
 #if defined(CONFIG_ARCH_SA1100)
+<<<<<<< HEAD
 		.macro	loadsp, rb, tmp
+=======
+		.macro	loadsp, rb, tmp1, tmp2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mov	\rb, #0x80000000	@ physical base address
 #ifdef CONFIG_DEBUG_LL_SER3
 		add	\rb, \rb, #0x00050000	@ Ser3
@@ -61,8 +77,13 @@
 #endif
 		.endm
 #else
+<<<<<<< HEAD
 		.macro	loadsp,	rb, tmp
 		addruart \rb, \tmp
+=======
+		.macro	loadsp,	rb, tmp1, tmp2
+		addruart \rb, \tmp1, \tmp2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.endm
 #endif
 #endif
@@ -728,7 +749,11 @@ __armv7_mmu_cache_on:
 		orrne	r0, r0, #1		@ MMU enabled
 		movne	r1, #0xfffffffd		@ domain 0 = client
 		bic     r6, r6, #1 << 31        @ 32-bit translation system
+<<<<<<< HEAD
 		bic     r6, r6, #3 << 0         @ use only ttbr0
+=======
+		bic     r6, r6, #(7 << 0) | (1 << 4)	@ use only ttbr0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
 		mcrne	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
 		mcr	p15, 0, r0, c7, c5, 4	@ ISB
@@ -1018,9 +1043,15 @@ __armv4_mmu_cache_off:
 __armv7_mmu_cache_off:
 		mrc	p15, 0, r0, c1, c0
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 		bic	r0, r0, #0x000d
 #else
 		bic	r0, r0, #0x000c
+=======
+		bic	r0, r0, #0x0005
+#else
+		bic	r0, r0, #0x0004
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 		mcr	p15, 0, r0, c1, c0	@ turn MMU and cache off
 		mov	r12, lr
@@ -1223,7 +1254,11 @@ phex:		adr	r3, phexbuf
 		b	1b
 
 @ puts corrupts {r0, r1, r2, r3}
+<<<<<<< HEAD
 puts:		loadsp	r3, r1
+=======
+puts:		loadsp	r3, r2, r1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 1:		ldrb	r2, [r0], #1
 		teq	r2, #0
 		moveq	pc, lr
@@ -1240,8 +1275,13 @@ puts:		loadsp	r3, r1
 @ putc corrupts {r0, r1, r2, r3}
 putc:
 		mov	r2, r0
+<<<<<<< HEAD
 		mov	r0, #0
 		loadsp	r3, r1
+=======
+		loadsp	r3, r1, r0
+		mov	r0, #0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		b	2b
 
 @ memdump corrupts {r0, r1, r2, r3, r10, r11, r12, lr}

@@ -829,8 +829,15 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
 	if (priv->mode == MQ_MG_MODE) {
 		for_each_child_of_node(np, child) {
 			err = gfar_parse_group(child, priv, model);
+<<<<<<< HEAD
 			if (err)
 				goto err_grp_init;
+=======
+			if (err) {
+				of_node_put(child);
+				goto err_grp_init;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	} else { /* SQ_SG_MODE */
 		err = gfar_parse_group(np, priv, model);
@@ -1356,6 +1363,7 @@ static int gfar_probe(struct platform_device *ofdev)
 
 	gfar_init_addr_hash_table(priv);
 
+<<<<<<< HEAD
 	/* Insert receive time stamps into padding alignment bytes */
 	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
 		priv->padding = 8;
@@ -1363,6 +1371,17 @@ static int gfar_probe(struct platform_device *ofdev)
 	if (dev->features & NETIF_F_IP_CSUM ||
 	    priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
 		dev->needed_headroom = GMAC_FCB_LEN;
+=======
+	/* Insert receive time stamps into padding alignment bytes, and
+	 * plus 2 bytes padding to ensure the cpu alignment.
+	 */
+	if (priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
+		priv->padding = 8 + DEFAULT_PADDING;
+
+	if (dev->features & NETIF_F_IP_CSUM ||
+	    priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
+		dev->needed_headroom = GMAC_FCB_LEN + GMAC_TXPAL_LEN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	priv->rx_buffer_size = DEFAULT_RX_BUFFER_SIZE;
 
@@ -2215,20 +2234,28 @@ static int gfar_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		fcb_len = GMAC_FCB_LEN + GMAC_TXPAL_LEN;
 
 	/* make space for additional header when fcb is needed */
+<<<<<<< HEAD
 	if (fcb_len && unlikely(skb_headroom(skb) < fcb_len)) {
 		struct sk_buff *skb_new;
 
 		skb_new = skb_realloc_headroom(skb, fcb_len);
 		if (!skb_new) {
+=======
+	if (fcb_len) {
+		if (unlikely(skb_cow_head(skb, fcb_len))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev->stats.tx_errors++;
 			dev_kfree_skb_any(skb);
 			return NETDEV_TX_OK;
 		}
+<<<<<<< HEAD
 
 		if (skb->sk)
 			skb_set_owner_w(skb_new, skb->sk);
 		dev_consume_skb_any(skb);
 		skb = skb_new;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* total number of fragments in the SKB */
@@ -2527,13 +2554,24 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
 
 	while ((skb = tx_queue->tx_skbuff[skb_dirtytx])) {
 		unsigned long flags;
+<<<<<<< HEAD
+=======
+		bool do_tstamp;
+
+		do_tstamp = (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+			    priv->hwts_tx_en;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		frags = skb_shinfo(skb)->nr_frags;
 
 		/* When time stamping, one additional TxBD must be freed.
 		 * Also, we need to dma_unmap_single() the TxPAL.
 		 */
+<<<<<<< HEAD
 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
+=======
+		if (unlikely(do_tstamp))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			nr_txbds = frags + 2;
 		else
 			nr_txbds = frags + 1;
@@ -2547,7 +2585,11 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
 		    (lstatus & BD_LENGTH_MASK))
 			break;
 
+<<<<<<< HEAD
 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
+=======
+		if (unlikely(do_tstamp)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			next = next_txbd(bdp, base, tx_ring_size);
 			buflen = next->length + GMAC_FCB_LEN + GMAC_TXPAL_LEN;
 		} else
@@ -2556,7 +2598,11 @@ static void gfar_clean_tx_ring(struct gfar_priv_tx_q *tx_queue)
 		dma_unmap_single(priv->dev, bdp->bufPtr,
 				 buflen, DMA_TO_DEVICE);
 
+<<<<<<< HEAD
 		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
+=======
+		if (unlikely(do_tstamp)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			struct skb_shared_hwtstamps shhwtstamps;
 			u64 *ns = (u64*) (((u32)skb->data + 0x10) & ~0x7);
 

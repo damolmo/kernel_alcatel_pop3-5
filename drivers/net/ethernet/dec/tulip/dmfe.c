@@ -2228,15 +2228,25 @@ static int __init dmfe_init_module(void)
 	if (cr6set)
 		dmfe_cr6_user_set = cr6set;
 
+<<<<<<< HEAD
  	switch(mode) {
    	case DMFE_10MHF:
+=======
+	switch (mode) {
+	case DMFE_10MHF:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case DMFE_100MHF:
 	case DMFE_10MFD:
 	case DMFE_100MFD:
 	case DMFE_1M_HPNA:
 		dmfe_media_mode = mode;
 		break;
+<<<<<<< HEAD
 	default:dmfe_media_mode = DMFE_AUTO;
+=======
+	default:
+		dmfe_media_mode = DMFE_AUTO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 

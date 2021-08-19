@@ -164,7 +164,11 @@ void __init free_bootmem_late(unsigned long physaddr, unsigned long size)
 	end = PFN_DOWN(physaddr + size);
 
 	for (; cursor < end; cursor++) {
+<<<<<<< HEAD
 		__free_pages_bootmem(pfn_to_page(cursor), 0);
+=======
+		__free_pages_bootmem(pfn_to_page(cursor), cursor, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		totalram_pages++;
 	}
 }
@@ -172,7 +176,11 @@ void __init free_bootmem_late(unsigned long physaddr, unsigned long size)
 static unsigned long __init free_all_bootmem_core(bootmem_data_t *bdata)
 {
 	struct page *page;
+<<<<<<< HEAD
 	unsigned long *map, start, end, pages, count = 0;
+=======
+	unsigned long *map, start, end, pages, cur, count = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!bdata->node_bootmem_map)
 		return 0;
@@ -210,17 +218,29 @@ static unsigned long __init free_all_bootmem_core(bootmem_data_t *bdata)
 		if (IS_ALIGNED(start, BITS_PER_LONG) && vec == ~0UL) {
 			int order = ilog2(BITS_PER_LONG);
 
+<<<<<<< HEAD
 			__free_pages_bootmem(pfn_to_page(start), order);
 			count += BITS_PER_LONG;
 			start += BITS_PER_LONG;
 		} else {
 			unsigned long cur = start;
+=======
+			__free_pages_bootmem(pfn_to_page(start), start, order);
+			count += BITS_PER_LONG;
+			start += BITS_PER_LONG;
+		} else {
+			cur = start;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			start = ALIGN(start + 1, BITS_PER_LONG);
 			while (vec && cur != start) {
 				if (vec & 1) {
 					page = pfn_to_page(cur);
+<<<<<<< HEAD
 					__free_pages_bootmem(page, 0);
+=======
+					__free_pages_bootmem(page, cur, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					count++;
 				}
 				vec >>= 1;
@@ -229,12 +249,20 @@ static unsigned long __init free_all_bootmem_core(bootmem_data_t *bdata)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	cur = bdata->node_min_pfn;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	page = virt_to_page(bdata->node_bootmem_map);
 	pages = bdata->node_low_pfn - bdata->node_min_pfn;
 	pages = bootmem_bootmap_pages(pages);
 	count += pages;
 	while (pages--)
+<<<<<<< HEAD
 		__free_pages_bootmem(page++, 0);
+=======
+		__free_pages_bootmem(page++, cur++, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	bdebug("nid=%td released=%lx\n", bdata - bootmem_node_data, count);
 

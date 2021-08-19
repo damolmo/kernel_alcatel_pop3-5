@@ -524,7 +524,11 @@ static int list_devices(struct dm_ioctl *param, size_t param_size)
 	 * Grab our output buffer.
 	 */
 	nl = get_result_buffer(param, param_size, &len);
+<<<<<<< HEAD
 	if (len < needed) {
+=======
+	if (len < needed || len < sizeof(nl->dev)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		param->flags |= DM_BUFFER_FULL_FLAG;
 		goto out;
 	}
@@ -1535,6 +1539,10 @@ static int target_message(struct dm_ioctl *param, size_t param_size)
 
 	if (!argc) {
 		DMWARN("Empty message received.");
+<<<<<<< HEAD
+=======
+		r = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_argv;
 	}
 
@@ -1681,8 +1689,12 @@ static void free_params(struct dm_ioctl *param, size_t param_size, int param_fla
 }
 
 static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kernel,
+<<<<<<< HEAD
 		       int ioctl_flags,
 		       struct dm_ioctl **param, int *param_flags)
+=======
+		       int ioctl_flags, struct dm_ioctl **param, int *param_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dm_ioctl *dmi;
 	int secure_data;
@@ -1730,6 +1742,7 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (copy_from_user(dmi, user, param_kernel->data_size))
 		goto bad;
 
@@ -1742,6 +1755,15 @@ data_copied:
 		goto bad;
 	}
 
+=======
+	/* Copy from param_kernel (which was already copied from user) */
+	memcpy(dmi, param_kernel, minimum_data_size);
+
+	if (copy_from_user(&dmi->data, (char __user *)user + minimum_data_size,
+			   param_kernel->data_size - minimum_data_size))
+		goto bad;
+data_copied:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Wipe the user buffer so we do not return it to userspace */
 	if (secure_data && clear_user(user, param_kernel->data_size))
 		goto bad;
@@ -1769,12 +1791,20 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 	    cmd == DM_LIST_VERSIONS_CMD)
 		return 0;
 
+<<<<<<< HEAD
 	if ((cmd == DM_DEV_CREATE_CMD)) {
+=======
+	if (cmd == DM_DEV_CREATE_CMD) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!*param->name) {
 			DMWARN("name not supplied when creating device");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 	} else if ((*param->uuid && *param->name)) {
+=======
+	} else if (*param->uuid && *param->name) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		DMWARN("only supply one of name or uuid, cmd(%u)", cmd);
 		return -EINVAL;
 	}
@@ -1839,7 +1869,11 @@ static int ctl_ioctl(uint command, struct dm_ioctl __user *user)
 	if (r)
 		goto out;
 
+<<<<<<< HEAD
 	param->data_size = sizeof(*param);
+=======
+	param->data_size = offsetof(struct dm_ioctl, data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = fn(param, input_param_size);
 
 	if (unlikely(param->flags & DM_BUFFER_FULL_FLAG) &&
@@ -1921,6 +1955,48 @@ void dm_interface_exit(void)
 	dm_hash_exit();
 }
 
+<<<<<<< HEAD
+=======
+
+/**
+ * dm_ioctl_export - Permanently export a mapped device via the ioctl interface
+ * @md: Pointer to mapped_device
+ * @name: Buffer (size DM_NAME_LEN) for name
+ * @uuid: Buffer (size DM_UUID_LEN) for uuid or NULL if not desired
+ */
+int dm_ioctl_export(struct mapped_device *md, const char *name,
+		    const char *uuid)
+{
+	int r = 0;
+	struct hash_cell *hc;
+
+	if (!md) {
+		r = -ENXIO;
+		goto out;
+	}
+
+	/* The name and uuid can only be set once. */
+	mutex_lock(&dm_hash_cells_mutex);
+	hc = dm_get_mdptr(md);
+	mutex_unlock(&dm_hash_cells_mutex);
+	if (hc) {
+		DMERR("%s: already exported", dm_device_name(md));
+		r = -ENXIO;
+		goto out;
+	}
+
+	r = dm_hash_insert(name, uuid, md);
+	if (r) {
+		DMERR("%s: could not bind to '%s'", dm_device_name(md), name);
+		goto out;
+	}
+
+	/* Let udev know we've changed. */
+	dm_kobject_uevent(md, KOBJ_CHANGE, dm_get_event_nr(md));
+out:
+	return r;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * dm_copy_name_and_uuid - Copy mapped device name & uuid into supplied buffers
  * @md: Pointer to mapped_device

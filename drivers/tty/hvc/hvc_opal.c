@@ -337,7 +337,10 @@ static void udbg_init_opal_common(void)
 	udbg_putc = udbg_opal_putc;
 	udbg_getc = udbg_opal_getc;
 	udbg_getc_poll = udbg_opal_getc_poll;
+<<<<<<< HEAD
 	tb_ticks_per_usec = 0x200; /* Make udelay not suck */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __init hvc_opal_init_early(void)

@@ -248,7 +248,11 @@ static int wm831x_clkout_is_prepared(struct clk_hw *hw)
 	if (ret < 0) {
 		dev_err(wm831x->dev, "Unable to read CLOCK_CONTROL_1: %d\n",
 			ret);
+<<<<<<< HEAD
 		return true;
+=======
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return (ret & WM831X_CLKOUT_ENA) != 0;

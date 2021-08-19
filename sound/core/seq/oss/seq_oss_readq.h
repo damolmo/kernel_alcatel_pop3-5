@@ -44,6 +44,11 @@ void snd_seq_oss_readq_delete(struct seq_oss_readq *q);
 void snd_seq_oss_readq_clear(struct seq_oss_readq *readq);
 unsigned int snd_seq_oss_readq_poll(struct seq_oss_readq *readq, struct file *file, poll_table *wait);
 int snd_seq_oss_readq_puts(struct seq_oss_readq *readq, int dev, unsigned char *data, int len);
+<<<<<<< HEAD
+=======
+int snd_seq_oss_readq_sysex(struct seq_oss_readq *q, int dev,
+			    struct snd_seq_event *ev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int snd_seq_oss_readq_put_event(struct seq_oss_readq *readq, union evrec *ev);
 int snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *readq, unsigned long curt, int seq_mode);
 int snd_seq_oss_readq_pick(struct seq_oss_readq *q, union evrec *rec);

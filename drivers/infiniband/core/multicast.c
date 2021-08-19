@@ -106,7 +106,10 @@ struct mcast_group {
 	atomic_t		refcount;
 	enum mcast_group_state	state;
 	struct ib_sa_query	*query;
+<<<<<<< HEAD
 	int			query_id;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u16			pkey_index;
 	u8			leave_state;
 	int			retries;
@@ -339,11 +342,15 @@ static int send_join(struct mcast_group *group, struct mcast_member *member)
 				       member->multicast.comp_mask,
 				       3000, GFP_KERNEL, join_handler, group,
 				       &group->query);
+<<<<<<< HEAD
 	if (ret >= 0) {
 		group->query_id = ret;
 		ret = 0;
 	}
 	return ret;
+=======
+	return (ret > 0) ? 0 : ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int send_leave(struct mcast_group *group, u8 leave_state)
@@ -363,11 +370,15 @@ static int send_leave(struct mcast_group *group, u8 leave_state)
 				       IB_SA_MCMEMBER_REC_JOIN_STATE,
 				       3000, GFP_KERNEL, leave_handler,
 				       group, &group->query);
+<<<<<<< HEAD
 	if (ret >= 0) {
 		group->query_id = ret;
 		ret = 0;
 	}
 	return ret;
+=======
+	return (ret > 0) ? 0 : ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void join_group(struct mcast_group *group, struct mcast_member *member,
@@ -525,8 +536,14 @@ static void join_handler(int status, struct ib_sa_mcmember_rec *rec,
 	if (status)
 		process_join_error(group, status);
 	else {
+<<<<<<< HEAD
 		ib_find_pkey(group->port->dev->device, group->port->port_num,
 			     be16_to_cpu(rec->pkey), &pkey_index);
+=======
+		if(ib_find_pkey(group->port->dev->device, group->port->port_num,
+				be16_to_cpu(rec->pkey), &pkey_index))
+			pkey_index = MCAST_INVALID_PKEY_INDEX;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		spin_lock_irq(&group->port->lock);
 		group->rec = *rec;

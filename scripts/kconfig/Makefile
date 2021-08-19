@@ -110,7 +110,11 @@ define mergeconfig
 $(if $(wildcard $(objtree)/.config),, $(error You need an existing .config for this target))
 $(if $(call configfiles,$(1)),, $(error No configuration exists for this target on this architecture))
 $(Q)$(CONFIG_SHELL) $(srctree)/scripts/kconfig/merge_config.sh -m -O $(objtree) $(objtree)/.config $(call configfiles,$(1))
+<<<<<<< HEAD
 $(Q)yes "" | $(MAKE) -f $(srctree)/Makefile oldconfig
+=======
++$(Q)yes "" | $(MAKE) -f $(srctree)/Makefile oldconfig
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endef
 
 PHONY += kvmconfig

@@ -12,6 +12,14 @@ Required properties:
 - vref-supply: The regulator supply ADC reference voltage.
 - #io-channel-cells: Should be 1, see ../iio-bindings.txt
 
+<<<<<<< HEAD
+=======
+Optional properties:
+- resets: Must contain an entry for each entry in reset-names if need support
+	  this option. See ../reset/reset.txt for details.
+- reset-names: Must include the name "saradc-apb".
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 Example:
 	saradc: saradc@2006c000 {
 		compatible = "rockchip,saradc";
@@ -19,6 +27,11 @@ Example:
 		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
 		clock-names = "saradc", "apb_pclk";
+<<<<<<< HEAD
+=======
+		resets = <&cru SRST_SARADC>;
+		reset-names = "saradc-apb";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		#io-channel-cells = <1>;
 		vref-supply = <&vcc18>;
 	};

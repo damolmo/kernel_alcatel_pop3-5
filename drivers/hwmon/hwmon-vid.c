@@ -293,7 +293,11 @@ u8 vid_which_vrm(void)
 	if (c->x86 < 6)		/* Any CPU with family lower than 6 */
 		return 0;	/* doesn't have VID */
 
+<<<<<<< HEAD
 	vrm_ret = find_vrm(c->x86, c->x86_model, c->x86_mask, c->x86_vendor);
+=======
+	vrm_ret = find_vrm(c->x86, c->x86_model, c->x86_stepping, c->x86_vendor);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (vrm_ret == 134)
 		vrm_ret = get_via_model_d_vrm();
 	if (vrm_ret == 0)

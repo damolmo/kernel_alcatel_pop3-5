@@ -47,6 +47,25 @@ static struct vfio_group *kvm_vfio_group_get_external_user(struct file *filep)
 	return vfio_group;
 }
 
+<<<<<<< HEAD
+=======
+static bool kvm_vfio_external_group_match_file(struct vfio_group *group,
+					       struct file *filep)
+{
+	bool ret, (*fn)(struct vfio_group *, struct file *);
+
+	fn = symbol_get(vfio_external_group_match_file);
+	if (!fn)
+		return false;
+
+	ret = fn(group, filep);
+
+	symbol_put(vfio_external_group_match_file);
+
+	return ret;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void kvm_vfio_group_put_external_user(struct vfio_group *vfio_group)
 {
 	void (*fn)(struct vfio_group *);
@@ -169,18 +188,26 @@ static int kvm_vfio_set_group(struct kvm_device *dev, long attr, u64 arg)
 		if (!f.file)
 			return -EBADF;
 
+<<<<<<< HEAD
 		vfio_group = kvm_vfio_group_get_external_user(f.file);
 		fdput(f);
 
 		if (IS_ERR(vfio_group))
 			return PTR_ERR(vfio_group);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENOENT;
 
 		mutex_lock(&kv->lock);
 
 		list_for_each_entry(kvg, &kv->group_list, node) {
+<<<<<<< HEAD
 			if (kvg->vfio_group != vfio_group)
+=======
+			if (!kvm_vfio_external_group_match_file(kvg->vfio_group,
+								f.file))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				continue;
 
 			list_del(&kvg->node);
@@ -192,7 +219,11 @@ static int kvm_vfio_set_group(struct kvm_device *dev, long attr, u64 arg)
 
 		mutex_unlock(&kv->lock);
 
+<<<<<<< HEAD
 		kvm_vfio_group_put_external_user(vfio_group);
+=======
+		fdput(f);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		kvm_vfio_update_coherency(dev);
 

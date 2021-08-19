@@ -470,6 +470,7 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (len == 0)
 		return 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 #ifdef CONFIG_MTK_HIBERNATION
 	if (strcmp(vol->name, IPOH_VOLUME_NANE) == 0)
@@ -492,6 +493,8 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	}
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ubi_eba_write_leb(ubi, vol, lnum, buf, offset, len);
 }
 EXPORT_SYMBOL_GPL(ubi_leb_write);
@@ -535,6 +538,7 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 
 	if (len == 0)
 		return 0;
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	/* archive data, leb atomical <== > leb full? */
 	if (lnum >= 10) {
@@ -545,6 +549,9 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 		}
 	}
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ubi_eba_atomic_leb_change(ubi, vol, lnum, buf, len);
 }
 EXPORT_SYMBOL_GPL(ubi_leb_change);
@@ -747,6 +754,7 @@ EXPORT_SYMBOL_GPL(ubi_sync);
  * eraseblock numbers. It returns zero in case of success and a negative error
  * code in case of failure.
  */
+<<<<<<< HEAD
 int ubi_flush_all(struct ubi_volume_desc *desc)
 {
 	struct ubi_volume *vol = desc->vol;
@@ -758,6 +766,8 @@ int ubi_flush_all(struct ubi_volume_desc *desc)
 }
 EXPORT_SYMBOL_GPL(ubi_flush_all);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ubi_flush(int ubi_num, int vol_id, int lnum)
 {
 	struct ubi_device *ubi;

@@ -110,6 +110,13 @@
 struct adis16480_chip_info {
 	unsigned int num_channels;
 	const struct iio_chan_spec *channels;
+<<<<<<< HEAD
+=======
+	unsigned int gyro_max_val;
+	unsigned int gyro_max_scale;
+	unsigned int accel_max_val;
+	unsigned int accel_max_scale;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct adis16480 {
@@ -262,8 +269,16 @@ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
 	struct adis16480 *st = iio_priv(indio_dev);
 	unsigned int t;
 
+<<<<<<< HEAD
 	t =  val * 1000 + val2 / 1000;
 	if (t <= 0)
+=======
+	if (val < 0 || val2 < 0)
+		return -EINVAL;
+
+	t =  val * 1000 + val2 / 1000;
+	if (t == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	t = 2460000 / t;
@@ -365,12 +380,22 @@ static int adis16480_get_calibbias(struct iio_dev *indio_dev,
 	case IIO_MAGN:
 	case IIO_PRESSURE:
 		ret = adis_read_reg_16(&st->adis, reg, &val16);
+<<<<<<< HEAD
 		*bias = sign_extend32(val16, 15);
+=======
+		if (ret == 0)
+			*bias = sign_extend32(val16, 15);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case IIO_ANGL_VEL:
 	case IIO_ACCEL:
 		ret = adis_read_reg_32(&st->adis, reg, &val32);
+<<<<<<< HEAD
 		*bias = sign_extend32(val32, 31);
+=======
+		if (ret == 0)
+			*bias = sign_extend32(val32, 31);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 			ret = -EINVAL;
@@ -497,12 +522,18 @@ static int adis16480_set_filter_freq(struct iio_dev *indio_dev,
 static int adis16480_read_raw(struct iio_dev *indio_dev,
 	const struct iio_chan_spec *chan, int *val, int *val2, long info)
 {
+<<<<<<< HEAD
+=======
+	struct adis16480 *st = iio_priv(indio_dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (info) {
 	case IIO_CHAN_INFO_RAW:
 		return adis_single_conversion(indio_dev, chan, 0, val);
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_ANGL_VEL:
+<<<<<<< HEAD
 			*val = 0;
 			*val2 = IIO_DEGREE_TO_RAD(20000); /* 0.02 degree/sec */
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -510,6 +541,15 @@ static int adis16480_read_raw(struct iio_dev *indio_dev,
 			*val = 0;
 			*val2 = IIO_G_TO_M_S_2(800); /* 0.8 mg */
 			return IIO_VAL_INT_PLUS_MICRO;
+=======
+			*val = st->chip_info->gyro_max_scale;
+			*val2 = st->chip_info->gyro_max_val;
+			return IIO_VAL_FRACTIONAL;
+		case IIO_ACCEL:
+			*val = st->chip_info->accel_max_scale;
+			*val2 = st->chip_info->accel_max_val;
+			return IIO_VAL_FRACTIONAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case IIO_MAGN:
 			*val = 0;
 			*val2 = 100; /* 0.0001 gauss */
@@ -674,18 +714,51 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
 	[ADIS16375] = {
 		.channels = adis16485_channels,
 		.num_channels = ARRAY_SIZE(adis16485_channels),
+<<<<<<< HEAD
+=======
+		/*
+		 * storing the value in rad/degree and the scale in degree
+		 * gives us the result in rad and better precession than
+		 * storing the scale directly in rad.
+		 */
+		.gyro_max_val = IIO_RAD_TO_DEGREE(22887),
+		.gyro_max_scale = 300,
+		.accel_max_val = IIO_M_S_2_TO_G(21973),
+		.accel_max_scale = 18,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	[ADIS16480] = {
 		.channels = adis16480_channels,
 		.num_channels = ARRAY_SIZE(adis16480_channels),
+<<<<<<< HEAD
+=======
+		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+		.gyro_max_scale = 450,
+		.accel_max_val = IIO_M_S_2_TO_G(12500),
+		.accel_max_scale = 10,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	[ADIS16485] = {
 		.channels = adis16485_channels,
 		.num_channels = ARRAY_SIZE(adis16485_channels),
+<<<<<<< HEAD
+=======
+		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+		.gyro_max_scale = 450,
+		.accel_max_val = IIO_M_S_2_TO_G(20000),
+		.accel_max_scale = 5,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	[ADIS16488] = {
 		.channels = adis16480_channels,
 		.num_channels = ARRAY_SIZE(adis16480_channels),
+<<<<<<< HEAD
+=======
+		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+		.gyro_max_scale = 450,
+		.accel_max_val = IIO_M_S_2_TO_G(22500),
+		.accel_max_scale = 18,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 };
 
@@ -694,6 +767,10 @@ static const struct iio_info adis16480_info = {
 	.write_raw = &adis16480_write_raw,
 	.update_scan_mode = adis_update_scan_mode,
 	.driver_module = THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.debugfs_reg_access = adis_debugfs_reg_access,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static int adis16480_stop_device(struct iio_dev *indio_dev)

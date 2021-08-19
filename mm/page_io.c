@@ -32,7 +32,10 @@ static struct bio *get_swap_bio(gfp_t gfp_flags,
 	bio = bio_alloc(gfp_flags, 1);
 	if (bio) {
 		bio->bi_iter.bi_sector = map_swap_page(page, &bio->bi_bdev);
+<<<<<<< HEAD
 		bio->bi_iter.bi_sector <<= PAGE_SHIFT - 9;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		bio->bi_io_vec[0].bv_page = page;
 		bio->bi_io_vec[0].bv_len = PAGE_SIZE;
 		bio->bi_io_vec[0].bv_offset = 0;
@@ -248,11 +251,14 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static sector_t swap_page_sector(struct page *page)
 {
 	return (sector_t)__page_file_index(page) << (PAGE_CACHE_SHIFT - 9);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int __swap_writepage(struct page *page, struct writeback_control *wbc,
 	void (*end_write_func)(struct bio *, int))
 {
@@ -309,7 +315,12 @@ int __swap_writepage(struct page *page, struct writeback_control *wbc,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = bdev_write_page(sis->bdev, swap_page_sector(page), page, wbc);
+=======
+	ret = bdev_write_page(sis->bdev, map_swap_page(page, &sis->bdev),
+			      page, wbc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ret) {
 		count_vm_event(PSWPOUT);
 		return 0;
@@ -325,10 +336,13 @@ int __swap_writepage(struct page *page, struct writeback_control *wbc,
 	}
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		rw |= REQ_SYNC;
+<<<<<<< HEAD
 
 	/* mlog */
 	current->swap_out++;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	count_vm_event(PSWPOUT);
 	set_page_writeback(page);
 	unlock_page(page);
@@ -356,6 +370,7 @@ int swap_readpage(struct page *page)
 		struct address_space *mapping = swap_file->f_mapping;
 
 		ret = mapping->a_ops->readpage(swap_file, page);
+<<<<<<< HEAD
 		if (!ret) {
 			count_vm_event(PSWPIN);
 
@@ -372,6 +387,16 @@ int swap_readpage(struct page *page)
 		/* mlog */
 		current->swap_in++;
 
+=======
+		if (!ret)
+			count_vm_event(PSWPIN);
+		return ret;
+	}
+
+	ret = bdev_read_page(sis->bdev, map_swap_page(page, &sis->bdev), page);
+	if (!ret) {
+		count_vm_event(PSWPIN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 
@@ -382,10 +407,13 @@ int swap_readpage(struct page *page)
 		ret = -ENOMEM;
 		goto out;
 	}
+<<<<<<< HEAD
 
 	/* mlog */
 	current->swap_in++;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	count_vm_event(PSWPIN);
 	submit_bio(READ, bio);
 out:

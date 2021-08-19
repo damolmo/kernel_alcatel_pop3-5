@@ -433,7 +433,11 @@ config ARM_CHARLCD
 	  still useful.
 
 config BMP085
+<<<<<<< HEAD
 	bool
+=======
+	tristate
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on SYSFS
 
 config BMP085_I2C
@@ -519,11 +523,33 @@ config VEXPRESS_SYSCFG
 	  bus. System Configuration interface is one of the possible means
 	  of generating transactions on this bus.
 
+<<<<<<< HEAD
 config UID_CPUTIME
 	tristate "Per-UID cpu time statistics"
 	depends on PROFILING
 	help
 	  Per UID based cpu time statistics exported to /proc/uid_cputime
+=======
+config UID_SYS_STATS
+	bool "Per-UID statistics"
+	depends on PROFILING && TASK_XACCT && TASK_IO_ACCOUNTING
+	help
+	  Per UID based cpu time statistics exported to /proc/uid_cputime
+	  Per UID based io statistics exported to /proc/uid_io
+
+config UID_SYS_STATS_DEBUG
+	bool "Per-TASK statistics"
+	depends on UID_SYS_STATS
+	default n
+	help
+	  Per TASK based io statistics exported to /proc/uid_io
+
+config MEMORY_STATE_TIME
+	tristate "Memory freq/bandwidth time statistics"
+	depends on PROFILING
+	help
+	  Memory time statistics exported to /sys/kernel/memory_state_time
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
@@ -538,5 +564,8 @@ source "drivers/misc/mic/Kconfig"
 source "drivers/misc/genwqe/Kconfig"
 source "drivers/misc/echo/Kconfig"
 source "drivers/misc/cxl/Kconfig"
+<<<<<<< HEAD
 source "drivers/misc/mediatek/Kconfig"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endmenu

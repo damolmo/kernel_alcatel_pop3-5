@@ -15,12 +15,18 @@
 #include "cpuidle.h"
 #include "hardware.h"
 
+<<<<<<< HEAD
 static atomic_t master = ATOMIC_INIT(0);
 static DEFINE_SPINLOCK(master_lock);
+=======
+static int num_idle_cpus = 0;
+static DEFINE_SPINLOCK(cpuidle_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int imx6q_enter_wait(struct cpuidle_device *dev,
 			    struct cpuidle_driver *drv, int index)
 {
+<<<<<<< HEAD
 	if (atomic_inc_return(&master) == num_online_cpus()) {
 		/*
 		 * With this lock, we prevent other cpu to exit and enter
@@ -39,6 +45,19 @@ idle:
 	cpu_do_idle();
 done:
 	atomic_dec(&master);
+=======
+	spin_lock(&cpuidle_lock);
+	if (++num_idle_cpus == num_online_cpus())
+		imx6q_set_lpm(WAIT_UNCLOCKED);
+	spin_unlock(&cpuidle_lock);
+
+	cpu_do_idle();
+
+	spin_lock(&cpuidle_lock);
+	if (num_idle_cpus-- == num_online_cpus())
+		imx6q_set_lpm(WAIT_CLOCKED);
+	spin_unlock(&cpuidle_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return index;
 }

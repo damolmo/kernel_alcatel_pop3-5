@@ -53,6 +53,10 @@
 #include <asm/uaccess.h>
 #include <linux/hashtable.h>
 
+<<<<<<< HEAD
+=======
+#include "auth_gss_internal.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "../netns.h"
 
 static const struct rpc_authops authgss_ops;
@@ -147,6 +151,7 @@ gss_cred_set_ctx(struct rpc_cred *cred, struct gss_cl_ctx *ctx)
 	clear_bit(RPCAUTH_CRED_NEW, &cred->cr_flags);
 }
 
+<<<<<<< HEAD
 static const void *
 simple_get_bytes(const void *p, const void *end, void *res, size_t len)
 {
@@ -176,6 +181,8 @@ simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
 	return q;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct gss_cl_ctx *
 gss_cred_get_ctx(struct rpc_cred *cred)
 {
@@ -340,12 +347,21 @@ gss_release_msg(struct gss_upcall_msg *gss_msg)
 }
 
 static struct gss_upcall_msg *
+<<<<<<< HEAD
 __gss_find_upcall(struct rpc_pipe *pipe, kuid_t uid)
+=======
+__gss_find_upcall(struct rpc_pipe *pipe, kuid_t uid, const struct gss_auth *auth)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct gss_upcall_msg *pos;
 	list_for_each_entry(pos, &pipe->in_downcall, list) {
 		if (!uid_eq(pos->uid, uid))
 			continue;
+<<<<<<< HEAD
+=======
+		if (auth && pos->auth->service != auth->service)
+			continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		atomic_inc(&pos->count);
 		dprintk("RPC:       %s found msg %p\n", __func__, pos);
 		return pos;
@@ -365,7 +381,11 @@ gss_add_msg(struct gss_upcall_msg *gss_msg)
 	struct gss_upcall_msg *old;
 
 	spin_lock(&pipe->lock);
+<<<<<<< HEAD
 	old = __gss_find_upcall(pipe, gss_msg->uid);
+=======
+	old = __gss_find_upcall(pipe, gss_msg->uid, gss_msg->auth);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (old == NULL) {
 		atomic_inc(&gss_msg->count);
 		list_add(&gss_msg->list, &pipe->in_downcall);
@@ -539,9 +559,19 @@ gss_setup_upcall(struct gss_auth *gss_auth, struct rpc_cred *cred)
 		return gss_new;
 	gss_msg = gss_add_msg(gss_new);
 	if (gss_msg == gss_new) {
+<<<<<<< HEAD
 		int res = rpc_queue_upcall(gss_new->pipe, &gss_new->msg);
 		if (res) {
 			gss_unhash_msg(gss_new);
+=======
+		int res;
+		atomic_inc(&gss_msg->count);
+		res = rpc_queue_upcall(gss_new->pipe, &gss_new->msg);
+		if (res) {
+			gss_unhash_msg(gss_new);
+			atomic_dec(&gss_msg->count);
+			gss_release_msg(gss_new);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			gss_msg = ERR_PTR(res);
 		}
 	} else
@@ -714,7 +744,11 @@ gss_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 	err = -ENOENT;
 	/* Find a matching upcall */
 	spin_lock(&pipe->lock);
+<<<<<<< HEAD
 	gss_msg = __gss_find_upcall(pipe, uid);
+=======
+	gss_msg = __gss_find_upcall(pipe, uid, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (gss_msg == NULL) {
 		spin_unlock(&pipe->lock);
 		goto err_put_ctx;
@@ -834,6 +868,10 @@ gss_pipe_destroy_msg(struct rpc_pipe_msg *msg)
 			warn_gssd();
 		gss_release_msg(gss_msg);
 	}
+<<<<<<< HEAD
+=======
+	gss_release_msg(gss_msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void gss_pipe_dentry_destroy(struct dentry *dir,
@@ -1716,6 +1754,10 @@ priv_release_snd_buf(struct rpc_rqst *rqstp)
 	for (i=0; i < rqstp->rq_enc_pages_num; i++)
 		__free_page(rqstp->rq_enc_pages[i]);
 	kfree(rqstp->rq_enc_pages);
+<<<<<<< HEAD
+=======
+	rqstp->rq_release_snd_buf = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
@@ -1724,6 +1766,12 @@ alloc_enc_pages(struct rpc_rqst *rqstp)
 	struct xdr_buf *snd_buf = &rqstp->rq_snd_buf;
 	int first, last, i;
 
+<<<<<<< HEAD
+=======
+	if (rqstp->rq_release_snd_buf)
+		rqstp->rq_release_snd_buf(rqstp);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (snd_buf->page_len == 0) {
 		rqstp->rq_enc_pages_num = 0;
 		return 0;

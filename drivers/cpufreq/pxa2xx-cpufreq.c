@@ -191,7 +191,11 @@ static int pxa_cpufreq_change_voltage(pxa_freqs_t *pxa_freq)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __init pxa_cpufreq_init_voltages(void)
+=======
+static void pxa_cpufreq_init_voltages(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	vcc_core = regulator_get(NULL, "vcc_core");
 	if (IS_ERR(vcc_core)) {
@@ -207,7 +211,11 @@ static int pxa_cpufreq_change_voltage(pxa_freqs_t *pxa_freq)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init pxa_cpufreq_init_voltages(void) { }
+=======
+static void pxa_cpufreq_init_voltages(void) { }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 static void find_freq_tables(struct cpufreq_frequency_table **freq_table,

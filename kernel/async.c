@@ -84,12 +84,17 @@ static atomic_t entry_count;
 
 static async_cookie_t lowest_in_progress(struct async_domain *domain)
 {
+<<<<<<< HEAD
 	struct list_head *pending;
+=======
+	struct async_entry *first = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	async_cookie_t ret = ASYNC_COOKIE_MAX;
 	unsigned long flags;
 
 	spin_lock_irqsave(&async_lock, flags);
 
+<<<<<<< HEAD
 	if (domain)
 		pending = &domain->pending;
 	else
@@ -98,6 +103,20 @@ static async_cookie_t lowest_in_progress(struct async_domain *domain)
 	if (!list_empty(pending))
 		ret = list_first_entry(pending, struct async_entry,
 				       domain_list)->cookie;
+=======
+	if (domain) {
+		if (!list_empty(&domain->pending))
+			first = list_first_entry(&domain->pending,
+					struct async_entry, domain_list);
+	} else {
+		if (!list_empty(&async_global_pending))
+			first = list_first_entry(&async_global_pending,
+					struct async_entry, global_list);
+	}
+
+	if (first)
+		ret = first->cookie;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_unlock_irqrestore(&async_lock, flags);
 	return ret;

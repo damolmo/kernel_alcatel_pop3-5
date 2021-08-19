@@ -31,7 +31,10 @@
 #include <mach/irqs.h>
 
 #define OMAP1_DMA_BASE			(0xfffed800)
+<<<<<<< HEAD
 #define OMAP1_LOGICAL_DMA_CH_COUNT	17
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static u32 enable_1510_mode;
 
@@ -311,8 +314,11 @@ static int __init omap1_system_dma_init(void)
 		goto exit_iounmap;
 	}
 
+<<<<<<< HEAD
 	d->lch_count		= OMAP1_LOGICAL_DMA_CH_COUNT;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Valid attributes for omap1 plus processors */
 	if (cpu_is_omap15xx())
 		d->dev_caps = ENABLE_1510_MODE;
@@ -329,6 +335,7 @@ static int __init omap1_system_dma_init(void)
 	d->dev_caps		|= CLEAR_CSR_ON_READ;
 	d->dev_caps		|= IS_WORD_16;
 
+<<<<<<< HEAD
 	if (cpu_is_omap15xx())
 		d->chan_count = 9;
 	else if (cpu_is_omap16xx() || cpu_is_omap7xx()) {
@@ -336,6 +343,16 @@ static int __init omap1_system_dma_init(void)
 			d->chan_count = 16;
 		else
 			d->chan_count = 9;
+=======
+	/* available logical channels */
+	if (cpu_is_omap15xx()) {
+		d->lch_count = 9;
+	} else {
+		if (d->dev_caps & ENABLE_1510_MODE)
+			d->lch_count = 9;
+		else
+			d->lch_count = 16;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	p = dma_plat_info;

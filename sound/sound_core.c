@@ -287,7 +287,12 @@ retry:
 				goto retry;
 			}
 			spin_unlock(&sound_loader_lock);
+<<<<<<< HEAD
 			return -EBUSY;
+=======
+			r = -EBUSY;
+			goto fail;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 

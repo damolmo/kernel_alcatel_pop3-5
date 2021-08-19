@@ -55,10 +55,19 @@
 #define RAB1bl %bl
 #define RAB2bl %cl
 
+<<<<<<< HEAD
+=======
+#define CD0 0x0(%rsp)
+#define CD1 0x8(%rsp)
+#define CD2 0x10(%rsp)
+
+# used only before/after all rounds
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define RCD0 %r8
 #define RCD1 %r9
 #define RCD2 %r10
 
+<<<<<<< HEAD
 #define RCD0d %r8d
 #define RCD1d %r9d
 #define RCD2d %r10d
@@ -78,6 +87,24 @@
 #define RY0d %r13d
 #define RY1d %r14d
 #define RY2d %r15d
+=======
+# used only during rounds
+#define RX0 %r8
+#define RX1 %r9
+#define RX2 %r10
+
+#define RX0d %r8d
+#define RX1d %r9d
+#define RX2d %r10d
+
+#define RY0 %r11
+#define RY1 %r12
+#define RY2 %r13
+
+#define RY0d %r11d
+#define RY1d %r12d
+#define RY2d %r13d
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define RT0 %rdx
 #define RT1 %rsi
@@ -85,6 +112,11 @@
 #define RT0d %edx
 #define RT1d %esi
 
+<<<<<<< HEAD
+=======
+#define RT1bl %sil
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define do16bit_ror(rot, op1, op2, T0, T1, tmp1, tmp2, ab, dst) \
 	movzbl ab ## bl,		tmp2 ## d; \
 	movzbl ab ## bh,		tmp1 ## d; \
@@ -92,6 +124,14 @@
 	op1##l T0(CTX, tmp2, 4),	dst ## d; \
 	op2##l T1(CTX, tmp1, 4),	dst ## d;
 
+<<<<<<< HEAD
+=======
+#define swap_ab_with_cd(ab, cd, tmp)	\
+	movq cd, tmp;			\
+	movq ab, cd;			\
+	movq tmp, ab;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Combined G1 & G2 function. Reordered with help of rotates to have moves
  * at begining.
@@ -110,6 +150,7 @@
 	/* G1,2 && G2,2 */ \
 	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 0, x ## 0); \
 	do16bit_ror(16, xor, xor, Ty3, Ty0, RT0, RT1, ab ## 0, y ## 0); \
+<<<<<<< HEAD
 	xchgq cd ## 0, ab ## 0; \
 	\
 	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 1, x ## 1); \
@@ -119,6 +160,17 @@
 	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 2, x ## 2); \
 	do16bit_ror(16, xor, xor, Ty3, Ty0, RT0, RT1, ab ## 2, y ## 2); \
 	xchgq cd ## 2, ab ## 2;
+=======
+	swap_ab_with_cd(ab ## 0, cd ## 0, RT0); \
+	\
+	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 1, x ## 1); \
+	do16bit_ror(16, xor, xor, Ty3, Ty0, RT0, RT1, ab ## 1, y ## 1); \
+	swap_ab_with_cd(ab ## 1, cd ## 1, RT0); \
+	\
+	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 2, x ## 2); \
+	do16bit_ror(16, xor, xor, Ty3, Ty0, RT0, RT1, ab ## 2, y ## 2); \
+	swap_ab_with_cd(ab ## 2, cd ## 2, RT0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define enc_round_end(ab, x, y, n) \
 	addl y ## d,			x ## d; \
@@ -168,6 +220,19 @@
 	decrypt_round3(ba, dc, (n*2)+1); \
 	decrypt_round3(ba, dc, (n*2));
 
+<<<<<<< HEAD
+=======
+#define push_cd()	\
+	pushq RCD2;	\
+	pushq RCD1;	\
+	pushq RCD0;
+
+#define pop_cd()	\
+	popq RCD0;	\
+	popq RCD1;	\
+	popq RCD2;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define inpack3(in, n, xy, m) \
 	movq 4*(n)(in),			xy ## 0; \
 	xorq w+4*m(CTX),		xy ## 0; \
@@ -223,11 +288,16 @@ ENTRY(__twofish_enc_blk_3way)
 	 *	%rdx: src, RIO
 	 *	%rcx: bool, if true: xor output
 	 */
+<<<<<<< HEAD
 	pushq %r15;
 	pushq %r14;
 	pushq %r13;
 	pushq %r12;
 	pushq %rbp;
+=======
+	pushq %r13;
+	pushq %r12;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pushq %rbx;
 
 	pushq %rcx; /* bool xor */
@@ -235,6 +305,7 @@ ENTRY(__twofish_enc_blk_3way)
 
 	inpack_enc3();
 
+<<<<<<< HEAD
 	encrypt_cycle3(RAB, RCD, 0);
 	encrypt_cycle3(RAB, RCD, 1);
 	encrypt_cycle3(RAB, RCD, 2);
@@ -248,27 +319,54 @@ ENTRY(__twofish_enc_blk_3way)
 	popq %rbp; /* bool xor */
 
 	testb %bpl, %bpl;
+=======
+	push_cd();
+	encrypt_cycle3(RAB, CD, 0);
+	encrypt_cycle3(RAB, CD, 1);
+	encrypt_cycle3(RAB, CD, 2);
+	encrypt_cycle3(RAB, CD, 3);
+	encrypt_cycle3(RAB, CD, 4);
+	encrypt_cycle3(RAB, CD, 5);
+	encrypt_cycle3(RAB, CD, 6);
+	encrypt_cycle3(RAB, CD, 7);
+	pop_cd();
+
+	popq RIO; /* dst */
+	popq RT1; /* bool xor */
+
+	testb RT1bl, RT1bl;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	jnz .L__enc_xor3;
 
 	outunpack_enc3(mov);
 
 	popq %rbx;
+<<<<<<< HEAD
 	popq %rbp;
 	popq %r12;
 	popq %r13;
 	popq %r14;
 	popq %r15;
+=======
+	popq %r12;
+	popq %r13;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret;
 
 .L__enc_xor3:
 	outunpack_enc3(xor);
 
 	popq %rbx;
+<<<<<<< HEAD
 	popq %rbp;
 	popq %r12;
 	popq %r13;
 	popq %r14;
 	popq %r15;
+=======
+	popq %r12;
+	popq %r13;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret;
 ENDPROC(__twofish_enc_blk_3way)
 
@@ -278,17 +376,23 @@ ENTRY(twofish_dec_blk_3way)
 	 *	%rsi: dst
 	 *	%rdx: src, RIO
 	 */
+<<<<<<< HEAD
 	pushq %r15;
 	pushq %r14;
 	pushq %r13;
 	pushq %r12;
 	pushq %rbp;
+=======
+	pushq %r13;
+	pushq %r12;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pushq %rbx;
 
 	pushq %rsi; /* dst */
 
 	inpack_dec3();
 
+<<<<<<< HEAD
 	decrypt_cycle3(RAB, RCD, 7);
 	decrypt_cycle3(RAB, RCD, 6);
 	decrypt_cycle3(RAB, RCD, 5);
@@ -297,16 +401,33 @@ ENTRY(twofish_dec_blk_3way)
 	decrypt_cycle3(RAB, RCD, 2);
 	decrypt_cycle3(RAB, RCD, 1);
 	decrypt_cycle3(RAB, RCD, 0);
+=======
+	push_cd();
+	decrypt_cycle3(RAB, CD, 7);
+	decrypt_cycle3(RAB, CD, 6);
+	decrypt_cycle3(RAB, CD, 5);
+	decrypt_cycle3(RAB, CD, 4);
+	decrypt_cycle3(RAB, CD, 3);
+	decrypt_cycle3(RAB, CD, 2);
+	decrypt_cycle3(RAB, CD, 1);
+	decrypt_cycle3(RAB, CD, 0);
+	pop_cd();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	popq RIO; /* dst */
 
 	outunpack_dec3();
 
 	popq %rbx;
+<<<<<<< HEAD
 	popq %rbp;
 	popq %r12;
 	popq %r13;
 	popq %r14;
 	popq %r15;
+=======
+	popq %r12;
+	popq %r13;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret;
 ENDPROC(twofish_dec_blk_3way)

@@ -395,7 +395,11 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	controller->controller.channel_abort = dma_channel_abort;
 
 	if (request_irq(irq, dma_controller_irq, 0,
+<<<<<<< HEAD
 			dev_name(musb->controller), &controller->controller)) {
+=======
+			dev_name(musb->controller), controller)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(dev, "request_irq %d failed!\n", irq);
 		dma_controller_destroy(&controller->controller);
 

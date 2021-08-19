@@ -84,6 +84,7 @@ config PM_STD_PARTITION
 	default ""
 	---help---
 	  The default resume partition is the partition that the suspend-
+<<<<<<< HEAD
 	  to-disk implementation will look for a suspended disk image.
 
 	  The partition specified here will be different for almost every user.
@@ -393,6 +394,24 @@ config TOI_ENHANCE
         def_bool y
         depends on TOI
 
+=======
+	  to-disk implementation will look for a suspended disk image. 
+
+	  The partition specified here will be different for almost every user. 
+	  It should be a valid swap partition (at least for now) that is turned
+	  on before suspending. 
+
+	  The partition specified can be overridden by specifying:
+
+		resume=/dev/<other device> 
+
+	  which will set the resume partition to the device specified. 
+
+	  Note there is currently not a way to specify which device to save the
+	  suspended image to. It will simply pick the first available swap 
+	  device.
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config PM_SLEEP
 	def_bool y
 	depends on SUSPEND || HIBERNATE_CALLBACKS

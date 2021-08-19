@@ -86,12 +86,20 @@ void invalidate_bdev(struct block_device *bdev)
 {
 	struct address_space *mapping = bdev->bd_inode->i_mapping;
 
+<<<<<<< HEAD
 	if (mapping->nrpages == 0)
 		return;
 
 	invalidate_bh_lrus();
 	lru_add_drain_all();	/* make sure all lru add caches are flushed */
 	invalidate_mapping_pages(mapping, 0, -1);
+=======
+	if (mapping->nrpages) {
+		invalidate_bh_lrus();
+		lru_add_drain_all();	/* make sure all lru add caches are flushed */
+		invalidate_mapping_pages(mapping, 0, -1);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* 99% of the time, we don't need to flush the cleancache on the bdev.
 	 * But, for the strange corners, lets be cautious
 	 */
@@ -694,7 +702,11 @@ static bool bd_may_claim(struct block_device *bdev, struct block_device *whole,
 		return true;	 /* already a holder */
 	else if (bdev->bd_holder != NULL)
 		return false; 	 /* held by someone else */
+<<<<<<< HEAD
 	else if (bdev->bd_contains == bdev)
+=======
+	else if (whole == bdev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return true;  	 /* is a whole device which isn't held */
 
 	else if (whole->bd_holder == bd_may_claim)
@@ -1118,10 +1130,15 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 	 */
 	if (!for_part) {
 		ret = devcgroup_inode_permission(bdev->bd_inode, perm);
+<<<<<<< HEAD
 		if (ret != 0) {
 			bdput(bdev);
 			return ret;
 		}
+=======
+		if (ret != 0)
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
  restart:
@@ -1194,8 +1211,15 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 				goto out_clear;
 			BUG_ON(for_part);
 			ret = __blkdev_get(whole, mode, 1);
+<<<<<<< HEAD
 			if (ret)
 				goto out_clear;
+=======
+			if (ret) {
+				bdput(whole);
+				goto out_clear;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			bdev->bd_contains = whole;
 			bdev_inode_switch_bdi(bdev->bd_inode,
 				whole->bd_inode->i_data.backing_dev_info);
@@ -1248,7 +1272,10 @@ static int __blkdev_get(struct block_device *bdev, fmode_t mode, int for_part)
 	put_disk(disk);
 	module_put(owner);
  out:
+<<<<<<< HEAD
 	bdput(bdev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -1334,6 +1361,12 @@ int blkdev_get(struct block_device *bdev, fmode_t mode, void *holder)
 		bdput(whole);
 	}
 
+<<<<<<< HEAD
+=======
+	if (res)
+		bdput(bdev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return res;
 }
 EXPORT_SYMBOL(blkdev_get);
@@ -1450,6 +1483,19 @@ static void __blkdev_put(struct block_device *bdev, fmode_t mode, int for_part)
 	struct gendisk *disk = bdev->bd_disk;
 	struct block_device *victim = NULL;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Sync early if it looks like we're the last one.  If someone else
+	 * opens the block device between now and the decrement of bd_openers
+	 * then we did a sync that we didn't need to, but that's not the end
+	 * of the world and we want to avoid long (could be several minute)
+	 * syncs while holding the mutex.
+	 */
+	if (bdev->bd_openers == 1)
+		sync_blockdev(bdev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock_nested(&bdev->bd_mutex, for_part);
 	if (for_part)
 		bdev->bd_part_count--;
@@ -1727,6 +1773,10 @@ void iterate_bdevs(void (*func)(struct block_device *, void *), void *arg)
 	spin_lock(&inode_sb_list_lock);
 	list_for_each_entry(inode, &blockdev_superblock->s_inodes, i_sb_list) {
 		struct address_space *mapping = inode->i_mapping;
+<<<<<<< HEAD
+=======
+		struct block_device *bdev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		spin_lock(&inode->i_lock);
 		if (inode->i_state & (I_FREEING|I_WILL_FREE|I_NEW) ||
@@ -1747,8 +1797,17 @@ void iterate_bdevs(void (*func)(struct block_device *, void *), void *arg)
 		 */
 		iput(old_inode);
 		old_inode = inode;
+<<<<<<< HEAD
 
 		func(I_BDEV(inode), arg);
+=======
+		bdev = I_BDEV(inode);
+
+		mutex_lock(&bdev->bd_mutex);
+		if (bdev->bd_openers)
+			func(bdev, arg);
+		mutex_unlock(&bdev->bd_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		spin_lock(&inode_sb_list_lock);
 	}

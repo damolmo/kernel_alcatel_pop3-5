@@ -17,6 +17,10 @@
  ******************************************************************************/
 
 #include <linux/ctype.h>
+<<<<<<< HEAD
+=======
+#include <linux/kthread.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
@@ -361,10 +365,31 @@ static int iscsi_target_do_tx_login_io(struct iscsi_conn *conn, struct iscsi_log
 		ntohl(login_rsp->statsn), login->rsp_length);
 
 	padding = ((-login->rsp_length) & 3);
+<<<<<<< HEAD
 
 	if (conn->conn_transport->iscsit_put_login_tx(conn, login,
 					login->rsp_length + padding) < 0)
 		return -1;
+=======
+	/*
+	 * Before sending the last login response containing the transition
+	 * bit for full-feature-phase, go ahead and start up TX/RX threads
+	 * now to avoid potential resource allocation failures after the
+	 * final login response has been sent.
+	 */
+	if (login->login_complete) {
+		int rc = iscsit_start_kthreads(conn);
+		if (rc) {
+			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
+					    ISCSI_LOGIN_STATUS_NO_RESOURCES);
+			return -1;
+		}
+	}
+
+	if (conn->conn_transport->iscsit_put_login_tx(conn, login,
+					login->rsp_length + padding) < 0)
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	login->rsp_length		= 0;
 	mutex_lock(&sess->cmdsn_mutex);
@@ -373,6 +398,27 @@ static int iscsi_target_do_tx_login_io(struct iscsi_conn *conn, struct iscsi_log
 	mutex_unlock(&sess->cmdsn_mutex);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err:
+	if (login->login_complete) {
+		if (conn->rx_thread && conn->rx_thread_active) {
+			send_sig(SIGINT, conn->rx_thread, 1);
+			complete(&conn->rx_login_comp);
+			kthread_stop(conn->rx_thread);
+		}
+		if (conn->tx_thread && conn->tx_thread_active) {
+			send_sig(SIGINT, conn->tx_thread, 1);
+			kthread_stop(conn->tx_thread);
+		}
+		spin_lock(&iscsit_global->ts_bitmap_lock);
+		bitmap_release_region(iscsit_global->ts_bitmap, conn->bitmap_id,
+				      get_order(1));
+		spin_unlock(&iscsit_global->ts_bitmap_lock);
+	}
+	return -1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void iscsi_target_sk_data_ready(struct sock *sk)
@@ -461,6 +507,7 @@ static void iscsi_target_restore_sock_callbacks(struct iscsi_conn *conn)
 
 static int iscsi_target_do_login(struct iscsi_conn *, struct iscsi_login *);
 
+<<<<<<< HEAD
 static bool iscsi_target_sk_state_check(struct sock *sk)
 {
 	if (sk->sk_state == TCP_CLOSE_WAIT || sk->sk_state == TCP_CLOSE) {
@@ -469,16 +516,79 @@ static bool iscsi_target_sk_state_check(struct sock *sk)
 		return false;
 	}
 	return true;
+=======
+static bool __iscsi_target_sk_check_close(struct sock *sk)
+{
+	if (sk->sk_state == TCP_CLOSE_WAIT || sk->sk_state == TCP_CLOSE) {
+		pr_debug("__iscsi_target_sk_check_close: TCP_CLOSE_WAIT|TCP_CLOSE,"
+			"returning FALSE\n");
+		return true;
+	}
+	return false;
+}
+
+static bool iscsi_target_sk_check_close(struct iscsi_conn *conn)
+{
+	bool state = false;
+
+	if (conn->sock) {
+		struct sock *sk = conn->sock->sk;
+
+		read_lock_bh(&sk->sk_callback_lock);
+		state = (__iscsi_target_sk_check_close(sk) ||
+			 test_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags));
+		read_unlock_bh(&sk->sk_callback_lock);
+	}
+	return state;
+}
+
+static bool iscsi_target_sk_check_flag(struct iscsi_conn *conn, unsigned int flag)
+{
+	bool state = false;
+
+	if (conn->sock) {
+		struct sock *sk = conn->sock->sk;
+
+		read_lock_bh(&sk->sk_callback_lock);
+		state = test_bit(flag, &conn->login_flags);
+		read_unlock_bh(&sk->sk_callback_lock);
+	}
+	return state;
+}
+
+static bool iscsi_target_sk_check_and_clear(struct iscsi_conn *conn, unsigned int flag)
+{
+	bool state = false;
+
+	if (conn->sock) {
+		struct sock *sk = conn->sock->sk;
+
+		write_lock_bh(&sk->sk_callback_lock);
+		state = (__iscsi_target_sk_check_close(sk) ||
+			 test_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags));
+		if (!state)
+			clear_bit(flag, &conn->login_flags);
+		write_unlock_bh(&sk->sk_callback_lock);
+	}
+	return state;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void iscsi_target_login_drop(struct iscsi_conn *conn, struct iscsi_login *login)
 {
+<<<<<<< HEAD
 	struct iscsi_np *np = login->np;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bool zero_tsih = login->zero_tsih;
 
 	iscsi_remove_failed_auth_entry(conn);
 	iscsi_target_nego_release(conn);
+<<<<<<< HEAD
 	iscsi_target_login_sess_out(conn, np, zero_tsih, true);
+=======
+	iscsi_target_login_sess_out(conn, zero_tsih, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void iscsi_target_login_timeout(unsigned long data)
@@ -508,6 +618,23 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 
 	pr_debug("entering iscsi_target_do_login_rx, conn: %p, %s:%d\n",
 			conn, current->comm, current->pid);
+<<<<<<< HEAD
+=======
+	/*
+	 * If iscsi_target_do_login_rx() has been invoked by ->sk_data_ready()
+	 * before initial PDU processing in iscsi_target_start_negotiation()
+	 * has completed, go ahead and retry until it's cleared.
+	 *
+	 * Otherwise if the TCP connection drops while this is occuring,
+	 * iscsi_target_start_negotiation() will detect the failure, call
+	 * cancel_delayed_work_sync(&conn->login_work), and cleanup the
+	 * remaining iscsi connection resources from iscsi_np process context.
+	 */
+	if (iscsi_target_sk_check_flag(conn, LOGIN_FLAGS_INITIAL_PDU)) {
+		schedule_delayed_work(&conn->login_work, msecs_to_jiffies(10));
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock(&tpg->tpg_state_lock);
 	state = (tpg->tpg_state == TPG_STATE_ACTIVE);
@@ -515,6 +642,7 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 
 	if (!state) {
 		pr_debug("iscsi_target_do_login_rx: tpg_state != TPG_STATE_ACTIVE\n");
+<<<<<<< HEAD
 		iscsi_target_restore_sock_callbacks(conn);
 		iscsi_target_login_drop(conn, login);
 		iscsit_deaccess_np(np, tpg, tpg_np);
@@ -535,6 +663,14 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 			iscsit_deaccess_np(np, tpg, tpg_np);
 			return;
 		}
+=======
+		goto err;
+	}
+
+	if (iscsi_target_sk_check_close(conn)) {
+		pr_debug("iscsi_target_do_login_rx, TCP state CLOSE\n");
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	conn->login_kworker = current;
@@ -552,18 +688,24 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 	flush_signals(current);
 	conn->login_kworker = NULL;
 
+<<<<<<< HEAD
 	if (rc < 0) {
 		iscsi_target_restore_sock_callbacks(conn);
 		iscsi_target_login_drop(conn, login);
 		iscsit_deaccess_np(np, tpg, tpg_np);
 		return;
 	}
+=======
+	if (rc < 0)
+		goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_debug("iscsi_target_do_login_rx after rx_login_io, %p, %s:%d\n",
 			conn, current->comm, current->pid);
 
 	rc = iscsi_target_do_login(conn, login);
 	if (rc < 0) {
+<<<<<<< HEAD
 		iscsi_target_restore_sock_callbacks(conn);
 		iscsi_target_login_drop(conn, login);
 		iscsit_deaccess_np(np, tpg, tpg_np);
@@ -575,11 +717,26 @@ static void iscsi_target_do_login_rx(struct work_struct *work)
 			clear_bit(LOGIN_FLAGS_READ_ACTIVE, &conn->login_flags);
 			write_unlock_bh(&sk->sk_callback_lock);
 		}
+=======
+		goto err;
+	} else if (!rc) {
+		if (iscsi_target_sk_check_and_clear(conn, LOGIN_FLAGS_READ_ACTIVE))
+			goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (rc == 1) {
 		iscsi_target_nego_release(conn);
 		iscsi_post_login_handler(np, conn, zero_tsih);
 		iscsit_deaccess_np(np, tpg, tpg_np);
 	}
+<<<<<<< HEAD
+=======
+	return;
+
+err:
+	iscsi_target_restore_sock_callbacks(conn);
+	iscsi_target_login_drop(conn, login);
+	iscsit_deaccess_np(np, tpg, tpg_np);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void iscsi_target_do_cleanup(struct work_struct *work)
@@ -627,20 +784,36 @@ static void iscsi_target_sk_state_change(struct sock *sk)
 		orig_state_change(sk);
 		return;
 	}
+<<<<<<< HEAD
 	if (test_bit(LOGIN_FLAGS_READ_ACTIVE, &conn->login_flags)) {
 		pr_debug("Got LOGIN_FLAGS_READ_ACTIVE=1 sk_state_change"
 			 " conn: %p\n", conn);
+=======
+	state = __iscsi_target_sk_check_close(sk);
+	pr_debug("__iscsi_target_sk_close_change: state: %d\n", state);
+
+	if (test_bit(LOGIN_FLAGS_READ_ACTIVE, &conn->login_flags)) {
+		pr_debug("Got LOGIN_FLAGS_READ_ACTIVE=1 sk_state_change"
+			 " conn: %p\n", conn);
+		if (state)
+			set_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		write_unlock_bh(&sk->sk_callback_lock);
 		orig_state_change(sk);
 		return;
 	}
+<<<<<<< HEAD
 	if (test_and_set_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags)) {
+=======
+	if (test_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pr_debug("Got LOGIN_FLAGS_CLOSED=1 sk_state_change conn: %p\n",
 			 conn);
 		write_unlock_bh(&sk->sk_callback_lock);
 		orig_state_change(sk);
 		return;
 	}
+<<<<<<< HEAD
 
 	state = iscsi_target_sk_state_check(sk);
 	write_unlock_bh(&sk->sk_callback_lock);
@@ -652,6 +825,37 @@ static void iscsi_target_sk_state_change(struct sock *sk)
 		schedule_delayed_work(&conn->login_cleanup_work, 0);
 		return;
 	}
+=======
+	/*
+	 * If the TCP connection has dropped, go ahead and set LOGIN_FLAGS_CLOSED,
+	 * but only queue conn->login_work -> iscsi_target_do_login_rx()
+	 * processing if LOGIN_FLAGS_INITIAL_PDU has already been cleared.
+	 *
+	 * When iscsi_target_do_login_rx() runs, iscsi_target_sk_check_close()
+	 * will detect the dropped TCP connection from delayed workqueue context.
+	 *
+	 * If LOGIN_FLAGS_INITIAL_PDU is still set, which means the initial
+	 * iscsi_target_start_negotiation() is running, iscsi_target_do_login()
+	 * via iscsi_target_sk_check_close() or iscsi_target_start_negotiation()
+	 * via iscsi_target_sk_check_and_clear() is responsible for detecting the
+	 * dropped TCP connection in iscsi_np process context, and cleaning up
+	 * the remaining iscsi connection resources.
+	 */
+	if (state) {
+		pr_debug("iscsi_target_sk_state_change got failed state\n");
+		set_bit(LOGIN_FLAGS_CLOSED, &conn->login_flags);
+		state = test_bit(LOGIN_FLAGS_INITIAL_PDU, &conn->login_flags);
+		write_unlock_bh(&sk->sk_callback_lock);
+
+		orig_state_change(sk);
+
+		if (!state)
+			schedule_delayed_work(&conn->login_work, 0);
+		return;
+	}
+	write_unlock_bh(&sk->sk_callback_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	orig_state_change(sk);
 }
 
@@ -914,6 +1118,18 @@ static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *lo
 			if (iscsi_target_handle_csg_one(conn, login) < 0)
 				return -1;
 			if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
+<<<<<<< HEAD
+=======
+				/*
+				 * Check to make sure the TCP connection has not
+				 * dropped asynchronously while session reinstatement
+				 * was occuring in this kthread context, before
+				 * transitioning to full feature phase operation.
+				 */
+				if (iscsi_target_sk_check_close(conn))
+					return -1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				login->tsih = conn->sess->tsih;
 				login->login_complete = 1;
 				iscsi_target_restore_sock_callbacks(conn);
@@ -940,6 +1156,7 @@ static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *lo
 		break;
 	}
 
+<<<<<<< HEAD
 	if (conn->sock) {
 		struct sock *sk = conn->sock->sk;
 		bool state;
@@ -955,6 +1172,8 @@ static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *lo
 		}
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1218,6 +1437,7 @@ int iscsi_target_start_negotiation(
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = iscsi_target_do_login(conn, login);
 	if (!ret) {
 		if (conn->sock) {
@@ -1228,6 +1448,30 @@ int iscsi_target_start_negotiation(
 			write_unlock_bh(&sk->sk_callback_lock);
 		}
 	} else if (ret < 0) {
+=======
+       if (conn->sock) {
+               struct sock *sk = conn->sock->sk;
+
+		write_lock_bh(&sk->sk_callback_lock);
+		set_bit(LOGIN_FLAGS_READY, &conn->login_flags);
+		set_bit(LOGIN_FLAGS_INITIAL_PDU, &conn->login_flags);
+		write_unlock_bh(&sk->sk_callback_lock);
+	}
+	/*
+	 * If iscsi_target_do_login returns zero to signal more PDU
+	 * exchanges are required to complete the login, go ahead and
+	 * clear LOGIN_FLAGS_INITIAL_PDU but only if the TCP connection
+	 * is still active.
+	 *
+	 * Otherwise if TCP connection dropped asynchronously, go ahead
+	 * and perform connection cleanup now.
+	 */
+	ret = iscsi_target_do_login(conn, login);
+	if (!ret && iscsi_target_sk_check_and_clear(conn, LOGIN_FLAGS_INITIAL_PDU))
+		ret = -1;
+
+	if (ret < 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cancel_delayed_work_sync(&conn->login_work);
 		cancel_delayed_work_sync(&conn->login_cleanup_work);
 		iscsi_target_restore_sock_callbacks(conn);

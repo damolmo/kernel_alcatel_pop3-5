@@ -132,6 +132,12 @@ static int tmp006_write_raw(struct iio_dev *indio_dev,
 	struct tmp006_data *data = iio_priv(indio_dev);
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < ARRAY_SIZE(tmp006_freqs); i++)
 		if ((val == tmp006_freqs[i][0]) &&
 		    (val2 == tmp006_freqs[i][1])) {

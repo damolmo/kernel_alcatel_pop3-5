@@ -13,6 +13,7 @@ endif
 
 CFLAGS_REMOVE_return_address.o = -pg
 
+<<<<<<< HEAD
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/mtprof/
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/hibcore
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/include
@@ -20,6 +21,8 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/base/power/$(MTK_PLATFORM)/
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # Object file lists.
 
 obj-y		:= elf.o entry-common.o irq.o opcodes.o \
@@ -41,7 +44,10 @@ obj-$(CONFIG_OC_ETM)		+= etm.o
 obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
 obj-$(CONFIG_ISA_DMA_API)	+= dma.o
 obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
+<<<<<<< HEAD
 obj-$(CONFIG_FIQ_GLUE)		+= fiq_smp_call.o
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_MODULES)		+= armksyms.o module.o
 obj-$(CONFIG_ARTHUR)		+= arthur.o
 obj-$(CONFIG_ISA_DMA)		+= dma-isa.o
@@ -75,7 +81,11 @@ test-kprobes-objs		+= kprobes-test-arm.o
 endif
 obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
 obj-$(CONFIG_ARM_THUMBEE)	+= thumbee.o
+<<<<<<< HEAD
 obj-$(CONFIG_KGDB)		+= kgdb.o
+=======
+obj-$(CONFIG_KGDB)		+= kgdb.o patch.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 obj-$(CONFIG_ARM_UNWIND)	+= unwind.o
 obj-$(CONFIG_HAVE_TCM)		+= tcm.o
 obj-$(CONFIG_OF)		+= devtree.o
@@ -92,9 +102,15 @@ obj-$(CONFIG_CPU_PJ4B)		+= pj4-cp0.o
 obj-$(CONFIG_IWMMXT)		+= iwmmxt.o
 obj-$(CONFIG_PERF_EVENTS)	+= perf_regs.o
 obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o perf_event_cpu.o
+<<<<<<< HEAD
 CFLAGS_pj4-cp0.o		:= -marm
 AFLAGS_iwmmxt.o			:= -Wa,-mcpu=iwmmxt
 obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
+=======
+AFLAGS_iwmmxt.o			:= -Wa,-mcpu=iwmmxt
+obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
+obj-$(CONFIG_VDSO)		+= vdso.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ifneq ($(CONFIG_ARCH_EBSA110),y)
   obj-y		+= io.o

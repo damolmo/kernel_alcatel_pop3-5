@@ -64,12 +64,27 @@ struct ptp_clock_request {
  * @adjtime:  Shifts the time of the hardware clock.
  *            parameter delta: Desired change in nanoseconds.
  *
+<<<<<<< HEAD
  * @gettime:  Reads the current time from the hardware clock.
  *            parameter ts: Holds the result.
  *
  * @settime:  Set the current time on the hardware clock.
  *            parameter ts: Time value to set.
  *
+=======
+ * @gettime:  Reads the current time from the hardware clock. (deprecated)
+ *            parameter ts: Holds the result.
+ *
+ * @settime:  Set the current time on the hardware clock. (deprecated)
+ *            parameter ts: Time value to set.
+ *
+ * @gettime64:  Reads the current time from the hardware clock.
+ *              parameter ts: Holds the result.
+ *
+ * @settime64:  Set the current time on the hardware clock.
+ *              parameter ts: Time value to set.
+ *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @enable:   Request driver to enable or disable an ancillary feature.
  *            parameter request: Desired resource to enable or disable.
  *            parameter on: Caller passes one to enable or zero to disable.
@@ -106,6 +121,11 @@ struct ptp_clock_info {
 	int (*adjtime)(struct ptp_clock_info *ptp, s64 delta);
 	int (*gettime)(struct ptp_clock_info *ptp, struct timespec *ts);
 	int (*settime)(struct ptp_clock_info *ptp, const struct timespec *ts);
+<<<<<<< HEAD
+=======
+	int (*gettime64)(struct ptp_clock_info *ptp, struct timespec64 *ts);
+	int (*settime64)(struct ptp_clock_info *p, const struct timespec64 *ts);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int (*enable)(struct ptp_clock_info *ptp,
 		      struct ptp_clock_request *request, int on);
 	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,

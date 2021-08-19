@@ -158,6 +158,7 @@ unsigned int get_c0_compare_int(void)
 
 static void __init init_rtc(void)
 {
+<<<<<<< HEAD
 	/* stop the clock whilst setting it up */
 	CMOS_WRITE(RTC_SET | RTC_24H, RTC_CONTROL);
 
@@ -166,6 +167,19 @@ static void __init init_rtc(void)
 
 	/* start the clock */
 	CMOS_WRITE(RTC_24H, RTC_CONTROL);
+=======
+	unsigned char freq, ctrl;
+
+	/* Set 32KHz time base if not already set */
+	freq = CMOS_READ(RTC_FREQ_SELECT);
+	if ((freq & RTC_DIV_CTL) != RTC_REF_CLCK_32KHZ)
+		CMOS_WRITE(RTC_REF_CLCK_32KHZ, RTC_FREQ_SELECT);
+
+	/* Ensure SET bit is clear so RTC can run */
+	ctrl = CMOS_READ(RTC_CONTROL);
+	if (ctrl & RTC_SET)
+		CMOS_WRITE(ctrl & ~RTC_SET, RTC_CONTROL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __init plat_time_init(void)

@@ -43,12 +43,20 @@
 static inline void ab_irqctl_writereg(struct irq_chip_generic *gc, u32 reg,
 	u32 val)
 {
+<<<<<<< HEAD
 	irq_reg_writel(val, gc->reg_base + reg);
+=======
+	irq_reg_writel(gc, val, reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline u32 ab_irqctl_readreg(struct irq_chip_generic *gc, u32 reg)
 {
+<<<<<<< HEAD
 	return irq_reg_readl(gc->reg_base + reg);
+=======
+	return irq_reg_readl(gc, reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int tb10x_irq_set_type(struct irq_data *data, unsigned int flow_type)

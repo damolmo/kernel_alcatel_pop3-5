@@ -575,7 +575,11 @@ static int jz4740_dma_probe(struct platform_device *pdev)
 
 	ret = dma_async_device_register(dd);
 	if (ret)
+<<<<<<< HEAD
 		return ret;
+=======
+		goto err_clk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	irq = platform_get_irq(pdev, 0);
 	ret = request_irq(irq, jz4740_dma_irq, 0, dev_name(&pdev->dev), dmadev);
@@ -588,6 +592,11 @@ static int jz4740_dma_probe(struct platform_device *pdev)
 
 err_unregister:
 	dma_async_device_unregister(dd);
+<<<<<<< HEAD
+=======
+err_clk:
+	clk_disable_unprepare(dmadev->clk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

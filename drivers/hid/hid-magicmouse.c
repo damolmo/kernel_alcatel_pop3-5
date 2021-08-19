@@ -451,6 +451,15 @@ static int magicmouse_setup_input(struct input_dev *input, struct hid_device *hd
 		__set_bit(MSC_RAW, input->mscbit);
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * hid-input may mark device as using autorepeat, but neither
+	 * the trackpad, nor the mouse actually want it.
+	 */
+	__clear_bit(EV_REP, input->evbit);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -476,14 +485,27 @@ static int magicmouse_input_configured(struct hid_device *hdev,
 
 {
 	struct magicmouse_sc *msc = hid_get_drvdata(hdev);
+<<<<<<< HEAD
 
 	int ret = magicmouse_setup_input(msc->input, hdev);
+=======
+	int ret;
+
+	ret = magicmouse_setup_input(msc->input, hdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		hid_err(hdev, "magicmouse setup input failed (%d)\n", ret);
 		/* clean msc->input to notify probe() of the failure */
 		msc->input = NULL;
+<<<<<<< HEAD
 	}
 	return ret;
+=======
+		return ret;
+	}
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

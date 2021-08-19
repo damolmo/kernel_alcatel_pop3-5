@@ -4,6 +4,10 @@
  *
  * Append a null-terminated string from SRC to DST.
  */
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	.text
 
@@ -50,3 +54,7 @@ $found:	negq    $2, $3		# clear all but least set bit
 	br	__stxcpy
 
 	.end strcat
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strcat);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

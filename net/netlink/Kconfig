@@ -2,6 +2,7 @@
 # Netlink Sockets
 #
 
+<<<<<<< HEAD
 config NETLINK_MMAP
 	bool "NETLINK: mmaped IO"
 	---help---
@@ -11,6 +12,8 @@ config NETLINK_MMAP
 
 	  If unsure, say N.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config NETLINK_DIAG
 	tristate "NETLINK: socket monitoring interface"
 	default n

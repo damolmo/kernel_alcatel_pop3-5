@@ -58,8 +58,13 @@ Mellon the rights to redistribute these changes without encumbrance.
 #ifndef _CODA_HEADER_
 #define _CODA_HEADER_
 
+<<<<<<< HEAD
 #if defined(__linux__)
 typedef unsigned long long u_quad_t;
 #endif
+=======
+typedef unsigned long long u_quad_t;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <uapi/linux/coda.h>
 #endif 

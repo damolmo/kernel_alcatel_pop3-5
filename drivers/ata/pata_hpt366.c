@@ -352,7 +352,11 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	};
 	const struct ata_port_info *ppi[] = { &info_hpt366, NULL };
 
+<<<<<<< HEAD
 	void *hpriv = NULL;
+=======
+	const void *hpriv = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 reg1;
 	int rc;
 
@@ -383,7 +387,11 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		break;
 	}
 	/* Now kick off ATA set up */
+<<<<<<< HEAD
 	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, hpriv, 0);
+=======
+	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, (void *)hpriv, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_PM_SLEEP

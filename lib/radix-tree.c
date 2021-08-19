@@ -33,7 +33,11 @@
 #include <linux/string.h>
 #include <linux/bitops.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
 #include <linux/hardirq.h>		/* in_interrupt() */
+=======
+#include <linux/preempt_mask.h>		/* in_interrupt() */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 /*
@@ -1014,9 +1018,19 @@ radix_tree_gang_lookup(struct radix_tree_root *root, void **results,
 		return 0;
 
 	radix_tree_for_each_slot(slot, root, &iter, first_index) {
+<<<<<<< HEAD
 		results[ret] = indirect_to_ptr(rcu_dereference_raw(*slot));
 		if (!results[ret])
 			continue;
+=======
+		results[ret] = rcu_dereference_raw(*slot);
+		if (!results[ret])
+			continue;
+		if (radix_tree_is_indirect_ptr(results[ret])) {
+			slot = radix_tree_iter_retry(&iter);
+			continue;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (++ret == max_items)
 			break;
 	}
@@ -1093,9 +1107,19 @@ radix_tree_gang_lookup_tag(struct radix_tree_root *root, void **results,
 		return 0;
 
 	radix_tree_for_each_tagged(slot, root, &iter, first_index, tag) {
+<<<<<<< HEAD
 		results[ret] = indirect_to_ptr(rcu_dereference_raw(*slot));
 		if (!results[ret])
 			continue;
+=======
+		results[ret] = rcu_dereference_raw(*slot);
+		if (!results[ret])
+			continue;
+		if (radix_tree_is_indirect_ptr(results[ret])) {
+			slot = radix_tree_iter_retry(&iter);
+			continue;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (++ret == max_items)
 			break;
 	}

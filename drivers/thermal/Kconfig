@@ -49,6 +49,7 @@ choice
 	  This option sets which thermal governor shall be loaded at
 	  startup. If in doubt, select 'step_wise'.
 
+<<<<<<< HEAD
 config THERMAL_DEFAULT_GOV_BACKWARD_COMPATIBLE
 	bool "backward_compatible"
 	select THERMAL_BACKWARD_COMPATIBLE
@@ -59,6 +60,8 @@ config THERMAL_DEFAULT_GOV_BACKWARD_COMPATIBLE
 	  framework in Linux kernel 2.6. It sets cooler states whenever
 	  temperature is updated no meter cooler state change or not.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config THERMAL_DEFAULT_GOV_STEP_WISE
 	bool "step_wise"
 	select THERMAL_GOV_STEP_WISE
@@ -83,6 +86,7 @@ config THERMAL_DEFAULT_GOV_USER_SPACE
 
 endchoice
 
+<<<<<<< HEAD
 config THERMAL_BACKWARD_COMPATIBLE
 	bool "Backward-compatible thermal governor"
 	help
@@ -91,6 +95,8 @@ config THERMAL_BACKWARD_COMPATIBLE
 	  framework in Linux kernel 2.6. It sets cooler states whenever
 	  temperature is updated no meter cooler state change or not.
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 config THERMAL_GOV_FAIR_SHARE
 	bool "Fair-share thermal governor"
 	help
@@ -154,7 +160,11 @@ config IMX_THERMAL
 	  passive trip is crossed.
 
 config SPEAR_THERMAL
+<<<<<<< HEAD
 	bool "SPEAr thermal sensor driver"
+=======
+	tristate "SPEAr thermal sensor driver"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depends on PLAT_SPEAR
 	depends on OF
 	help
@@ -186,8 +196,13 @@ config DOVE_THERMAL
 	  framework.
 
 config DB8500_THERMAL
+<<<<<<< HEAD
 	bool "DB8500 thermal management"
 	depends on ARCH_U8500
+=======
+	tristate "DB8500 thermal management"
+	depends on MFD_DB8500_PRCMU
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default y
 	help
 	  Adds DB8500 thermal management implementation according to the thermal

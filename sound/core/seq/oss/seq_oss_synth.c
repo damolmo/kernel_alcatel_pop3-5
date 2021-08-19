@@ -26,6 +26,10 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * constants
@@ -308,7 +312,11 @@ snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp)
 	struct seq_oss_synth *rec;
 	struct seq_oss_synthinfo *info;
 
+<<<<<<< HEAD
 	if (snd_BUG_ON(dp->max_synthdev >= SNDRV_SEQ_OSS_MAX_SYNTH_DEVS))
+=======
+	if (snd_BUG_ON(dp->max_synthdev > SNDRV_SEQ_OSS_MAX_SYNTH_DEVS))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	for (i = 0; i < dp->max_synthdev; i++) {
 		info = &dp->synths[i];
@@ -339,6 +347,7 @@ snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp)
 	dp->max_synthdev = 0;
 }
 
+<<<<<<< HEAD
 /*
  * check if the specified device is MIDI mapped device
  */
@@ -350,6 +359,15 @@ is_midi_dev(struct seq_oss_devinfo *dp, int dev)
 	if (dp->synths[dev].is_midi)
 		return 1;
 	return 0;
+=======
+static struct seq_oss_synthinfo *
+get_synthinfo_nospec(struct seq_oss_devinfo *dp, int dev)
+{
+	if (dev < 0 || dev >= dp->max_synthdev)
+		return NULL;
+	dev = array_index_nospec(dev, SNDRV_SEQ_OSS_MAX_SYNTH_DEVS);
+	return &dp->synths[dev];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -359,6 +377,7 @@ static struct seq_oss_synth *
 get_synthdev(struct seq_oss_devinfo *dp, int dev)
 {
 	struct seq_oss_synth *rec;
+<<<<<<< HEAD
 	if (dev < 0 || dev >= dp->max_synthdev)
 		return NULL;
 	if (! dp->synths[dev].opened)
@@ -367,6 +386,22 @@ get_synthdev(struct seq_oss_devinfo *dp, int dev)
 		return &midi_synth_dev;
 	if ((rec = get_sdev(dev)) == NULL)
 		return NULL;
+=======
+	struct seq_oss_synthinfo *info = get_synthinfo_nospec(dp, dev);
+
+	if (!info)
+		return NULL;
+	if (!info->opened)
+		return NULL;
+	if (info->is_midi) {
+		rec = &midi_synth_dev;
+		snd_use_lock_use(&rec->use_lock);
+	} else {
+		rec = get_sdev(dev);
+		if (!rec)
+			return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (! rec->opened) {
 		snd_use_lock_free(&rec->use_lock);
 		return NULL;
@@ -402,10 +437,15 @@ snd_seq_oss_synth_reset(struct seq_oss_devinfo *dp, int dev)
 	struct seq_oss_synth *rec;
 	struct seq_oss_synthinfo *info;
 
+<<<<<<< HEAD
 	if (snd_BUG_ON(dev < 0 || dev >= dp->max_synthdev))
 		return;
 	info = &dp->synths[dev];
 	if (! info->opened)
+=======
+	info = get_synthinfo_nospec(dp, dev);
+	if (!info || !info->opened)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	if (info->sysex)
 		info->sysex->len = 0; /* reset sysex */
@@ -454,12 +494,23 @@ snd_seq_oss_synth_load_patch(struct seq_oss_devinfo *dp, int dev, int fmt,
 			    const char __user *buf, int p, int c)
 {
 	struct seq_oss_synth *rec;
+<<<<<<< HEAD
 	int rc;
 
 	if (dev < 0 || dev >= dp->max_synthdev)
 		return -ENXIO;
 
 	if (is_midi_dev(dp, dev))
+=======
+	struct seq_oss_synthinfo *info;
+	int rc;
+
+	info = get_synthinfo_nospec(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+	if (info->is_midi)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	if ((rec = get_synthdev(dp, dev)) == NULL)
 		return -ENXIO;
@@ -467,12 +518,17 @@ snd_seq_oss_synth_load_patch(struct seq_oss_devinfo *dp, int dev, int fmt,
 	if (rec->oper.load_patch == NULL)
 		rc = -ENXIO;
 	else
+<<<<<<< HEAD
 		rc = rec->oper.load_patch(&dp->synths[dev].arg, fmt, buf, p, c);
+=======
+		rc = rec->oper.load_patch(&info->arg, fmt, buf, p, c);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	snd_use_lock_free(&rec->use_lock);
 	return rc;
 }
 
 /*
+<<<<<<< HEAD
  * check if the device is valid synth device
  */
 int
@@ -485,6 +541,21 @@ snd_seq_oss_synth_is_valid(struct seq_oss_devinfo *dp, int dev)
 		return 1;
 	}
 	return 0;
+=======
+ * check if the device is valid synth device and return the synth info
+ */
+struct seq_oss_synthinfo *
+snd_seq_oss_synth_info(struct seq_oss_devinfo *dp, int dev)
+{
+	struct seq_oss_synth *rec;
+
+	rec = get_synthdev(dp, dev);
+	if (rec) {
+		snd_use_lock_free(&rec->use_lock);
+		return get_synthinfo_nospec(dp, dev);
+	}
+	return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -499,16 +570,30 @@ snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 	int i, send;
 	unsigned char *dest;
 	struct seq_oss_synth_sysex *sysex;
+<<<<<<< HEAD
 
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
 		return -ENXIO;
 
 	sysex = dp->synths[dev].sysex;
+=======
+	struct seq_oss_synthinfo *info;
+
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+	sysex = info->sysex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sysex == NULL) {
 		sysex = kzalloc(sizeof(*sysex), GFP_KERNEL);
 		if (sysex == NULL)
 			return -ENOMEM;
+<<<<<<< HEAD
 		dp->synths[dev].sysex = sysex;
+=======
+		info->sysex = sysex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	send = 0;
@@ -553,10 +638,19 @@ snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 int
 snd_seq_oss_synth_addr(struct seq_oss_devinfo *dp, int dev, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
 		return -EINVAL;
 	snd_seq_oss_fill_addr(dp, ev, dp->synths[dev].arg.addr.client,
 			      dp->synths[dev].arg.addr.port);
+=======
+	struct seq_oss_synthinfo *info = snd_seq_oss_synth_info(dp, dev);
+
+	if (!info)
+		return -EINVAL;
+	snd_seq_oss_fill_addr(dp, ev, info->arg.addr.client,
+			      info->arg.addr.port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -568,16 +662,28 @@ int
 snd_seq_oss_synth_ioctl(struct seq_oss_devinfo *dp, int dev, unsigned int cmd, unsigned long addr)
 {
 	struct seq_oss_synth *rec;
+<<<<<<< HEAD
 	int rc;
 
 	if (is_midi_dev(dp, dev))
+=======
+	struct seq_oss_synthinfo *info;
+	int rc;
+
+	info = get_synthinfo_nospec(dp, dev);
+	if (!info || info->is_midi)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENXIO;
 	if ((rec = get_synthdev(dp, dev)) == NULL)
 		return -ENXIO;
 	if (rec->oper.ioctl == NULL)
 		rc = -ENXIO;
 	else
+<<<<<<< HEAD
 		rc = rec->oper.ioctl(&dp->synths[dev].arg, cmd, addr);
+=======
+		rc = rec->oper.ioctl(&info->arg, cmd, addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	snd_use_lock_free(&rec->use_lock);
 	return rc;
 }
@@ -589,7 +695,14 @@ snd_seq_oss_synth_ioctl(struct seq_oss_devinfo *dp, int dev, unsigned int cmd, u
 int
 snd_seq_oss_synth_raw_event(struct seq_oss_devinfo *dp, int dev, unsigned char *data, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev) || is_midi_dev(dp, dev))
+=======
+	struct seq_oss_synthinfo *info;
+
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info || info->is_midi)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENXIO;
 	ev->type = SNDRV_SEQ_EVENT_OSS;
 	memcpy(ev->data.raw8.d, data, 8);
@@ -604,6 +717,7 @@ int
 snd_seq_oss_synth_make_info(struct seq_oss_devinfo *dp, int dev, struct synth_info *inf)
 {
 	struct seq_oss_synth *rec;
+<<<<<<< HEAD
 
 	if (dev < 0 || dev >= dp->max_synthdev)
 		return -ENXIO;
@@ -611,6 +725,17 @@ snd_seq_oss_synth_make_info(struct seq_oss_devinfo *dp, int dev, struct synth_in
 	if (dp->synths[dev].is_midi) {
 		struct midi_info minf;
 		snd_seq_oss_midi_make_info(dp, dp->synths[dev].midi_mapped, &minf);
+=======
+	struct seq_oss_synthinfo *info = get_synthinfo_nospec(dp, dev);
+
+	if (!info)
+		return -ENXIO;
+
+	if (info->is_midi) {
+		struct midi_info minf;
+		if (snd_seq_oss_midi_make_info(dp, info->midi_mapped, &minf))
+			return -ENXIO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		inf->synth_type = SYNTH_TYPE_MIDI;
 		inf->synth_subtype = 0;
 		inf->nr_voices = 16;

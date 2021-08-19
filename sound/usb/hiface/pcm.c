@@ -445,6 +445,11 @@ static int hiface_pcm_prepare(struct snd_pcm_substream *alsa_sub)
 
 	mutex_lock(&rt->stream_mutex);
 
+<<<<<<< HEAD
+=======
+	hiface_pcm_stream_stop(rt);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sub->dma_off = 0;
 	sub->period_off = 0;
 

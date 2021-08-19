@@ -268,13 +268,21 @@ static int adjust_tjmax(struct cpuinfo_x86 *c, u32 id, struct device *dev)
 	for (i = 0; i < ARRAY_SIZE(tjmax_model_table); i++) {
 		const struct tjmax_model *tm = &tjmax_model_table[i];
 		if (c->x86_model == tm->model &&
+<<<<<<< HEAD
 		    (tm->mask == ANY || c->x86_mask == tm->mask))
+=======
+		    (tm->mask == ANY || c->x86_stepping == tm->mask))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return tm->tjmax;
 	}
 
 	/* Early chips have no MSR for TjMax */
 
+<<<<<<< HEAD
 	if (c->x86_model == 0xf && c->x86_mask < 4)
+=======
+	if (c->x86_model == 0xf && c->x86_stepping < 4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		usemsr_ee = 0;
 
 	if (c->x86_model > 0xe && usemsr_ee) {
@@ -426,7 +434,11 @@ static int chk_ucode_version(unsigned int cpu)
 	 * Readings might stop update when processor visited too deep sleep,
 	 * fixed for stepping D0 (6EC).
 	 */
+<<<<<<< HEAD
 	if (c->x86_model == 0xe && c->x86_mask < 0xc && c->microcode < 0x39) {
+=======
+	if (c->x86_model == 0xe && c->x86_stepping < 0xc && c->microcode < 0x39) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pr_err("Errata AE18 not fixed, update BIOS or microcode of the CPU!\n");
 		return -ENODEV;
 	}

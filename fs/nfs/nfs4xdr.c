@@ -1103,7 +1103,11 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap,
 		} else
 			*p++ = cpu_to_be32(NFS4_SET_TO_SERVER_TIME);
 	}
+<<<<<<< HEAD
 	if (bmval[2] & FATTR4_WORD2_SECURITY_LABEL) {
+=======
+	if (label && (bmval[2] & FATTR4_WORD2_SECURITY_LABEL)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*p++ = cpu_to_be32(label->lfs);
 		*p++ = cpu_to_be32(label->pi);
 		*p++ = cpu_to_be32(label->len);
@@ -2481,7 +2485,11 @@ static void nfs4_xdr_enc_getacl(struct rpc_rqst *req, struct xdr_stream *xdr,
 	encode_compound_hdr(xdr, req, &hdr);
 	encode_sequence(xdr, &args->seq_args, &hdr);
 	encode_putfh(xdr, args->fh, &hdr);
+<<<<<<< HEAD
 	replen = hdr.replen + op_decode_hdr_maxsz + 1;
+=======
+	replen = hdr.replen + op_decode_hdr_maxsz;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	encode_getattr_two(xdr, FATTR4_WORD0_ACL, 0, &hdr);
 
 	xdr_inline_pages(&req->rq_rcv_buf, replen << 2,
@@ -4138,7 +4146,15 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
 			goto out_overflow;
 		if (len < NFS4_MAXLABELLEN) {
 			if (label) {
+<<<<<<< HEAD
 				memcpy(label->label, p, len);
+=======
+				if (label->len) {
+					if (label->len < len)
+						return -ERANGE;
+					memcpy(label->label, p, len);
+				}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				label->len = len;
 				label->pi = pi;
 				label->lfs = lfs;

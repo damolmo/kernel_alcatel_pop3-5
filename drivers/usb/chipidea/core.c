@@ -376,6 +376,7 @@ int hw_device_reset(struct ci_hdrc *ci, u32 mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * hw_wait_reg: wait the register value
  *
@@ -408,6 +409,8 @@ int hw_wait_reg(struct ci_hdrc *ci, enum ci_hw_regs reg, u32 mask,
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static irqreturn_t ci_irq(int irq, void *data)
 {
 	struct ci_hdrc *ci = data;
@@ -553,7 +556,11 @@ static inline void ci_role_destroy(struct ci_hdrc *ci)
 {
 	ci_hdrc_gadget_destroy(ci);
 	ci_hdrc_host_destroy(ci);
+<<<<<<< HEAD
 	if (ci->is_otg)
+=======
+	if (ci->is_otg && ci->roles[CI_ROLE_GADGET])
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ci_hdrc_otg_destroy(ci);
 }
 
@@ -594,6 +601,10 @@ static int ci_hdrc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&ci->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ci->dev = dev;
 	ci->platdata = dev_get_platdata(dev);
 	ci->imx28_write_fix = !!(ci->platdata->flags &
@@ -652,20 +663,42 @@ static int ci_hdrc_probe(struct platform_device *pdev)
 	/* initialize role(s) before the interrupt is requested */
 	if (dr_mode == USB_DR_MODE_OTG || dr_mode == USB_DR_MODE_HOST) {
 		ret = ci_hdrc_host_init(ci);
+<<<<<<< HEAD
 		if (ret)
 			dev_info(dev, "doesn't support host\n");
+=======
+		if (ret) {
+			if (ret == -ENXIO)
+				dev_info(dev, "doesn't support host\n");
+			else
+				goto deinit_phy;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (dr_mode == USB_DR_MODE_OTG || dr_mode == USB_DR_MODE_PERIPHERAL) {
 		ret = ci_hdrc_gadget_init(ci);
+<<<<<<< HEAD
 		if (ret)
 			dev_info(dev, "doesn't support gadget\n");
+=======
+		if (ret) {
+			if (ret == -ENXIO)
+				dev_info(dev, "doesn't support gadget\n");
+			else
+				goto deinit_host;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (!ci->roles[CI_ROLE_HOST] && !ci->roles[CI_ROLE_GADGET]) {
 		dev_err(dev, "no supported roles\n");
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto deinit_phy;
+=======
+		goto deinit_gadget;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (ci->is_otg && ci->roles[CI_ROLE_GADGET]) {
@@ -675,7 +708,11 @@ static int ci_hdrc_probe(struct platform_device *pdev)
 		ret = ci_hdrc_otg_init(ci);
 		if (ret) {
 			dev_err(dev, "init otg fails, ret = %d\n", ret);
+<<<<<<< HEAD
 			goto stop;
+=======
+			goto deinit_gadget;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -726,7 +763,16 @@ static int ci_hdrc_probe(struct platform_device *pdev)
 
 	free_irq(ci->irq, ci);
 stop:
+<<<<<<< HEAD
 	ci_role_destroy(ci);
+=======
+	if (ci->is_otg && ci->roles[CI_ROLE_GADGET])
+		ci_hdrc_otg_destroy(ci);
+deinit_gadget:
+	ci_hdrc_gadget_destroy(ci);
+deinit_host:
+	ci_hdrc_host_destroy(ci);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 deinit_phy:
 	usb_phy_shutdown(ci->transceiver);
 

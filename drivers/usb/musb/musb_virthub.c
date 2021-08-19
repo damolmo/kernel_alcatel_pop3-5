@@ -74,14 +74,22 @@ void musb_host_finish_resume(struct work_struct *work)
 	spin_unlock_irqrestore(&musb->lock, flags);
 }
 
+<<<<<<< HEAD
 void musb_port_suspend(struct musb *musb, bool do_suspend)
+=======
+int musb_port_suspend(struct musb *musb, bool do_suspend)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct usb_otg	*otg = musb->xceiv->otg;
 	u8		power;
 	void __iomem	*mbase = musb->mregs;
 
 	if (!is_host_active(musb))
+<<<<<<< HEAD
 		return;
+=======
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* NOTE:  this doesn't necessarily put PHY into low power mode,
 	 * turning off its clock; that's a function of PHY integration and
@@ -92,6 +100,7 @@ void musb_port_suspend(struct musb *musb, bool do_suspend)
 	if (do_suspend) {
 		int retries = 10000;
 
+<<<<<<< HEAD
 		power &= ~MUSB_POWER_RESUME;
 		power |= MUSB_POWER_SUSPENDM;
 		musb_writeb(mbase, MUSB_POWER, power);
@@ -102,6 +111,22 @@ void musb_port_suspend(struct musb *musb, bool do_suspend)
 			power = musb_readb(mbase, MUSB_POWER);
 			if (retries-- < 1)
 				break;
+=======
+		if (power & MUSB_POWER_RESUME)
+			return -EBUSY;
+
+		if (!(power & MUSB_POWER_SUSPENDM)) {
+			power |= MUSB_POWER_SUSPENDM;
+			musb_writeb(mbase, MUSB_POWER, power);
+
+			/* Needed for OPT A tests */
+			power = musb_readb(mbase, MUSB_POWER);
+			while (power & MUSB_POWER_SUSPENDM) {
+				power = musb_readb(mbase, MUSB_POWER);
+				if (retries-- < 1)
+					break;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		dev_dbg(musb->controller, "Root port suspended, power %02x\n", power);
@@ -138,6 +163,10 @@ void musb_port_suspend(struct musb *musb, bool do_suspend)
 		schedule_delayed_work(&musb->finish_resume_work,
 				      msecs_to_jiffies(USB_RESUME_TIMEOUT));
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void musb_port_reset(struct musb *musb, bool do_reset)
@@ -273,9 +302,13 @@ static int musb_has_gadget(struct musb *musb)
 #ifdef CONFIG_USB_MUSB_HOST
 	return 1;
 #else
+<<<<<<< HEAD
 	if (musb->port_mode == MUSB_PORT_MODE_HOST)
 		return 1;
 	return musb->g.dev.driver != NULL;
+=======
+	return musb->port_mode == MUSB_PORT_MODE_HOST;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 }
 

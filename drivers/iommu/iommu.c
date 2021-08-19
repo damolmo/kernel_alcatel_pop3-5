@@ -190,7 +190,11 @@ again:
 		mutex_lock(&iommu_group_mutex);
 		ida_remove(&iommu_group_ida, group->id);
 		mutex_unlock(&iommu_group_mutex);
+<<<<<<< HEAD
 		kfree(group);
+=======
+		kobject_put(&group->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(ret);
 	}
 
@@ -327,36 +331,57 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
 	device->dev = dev;
 
 	ret = sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group");
+<<<<<<< HEAD
 	if (ret) {
 		kfree(device);
 		return ret;
 	}
+=======
+	if (ret)
+		goto err_free_device;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	device->name = kasprintf(GFP_KERNEL, "%s", kobject_name(&dev->kobj));
 rename:
 	if (!device->name) {
+<<<<<<< HEAD
 		sysfs_remove_link(&dev->kobj, "iommu_group");
 		kfree(device);
 		return -ENOMEM;
+=======
+		ret = -ENOMEM;
+		goto err_remove_link;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = sysfs_create_link_nowarn(group->devices_kobj,
 				       &dev->kobj, device->name);
 	if (ret) {
+<<<<<<< HEAD
 		kfree(device->name);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret == -EEXIST && i >= 0) {
 			/*
 			 * Account for the slim chance of collision
 			 * and append an instance to the name.
 			 */
+<<<<<<< HEAD
+=======
+			kfree(device->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			device->name = kasprintf(GFP_KERNEL, "%s.%d",
 						 kobject_name(&dev->kobj), i++);
 			goto rename;
 		}
+<<<<<<< HEAD
 
 		sysfs_remove_link(&dev->kobj, "iommu_group");
 		kfree(device);
 		return ret;
+=======
+		goto err_free_name;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	kobject_get(group->devices_kobj);
@@ -373,6 +398,18 @@ rename:
 
 	trace_add_device_to_group(group->id, dev);
 	return 0;
+<<<<<<< HEAD
+=======
+
+err_free_name:
+	kfree(device->name);
+err_remove_link:
+	sysfs_remove_link(&dev->kobj, "iommu_group");
+err_free_device:
+	kfree(device);
+	pr_err("Failed to add device %s to group %d: %d\n", dev_name(dev), group->id, ret);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(iommu_group_add_device);
 

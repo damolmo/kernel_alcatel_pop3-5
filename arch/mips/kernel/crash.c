@@ -14,16 +14,41 @@ static int crashing_cpu = -1;
 static cpumask_t cpus_in_crash = CPU_MASK_NONE;
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static void crash_shutdown_secondary(void *ignore)
 {
 	struct pt_regs *regs;
 	int cpu = smp_processor_id();
 
 	regs = task_pt_regs(current);
+=======
+static void crash_shutdown_secondary(void *passed_regs)
+{
+	struct pt_regs *regs = passed_regs;
+	int cpu = smp_processor_id();
+
+	/*
+	 * If we are passed registers, use those.  Otherwise get the
+	 * regs from the last interrupt, which should be correct, as
+	 * we are in an interrupt.  But if the regs are not there,
+	 * pull them from the top of the stack.  They are probably
+	 * wrong, but we need something to keep from crashing again.
+	 */
+	if (!regs)
+		regs = get_irq_regs();
+	if (!regs)
+		regs = task_pt_regs(current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!cpu_online(cpu))
 		return;
 
+<<<<<<< HEAD
+=======
+	/* We won't be sent IPIs any more. */
+	set_cpu_online(cpu, false);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_irq_disable();
 	if (!cpu_isset(cpu, cpus_in_crash))
 		crash_save_cpu(regs, cpu);

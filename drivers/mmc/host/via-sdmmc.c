@@ -1269,11 +1269,22 @@ static void via_init_sdc_pm(struct via_crdr_mmc_host *host)
 static int via_sd_suspend(struct pci_dev *pcidev, pm_message_t state)
 {
 	struct via_crdr_mmc_host *host;
+<<<<<<< HEAD
 
 	host = pci_get_drvdata(pcidev);
 
 	via_save_pcictrlreg(host);
 	via_save_sdcreg(host);
+=======
+	unsigned long flags;
+
+	host = pci_get_drvdata(pcidev);
+
+	spin_lock_irqsave(&host->lock, flags);
+	via_save_pcictrlreg(host);
+	via_save_sdcreg(host);
+	spin_unlock_irqrestore(&host->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pci_save_state(pcidev);
 	pci_enable_wake(pcidev, pci_choose_state(pcidev, state), 0);

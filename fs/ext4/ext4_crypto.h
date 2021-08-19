@@ -78,7 +78,10 @@ struct ext4_crypt_info {
 	char		ci_filename_mode;
 	char		ci_flags;
 	struct crypto_ablkcipher *ci_ctfm;
+<<<<<<< HEAD
 	struct key	*ci_keyring_key;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char		ci_master_key[EXT4_KEY_DESCRIPTOR_SIZE];
 };
 

@@ -51,6 +51,7 @@ xfs_trim_extents(
 
 	pag = xfs_perag_get(mp, agno);
 
+<<<<<<< HEAD
 	error = xfs_alloc_read_agf(mp, NULL, agno, 0, &agbp);
 	if (error || !agbp)
 		goto out_put_perag;
@@ -60,10 +61,24 @@ xfs_trim_extents(
 	/*
 	 * Force out the log.  This means any transactions that might have freed
 	 * space before we took the AGF buffer lock are now on disk, and the
+=======
+	/*
+	 * Force out the log.  This means any transactions that might have freed
+	 * space before we take the AGF buffer lock are now on disk, and the
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * volatile disk cache is flushed.
 	 */
 	xfs_log_force(mp, XFS_LOG_SYNC);
 
+<<<<<<< HEAD
+=======
+	error = xfs_alloc_read_agf(mp, NULL, agno, 0, &agbp);
+	if (error || !agbp)
+		goto out_put_perag;
+
+	cur = xfs_allocbt_init_cursor(mp, NULL, agbp, agno, XFS_BTNUM_CNT);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Look up the longest btree in the AGF and start with it.
 	 */

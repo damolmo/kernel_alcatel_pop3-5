@@ -235,9 +235,16 @@ int jffs2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	case ACL_TYPE_ACCESS:
 		xprefix = JFFS2_XPREFIX_ACL_ACCESS;
 		if (acl) {
+<<<<<<< HEAD
 			umode_t mode = inode->i_mode;
 			rc = posix_acl_equiv_mode(acl, &mode);
 			if (rc < 0)
+=======
+			umode_t mode;
+
+			rc = posix_acl_update_mode(inode, &mode, &acl);
+			if (rc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return rc;
 			if (inode->i_mode != mode) {
 				struct iattr attr;
@@ -249,8 +256,11 @@ int jffs2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 				if (rc < 0)
 					return rc;
 			}
+<<<<<<< HEAD
 			if (rc == 0)
 				acl = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		break;
 	case ACL_TYPE_DEFAULT:

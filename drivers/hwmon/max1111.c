@@ -85,6 +85,12 @@ static struct max1111_data *the_max1111;
 
 int max1111_read_channel(int channel)
 {
+<<<<<<< HEAD
+=======
+	if (!the_max1111 || !the_max1111->spi)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return max1111_read(&the_max1111->spi->dev, channel);
 }
 EXPORT_SYMBOL(max1111_read_channel);
@@ -258,6 +264,12 @@ static int max1111_remove(struct spi_device *spi)
 {
 	struct max1111_data *data = spi_get_drvdata(spi);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SHARPSL_PM
+	the_max1111 = NULL;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hwmon_device_unregister(data->hwmon_dev);
 	sysfs_remove_group(&spi->dev.kobj, &max1110_attr_group);
 	sysfs_remove_group(&spi->dev.kobj, &max1111_attr_group);

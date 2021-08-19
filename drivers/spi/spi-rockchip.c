@@ -264,7 +264,14 @@ static inline u32 rx_max(struct rockchip_spi *rs)
 static void rockchip_spi_set_cs(struct spi_device *spi, bool enable)
 {
 	u32 ser;
+<<<<<<< HEAD
 	struct rockchip_spi *rs = spi_master_get_devdata(spi->master);
+=======
+	struct spi_master *master = spi->master;
+	struct rockchip_spi *rs = spi_master_get_devdata(master);
+
+	pm_runtime_get_sync(rs->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ser = readl_relaxed(rs->regs + ROCKCHIP_SPI_SER) & SER_MASK;
 
@@ -289,6 +296,11 @@ static void rockchip_spi_set_cs(struct spi_device *spi, bool enable)
 		ser &= ~(1 << spi->chip_select);
 
 	writel_relaxed(ser, rs->regs + ROCKCHIP_SPI_SER);
+<<<<<<< HEAD
+=======
+
+	pm_runtime_put_sync(rs->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int rockchip_spi_prepare_message(struct spi_master *master,
@@ -432,6 +444,12 @@ static void rockchip_spi_prepare_dma(struct rockchip_spi *rs)
 	struct dma_slave_config rxconf, txconf;
 	struct dma_async_tx_descriptor *rxdesc, *txdesc;
 
+<<<<<<< HEAD
+=======
+	memset(&rxconf, 0, sizeof(rxconf));
+	memset(&txconf, 0, sizeof(txconf));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&rs->lock, flags);
 	rs->state &= ~RXBUSY;
 	rs->state &= ~TXBUSY;

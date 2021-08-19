@@ -14,7 +14,11 @@
  * to GMT.  Thus  we should always be correct.
  */
 
+<<<<<<< HEAD
 int iso_date(char * p, int flag)
+=======
+int iso_date(u8 *p, int flag)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int year, month, day, hour, minute, second, tz;
 	int crtime, days, i;

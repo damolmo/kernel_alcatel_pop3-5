@@ -65,11 +65,19 @@ aic_handle(struct pt_regs *regs)
 	u32 irqnr;
 	u32 irqstat;
 
+<<<<<<< HEAD
 	irqnr = irq_reg_readl(gc->reg_base + AT91_AIC_IVR);
 	irqstat = irq_reg_readl(gc->reg_base + AT91_AIC_ISR);
 
 	if (!irqstat)
 		irq_reg_writel(0, gc->reg_base + AT91_AIC_EOICR);
+=======
+	irqnr = irq_reg_readl(gc, AT91_AIC_IVR);
+	irqstat = irq_reg_readl(gc, AT91_AIC_ISR);
+
+	if (!irqstat)
+		irq_reg_writel(gc, 0, AT91_AIC_EOICR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		handle_domain_irq(aic_domain, irqnr, regs);
 }
@@ -80,7 +88,11 @@ static int aic_retrigger(struct irq_data *d)
 
 	/* Enable interrupt on AIC5 */
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	irq_reg_writel(d->mask, gc->reg_base + AT91_AIC_ISCR);
+=======
+	irq_reg_writel(gc, d->mask, AT91_AIC_ISCR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 
 	return 0;
@@ -92,12 +104,20 @@ static int aic_set_type(struct irq_data *d, unsigned type)
 	unsigned int smr;
 	int ret;
 
+<<<<<<< HEAD
 	smr = irq_reg_readl(gc->reg_base + AT91_AIC_SMR(d->hwirq));
+=======
+	smr = irq_reg_readl(gc, AT91_AIC_SMR(d->hwirq));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = aic_common_set_type(d, type, &smr);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	irq_reg_writel(smr, gc->reg_base + AT91_AIC_SMR(d->hwirq));
+=======
+	irq_reg_writel(gc, smr, AT91_AIC_SMR(d->hwirq));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -108,8 +128,13 @@ static void aic_suspend(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	irq_reg_writel(gc->mask_cache, gc->reg_base + AT91_AIC_IDCR);
 	irq_reg_writel(gc->wake_active, gc->reg_base + AT91_AIC_IECR);
+=======
+	irq_reg_writel(gc, gc->mask_cache, AT91_AIC_IDCR);
+	irq_reg_writel(gc, gc->wake_active, AT91_AIC_IECR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 }
 
@@ -118,8 +143,13 @@ static void aic_resume(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	irq_reg_writel(gc->wake_active, gc->reg_base + AT91_AIC_IDCR);
 	irq_reg_writel(gc->mask_cache, gc->reg_base + AT91_AIC_IECR);
+=======
+	irq_reg_writel(gc, gc->wake_active, AT91_AIC_IDCR);
+	irq_reg_writel(gc, gc->mask_cache, AT91_AIC_IECR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 }
 
@@ -128,8 +158,13 @@ static void aic_pm_shutdown(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 
 	irq_gc_lock(gc);
+<<<<<<< HEAD
 	irq_reg_writel(0xffffffff, gc->reg_base + AT91_AIC_IDCR);
 	irq_reg_writel(0xffffffff, gc->reg_base + AT91_AIC_ICCR);
+=======
+	irq_reg_writel(gc, 0xffffffff, AT91_AIC_IDCR);
+	irq_reg_writel(gc, 0xffffffff, AT91_AIC_ICCR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	irq_gc_unlock(gc);
 }
 #else
@@ -148,13 +183,18 @@ static void __init aic_hw_init(struct irq_domain *domain)
 	 * will not Lock out nIRQ
 	 */
 	for (i = 0; i < 8; i++)
+<<<<<<< HEAD
 		irq_reg_writel(0, gc->reg_base + AT91_AIC_EOICR);
+=======
+		irq_reg_writel(gc, 0, AT91_AIC_EOICR);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Spurious Interrupt ID in Spurious Vector Register.
 	 * When there is no current interrupt, the IRQ Vector Register
 	 * reads the value stored in AIC_SPU
 	 */
+<<<<<<< HEAD
 	irq_reg_writel(0xffffffff, gc->reg_base + AT91_AIC_SPU);
 
 	/* No debugging in AIC: Debug (Protect) Control Register */
@@ -166,6 +206,19 @@ static void __init aic_hw_init(struct irq_domain *domain)
 
 	for (i = 0; i < 32; i++)
 		irq_reg_writel(i, gc->reg_base + AT91_AIC_SVR(i));
+=======
+	irq_reg_writel(gc, 0xffffffff, AT91_AIC_SPU);
+
+	/* No debugging in AIC: Debug (Protect) Control Register */
+	irq_reg_writel(gc, 0, AT91_AIC_DCR);
+
+	/* Disable and clear all interrupts initially */
+	irq_reg_writel(gc, 0xffffffff, AT91_AIC_IDCR);
+	irq_reg_writel(gc, 0xffffffff, AT91_AIC_ICCR);
+
+	for (i = 0; i < 32; i++)
+		irq_reg_writel(gc, i, AT91_AIC_SVR(i));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int aic_irq_domain_xlate(struct irq_domain *d,
@@ -176,6 +229,10 @@ static int aic_irq_domain_xlate(struct irq_domain *d,
 {
 	struct irq_domain_chip_generic *dgc = d->gc;
 	struct irq_chip_generic *gc;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned smr;
 	int idx;
 	int ret;
@@ -194,12 +251,21 @@ static int aic_irq_domain_xlate(struct irq_domain *d,
 
 	gc = dgc->gc[idx];
 
+<<<<<<< HEAD
 	irq_gc_lock(gc);
 	smr = irq_reg_readl(gc->reg_base + AT91_AIC_SMR(*out_hwirq));
 	ret = aic_common_set_priority(intspec[2], &smr);
 	if (!ret)
 		irq_reg_writel(smr, gc->reg_base + AT91_AIC_SMR(*out_hwirq));
 	irq_gc_unlock(gc);
+=======
+	irq_gc_lock_irqsave(gc, flags);
+	smr = irq_reg_readl(gc, AT91_AIC_SMR(*out_hwirq));
+	ret = aic_common_set_priority(intspec[2], &smr);
+	if (!ret)
+		irq_reg_writel(gc, smr, AT91_AIC_SMR(*out_hwirq));
+	irq_gc_unlock_irqrestore(gc, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }

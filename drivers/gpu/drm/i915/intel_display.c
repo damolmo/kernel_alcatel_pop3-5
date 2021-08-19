@@ -1650,6 +1650,11 @@ static void i9xx_enable_pll(struct intel_crtc *crtc)
 			   I915_READ(DPLL(!crtc->pipe)) | DPLL_DVO_2X_MODE);
 	}
 
+<<<<<<< HEAD
+=======
+	I915_WRITE(reg, dpll);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Wait for the clocks to stabilize. */
 	POSTING_READ(reg);
 	udelay(150);
@@ -3462,10 +3467,17 @@ static void page_flip_completed(struct intel_crtc *intel_crtc)
 	drm_crtc_vblank_put(&intel_crtc->base);
 
 	wake_up_all(&dev_priv->pending_flip_queue);
+<<<<<<< HEAD
 	queue_work(dev_priv->wq, &work->work);
 
 	trace_i915_flip_complete(intel_crtc->plane,
 				 work->pending_flip_obj);
+=======
+	trace_i915_flip_complete(intel_crtc->plane,
+				 work->pending_flip_obj);
+
+	queue_work(dev_priv->wq, &work->work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void intel_crtc_wait_for_pending_flips(struct drm_crtc *crtc)
@@ -13555,6 +13567,11 @@ void intel_modeset_cleanup(struct drm_device *dev)
 	mutex_lock(&dev->struct_mutex);
 	intel_cleanup_gt_powersave(dev);
 	mutex_unlock(&dev->struct_mutex);
+<<<<<<< HEAD
+=======
+
+	intel_teardown_gmbus(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

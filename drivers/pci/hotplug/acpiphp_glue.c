@@ -136,6 +136,7 @@ static struct acpiphp_context *acpiphp_grab_context(struct acpi_device *adev)
 	struct acpiphp_context *context;
 
 	acpi_lock_hp_context();
+<<<<<<< HEAD
 	context = acpiphp_get_context(adev);
 	if (!context || context->func.parent->is_going_away) {
 		acpi_unlock_hp_context();
@@ -143,6 +144,23 @@ static struct acpiphp_context *acpiphp_grab_context(struct acpi_device *adev)
 	}
 	get_bridge(context->func.parent);
 	acpiphp_put_context(context);
+=======
+
+	context = acpiphp_get_context(adev);
+	if (!context)
+		goto unlock;
+
+	if (context->func.parent->is_going_away) {
+		acpiphp_put_context(context);
+		context = NULL;
+		goto unlock;
+	}
+
+	get_bridge(context->func.parent);
+	acpiphp_put_context(context);
+
+unlock:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	acpi_unlock_hp_context();
 	return context;
 }
@@ -530,6 +548,10 @@ static void enable_slot(struct acpiphp_slot *slot)
 			slot->flags &= (~SLOT_ENABLED);
 			continue;
 		}
+<<<<<<< HEAD
+=======
+		pci_dev_put(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -587,6 +609,10 @@ static unsigned int get_slot_status(struct acpiphp_slot *slot)
 {
 	unsigned long long sta = 0;
 	struct acpiphp_func *func;
+<<<<<<< HEAD
+=======
+	u32 dvid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_for_each_entry(func, &slot->funcs, sibling) {
 		if (func->flags & FUNC_HAS_STA) {
@@ -597,6 +623,7 @@ static unsigned int get_slot_status(struct acpiphp_slot *slot)
 			if (ACPI_SUCCESS(status) && sta)
 				break;
 		} else {
+<<<<<<< HEAD
 			u32 dvid;
 
 			pci_bus_read_config_dword(slot->bus,
@@ -604,12 +631,32 @@ static unsigned int get_slot_status(struct acpiphp_slot *slot)
 							    func->function),
 						  PCI_VENDOR_ID, &dvid);
 			if (dvid != 0xffffffff) {
+=======
+			if (pci_bus_read_dev_vendor_id(slot->bus,
+					PCI_DEVFN(slot->device, func->function),
+					&dvid, 0)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sta = ACPI_STA_ALL;
 				break;
 			}
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	if (!sta) {
+		/*
+		 * Check for the slot itself since it may be that the
+		 * ACPI slot is a device below PCIe upstream port so in
+		 * that case it may not even be reachable yet.
+		 */
+		if (pci_bus_read_dev_vendor_id(slot->bus,
+				PCI_DEVFN(slot->device, 0), &dvid, 0)) {
+			sta = ACPI_STA_ALL;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return (unsigned int)sta;
 }
 
@@ -954,8 +1001,15 @@ int acpiphp_enable_slot(struct acpiphp_slot *slot)
 {
 	pci_lock_rescan_remove();
 
+<<<<<<< HEAD
 	if (slot->flags & SLOT_IS_GOING_AWAY)
 		return -ENODEV;
+=======
+	if (slot->flags & SLOT_IS_GOING_AWAY) {
+		pci_unlock_rescan_remove();
+		return -ENODEV;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* configure all functions */
 	if (!(slot->flags & SLOT_ENABLED))

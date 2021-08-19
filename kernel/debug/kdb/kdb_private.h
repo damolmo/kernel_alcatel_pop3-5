@@ -83,7 +83,11 @@ typedef struct __ksymtab {
 		unsigned long sym_start;
 		unsigned long sym_end;
 		} kdb_symtab_t;
+<<<<<<< HEAD
 extern int kallsyms_symbol_next(char *prefix_name, int flag);
+=======
+extern int kallsyms_symbol_next(char *prefix_name, int flag, int buf_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int kallsyms_symbol_complete(char *prefix_name, int max_len);
 
 /* Exported Symbols for kernel loadable modules to use. */
@@ -233,7 +237,11 @@ extern struct task_struct *kdb_curr_task(int);
 #define	kdb_do_each_thread(g, p) do_each_thread(g, p)
 #define	kdb_while_each_thread(g, p) while_each_thread(g, p)
 
+<<<<<<< HEAD
 #define GFP_KDB (in_interrupt() ? GFP_ATOMIC : GFP_KERNEL)
+=======
+#define GFP_KDB (in_dbg_master() ? GFP_ATOMIC : GFP_KERNEL)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern void *debug_kmalloc(size_t size, gfp_t flags);
 extern void debug_kfree(void *);

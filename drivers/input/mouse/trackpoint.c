@@ -263,7 +263,12 @@ static int trackpoint_start_protocol(struct psmouse *psmouse, unsigned char *fir
 	if (ps2_command(&psmouse->ps2dev, param, MAKE_PS2_CMD(0, 2, TP_READ_ID)))
 		return -1;
 
+<<<<<<< HEAD
 	if (param[0] != TP_MAGIC_IDENT)
+=======
+	/* add new TP ID. */
+	if (!(param[0] & TP_MAGIC_IDENT))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -1;
 
 	if (firmware_id)
@@ -376,8 +381,16 @@ int trackpoint_detect(struct psmouse *psmouse, bool set_properties)
 		return 0;
 
 	if (trackpoint_read(&psmouse->ps2dev, TP_EXT_BTN, &button_info)) {
+<<<<<<< HEAD
 		psmouse_warn(psmouse, "failed to get extended button data\n");
 		button_info = 0;
+=======
+		psmouse_warn(psmouse, "failed to get extended button data, assuming 3 buttons\n");
+		button_info = 0x33;
+	} else if (!button_info) {
+		psmouse_warn(psmouse, "got 0 in extended button data, assuming 3 buttons\n");
+		button_info = 0x33;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	psmouse->private = kzalloc(sizeof(struct trackpoint_data), GFP_KERNEL);

@@ -1061,7 +1061,11 @@ lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	memset(dstbuf, 0, 32);
 	size = (nbytes < 32) ? nbytes : 32;
 	if (copy_from_user(dstbuf, buf, size))
+<<<<<<< HEAD
 		return 0;
+=======
+		return -EFAULT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dent == phba->debug_InjErrLBA) {
 		if ((buf[0] == 'o') && (buf[1] == 'f') && (buf[2] == 'f'))
@@ -1069,7 +1073,11 @@ lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	}
 
 	if ((tmp == 0) && (kstrtoull(dstbuf, 0, &tmp)))
+<<<<<<< HEAD
 		return 0;
+=======
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (dent == phba->debug_writeGuard)
 		phba->lpfc_injerr_wgrd_cnt = (uint32_t)tmp;

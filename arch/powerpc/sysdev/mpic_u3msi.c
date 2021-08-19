@@ -108,15 +108,26 @@ static u64 find_u4_magic_addr(struct pci_dev *pdev, unsigned int hwirq)
 static void u3msi_teardown_msi_irqs(struct pci_dev *pdev)
 {
 	struct msi_desc *entry;
+<<<<<<< HEAD
+=======
+	irq_hw_number_t hwirq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
         list_for_each_entry(entry, &pdev->msi_list, list) {
 		if (entry->irq == NO_IRQ)
 			continue;
 
+<<<<<<< HEAD
 		irq_set_msi_desc(entry->irq, NULL);
 		msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap,
 				       virq_to_hw(entry->irq), 1);
 		irq_dispose_mapping(entry->irq);
+=======
+		hwirq = virq_to_hw(entry->irq);
+		irq_set_msi_desc(entry->irq, NULL);
+		irq_dispose_mapping(entry->irq);
+		msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap, hwirq, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return;

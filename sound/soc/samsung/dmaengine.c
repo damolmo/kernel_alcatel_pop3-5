@@ -50,14 +50,22 @@ void samsung_asoc_init_dma_data(struct snd_soc_dai *dai,
 
 	if (playback) {
 		playback_data = &playback->dma_data;
+<<<<<<< HEAD
 		playback_data->filter_data = (void *)playback->channel;
+=======
+		playback_data->filter_data = playback->slave;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		playback_data->chan_name = playback->ch_name;
 		playback_data->addr = playback->dma_addr;
 		playback_data->addr_width = playback->dma_size;
 	}
 	if (capture) {
 		capture_data = &capture->dma_data;
+<<<<<<< HEAD
 		capture_data->filter_data = (void *)capture->channel;
+=======
+		capture_data->filter_data = capture->slave;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		capture_data->chan_name = capture->ch_name;
 		capture_data->addr = capture->dma_addr;
 		capture_data->addr_width = capture->dma_size;

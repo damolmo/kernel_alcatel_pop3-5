@@ -91,10 +91,13 @@
 #define SD_SWITCH_ACCESS_DEF	0
 #define SD_SWITCH_ACCESS_HS	1
 
+<<<<<<< HEAD
 /*
  * SD card power cycle, if SD use MMC_CAP_HW_RESET, please remove this function
  */
 extern int mmc_sd_power_cycle(struct mmc_host *host, u32 ocr,
 	struct mmc_card *card);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* LINUX_MMC_SD_H */

@@ -8,13 +8,19 @@
 #include <linux/stddef.h>
 #include <linux/mm.h>
 #include <linux/mmzone.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct pglist_data *first_online_pgdat(void)
 {
 	return NODE_DATA(first_online_node);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(first_online_pgdat);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct pglist_data *next_online_pgdat(struct pglist_data *pgdat)
 {
@@ -24,7 +30,10 @@ struct pglist_data *next_online_pgdat(struct pglist_data *pgdat)
 		return NULL;
 	return NODE_DATA(nid);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(next_online_pgdat);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * next_zone - helper magic for for_each_zone()
@@ -44,7 +53,10 @@ struct zone *next_zone(struct zone *zone)
 	}
 	return zone;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(next_zone);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline int zref_in_nodemask(struct zoneref *zref, nodemask_t *nodes)
 {

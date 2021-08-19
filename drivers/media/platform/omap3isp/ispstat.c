@@ -1011,6 +1011,11 @@ void omap3isp_stat_unregister_entities(struct ispstat *stat)
 int omap3isp_stat_register_entities(struct ispstat *stat,
 				    struct v4l2_device *vdev)
 {
+<<<<<<< HEAD
+=======
+	stat->subdev.dev = vdev->mdev->dev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return v4l2_device_register_subdev(vdev, &stat->subdev);
 }
 

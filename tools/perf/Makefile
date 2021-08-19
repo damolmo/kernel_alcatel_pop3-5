@@ -69,10 +69,17 @@ all tags TAGS:
 	$(make)
 
 #
+<<<<<<< HEAD
 # The clean target is not really parallel, don't print the jobs info:
 #
 clean:
 	$(make)
+=======
+# Explicitly disable parallelism for the clean target.
+#
+clean:
+	$(make) -j1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #
 # The build-test target is not really parallel, don't print the jobs info:

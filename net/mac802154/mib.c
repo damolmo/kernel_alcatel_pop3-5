@@ -93,7 +93,11 @@ void mac802154_dev_set_short_addr(struct net_device *dev, __le16 val)
 	if ((priv->hw->ops->set_hw_addr_filt) &&
 	    (priv->hw->hw.hw_filt.short_addr != priv->short_addr)) {
 		priv->hw->hw.hw_filt.short_addr = priv->short_addr;
+<<<<<<< HEAD
 		set_hw_addr_filt(dev, IEEE802515_AFILT_SADDR_CHANGED);
+=======
+		set_hw_addr_filt(dev, IEEE802154_AFILT_SADDR_CHANGED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -121,7 +125,11 @@ void mac802154_dev_set_ieee_addr(struct net_device *dev)
 	if (mac->ops->set_hw_addr_filt &&
 	    mac->hw.hw_filt.ieee_addr != priv->extended_addr) {
 		mac->hw.hw_filt.ieee_addr = priv->extended_addr;
+<<<<<<< HEAD
 		set_hw_addr_filt(dev, IEEE802515_AFILT_IEEEADDR_CHANGED);
+=======
+		set_hw_addr_filt(dev, IEEE802154_AFILT_IEEEADDR_CHANGED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -152,7 +160,11 @@ void mac802154_dev_set_pan_id(struct net_device *dev, __le16 val)
 	if ((priv->hw->ops->set_hw_addr_filt) &&
 	    (priv->hw->hw.hw_filt.pan_id != priv->pan_id)) {
 		priv->hw->hw.hw_filt.pan_id = priv->pan_id;
+<<<<<<< HEAD
 		set_hw_addr_filt(dev, IEEE802515_AFILT_PANID_CHANGED);
+=======
+		set_hw_addr_filt(dev, IEEE802154_AFILT_PANID_CHANGED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

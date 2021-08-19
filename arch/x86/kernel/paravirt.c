@@ -41,6 +41,7 @@
 #include <asm/timer.h>
 #include <asm/special_insns.h>
 
+<<<<<<< HEAD
 /* nop stub */
 void _paravirt_nop(void)
 {
@@ -48,11 +49,32 @@ void _paravirt_nop(void)
 
 /* identity function, which can be inlined */
 u32 _paravirt_ident_32(u32 x)
+=======
+/*
+ * nop stub, which must not clobber anything *including the stack* to
+ * avoid confusing the entry prologues.
+ */
+extern void _paravirt_nop(void);
+asm (".pushsection .entry.text, \"ax\"\n"
+     ".global _paravirt_nop\n"
+     "_paravirt_nop:\n\t"
+     "ret\n\t"
+     ".size _paravirt_nop, . - _paravirt_nop\n\t"
+     ".type _paravirt_nop, @function\n\t"
+     ".popsection");
+
+/* identity function, which can be inlined */
+u32 notrace _paravirt_ident_32(u32 x)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return x;
 }
 
+<<<<<<< HEAD
 u64 _paravirt_ident_64(u64 x)
+=======
+u64 notrace _paravirt_ident_64(u64 x)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return x;
 }
@@ -89,10 +111,19 @@ unsigned paravirt_patch_call(void *insnbuf,
 	struct branch *b = insnbuf;
 	unsigned long delta = (unsigned long)target - (addr+5);
 
+<<<<<<< HEAD
 	if (tgt_clobbers & ~site_clobbers)
 		return len;	/* target would clobber too much for this site */
 	if (len < 5)
 		return len;	/* call too long for patch site */
+=======
+	if (len < 5) {
+#ifdef CONFIG_RETPOLINE
+		WARN_ONCE("Failing to patch indirect CALL in %ps\n", (void *)addr);
+#endif
+		return len;	/* call too long for patch site */
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	b->opcode = 0xe8; /* call */
 	b->delta = delta;
@@ -107,8 +138,17 @@ unsigned paravirt_patch_jmp(void *insnbuf, const void *target,
 	struct branch *b = insnbuf;
 	unsigned long delta = (unsigned long)target - (addr+5);
 
+<<<<<<< HEAD
 	if (len < 5)
 		return len;	/* call too long for patch site */
+=======
+	if (len < 5) {
+#ifdef CONFIG_RETPOLINE
+		WARN_ONCE("Failing to patch indirect JMP in %ps\n", (void *)addr);
+#endif
+		return len;	/* call too long for patch site */
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	b->opcode = 0xe9;	/* jmp */
 	b->delta = delta;

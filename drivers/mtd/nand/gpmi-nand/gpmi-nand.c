@@ -1025,9 +1025,12 @@ static int gpmi_ecc_read_page(struct mtd_info *mtd, struct nand_chip *chip,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	/* handle the block mark swapping */
 	block_mark_swapping(this, payload_virt, auxiliary_virt);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Loop over status bytes, accumulating ECC status. */
 	status = auxiliary_virt + nfc_geo->auxiliary_status_offset;
 
@@ -1043,6 +1046,12 @@ static int gpmi_ecc_read_page(struct mtd_info *mtd, struct nand_chip *chip,
 		max_bitflips = max_t(unsigned int, max_bitflips, *status);
 	}
 
+<<<<<<< HEAD
+=======
+	/* handle the block mark swapping */
+	block_mark_swapping(this, buf, auxiliary_virt);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (oob_required) {
 		/*
 		 * It's time to deliver the OOB bytes. See gpmi_ecc_read_oob()

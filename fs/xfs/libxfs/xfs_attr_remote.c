@@ -198,6 +198,10 @@ xfs_attr3_rmt_write_verify(
 }
 
 const struct xfs_buf_ops xfs_attr3_rmt_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_attr3_rmt",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_attr3_rmt_read_verify,
 	.verify_write = xfs_attr3_rmt_write_verify,
 };

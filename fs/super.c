@@ -37,8 +37,11 @@
 
 
 LIST_HEAD(super_blocks);
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(super_blocks);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 DEFINE_SPINLOCK(sb_lock);
 
 static char *sb_writers_name[SB_FREEZE_LEVELS] = {
@@ -116,6 +119,7 @@ static unsigned long super_cache_count(struct shrinker *shrink,
 	sb = container_of(shrink, struct super_block, s_shrink);
 
 	/*
+<<<<<<< HEAD
 	 * Don't call grab_super_passive as it is a potential
 	 * scalability bottleneck. The counts could get updated
 	 * between super_cache_count and super_cache_scan anyway.
@@ -123,6 +127,25 @@ static unsigned long super_cache_count(struct shrinker *shrink,
 	 * ensures the safety of call to list_lru_count_node() and
 	 * s_op->nr_cached_objects().
 	 */
+=======
+	 * We don't call trylock_super() here as it is a scalability bottleneck,
+	 * so we're exposed to partial setup state. The shrinker rwsem does not
+	 * protect filesystem operations backing list_lru_shrink_count() or
+	 * s_op->nr_cached_objects(). Counts can change between
+	 * super_cache_count and super_cache_scan, so we really don't need locks
+	 * here.
+	 *
+	 * However, if we are currently mounting the superblock, the underlying
+	 * filesystem might be in a state of partial construction and hence it
+	 * is dangerous to access it.  trylock_super() uses a MS_BORN check to
+	 * avoid this situation, so do the same here. The memory barrier is
+	 * matched with the one in mount_fs() as we don't hold locks here.
+	 */
+	if (!(sb->s_flags & MS_BORN))
+		return 0;
+	smp_rmb();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sb->s_op && sb->s_op->nr_cached_objects)
 		total_objects = sb->s_op->nr_cached_objects(sb,
 						 sc->nid);
@@ -478,7 +501,15 @@ retry:
 	hlist_add_head(&s->s_instances, &type->fs_supers);
 	spin_unlock(&sb_lock);
 	get_filesystem(type);
+<<<<<<< HEAD
 	register_shrinker(&s->s_shrink);
+=======
+	err = register_shrinker(&s->s_shrink);
+	if (err) {
+		deactivate_locked_super(s);
+		s = ERR_PTR(err);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return s;
 }
 
@@ -684,7 +715,12 @@ rescan:
 }
 
 /**
+<<<<<<< HEAD
  *	do_remount_sb - asks filesystem to change mount options.
+=======
+ *	do_remount_sb2 - asks filesystem to change mount options.
+ *	@mnt:   mount we are looking at
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *	@sb:	superblock in question
  *	@flags:	numeric part of options
  *	@data:	the rest of options
@@ -692,7 +728,11 @@ rescan:
  *
  *	Alters the mount options of a mounted file system.
  */
+<<<<<<< HEAD
 int do_remount_sb(struct super_block *sb, int flags, void *data, int force)
+=======
+int do_remount_sb2(struct vfsmount *mnt, struct super_block *sb, int flags, void *data, int force)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int retval;
 	int remount_ro;
@@ -734,7 +774,20 @@ int do_remount_sb(struct super_block *sb, int flags, void *data, int force)
 		}
 	}
 
+<<<<<<< HEAD
 	if (sb->s_op->remount_fs) {
+=======
+	if (mnt && sb->s_op->remount_fs2) {
+		retval = sb->s_op->remount_fs2(mnt, sb, &flags, data);
+		if (retval) {
+			if (!force)
+				goto cancel_readonly;
+			/* If forced remount, go ahead despite any errors */
+			WARN(1, "forced remount of a %s fs returned %i\n",
+			     sb->s_type->name, retval);
+		}
+	} else if (sb->s_op->remount_fs) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = sb->s_op->remount_fs(sb, &flags, data);
 		if (retval) {
 			if (!force)
@@ -766,19 +819,36 @@ cancel_readonly:
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+int do_remount_sb(struct super_block *sb, int flags, void *data, int force)
+{
+	return do_remount_sb2(NULL, sb, flags, data, force);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void do_emergency_remount(struct work_struct *work)
 {
 	struct super_block *sb, *p = NULL;
 
 	spin_lock(&sb_lock);
+<<<<<<< HEAD
 	list_for_each_entry(sb, &super_blocks, s_list) {
+=======
+	list_for_each_entry_reverse(sb, &super_blocks, s_list) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (hlist_unhashed(&sb->s_instances))
 			continue;
 		sb->s_count++;
 		spin_unlock(&sb_lock);
 		down_write(&sb->s_umount);
+<<<<<<< HEAD
 		if (sb->s_root && (sb->s_bdev || !(strcmp(sb->s_type->name, "ubifs"))) &&
 		    (sb->s_flags & MS_BORN) && !(sb->s_flags & MS_RDONLY)) {
+=======
+		if (sb->s_root && sb->s_bdev && (sb->s_flags & MS_BORN) &&
+		    !(sb->s_flags & MS_RDONLY)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/*
 			 * What lock protects sb->s_flags??
 			 */
@@ -1088,7 +1158,11 @@ struct dentry *mount_single(struct file_system_type *fs_type,
 EXPORT_SYMBOL(mount_single);
 
 struct dentry *
+<<<<<<< HEAD
 mount_fs(struct file_system_type *type, int flags, const char *name, void *data)
+=======
+mount_fs(struct file_system_type *type, int flags, const char *name, struct vfsmount *mnt, void *data)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dentry *root;
 	struct super_block *sb;
@@ -1105,7 +1179,14 @@ mount_fs(struct file_system_type *type, int flags, const char *name, void *data)
 			goto out_free_secdata;
 	}
 
+<<<<<<< HEAD
 	root = type->mount(type, flags, name, data);
+=======
+	if (type->mount2)
+		root = type->mount2(mnt, type, flags, name, data);
+	else
+		root = type->mount(type, flags, name, data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(root)) {
 		error = PTR_ERR(root);
 		goto out_free_secdata;
@@ -1114,6 +1195,17 @@ mount_fs(struct file_system_type *type, int flags, const char *name, void *data)
 	BUG_ON(!sb);
 	WARN_ON(!sb->s_bdi);
 	WARN_ON(sb->s_bdi == &default_backing_dev_info);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Write barrier is for super_cache_count(). We place it before setting
+	 * MS_BORN as the data dependency between the two functions is the
+	 * superblock structure contents that we just set up, not the MS_BORN
+	 * flag.
+	 */
+	smp_wmb();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sb->s_flags |= MS_BORN;
 
 	error = security_sb_kern_mount(sb, flags, secdata);
@@ -1155,6 +1247,7 @@ void __sb_end_write(struct super_block *sb, int level)
 	smp_mb();
 	if (waitqueue_active(&sb->s_writers.wait))
 		wake_up(&sb->s_writers.wait);
+<<<<<<< HEAD
 
 	/*s_writers was taken with lockdep checks disabled,
 	* so turn off lockdep checks here too
@@ -1162,6 +1255,9 @@ void __sb_end_write(struct super_block *sb, int level)
 	lockdep_off();
 	rwsem_release(&sb->s_writers.lock_map[level-1], 1, _RET_IP_);
 	lockdep_on();
+=======
+	rwsem_release(&sb->s_writers.lock_map[level-1], 1, _RET_IP_);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(__sb_end_write);
 
@@ -1187,6 +1283,7 @@ static void acquire_freeze_lock(struct super_block *sb, int level, bool trylock,
 				break;
 			}
 	}
+<<<<<<< HEAD
 
 	/*s_writers was taken with lockdep checks disabled,
 	* so turn off lockdep checks here too
@@ -1194,6 +1291,9 @@ static void acquire_freeze_lock(struct super_block *sb, int level, bool trylock,
 	lockdep_off();
 	rwsem_acquire_read(&sb->s_writers.lock_map[level-1], 0, trylock, ip);
 	lockdep_on();
+=======
+	rwsem_acquire_read(&sb->s_writers.lock_map[level-1], 0, trylock, ip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif
 
@@ -1360,8 +1460,13 @@ int freeze_super(struct super_block *sb)
 		}
 	}
 	/*
+<<<<<<< HEAD
 	 * This is just for debugging purposes so that fs can warn if it
 	 * sees write activity when frozen is set to SB_FREEZE_COMPLETE.
+=======
+	 * For debugging purposes so that fs can warn if it sees write activity
+	 * when frozen is set to SB_FREEZE_COMPLETE, and for thaw_super().
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 */
 	sb->s_writers.frozen = SB_FREEZE_COMPLETE;
 	up_write(&sb->s_umount);
@@ -1380,7 +1485,11 @@ int thaw_super(struct super_block *sb)
 	int error;
 
 	down_write(&sb->s_umount);
+<<<<<<< HEAD
 	if (sb->s_writers.frozen == SB_UNFROZEN) {
+=======
+	if (sb->s_writers.frozen != SB_FREEZE_COMPLETE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		up_write(&sb->s_umount);
 		return -EINVAL;
 	}

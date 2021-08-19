@@ -28,8 +28,12 @@ struct bmp_header {
 void __init efi_bgrt_init(void)
 {
 	acpi_status status;
+<<<<<<< HEAD
 	void __iomem *image;
 	bool ioremapped = false;
+=======
+	void *image;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct bmp_header bmp_header;
 
 	if (acpi_disabled)
@@ -65,6 +69,7 @@ void __init efi_bgrt_init(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	image = efi_lookup_mapped_addr(bgrt_tab->image_address);
 	if (!image) {
 		image = early_memremap(bgrt_tab->image_address,
@@ -79,6 +84,16 @@ void __init efi_bgrt_init(void)
 	memcpy_fromio(&bmp_header, image, sizeof(bmp_header));
 	if (ioremapped)
 		early_iounmap(image, sizeof(bmp_header));
+=======
+	image = early_memremap(bgrt_tab->image_address, sizeof(bmp_header));
+	if (!image) {
+		pr_err("Ignoring BGRT: failed to map image header memory\n");
+		return;
+	}
+
+	memcpy(&bmp_header, image, sizeof(bmp_header));
+	early_memunmap(image, sizeof(bmp_header));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bgrt_image_size = bmp_header.size;
 
 	bgrt_image = kmalloc(bgrt_image_size, GFP_KERNEL | __GFP_NOWARN);
@@ -88,6 +103,7 @@ void __init efi_bgrt_init(void)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (ioremapped) {
 		image = early_memremap(bgrt_tab->image_address,
 				       bmp_header.size);
@@ -102,4 +118,16 @@ void __init efi_bgrt_init(void)
 	memcpy_fromio(bgrt_image, image, bgrt_image_size);
 	if (ioremapped)
 		early_iounmap(image, bmp_header.size);
+=======
+	image = early_memremap(bgrt_tab->image_address, bmp_header.size);
+	if (!image) {
+		pr_err("Ignoring BGRT: failed to map image memory\n");
+		kfree(bgrt_image);
+		bgrt_image = NULL;
+		return;
+	}
+
+	memcpy(bgrt_image, image, bgrt_image_size);
+	early_memunmap(image, bmp_header.size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

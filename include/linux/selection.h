@@ -12,8 +12,13 @@
 
 struct tty_struct;
 
+<<<<<<< HEAD
 extern struct vc_data *sel_cons;
 struct tty_struct;
+=======
+struct tty_struct;
+struct vc_data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern void clear_selection(void);
 extern int set_selection(const struct tiocl_selection __user *sel, struct tty_struct *tty);
@@ -22,6 +27,11 @@ extern int sel_loadlut(char __user *p);
 extern int mouse_reporting(void);
 extern void mouse_report(struct tty_struct * tty, int butt, int mrx, int mry);
 
+<<<<<<< HEAD
+=======
+bool vc_is_sel(struct vc_data *vc);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int console_blanked;
 
 extern unsigned char color_table[];

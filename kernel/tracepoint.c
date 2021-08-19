@@ -185,7 +185,11 @@ static int tracepoint_add_func(struct tracepoint *tp,
 			lockdep_is_held(&tracepoints_mutex));
 	old = func_add(&tp_funcs, func);
 	if (IS_ERR(old)) {
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return PTR_ERR(old);
 	}
 
@@ -218,7 +222,11 @@ static int tracepoint_remove_func(struct tracepoint *tp,
 			lockdep_is_held(&tracepoints_mutex));
 	old = func_remove(&tp_funcs, func);
 	if (IS_ERR(old)) {
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return PTR_ERR(old);
 	}
 

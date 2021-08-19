@@ -24,11 +24,20 @@
 
 static const struct crypto_type crypto_shash_type;
 
+<<<<<<< HEAD
 static int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
 			   unsigned int keylen)
 {
 	return -ENOSYS;
 }
+=======
+int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
+		    unsigned int keylen)
+{
+	return -ENOSYS;
+}
+EXPORT_SYMBOL_GPL(shash_no_setkey);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int shash_setkey_unaligned(struct crypto_shash *tfm, const u8 *key,
 				  unsigned int keylen)
@@ -40,7 +49,11 @@ static int shash_setkey_unaligned(struct crypto_shash *tfm, const u8 *key,
 	int err;
 
 	absize = keylen + (alignmask & ~(crypto_tfm_ctx_alignment() - 1));
+<<<<<<< HEAD
 	buffer = kmalloc(absize, GFP_KERNEL);
+=======
+	buffer = kmalloc(absize, GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!buffer)
 		return -ENOMEM;
 
@@ -274,12 +287,23 @@ static int shash_async_finup(struct ahash_request *req)
 
 int shash_ahash_digest(struct ahash_request *req, struct shash_desc *desc)
 {
+<<<<<<< HEAD
 	struct scatterlist *sg = req->src;
 	unsigned int offset = sg->offset;
 	unsigned int nbytes = req->nbytes;
 	int err;
 
 	if (nbytes < min(sg->length, ((unsigned int)(PAGE_SIZE)) - offset)) {
+=======
+	unsigned int nbytes = req->nbytes;
+	struct scatterlist *sg;
+	unsigned int offset;
+	int err;
+
+	if (nbytes &&
+	    (sg = req->src, offset = sg->offset,
+	     nbytes < min(sg->length, ((unsigned int)(PAGE_SIZE)) - offset))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		void *data;
 
 		data = kmap_atomic(sg_page(sg));
@@ -354,9 +378,16 @@ int crypto_init_shash_ops_async(struct crypto_tfm *tfm)
 	crt->final = shash_async_final;
 	crt->finup = shash_async_finup;
 	crt->digest = shash_async_digest;
+<<<<<<< HEAD
 
 	if (alg->setkey)
 		crt->setkey = shash_async_setkey;
+=======
+	crt->setkey = shash_async_setkey;
+
+	crt->has_setkey = alg->setkey != shash_no_setkey;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (alg->export)
 		crt->export = shash_async_export;
 	if (alg->import)

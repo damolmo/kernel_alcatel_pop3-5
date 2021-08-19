@@ -300,11 +300,19 @@ static u64 qp_read_field(struct mlx5_core_dev *dev, struct mlx5_core_qp *qp,
 		param = qp->pid;
 		break;
 	case QP_STATE:
+<<<<<<< HEAD
 		param = (u64)mlx5_qp_state_str(be32_to_cpu(ctx->flags) >> 28);
 		*is_str = 1;
 		break;
 	case QP_XPORT:
 		param = (u64)mlx5_qp_type_str((be32_to_cpu(ctx->flags) >> 16) & 0xff);
+=======
+		param = (unsigned long)mlx5_qp_state_str(be32_to_cpu(ctx->flags) >> 28);
+		*is_str = 1;
+		break;
+	case QP_XPORT:
+		param = (unsigned long)mlx5_qp_type_str((be32_to_cpu(ctx->flags) >> 16) & 0xff);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*is_str = 1;
 		break;
 	case QP_MTU:
@@ -464,7 +472,11 @@ static ssize_t dbg_read(struct file *filp, char __user *buf, size_t count,
 
 
 	if (is_str)
+<<<<<<< HEAD
 		ret = snprintf(tbuf, sizeof(tbuf), "%s\n", (const char *)field);
+=======
+		ret = snprintf(tbuf, sizeof(tbuf), "%s\n", (const char *)(unsigned long)field);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		ret = snprintf(tbuf, sizeof(tbuf), "0x%llx\n", field);
 

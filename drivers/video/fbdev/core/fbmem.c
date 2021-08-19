@@ -425,6 +425,12 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 {
 	unsigned int x;
 
+<<<<<<< HEAD
+=======
+	if (image->width > info->var.xres || image->height > info->var.yres)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rotate == FB_ROTATE_UR) {
 		for (x = 0;
 		     x < num && image->dx + image->width <= info->var.xres;
@@ -433,7 +439,13 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 			image->dx += image->width + 8;
 		}
 	} else if (rotate == FB_ROTATE_UD) {
+<<<<<<< HEAD
 		for (x = 0; x < num; x++) {
+=======
+		u32 dx = image->dx;
+
+		for (x = 0; x < num && image->dx <= dx; x++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info->fbops->fb_imageblit(info, image);
 			image->dx -= image->width + 8;
 		}
@@ -445,7 +457,13 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 			image->dy += image->height + 8;
 		}
 	} else if (rotate == FB_ROTATE_CCW) {
+<<<<<<< HEAD
 		for (x = 0; x < num; x++) {
+=======
+		u32 dy = image->dy;
+
+		for (x = 0; x < num && image->dy <= dy; x++) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			info->fbops->fb_imageblit(info, image);
 			image->dy -= image->height + 8;
 		}
@@ -1125,7 +1143,11 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	case FBIOGET_FSCREENINFO:
 		if (!lock_fb_info(info))
 			return -ENODEV;
+<<<<<<< HEAD
 		fix = info->fix;
+=======
+		memcpy(&fix, &info->fix, sizeof(fix));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		unlock_fb_info(info);
 
 		ret = copy_to_user(argp, &fix, sizeof(fix)) ? -EFAULT : 0;
@@ -1687,12 +1709,21 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int do_unregister_framebuffer(struct fb_info *fb_info)
 {
 	struct fb_event event;
 	int i, ret = 0;
 
 	i = fb_info->node;
+=======
+static int unbind_console(struct fb_info *fb_info)
+{
+	struct fb_event event;
+	int ret;
+	int i = fb_info->node;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (i < 0 || i >= FB_MAX || registered_fb[i] != fb_info)
 		return -EINVAL;
 
@@ -1707,17 +1738,40 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 	unlock_fb_info(fb_info);
 	console_unlock();
 
+<<<<<<< HEAD
+=======
+	return ret;
+}
+
+static int __unlink_framebuffer(struct fb_info *fb_info);
+
+static int do_unregister_framebuffer(struct fb_info *fb_info)
+{
+	struct fb_event event;
+	int ret;
+
+	ret = unbind_console(fb_info);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		return -EINVAL;
 
 	pm_vt_switch_unregister(fb_info->dev);
 
+<<<<<<< HEAD
 	unlink_framebuffer(fb_info);
+=======
+	__unlink_framebuffer(fb_info);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (fb_info->pixmap.addr &&
 	    (fb_info->pixmap.flags & FB_PIXMAP_DEFAULT))
 		kfree(fb_info->pixmap.addr);
 	fb_destroy_modelist(&fb_info->modelist);
+<<<<<<< HEAD
 	registered_fb[i] = NULL;
+=======
+	registered_fb[fb_info->node] = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	num_registered_fb--;
 	fb_cleanup_device(fb_info);
 	event.info = fb_info;
@@ -1730,7 +1784,11 @@ static int do_unregister_framebuffer(struct fb_info *fb_info)
 	return 0;
 }
 
+<<<<<<< HEAD
 int unlink_framebuffer(struct fb_info *fb_info)
+=======
+static int __unlink_framebuffer(struct fb_info *fb_info)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int i;
 
@@ -1742,6 +1800,23 @@ int unlink_framebuffer(struct fb_info *fb_info)
 		device_destroy(fb_class, MKDEV(FB_MAJOR, i));
 		fb_info->dev = NULL;
 	}
+<<<<<<< HEAD
+=======
+
+	return 0;
+}
+
+int unlink_framebuffer(struct fb_info *fb_info)
+{
+	int ret;
+
+	ret = __unlink_framebuffer(fb_info);
+	if (ret)
+		return ret;
+
+	unbind_console(fb_info);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(unlink_framebuffer);

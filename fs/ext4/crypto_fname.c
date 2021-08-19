@@ -19,7 +19,10 @@
 #include <linux/gfp.h>
 #include <linux/kernel.h>
 #include <linux/key.h>
+<<<<<<< HEAD
 #include <linux/key.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/list.h>
 #include <linux/mempool.h>
 #include <linux/random.h>
@@ -121,7 +124,10 @@ static int ext4_fname_encrypt(struct inode *inode,
 	ablkcipher_request_set_crypt(req, &src_sg, &dst_sg, ciphertext_len, iv);
 	res = crypto_ablkcipher_encrypt(req);
 	if (res == -EINPROGRESS || res == -EBUSY) {
+<<<<<<< HEAD
 		BUG_ON(req->base.data != &ecr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		wait_for_completion(&ecr.completion);
 		res = ecr.res;
 	}
@@ -183,7 +189,10 @@ static int ext4_fname_decrypt(struct inode *inode,
 	ablkcipher_request_set_crypt(req, &src_sg, &dst_sg, iname->len, iv);
 	res = crypto_ablkcipher_decrypt(req);
 	if (res == -EINPROGRESS || res == -EBUSY) {
+<<<<<<< HEAD
 		BUG_ON(req->base.data != &ecr);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		wait_for_completion(&ecr.completion);
 		res = ecr.res;
 	}
@@ -329,6 +338,13 @@ int _ext4_fname_disk_to_usr(struct inode *inode,
 			return oname->len;
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (iname->len < EXT4_CRYPTO_BLOCK_SIZE) {
+		EXT4_ERROR_INODE(inode, "encrypted inode too small");
+		return -EUCLEAN;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (EXT4_I(inode)->i_crypt_info)
 		return ext4_fname_decrypt(inode, iname, oname);
 
@@ -342,7 +358,11 @@ int _ext4_fname_disk_to_usr(struct inode *inode,
 		memcpy(buf+4, &hinfo->minor_hash, 4);
 	} else
 		memset(buf, 0, 8);
+<<<<<<< HEAD
 	memcpy(buf + 8, iname->name + iname->len - 16, 16);
+=======
+	memcpy(buf + 8, iname->name + ((iname->len - 17) & ~15), 16);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	oname->name[0] = '_';
 	ret = digest_encode(buf, 24, oname->name+1);
 	oname->len = ret + 1;

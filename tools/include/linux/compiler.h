@@ -37,4 +37,15 @@
 
 #define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
 
+<<<<<<< HEAD
+=======
+#ifndef __fallthrough
+# if defined(__GNUC__) && __GNUC__ >= 7
+#  define __fallthrough __attribute__ ((fallthrough))
+# else
+#  define __fallthrough
+# endif
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _TOOLS_LINUX_COMPILER_H */

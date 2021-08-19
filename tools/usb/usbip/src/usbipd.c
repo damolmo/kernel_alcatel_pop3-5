@@ -453,7 +453,11 @@ static void set_signal(void)
 	sigaction(SIGTERM, &act, NULL);
 	sigaction(SIGINT, &act, NULL);
 	act.sa_handler = SIG_IGN;
+<<<<<<< HEAD
 	sigaction(SIGCLD, &act, NULL);
+=======
+	sigaction(SIGCHLD, &act, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const char *pid_file;

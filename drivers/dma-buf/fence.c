@@ -301,8 +301,17 @@ fence_remove_callback(struct fence *fence, struct fence_cb *cb)
 	spin_lock_irqsave(fence->lock, flags);
 
 	ret = !list_empty(&cb->node);
+<<<<<<< HEAD
 	if (ret)
 		list_del_init(&cb->node);
+=======
+	if (ret) {
+		list_del_init(&cb->node);
+		if (list_empty(&fence->cb_list))
+			if (fence->ops->disable_signaling)
+				fence->ops->disable_signaling(fence);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_unlock_irqrestore(fence->lock, flags);
 

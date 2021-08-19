@@ -163,7 +163,11 @@ static inline void shrink_free_pagepool(struct xen_blkif *blkif, int num)
 
 #define vaddr(page) ((unsigned long)pfn_to_kaddr(page_to_pfn(page)))
 
+<<<<<<< HEAD
 static int do_block_io_op(struct xen_blkif *blkif);
+=======
+static int do_block_io_op(struct xen_blkif *blkif, unsigned int *eoi_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int dispatch_rw_block_io(struct xen_blkif *blkif,
 				struct blkif_request *req,
 				struct pending_req *pending_req);
@@ -350,7 +354,11 @@ static void purge_persistent_gnt(struct xen_blkif *blkif)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (work_pending(&blkif->persistent_purge_work)) {
+=======
+	if (work_busy(&blkif->persistent_purge_work)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pr_alert_ratelimited(DRV_PFX "Scheduled work from previous purge is still pending, cannot purge list\n");
 		return;
 	}
@@ -575,8 +583,13 @@ int xen_blkif_schedule(void *arg)
 	struct xen_vbd *vbd = &blkif->vbd;
 	unsigned long timeout;
 	int ret;
+<<<<<<< HEAD
 
 	xen_blkif_get(blkif);
+=======
+	bool do_eoi;
+	unsigned int eoi_flags = XEN_EOI_FLAG_SPURIOUS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (!kthread_should_stop()) {
 		if (try_to_freeze())
@@ -600,16 +613,33 @@ int xen_blkif_schedule(void *arg)
 		if (timeout == 0)
 			goto purge_gnt_list;
 
+<<<<<<< HEAD
 		blkif->waiting_reqs = 0;
 		smp_mb(); /* clear flag *before* checking for work */
 
 		ret = do_block_io_op(blkif);
+=======
+		do_eoi = blkif->waiting_reqs;
+
+		blkif->waiting_reqs = 0;
+		smp_mb(); /* clear flag *before* checking for work */
+
+		ret = do_block_io_op(blkif, &eoi_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret > 0)
 			blkif->waiting_reqs = 1;
 		if (ret == -EACCES)
 			wait_event_interruptible(blkif->shutdown_wq,
 						 kthread_should_stop());
 
+<<<<<<< HEAD
+=======
+		if (do_eoi && !blkif->waiting_reqs) {
+			xen_irq_lateeoi(blkif->irq, eoi_flags);
+			eoi_flags |= XEN_EOI_FLAG_SPURIOUS;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 purge_gnt_list:
 		if (blkif->vbd.feature_gnt_persistent &&
 		    time_after(jiffies, blkif->next_lru)) {
@@ -631,7 +661,10 @@ purge_gnt_list:
 		print_stats(blkif);
 
 	blkif->xenblkd = NULL;
+<<<<<<< HEAD
 	xen_blkif_put(blkif);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -730,8 +763,16 @@ again:
 			pages[i]->page = persistent_gnt->page;
 			pages[i]->persistent_gnt = persistent_gnt;
 		} else {
+<<<<<<< HEAD
 			if (get_free_page(blkif, &pages[i]->page))
 				goto out_of_memory;
+=======
+			if (get_free_page(blkif, &pages[i]->page)) {
+				put_free_pages(blkif, pages_to_gnt, segs_to_map);
+				ret = -ENOMEM;
+				goto out;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			addr = vaddr(pages[i]->page);
 			pages_to_gnt[segs_to_map] = pages[i]->page;
 			pages[i]->persistent_gnt = NULL;
@@ -747,10 +788,15 @@ again:
 			break;
 	}
 
+<<<<<<< HEAD
 	if (segs_to_map) {
 		ret = gnttab_map_refs(map, NULL, pages_to_gnt, segs_to_map);
 		BUG_ON(ret);
 	}
+=======
+	if (segs_to_map)
+		ret = gnttab_map_refs(map, NULL, pages_to_gnt, segs_to_map);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Now swizzle the MFN in our domain with the MFN from the other domain
@@ -765,7 +811,11 @@ again:
 				pr_debug(DRV_PFX "invalid buffer -- could not remap it\n");
 				put_free_pages(blkif, &pages[seg_idx]->page, 1);
 				pages[seg_idx]->handle = BLKBACK_INVALID_HANDLE;
+<<<<<<< HEAD
 				ret |= 1;
+=======
+				ret |= !ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto next;
 			}
 			pages[seg_idx]->handle = map[new_map_idx].handle;
@@ -817,6 +867,7 @@ next:
 	}
 	segs_to_map = 0;
 	last_map = map_until;
+<<<<<<< HEAD
 	if (map_until != num)
 		goto again;
 
@@ -826,6 +877,20 @@ out_of_memory:
 	pr_alert(DRV_PFX "%s: out of memory\n", __func__);
 	put_free_pages(blkif, pages_to_gnt, segs_to_map);
 	return -ENOMEM;
+=======
+	if (!ret && map_until != num)
+		goto again;
+
+out:
+	for (i = last_map; i < num; i++) {
+		/* Don't zap current batch's valid persistent grants. */
+		if(i >= map_until)
+			pages[i]->persistent_gnt = NULL;
+		pages[i]->handle = BLKBACK_INVALID_HANDLE;
+	}
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int xen_blkbk_map_seg(struct pending_req *pending_req)
@@ -1027,7 +1092,11 @@ static void end_block_io_op(struct bio *bio, int error)
  * and transmute  it to the block API to hand it over to the proper block disk.
  */
 static int
+<<<<<<< HEAD
 __do_block_io_op(struct xen_blkif *blkif)
+=======
+__do_block_io_op(struct xen_blkif *blkif, unsigned int *eoi_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	union blkif_back_rings *blk_rings = &blkif->blk_rings;
 	struct blkif_request req;
@@ -1050,6 +1119,12 @@ __do_block_io_op(struct xen_blkif *blkif)
 		if (RING_REQUEST_CONS_OVERFLOW(&blk_rings->common, rc))
 			break;
 
+<<<<<<< HEAD
+=======
+		/* We've seen a request, so clear spurious eoi flag. */
+		*eoi_flags &= ~XEN_EOI_FLAG_SPURIOUS;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (kthread_should_stop()) {
 			more_to_do = 1;
 			break;
@@ -1108,13 +1183,21 @@ done:
 }
 
 static int
+<<<<<<< HEAD
 do_block_io_op(struct xen_blkif *blkif)
+=======
+do_block_io_op(struct xen_blkif *blkif, unsigned int *eoi_flags)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	union blkif_back_rings *blk_rings = &blkif->blk_rings;
 	int more_to_do;
 
 	do {
+<<<<<<< HEAD
 		more_to_do = __do_block_io_op(blkif);
+=======
+		more_to_do = __do_block_io_op(blkif, eoi_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (more_to_do)
 			break;
 
@@ -1341,19 +1424,27 @@ static int dispatch_rw_block_io(struct xen_blkif *blkif,
 static void make_response(struct xen_blkif *blkif, u64 id,
 			  unsigned short op, int st)
 {
+<<<<<<< HEAD
 	struct blkif_response  resp;
+=======
+	struct blkif_response *resp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long     flags;
 	union blkif_back_rings *blk_rings = &blkif->blk_rings;
 	int notify;
 
+<<<<<<< HEAD
 	resp.id        = id;
 	resp.operation = op;
 	resp.status    = st;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&blkif->blk_ring_lock, flags);
 	/* Place on the response ring for the relevant domain. */
 	switch (blkif->blk_protocol) {
 	case BLKIF_PROTOCOL_NATIVE:
+<<<<<<< HEAD
 		memcpy(RING_GET_RESPONSE(&blk_rings->native, blk_rings->native.rsp_prod_pvt),
 		       &resp, sizeof(resp));
 		break;
@@ -1364,10 +1455,30 @@ static void make_response(struct xen_blkif *blkif, u64 id,
 	case BLKIF_PROTOCOL_X86_64:
 		memcpy(RING_GET_RESPONSE(&blk_rings->x86_64, blk_rings->x86_64.rsp_prod_pvt),
 		       &resp, sizeof(resp));
+=======
+		resp = RING_GET_RESPONSE(&blk_rings->native,
+					 blk_rings->native.rsp_prod_pvt);
+		break;
+	case BLKIF_PROTOCOL_X86_32:
+		resp = RING_GET_RESPONSE(&blk_rings->x86_32,
+					 blk_rings->x86_32.rsp_prod_pvt);
+		break;
+	case BLKIF_PROTOCOL_X86_64:
+		resp = RING_GET_RESPONSE(&blk_rings->x86_64,
+					 blk_rings->x86_64.rsp_prod_pvt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		BUG();
 	}
+<<<<<<< HEAD
+=======
+
+	resp->id        = id;
+	resp->operation = op;
+	resp->status    = st;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	blk_rings->common.rsp_prod_pvt++;
 	RING_PUSH_RESPONSES_AND_CHECK_NOTIFY(&blk_rings->common, notify);
 	spin_unlock_irqrestore(&blkif->blk_ring_lock, flags);

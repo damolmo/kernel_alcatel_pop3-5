@@ -37,7 +37,11 @@ int iso_packets_buffer_init(struct iso_packets_buffer *b, struct fw_unit *unit,
 	packets_per_page = PAGE_SIZE / packet_size;
 	if (WARN_ON(!packets_per_page)) {
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto error;
+=======
+		goto err_packets;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	pages = DIV_ROUND_UP(count, packets_per_page);
 

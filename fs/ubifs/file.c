@@ -54,6 +54,10 @@
 #include <linux/mount.h>
 #include <linux/namei.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/migrate.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int read_block(struct inode *inode, void *addr, unsigned int block,
 		      struct ubifs_data_node *dn)
@@ -79,11 +83,15 @@ static int read_block(struct inode *inode, void *addr, unsigned int block,
 		goto dump;
 
 	dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
+<<<<<<< HEAD
 
 	if (UBIFS_COMPR_LZ4K ==  le16_to_cpu(dn->compr_type))
 		out_len = len; /*Jack modify for lz4k decompress*/
 	else
 		out_len = UBIFS_BLOCK_SIZE;
+=======
+	out_len = UBIFS_BLOCK_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = ubifs_decompress(&dn->data, dlen, addr, &out_len,
 			       le16_to_cpu(dn->compr_type));
 	if (err || len != out_len)
@@ -652,11 +660,15 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 				goto out_err;
 
 			dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
+<<<<<<< HEAD
 
 			if (UBIFS_COMPR_LZ4K ==  le16_to_cpu(dn->compr_type))
 				out_len = len; /*Jack modify for lz4k decompress*/
 			else
 				out_len = UBIFS_BLOCK_SIZE;
+=======
+			out_len = UBIFS_BLOCK_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = ubifs_decompress(&dn->data, dlen, addr, &out_len,
 					       le16_to_cpu(dn->compr_type));
 			if (err || len != out_len)
@@ -789,8 +801,14 @@ static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
 
 		if (page_offset > end_index)
 			break;
+<<<<<<< HEAD
 		page = find_or_create_page(mapping, page_offset,
 					   GFP_NOFS | __GFP_COLD);
+=======
+		page = pagecache_get_page(mapping, page_offset,
+				 FGP_LOCK|FGP_ACCESSED|FGP_CREAT|FGP_NOWAIT,
+				 GFP_NOFS | __GFP_COLD);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!page)
 			break;
 		if (!PageUptodate(page))
@@ -1427,6 +1445,29 @@ static int ubifs_set_page_dirty(struct page *page)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIGRATION
+static int ubifs_migrate_page(struct address_space *mapping,
+		struct page *newpage, struct page *page, enum migrate_mode mode)
+{
+	int rc;
+
+	rc = migrate_page_move_mapping(mapping, newpage, page, NULL, mode, 0);
+	if (rc != MIGRATEPAGE_SUCCESS)
+		return rc;
+
+	if (PagePrivate(page)) {
+		ClearPagePrivate(page);
+		SetPagePrivate(newpage);
+	}
+
+	migrate_page_copy(newpage, page);
+	return MIGRATEPAGE_SUCCESS;
+}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ubifs_releasepage(struct page *page, gfp_t unused_gfp_flags)
 {
 	/*
@@ -1557,6 +1598,7 @@ static int ubifs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*MTK add for cts*/
 long ubifs_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
 {
@@ -1583,6 +1625,8 @@ long ubifs_fallocate(struct file *file, int mode, loff_t offset, loff_t len)
 	return err;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 const struct address_space_operations ubifs_file_address_operations = {
 	.readpage       = ubifs_readpage,
 	.writepage      = ubifs_writepage,
@@ -1590,6 +1634,12 @@ const struct address_space_operations ubifs_file_address_operations = {
 	.write_end      = ubifs_write_end,
 	.invalidatepage = ubifs_invalidatepage,
 	.set_page_dirty = ubifs_set_page_dirty,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIGRATION
+	.migratepage	= ubifs_migrate_page,
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.releasepage    = ubifs_releasepage,
 };
 
@@ -1607,10 +1657,13 @@ const struct inode_operations ubifs_symlink_inode_operations = {
 	.follow_link = ubifs_follow_link,
 	.setattr     = ubifs_setattr,
 	.getattr     = ubifs_getattr,
+<<<<<<< HEAD
 	.setxattr    = ubifs_setxattr,
 	.getxattr    = ubifs_getxattr,
 	.listxattr   = ubifs_listxattr,
 	.removexattr = ubifs_removexattr,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 const struct file_operations ubifs_file_operations = {
@@ -1627,5 +1680,8 @@ const struct file_operations ubifs_file_operations = {
 #ifdef CONFIG_COMPAT
 	.compat_ioctl   = ubifs_compat_ioctl,
 #endif
+<<<<<<< HEAD
 	.fallocate      = ubifs_fallocate,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };

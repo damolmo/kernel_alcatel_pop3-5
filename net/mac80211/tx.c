@@ -299,9 +299,12 @@ ieee80211_tx_h_check_assoc(struct ieee80211_tx_data *tx)
 	if (tx->sdata->vif.type == NL80211_IFTYPE_WDS)
 		return TX_CONTINUE;
 
+<<<<<<< HEAD
 	if (tx->sdata->vif.type == NL80211_IFTYPE_MESH_POINT)
 		return TX_CONTINUE;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (tx->flags & IEEE80211_TX_PS_BUFFERED)
 		return TX_CONTINUE;
 
@@ -356,7 +359,11 @@ static void purge_old_ps_buffers(struct ieee80211_local *local)
 		skb = skb_dequeue(&ps->bc_buf);
 		if (skb) {
 			purged++;
+<<<<<<< HEAD
 			dev_kfree_skb(skb);
+=======
+			ieee80211_free_txskb(&local->hw, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		total += skb_queue_len(&ps->bc_buf);
 	}
@@ -422,8 +429,13 @@ ieee80211_tx_h_multicast_ps_buf(struct ieee80211_tx_data *tx)
 	if (tx->local->hw.flags & IEEE80211_HW_QUEUE_CONTROL)
 		info->hw_queue = tx->sdata->vif.cab_queue;
 
+<<<<<<< HEAD
 	/* no stations in PS mode */
 	if (!atomic_read(&ps->num_sta_ps))
+=======
+	/* no stations in PS mode and no buffered packets */
+	if (!atomic_read(&ps->num_sta_ps) && skb_queue_empty(&ps->bc_buf))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return TX_CONTINUE;
 
 	info->flags |= IEEE80211_TX_CTL_SEND_AFTER_DTIM;
@@ -439,7 +451,11 @@ ieee80211_tx_h_multicast_ps_buf(struct ieee80211_tx_data *tx)
 	if (skb_queue_len(&ps->bc_buf) >= AP_MAX_BC_BUFFER) {
 		ps_dbg(tx->sdata,
 		       "BC TX buffer full - dropping the oldest frame\n");
+<<<<<<< HEAD
 		dev_kfree_skb(skb_dequeue(&ps->bc_buf));
+=======
+		ieee80211_free_txskb(&tx->local->hw, skb_dequeue(&ps->bc_buf));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		tx->local->total_ps_buffered++;
 
@@ -1472,9 +1488,22 @@ static int ieee80211_skb_resize(struct ieee80211_sub_if_data *sdata,
 				int head_need, bool may_encrypt)
 {
 	struct ieee80211_local *local = sdata->local;
+<<<<<<< HEAD
 	int tail_need = 0;
 
 	if (may_encrypt && sdata->crypto_tx_tailroom_needed_cnt) {
+=======
+	struct ieee80211_hdr *hdr;
+	bool enc_tailroom;
+	int tail_need = 0;
+
+	hdr = (struct ieee80211_hdr *) skb->data;
+	enc_tailroom = may_encrypt &&
+		       (sdata->crypto_tx_tailroom_needed_cnt ||
+			ieee80211_is_mgmt(hdr->frame_control));
+
+	if (enc_tailroom) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tail_need = IEEE80211_ENCRYPT_TAILROOM;
 		tail_need -= skb_tailroom(skb);
 		tail_need = max_t(int, tail_need, 0);
@@ -1482,8 +1511,12 @@ static int ieee80211_skb_resize(struct ieee80211_sub_if_data *sdata,
 
 	if (skb_cloned(skb) &&
 	    (!(local->hw.flags & IEEE80211_HW_SUPPORTS_CLONED_SKBS) ||
+<<<<<<< HEAD
 	     !skb_clone_writable(skb, ETH_HLEN) ||
 	     sdata->crypto_tx_tailroom_needed_cnt))
+=======
+	     !skb_clone_writable(skb, ETH_HLEN) || enc_tailroom))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		I802_DEBUG_INC(local->tx_expand_skb_head_cloned);
 	else if (head_need || tail_need)
 		I802_DEBUG_INC(local->tx_expand_skb_head);
@@ -3002,7 +3035,11 @@ ieee80211_get_buffered_bc(struct ieee80211_hw *hw,
 			sdata = IEEE80211_DEV_TO_SUB_IF(skb->dev);
 		if (!ieee80211_tx_prepare(sdata, &tx, skb))
 			break;
+<<<<<<< HEAD
 		dev_kfree_skb_any(skb);
+=======
+		ieee80211_free_txskb(hw, skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	info = IEEE80211_SKB_CB(skb);

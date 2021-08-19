@@ -142,6 +142,10 @@ static struct regulator_ops pfuze100_sw_regulator_ops = {
 static struct regulator_ops pfuze100_swb_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
+<<<<<<< HEAD
+=======
+	.is_enabled = regulator_is_enabled_regmap,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.list_voltage = regulator_list_voltage_table,
 	.map_voltage = regulator_map_voltage_ascend,
 	.set_voltage_sel = regulator_set_voltage_sel_regmap,
@@ -497,7 +501,17 @@ static int pfuze100_regulator_probe(struct i2c_client *client,
 
 		/* SW2~SW4 high bit check and modify the voltage value table */
 		if (i >= sw_check_start && i <= sw_check_end) {
+<<<<<<< HEAD
 			regmap_read(pfuze_chip->regmap, desc->vsel_reg, &val);
+=======
+			ret = regmap_read(pfuze_chip->regmap,
+					  desc->vsel_reg, &val);
+			if (ret) {
+				dev_err(&client->dev, "Fails to read from the register.\n");
+				return ret;
+			}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (val & 0x40) {
 				desc->min_uV = 800000;
 				desc->uV_step = 50000;

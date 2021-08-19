@@ -58,9 +58,13 @@
 #define DEFAULT_RP_PERCENT 5
 
 /* The default maximum size of reserved pool in bytes */
+<<<<<<< HEAD
 #define DEFAULT_MAX_RP_SIZE (16*1024*1024)
 
 #define UBIFS_ONE_GIGA (1024*1024*1024)
+=======
+#define DEFAULT_MAX_RP_SIZE (5*1024*1024)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Default time granularity in nanoseconds */
 #define DEFAULT_TIME_GRAN 1000000000
@@ -184,6 +188,7 @@ static int create_default_filesystem(struct ubifs_info *c)
 	sup->time_gran     = cpu_to_le32(DEFAULT_TIME_GRAN);
 	if (c->mount_opts.override_compr)
 		sup->default_compr = cpu_to_le16(c->mount_opts.compr_type);
+<<<<<<< HEAD
 	else {
 #if defined(CONFIG_UBIFS_FS_LZ4K)
 		sup->default_compr = cpu_to_le16(UBIFS_COMPR_LZ4K);
@@ -191,10 +196,15 @@ static int create_default_filesystem(struct ubifs_info *c)
 		sup->default_compr = cpu_to_le16(UBIFS_COMPR_LZO);
 #endif
 	}
+=======
+	else
+		sup->default_compr = cpu_to_le16(UBIFS_COMPR_LZO);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	generate_random_uuid(sup->uuid);
 
 	main_bytes = (long long)main_lebs * c->leb_size;
+<<<<<<< HEAD
 
 	/*If the size of a volume is bigger than 1G, set rp_size to DEFAULT_MAX_RP_SIZE(16M).*/
 	if (main_bytes >= UBIFS_ONE_GIGA)
@@ -204,6 +214,12 @@ static int create_default_filesystem(struct ubifs_info *c)
 
 	sup->rp_size = cpu_to_le64(tmp64);
 	sup->rp_uid = 10010; /*VID_CCCI*/
+=======
+	tmp64 = div_u64(main_bytes * DEFAULT_RP_PERCENT, 100);
+	if (tmp64 > DEFAULT_MAX_RP_SIZE)
+		tmp64 = DEFAULT_MAX_RP_SIZE;
+	sup->rp_size = cpu_to_le64(tmp64);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sup->ro_compat_version = cpu_to_le32(UBIFS_RO_COMPAT_VERSION);
 
 	err = ubifs_write_node(c, sup, UBIFS_SB_NODE_SZ, 0, 0);
@@ -692,6 +708,7 @@ static int fixup_leb(struct ubifs_info *c, int lnum, int len)
 	}
 
 	dbg_mnt("fixup LEB %d, data len %d", lnum, len);
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	if (mutex_trylock(&ubifs_sbuf_mutex) == 0) {
 		atomic_long_inc(&ubifs_sbuf_lock_count);
@@ -700,15 +717,21 @@ static int fixup_leb(struct ubifs_info *c, int lnum, int len)
 		ubifs_err("locked count %ld\n", atomic_long_read(&ubifs_sbuf_lock_count));
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = ubifs_leb_read(c, lnum, c->sbuf, 0, len, 1);
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	err = ubifs_leb_change(c, lnum, c->sbuf, len);
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	mutex_unlock(&ubifs_sbuf_mutex);
 #endif
 	return err;
+=======
+	return ubifs_leb_change(c, lnum, c->sbuf, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

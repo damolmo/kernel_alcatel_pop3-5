@@ -59,6 +59,10 @@ static struct dma_map_ops xen_swiotlb_dma_ops = {
 	.unmap_page = xen_swiotlb_unmap_page,
 	.dma_supported = xen_swiotlb_dma_supported,
 	.set_dma_mask = xen_swiotlb_set_dma_mask,
+<<<<<<< HEAD
+=======
+	.mmap = xen_swiotlb_dma_mmap,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 int __init xen_mm_init(void)

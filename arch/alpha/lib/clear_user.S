@@ -24,6 +24,10 @@
  * Clobbers:
  *	$1,$2,$3,$4,$5,$6
  */
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Allow an exception for an insn; exit if we get one.  */
 #define EX(x,y...)			\
@@ -111,3 +115,7 @@ $exception:
 	ret	$31, ($28), 1	# .. e1 :
 
 	.end __do_clear_user
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__do_clear_user)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

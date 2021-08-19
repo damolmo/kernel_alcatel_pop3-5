@@ -10,6 +10,10 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/cpufreq.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/init.h>
@@ -709,7 +713,11 @@ class_dir_create_and_add(struct class *class, struct kobject *parent_kobj)
 
 	dir = kzalloc(sizeof(*dir), GFP_KERNEL);
 	if (!dir)
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dir->class = class;
 	kobject_init(&dir->kobj, &class_dir_ktype);
@@ -719,7 +727,11 @@ class_dir_create_and_add(struct class *class, struct kobject *parent_kobj)
 	retval = kobject_add(&dir->kobj, parent_kobj, "%s", class->name);
 	if (retval < 0) {
 		kobject_put(&dir->kobj);
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(retval);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return &dir->kobj;
 }
@@ -786,6 +798,7 @@ static struct kobject *get_device_parent(struct device *dev,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void cleanup_glue_dir(struct device *dev, struct kobject *glue_dir)
 {
 	/* see if we live in a "glue" directory */
@@ -794,15 +807,48 @@ static void cleanup_glue_dir(struct device *dev, struct kobject *glue_dir)
 		return;
 
 	mutex_lock(&gdp_mutex);
+=======
+static inline bool live_in_glue_dir(struct kobject *kobj,
+				    struct device *dev)
+{
+	if (!kobj || !dev->class ||
+	    kobj->kset != &dev->class->p->glue_dirs)
+		return false;
+	return true;
+}
+
+static inline struct kobject *get_glue_dir(struct device *dev)
+{
+	return dev->kobj.parent;
+}
+
+/*
+ * make sure cleaning up dir as the last step, we need to make
+ * sure .release handler of kobject is run with holding the
+ * global lock
+ */
+static void cleanup_glue_dir(struct device *dev, struct kobject *glue_dir)
+{
+	/* see if we live in a "glue" directory */
+	if (!live_in_glue_dir(glue_dir, dev))
+		return;
+
+	mutex_lock(&gdp_mutex);
+	if (!kobject_has_children(glue_dir))
+		kobject_del(glue_dir);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kobject_put(glue_dir);
 	mutex_unlock(&gdp_mutex);
 }
 
+<<<<<<< HEAD
 static void cleanup_device_parent(struct device *dev)
 {
 	cleanup_glue_dir(dev, dev->kobj.parent);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int device_add_class_symlinks(struct device *dev)
 {
 	int error;
@@ -966,6 +1012,10 @@ int device_add(struct device *dev)
 	struct kobject *kobj;
 	struct class_interface *class_intf;
 	int error = -EINVAL;
+<<<<<<< HEAD
+=======
+	struct kobject *glue_dir = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev = get_device(dev);
 	if (!dev)
@@ -1000,6 +1050,13 @@ int device_add(struct device *dev)
 
 	parent = get_device(dev->parent);
 	kobj = get_device_parent(dev, parent);
+<<<<<<< HEAD
+=======
+	if (IS_ERR(kobj)) {
+		error = PTR_ERR(kobj);
+		goto parent_error;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (kobj)
 		dev->kobj.parent = kobj;
 
@@ -1010,8 +1067,15 @@ int device_add(struct device *dev)
 	/* first, register with generic layer. */
 	/* we require the name to be set before, and pass NULL */
 	error = kobject_add(&dev->kobj, dev->kobj.parent, NULL);
+<<<<<<< HEAD
 	if (error)
 		goto Error;
+=======
+	if (error) {
+		glue_dir = get_glue_dir(dev);
+		goto Error;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* notify platform of device entry */
 	if (platform_notify)
@@ -1094,9 +1158,17 @@ done:
 	device_remove_file(dev, &dev_attr_uevent);
  attrError:
 	kobject_uevent(&dev->kobj, KOBJ_REMOVE);
+<<<<<<< HEAD
 	kobject_del(&dev->kobj);
  Error:
 	cleanup_device_parent(dev);
+=======
+	glue_dir = get_glue_dir(dev);
+	kobject_del(&dev->kobj);
+ Error:
+	cleanup_glue_dir(dev, glue_dir);
+parent_error:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (parent)
 		put_device(parent);
 name_error:
@@ -1173,6 +1245,10 @@ EXPORT_SYMBOL_GPL(put_device);
 void device_del(struct device *dev)
 {
 	struct device *parent = dev->parent;
+<<<<<<< HEAD
+=======
+	struct kobject *glue_dir = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct class_interface *class_intf;
 
 	/* Notify clients of device removal.  This call must come
@@ -1217,8 +1293,14 @@ void device_del(struct device *dev)
 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
 					     BUS_NOTIFY_REMOVED_DEVICE, dev);
 	kobject_uevent(&dev->kobj, KOBJ_REMOVE);
+<<<<<<< HEAD
 	cleanup_device_parent(dev);
 	kobject_del(&dev->kobj);
+=======
+	glue_dir = get_glue_dir(dev);
+	kobject_del(&dev->kobj);
+	cleanup_glue_dir(dev, glue_dir);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	put_device(parent);
 }
 EXPORT_SYMBOL_GPL(device_del);
@@ -1870,6 +1952,14 @@ int device_move(struct device *dev, struct device *new_parent,
 	device_pm_lock();
 	new_parent = get_device(new_parent);
 	new_parent_kobj = get_device_parent(dev, new_parent);
+<<<<<<< HEAD
+=======
+	if (IS_ERR(new_parent_kobj)) {
+		error = PTR_ERR(new_parent_kobj);
+		put_device(new_parent);
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pr_debug("device: '%s': %s: moving to '%s'\n", dev_name(dev),
 		 __func__, new_parent ? dev_name(new_parent) : "<NULL>");
@@ -1938,6 +2028,11 @@ void device_shutdown(void)
 {
 	struct device *dev, *parent;
 
+<<<<<<< HEAD
+=======
+	cpufreq_suspend();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock(&devices_kset->list_lock);
 	/*
 	 * Walk the devices list backward, shutting down each in turn.

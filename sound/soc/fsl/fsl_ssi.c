@@ -1284,6 +1284,10 @@ static int fsl_ssi_probe(struct platform_device *pdev)
 	struct fsl_ssi_private *ssi_private;
 	int ret = 0;
 	struct device_node *np = pdev->dev.of_node;
+<<<<<<< HEAD
+=======
+	struct device_node *root;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	const struct of_device_id *of_id;
 	const char *p, *sprop;
 	const uint32_t *iprop;
@@ -1325,8 +1329,11 @@ static int fsl_ssi_probe(struct platform_device *pdev)
 				sizeof(fsl_ssi_ac97_dai));
 
 		fsl_ac97_data = ssi_private;
+<<<<<<< HEAD
 
 		snd_soc_set_ac97_ops_of_reset(&fsl_ssi_ac97_ops, pdev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		/* Initialize this copy of the CPU DAI driver structure */
 		memcpy(&ssi_private->cpu_dai_drv, &fsl_ssi_dai_template,
@@ -1392,6 +1399,17 @@ static int fsl_ssi_probe(struct platform_device *pdev)
 			goto error_irqmap;
 	}
 
+<<<<<<< HEAD
+=======
+	if (fsl_ssi_is_ac97(ssi_private)) {
+		ret = snd_soc_set_ac97_ops_of_reset(&fsl_ssi_ac97_ops, pdev);
+		if (ret) {
+			dev_err(&pdev->dev, "could not set AC'97 ops\n");
+			goto error_ac97_ops;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = snd_soc_register_component(&pdev->dev, &fsl_ssi_component,
 					 &ssi_private->cpu_dai_drv, 1);
 	if (ret) {
@@ -1427,7 +1445,13 @@ static int fsl_ssi_probe(struct platform_device *pdev)
 	 * device tree.  We also pass the address of the CPU DAI driver
 	 * structure.
 	 */
+<<<<<<< HEAD
 	sprop = of_get_property(of_find_node_by_path("/"), "compatible", NULL);
+=======
+	root = of_find_node_by_path("/");
+	sprop = of_get_property(root, "compatible", NULL);
+	of_node_put(root);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Sometimes the compatible name has a "fsl," prefix, so we strip it. */
 	p = strrchr(sprop, ',');
 	if (p)
@@ -1457,6 +1481,13 @@ error_irq:
 	snd_soc_unregister_component(&pdev->dev);
 
 error_asoc_register:
+<<<<<<< HEAD
+=======
+	if (fsl_ssi_is_ac97(ssi_private))
+		snd_soc_set_ac97_ops(NULL);
+
+error_ac97_ops:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ssi_private->soc->imx)
 		fsl_ssi_imx_clean(pdev, ssi_private);
 

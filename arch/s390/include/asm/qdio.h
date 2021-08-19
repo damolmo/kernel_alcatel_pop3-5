@@ -271,7 +271,10 @@ struct qdio_outbuf_state {
 	void *user;
 };
 
+<<<<<<< HEAD
 #define QDIO_OUTBUF_STATE_FLAG_NONE	0x00
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define QDIO_OUTBUF_STATE_FLAG_PENDING	0x01
 
 #define CHSC_AC1_INITIATE_INPUTQ	0x80

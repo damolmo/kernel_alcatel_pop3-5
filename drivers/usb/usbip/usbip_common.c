@@ -103,7 +103,11 @@ static void usbip_dump_usb_device(struct usb_device *udev)
 	dev_dbg(dev, "       devnum(%d) devpath(%s) usb speed(%s)",
 		udev->devnum, udev->devpath, usb_speed_string(udev->speed));
 
+<<<<<<< HEAD
 	pr_debug("tt %p, ttport %d\n", udev->tt, udev->ttport);
+=======
+	pr_debug("tt hub ttport %d\n", udev->ttport);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev_dbg(dev, "                    ");
 	for (i = 0; i < 16; i++)
@@ -136,12 +140,17 @@ static void usbip_dump_usb_device(struct usb_device *udev)
 	}
 	pr_debug("\n");
 
+<<<<<<< HEAD
 	dev_dbg(dev, "parent %p, bus %p\n", udev->parent, udev->bus);
 
 	dev_dbg(dev,
 		"descriptor %p, config %p, actconfig %p, rawdescriptors %p\n",
 		&udev->descriptor, udev->config,
 		udev->actconfig, udev->rawdescriptors);
+=======
+	dev_dbg(dev, "parent %s, bus %s\n", dev_name(&udev->parent->dev),
+		udev->bus->bus_name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev_dbg(dev, "have_langid %d, string_langid %d\n",
 		udev->have_langid, udev->string_langid);
@@ -249,9 +258,12 @@ void usbip_dump_urb(struct urb *urb)
 
 	dev = &urb->dev->dev;
 
+<<<<<<< HEAD
 	dev_dbg(dev, "   urb                   :%p\n", urb);
 	dev_dbg(dev, "   dev                   :%p\n", urb->dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usbip_dump_usb_device(urb->dev);
 
 	dev_dbg(dev, "   pipe                  :%08x ", urb->pipe);
@@ -260,11 +272,17 @@ void usbip_dump_urb(struct urb *urb)
 
 	dev_dbg(dev, "   status                :%d\n", urb->status);
 	dev_dbg(dev, "   transfer_flags        :%08X\n", urb->transfer_flags);
+<<<<<<< HEAD
 	dev_dbg(dev, "   transfer_buffer       :%p\n", urb->transfer_buffer);
 	dev_dbg(dev, "   transfer_buffer_length:%d\n",
 						urb->transfer_buffer_length);
 	dev_dbg(dev, "   actual_length         :%d\n", urb->actual_length);
 	dev_dbg(dev, "   setup_packet          :%p\n", urb->setup_packet);
+=======
+	dev_dbg(dev, "   transfer_buffer_length:%d\n",
+						urb->transfer_buffer_length);
+	dev_dbg(dev, "   actual_length         :%d\n", urb->actual_length);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (urb->setup_packet && usb_pipetype(urb->pipe) == PIPE_CONTROL)
 		usbip_dump_usb_ctrlrequest(
@@ -274,8 +292,11 @@ void usbip_dump_urb(struct urb *urb)
 	dev_dbg(dev, "   number_of_packets     :%d\n", urb->number_of_packets);
 	dev_dbg(dev, "   interval              :%d\n", urb->interval);
 	dev_dbg(dev, "   error_count           :%d\n", urb->error_count);
+<<<<<<< HEAD
 	dev_dbg(dev, "   context               :%p\n", urb->context);
 	dev_dbg(dev, "   complete              :%p\n", urb->complete);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(usbip_dump_urb);
 
@@ -328,11 +349,15 @@ int usbip_recv(struct socket *sock, void *buf, int size)
 	struct msghdr msg;
 	struct kvec iov;
 	int total = 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* for blocks of if (usbip_dbg_flag_xmit) */
 	char *bp = buf;
 	int osize = size;
 
+<<<<<<< HEAD
 	usbip_dbg_xmit("enter\n");
 
 	if (!sock || !buf || !size) {
@@ -340,6 +365,12 @@ int usbip_recv(struct socket *sock, void *buf, int size)
 		       size);
 		return -EINVAL;
 	}
+=======
+	if (!sock || !buf || !size)
+		return -EINVAL;
+
+	usbip_dbg_xmit("enter\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	do {
 		sock->sk->sk_allocation = GFP_NOIO;
@@ -352,11 +383,16 @@ int usbip_recv(struct socket *sock, void *buf, int size)
 		msg.msg_flags      = MSG_NOSIGNAL;
 
 		result = kernel_recvmsg(sock, &msg, &iov, 1, size, MSG_WAITALL);
+<<<<<<< HEAD
 		if (result <= 0) {
 			pr_debug("receive sock %p buf %p size %u ret %d total %d\n",
 				 sock, buf, size, result, total);
 			goto err;
 		}
+=======
+		if (result <= 0)
+			goto err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		size -= result;
 		buf += result;
@@ -741,6 +777,20 @@ int usbip_recv_xbuff(struct usbip_device *ud, struct urb *urb)
 	if (!(size > 0))
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (size > urb->transfer_buffer_length) {
+		/* should not happen, probably malicious packet */
+		if (ud->side == USBIP_STUB) {
+			usbip_event_add(ud, SDEV_EVENT_ERROR_TCP);
+			return 0;
+		} else {
+			usbip_event_add(ud, VDEV_EVENT_ERROR_TCP);
+			return -EPIPE;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = usbip_recv(ud->tcp_socket, urb->transfer_buffer, size);
 	if (ret != size) {
 		dev_err(&urb->dev->dev, "recv xbuf, %d\n", ret);

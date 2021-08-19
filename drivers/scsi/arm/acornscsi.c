@@ -2912,8 +2912,15 @@ static int acornscsi_probe(struct expansion_card *ec, const struct ecard_id *id)
 
 	ashost->base = ecardm_iomap(ec, ECARD_RES_MEMC, 0, 0);
 	ashost->fast = ecardm_iomap(ec, ECARD_RES_IOCFAST, 0, 0);
+<<<<<<< HEAD
 	if (!ashost->base || !ashost->fast)
 		goto out_put;
+=======
+	if (!ashost->base || !ashost->fast) {
+		ret = -ENOMEM;
+		goto out_put;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	host->irq = ec->irq;
 	ashost->host = host;

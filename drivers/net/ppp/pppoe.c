@@ -313,7 +313,10 @@ static void pppoe_flush_dev(struct net_device *dev)
 			if (po->pppoe_dev == dev &&
 			    sk->sk_state & (PPPOX_CONNECTED | PPPOX_BOUND | PPPOX_ZOMBIE)) {
 				pppox_unbind_sock(sk);
+<<<<<<< HEAD
 				sk->sk_state = PPPOX_ZOMBIE;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sk->sk_state_change(sk);
 				po->pppoe_dev = NULL;
 				dev_put(dev);
@@ -393,6 +396,11 @@ static int pppoe_rcv_core(struct sock *sk, struct sk_buff *skb)
 
 		if (!__pppoe_xmit(sk_pppox(relay_po), skb))
 			goto abort_put;
+<<<<<<< HEAD
+=======
+
+		sock_put(sk_pppox(relay_po));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		if (sock_queue_rcv_skb(sk, skb))
 			goto abort_kfree;
@@ -473,6 +481,12 @@ static int pppoe_disc_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (!skb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	if (skb->pkt_type != PACKET_HOST)
+		goto abort;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!pskb_may_pull(skb, sizeof(struct pppoe_hdr)))
 		goto abort;
 
@@ -570,7 +584,11 @@ static int pppoe_release(struct socket *sock)
 
 	po = pppox_sk(sk);
 
+<<<<<<< HEAD
 	if (sk->sk_state & (PPPOX_CONNECTED | PPPOX_BOUND | PPPOX_ZOMBIE)) {
+=======
+	if (po->pppoe_dev) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_put(po->pppoe_dev);
 		po->pppoe_dev = NULL;
 	}
@@ -614,6 +632,13 @@ static int pppoe_connect(struct socket *sock, struct sockaddr *uservaddr,
 	lock_sock(sk);
 
 	error = -EINVAL;
+<<<<<<< HEAD
+=======
+
+	if (sockaddr_len != sizeof(struct sockaddr_pppox))
+		goto end;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sp->sa_protocol != PX_PROTO_OE)
 		goto end;
 
@@ -831,6 +856,10 @@ static int pppoe_sendmsg(struct kiocb *iocb, struct socket *sock,
 	struct pppoe_hdr *ph;
 	struct net_device *dev;
 	char *start;
+<<<<<<< HEAD
+=======
+	int hlen;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	lock_sock(sk);
 	if (sock_flag(sk, SOCK_DEAD) || !(sk->sk_state & PPPOX_CONNECTED)) {
@@ -849,16 +878,26 @@ static int pppoe_sendmsg(struct kiocb *iocb, struct socket *sock,
 	if (total_len > (dev->mtu + dev->hard_header_len))
 		goto end;
 
+<<<<<<< HEAD
 
 	skb = sock_wmalloc(sk, total_len + dev->hard_header_len + 32,
 			   0, GFP_KERNEL);
+=======
+	hlen = LL_RESERVED_SPACE(dev);
+	skb = sock_wmalloc(sk, hlen + sizeof(*ph) + total_len +
+			   dev->needed_tailroom, 0, GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!skb) {
 		error = -ENOMEM;
 		goto end;
 	}
 
 	/* Reserve space for headers. */
+<<<<<<< HEAD
 	skb_reserve(skb, dev->hard_header_len);
+=======
+	skb_reserve(skb, hlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	skb_reset_network_header(skb);
 
 	skb->dev = dev;
@@ -919,7 +958,11 @@ static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb)
 	/* Copy the data if there is no space for the header or if it's
 	 * read-only.
 	 */
+<<<<<<< HEAD
 	if (skb_cow_head(skb, sizeof(*ph) + dev->hard_header_len))
+=======
+	if (skb_cow_head(skb, LL_RESERVED_SPACE(dev) + sizeof(*ph)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto abort;
 
 	__skb_push(skb, sizeof(*ph));
@@ -1117,6 +1160,12 @@ static const struct proto_ops pppoe_ops = {
 	.recvmsg	= pppoe_recvmsg,
 	.mmap		= sock_no_mmap,
 	.ioctl		= pppox_ioctl,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= pppox_compat_ioctl,
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct pppox_proto pppoe_proto = {

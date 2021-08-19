@@ -14,7 +14,10 @@ struct thread_info {
 	mm_segment_t addr_limit;	/* user-level address space limit */
 	__u32 cpu;			/* current CPU */
 	int preempt_count;		/* 0=premptable, <0=BUG; will also serve as bh-counter */
+<<<<<<< HEAD
 	struct restart_block restart_block;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define INIT_THREAD_INFO(tsk)			\
@@ -25,9 +28,12 @@ struct thread_info {
 	.cpu		= 0,			\
 	.addr_limit	= KERNEL_DS,		\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
+<<<<<<< HEAD
   	.restart_block	= {			\
 		.fn = do_no_restart_syscall	\
 	}					\
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define init_thread_info        (init_thread_union.thread_info)

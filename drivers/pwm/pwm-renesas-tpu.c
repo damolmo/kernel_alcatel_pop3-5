@@ -423,16 +423,28 @@ static int tpu_probe(struct platform_device *pdev)
 	tpu->chip.base = -1;
 	tpu->chip.npwm = TPU_CHANNEL_MAX;
 
+<<<<<<< HEAD
 	ret = pwmchip_add(&tpu->chip);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to register PWM chip\n");
+=======
+	pm_runtime_enable(&pdev->dev);
+
+	ret = pwmchip_add(&tpu->chip);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to register PWM chip\n");
+		pm_runtime_disable(&pdev->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ret;
 	}
 
 	dev_info(&pdev->dev, "TPU PWM %d registered\n", tpu->pdev->id);
 
+<<<<<<< HEAD
 	pm_runtime_enable(&pdev->dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -442,12 +454,19 @@ static int tpu_remove(struct platform_device *pdev)
 	int ret;
 
 	ret = pwmchip_remove(&tpu->chip);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
 
 	pm_runtime_disable(&pdev->dev);
 
 	return 0;
+=======
+
+	pm_runtime_disable(&pdev->dev);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_OF

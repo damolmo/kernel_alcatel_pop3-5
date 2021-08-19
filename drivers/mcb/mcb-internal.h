@@ -7,6 +7,10 @@
 #define PCI_DEVICE_ID_MEN_CHAMELEON	0x4d45
 #define CHAMELEON_FILENAME_LEN		12
 #define CHAMELEONV2_MAGIC		0xabce
+<<<<<<< HEAD
+=======
+#define CHAM_HEADER_SIZE		0x200
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 enum chameleon_descriptor_type {
 	CHAMELEON_DTYPE_GENERAL = 0x0,

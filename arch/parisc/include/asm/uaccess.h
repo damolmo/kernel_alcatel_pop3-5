@@ -10,6 +10,10 @@
 #include <asm-generic/uaccess-unaligned.h>
 
 #include <linux/bug.h>
+<<<<<<< HEAD
+=======
+#include <linux/string.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define VERIFY_READ 0
 #define VERIFY_WRITE 1
@@ -76,6 +80,10 @@ struct exception_table_entry {
  */
 struct exception_data {
 	unsigned long fault_ip;
+<<<<<<< HEAD
+=======
+	unsigned long fault_gp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long fault_space;
 	unsigned long fault_addr;
 };
@@ -244,13 +252,22 @@ static inline unsigned long __must_check copy_from_user(void *to,
                                           unsigned long n)
 {
         int sz = __compiletime_object_size(to);
+<<<<<<< HEAD
         int ret = -EFAULT;
+=======
+        unsigned long ret = n;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
         if (likely(sz == -1 || !__builtin_constant_p(n) || sz >= n))
                 ret = __copy_from_user(to, from, n);
         else
                 copy_from_user_overflow();
+<<<<<<< HEAD
 
+=======
+	if (unlikely(ret))
+		memset(to + (n - ret), 0, ret);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         return ret;
 }
 

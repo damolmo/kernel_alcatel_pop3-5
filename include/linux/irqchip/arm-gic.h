@@ -18,8 +18,11 @@
 #define GIC_CPU_RUNNINGPRI		0x14
 #define GIC_CPU_HIGHPRI			0x18
 #define GIC_CPU_ALIAS_BINPOINT		0x1c
+<<<<<<< HEAD
 #define GIC_CPU_AIAR			0x20
 #define GIC_CPU_AEOI			0x24
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define GIC_CPU_ACTIVEPRIO		0xd0
 #define GIC_CPU_IDENT			0xfc
 
@@ -93,8 +96,11 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct device_node;
 
 extern struct irq_chip gic_arch_extn;

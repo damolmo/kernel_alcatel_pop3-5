@@ -96,7 +96,11 @@ struct mount_options
 	unsigned long	commit_interval;
 	unsigned long	mount_opt;
 	unsigned int	atime_quantum;
+<<<<<<< HEAD
 	signed short	slot;
+=======
+	unsigned short	slot;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int		localalloc_opt;
 	unsigned int	resv_level;
 	int		dir_resv_level;
@@ -467,9 +471,14 @@ static int ocfs2_init_global_system_inodes(struct ocfs2_super *osb)
 		new = ocfs2_get_system_file_inode(osb, i, osb->slot_num);
 		if (!new) {
 			ocfs2_release_system_inodes(osb);
+<<<<<<< HEAD
 			status = -EINVAL;
 			mlog_errno(status);
 			/* FIXME: Should ERROR_RO_FS */
+=======
+			status = ocfs2_is_soft_readonly(osb) ? -EROFS : -EINVAL;
+			mlog_errno(status);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mlog(ML_ERROR, "Unable to load system inode %d, "
 			     "possibly corrupt fs?", i);
 			goto bail;
@@ -498,7 +507,11 @@ static int ocfs2_init_local_system_inodes(struct ocfs2_super *osb)
 		new = ocfs2_get_system_file_inode(osb, i, osb->slot_num);
 		if (!new) {
 			ocfs2_release_system_inodes(osb);
+<<<<<<< HEAD
 			status = -EINVAL;
+=======
+			status = ocfs2_is_soft_readonly(osb) ? -EROFS : -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			mlog(ML_ERROR, "status=%d, sysfile=%d, slot=%d\n",
 			     status, i, osb->slot_num);
 			goto bail;
@@ -1383,7 +1396,11 @@ static int ocfs2_parse_options(struct super_block *sb,
 				goto bail;
 			}
 			if (option)
+<<<<<<< HEAD
 				mopt->slot = (s16)option;
+=======
+				mopt->slot = (u16)option;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case Opt_commit:
 			option = 0;
@@ -1753,6 +1770,10 @@ static void ocfs2_inode_init_once(void *data)
 
 	oi->ip_blkno = 0ULL;
 	oi->ip_clusters = 0;
+<<<<<<< HEAD
+=======
+	oi->ip_next_orphan = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ocfs2_resv_init_once(&oi->ip_la_data_resv);
 

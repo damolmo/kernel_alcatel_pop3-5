@@ -30,6 +30,10 @@
 
 #define ADT7411_REG_CFG1			0x18
 #define ADT7411_CFG1_START_MONITOR		(1 << 0)
+<<<<<<< HEAD
+=======
+#define ADT7411_CFG1_RESERVED_BIT3		(1 << 3)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define ADT7411_REG_CFG2			0x19
 #define ADT7411_CFG2_DISABLE_AVG		(1 << 5)
@@ -296,8 +300,15 @@ static int adt7411_probe(struct i2c_client *client,
 	mutex_init(&data->device_lock);
 	mutex_init(&data->update_lock);
 
+<<<<<<< HEAD
 	ret = adt7411_modify_bit(client, ADT7411_REG_CFG1,
 				 ADT7411_CFG1_START_MONITOR, 1);
+=======
+	/* According to the datasheet, we must only write 1 to bit 3 */
+	ret = adt7411_modify_bit(client, ADT7411_REG_CFG1,
+				 ADT7411_CFG1_RESERVED_BIT3
+				 | ADT7411_CFG1_START_MONITOR, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret < 0)
 		return ret;
 

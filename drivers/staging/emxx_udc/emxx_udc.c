@@ -3286,7 +3286,11 @@ static void __init nbu2ss_drv_set_ep_info(
 }
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
 static void __init nbu2ss_drv_ep_init(struct nbu2ss_udc *udc)
+=======
+static void nbu2ss_drv_ep_init(struct nbu2ss_udc *udc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int	i;
 
@@ -3302,7 +3306,11 @@ static void __init nbu2ss_drv_ep_init(struct nbu2ss_udc *udc)
 
 /*-------------------------------------------------------------------------*/
 /* platform_driver */
+<<<<<<< HEAD
 static int __init nbu2ss_drv_contest_init(
+=======
+static int nbu2ss_drv_contest_init(
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct platform_device *pdev,
 	struct nbu2ss_udc *udc)
 {

@@ -272,7 +272,11 @@ static void drm_dp_encode_sideband_req(struct drm_dp_sideband_msg_req_body *req,
 			memcpy(&buf[idx], req->u.i2c_read.transactions[i].bytes, req->u.i2c_read.transactions[i].num_bytes);
 			idx += req->u.i2c_read.transactions[i].num_bytes;
 
+<<<<<<< HEAD
 			buf[idx] = (req->u.i2c_read.transactions[i].no_stop_bit & 0x1) << 5;
+=======
+			buf[idx] = (req->u.i2c_read.transactions[i].no_stop_bit & 0x1) << 4;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			buf[idx] |= (req->u.i2c_read.transactions[i].i2c_transaction_delay & 0xf);
 			idx++;
 		}
@@ -330,6 +334,16 @@ static bool drm_dp_sideband_msg_build(struct drm_dp_sideband_msg_rx *msg,
 			return false;
 		}
 
+<<<<<<< HEAD
+=======
+		/*
+		 * ignore out-of-order messages or messages that are part of a
+		 * failed transaction
+		 */
+		if (!recv_hdr.somt && !msg->have_somt)
+			return false;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* get length contained in this portion */
 		msg->curchunk_len = recv_hdr.msg_len;
 		msg->curchunk_hdrlen = hdrlen;
@@ -424,6 +438,10 @@ static bool drm_dp_sideband_parse_remote_dpcd_read(struct drm_dp_sideband_msg_rx
 	if (idx > raw->curlen)
 		goto fail_len;
 	repmsg->u.remote_dpcd_read_ack.num_bytes = raw->msg[idx];
+<<<<<<< HEAD
+=======
+	idx++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (idx > raw->curlen)
 		goto fail_len;
 
@@ -839,6 +857,11 @@ static void drm_dp_put_mst_branch_device(struct drm_dp_mst_branch *mstb)
 
 static void drm_dp_port_teardown_pdt(struct drm_dp_mst_port *port, int old_pdt)
 {
+<<<<<<< HEAD
+=======
+	struct drm_dp_mst_branch *mstb;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (old_pdt) {
 	case DP_PEER_DEVICE_DP_LEGACY_CONV:
 	case DP_PEER_DEVICE_SST_SINK:
@@ -846,8 +869,14 @@ static void drm_dp_port_teardown_pdt(struct drm_dp_mst_port *port, int old_pdt)
 		drm_dp_mst_unregister_i2c_bus(&port->aux);
 		break;
 	case DP_PEER_DEVICE_MST_BRANCHING:
+<<<<<<< HEAD
 		drm_dp_put_mst_branch_device(port->mstb);
 		port->mstb = NULL;
+=======
+		mstb = port->mstb;
+		port->mstb = NULL;
+		drm_dp_put_mst_branch_device(mstb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 }
@@ -953,17 +982,30 @@ static struct drm_dp_mst_port *drm_dp_get_port(struct drm_dp_mst_branch *mstb, u
 static u8 drm_dp_calculate_rad(struct drm_dp_mst_port *port,
 				 u8 *rad)
 {
+<<<<<<< HEAD
 	int lct = port->parent->lct;
 	int shift = 4;
 	int idx = lct / 2;
 	if (lct > 1) {
 		memcpy(rad, port->parent->rad, idx);
 		shift = (lct % 2) ? 4 : 0;
+=======
+	int parent_lct = port->parent->lct;
+	int shift = 4;
+	int idx = (parent_lct - 1) / 2;
+	if (parent_lct > 1) {
+		memcpy(rad, port->parent->rad, idx + 1);
+		shift = (parent_lct % 2) ? 4 : 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		rad[0] = 0;
 
 	rad[idx] |= port->port_num << shift;
+<<<<<<< HEAD
 	return lct + 1;
+=======
+	return parent_lct + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -984,15 +1026,25 @@ static bool drm_dp_port_setup_pdt(struct drm_dp_mst_port *port)
 		lct = drm_dp_calculate_rad(port, rad);
 
 		port->mstb = drm_dp_add_mst_branch_device(lct, rad);
+<<<<<<< HEAD
 		port->mstb->mgr = port->mgr;
 		port->mstb->port_parent = port;
 
 		send_link = true;
+=======
+		if (port->mstb) {
+			port->mstb->mgr = port->mgr;
+			port->mstb->port_parent = port;
+
+			send_link = true;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 	return send_link;
 }
 
+<<<<<<< HEAD
 static void drm_dp_check_port_guid(struct drm_dp_mst_branch *mstb,
 				   struct drm_dp_mst_port *port)
 {
@@ -1005,12 +1057,36 @@ static void drm_dp_check_port_guid(struct drm_dp_mst_branch *mstb,
 						     DP_GUID,
 						     16, port->guid);
 			port->guid_valid = true;
+=======
+static void drm_dp_check_mstb_guid(struct drm_dp_mst_branch *mstb, u8 *guid)
+{
+	int ret;
+
+	memcpy(mstb->guid, guid, 16);
+
+	if (!drm_dp_validate_guid(mstb->mgr, mstb->guid)) {
+		if (mstb->port_parent) {
+			ret = drm_dp_send_dpcd_write(
+					mstb->mgr,
+					mstb->port_parent,
+					DP_GUID,
+					16,
+					mstb->guid);
+		} else {
+
+			ret = drm_dp_dpcd_write(
+					mstb->mgr->aux,
+					DP_GUID,
+					mstb->guid,
+					16);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 }
 
 static void build_mst_prop_path(struct drm_dp_mst_port *port,
 				struct drm_dp_mst_branch *mstb,
+<<<<<<< HEAD
 				char *proppath)
 {
 	int i;
@@ -1024,6 +1100,22 @@ static void build_mst_prop_path(struct drm_dp_mst_port *port,
 	}
 	snprintf(temp, 8, "-%d", port->port_num);
 	strncat(proppath, temp, 255);
+=======
+				char *proppath,
+				size_t proppath_size)
+{
+	int i;
+	char temp[8];
+	snprintf(proppath, proppath_size, "mst:%d", mstb->mgr->conn_base_id);
+	for (i = 0; i < (mstb->lct - 1); i++) {
+		int shift = (i % 2) ? 0 : 4;
+		int port_num = (mstb->rad[i / 2] >> shift) & 0xf;
+		snprintf(temp, sizeof(temp), "-%d", port_num);
+		strlcat(proppath, temp, proppath_size);
+	}
+	snprintf(temp, sizeof(temp), "-%d", port->port_num);
+	strlcat(proppath, temp, proppath_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void drm_dp_add_port(struct drm_dp_mst_branch *mstb,
@@ -1060,7 +1152,10 @@ static void drm_dp_add_port(struct drm_dp_mst_branch *mstb,
 	port->dpcd_rev = port_msg->dpcd_revision;
 	port->num_sdp_streams = port_msg->num_sdp_streams;
 	port->num_sdp_stream_sinks = port_msg->num_sdp_stream_sinks;
+<<<<<<< HEAD
 	memcpy(port->guid, port_msg->peer_guid, 16);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* manage mstb port lists with mgr lock - take a reference
 	   for this list */
@@ -1073,11 +1168,17 @@ static void drm_dp_add_port(struct drm_dp_mst_branch *mstb,
 
 	if (old_ddps != port->ddps) {
 		if (port->ddps) {
+<<<<<<< HEAD
 			drm_dp_check_port_guid(mstb, port);
 			if (!port->input)
 				drm_dp_send_enum_path_resources(mstb->mgr, mstb, port);
 		} else {
 			port->guid_valid = false;
+=======
+			if (!port->input)
+				drm_dp_send_enum_path_resources(mstb->mgr, mstb, port);
+		} else {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			port->available_pbn = 0;
 			}
 	}
@@ -1094,7 +1195,11 @@ static void drm_dp_add_port(struct drm_dp_mst_branch *mstb,
 
 	if (created && !port->input) {
 		char proppath[255];
+<<<<<<< HEAD
 		build_mst_prop_path(port, mstb, proppath);
+=======
+		build_mst_prop_path(port, mstb, proppath, sizeof(proppath));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		port->connector = (*mstb->mgr->cbs->add_connector)(mstb->mgr, port, proppath);
 	}
 
@@ -1122,10 +1227,15 @@ static void drm_dp_update_port(struct drm_dp_mst_branch *mstb,
 
 	if (old_ddps != port->ddps) {
 		if (port->ddps) {
+<<<<<<< HEAD
 			drm_dp_check_port_guid(mstb, port);
 			dowork = true;
 		} else {
 			port->guid_valid = false;
+=======
+			dowork = true;
+		} else {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			port->available_pbn = 0;
 		}
 	}
@@ -1149,11 +1259,24 @@ static struct drm_dp_mst_branch *drm_dp_get_mst_branch_device(struct drm_dp_mst_
 	struct drm_dp_mst_port *port;
 	int i;
 	/* find the port by iterating down */
+<<<<<<< HEAD
 	mstb = mgr->mst_primary;
 
 	for (i = 0; i < lct - 1; i++) {
 		int shift = (i % 2) ? 0 : 4;
 		int port_num = rad[i / 2] >> shift;
+=======
+
+	mutex_lock(&mgr->lock);
+	mstb = mgr->mst_primary;
+
+	if (!mstb)
+		goto out;
+
+	for (i = 0; i < lct - 1; i++) {
+		int shift = (i % 2) ? 0 : 4;
+		int port_num = (rad[i / 2] >> shift) & 0xf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		list_for_each_entry(port, &mstb->ports, next) {
 			if (port->port_num == port_num) {
@@ -1168,6 +1291,53 @@ static struct drm_dp_mst_branch *drm_dp_get_mst_branch_device(struct drm_dp_mst_
 		}
 	}
 	kref_get(&mstb->kref);
+<<<<<<< HEAD
+=======
+out:
+	mutex_unlock(&mgr->lock);
+	return mstb;
+}
+
+static struct drm_dp_mst_branch *get_mst_branch_device_by_guid_helper(
+	struct drm_dp_mst_branch *mstb,
+	uint8_t *guid)
+{
+	struct drm_dp_mst_branch *found_mstb;
+	struct drm_dp_mst_port *port;
+
+	if (memcmp(mstb->guid, guid, 16) == 0)
+		return mstb;
+
+
+	list_for_each_entry(port, &mstb->ports, next) {
+		if (!port->mstb)
+			continue;
+
+		found_mstb = get_mst_branch_device_by_guid_helper(port->mstb, guid);
+
+		if (found_mstb)
+			return found_mstb;
+	}
+
+	return NULL;
+}
+
+static struct drm_dp_mst_branch *drm_dp_get_mst_branch_device_by_guid(
+	struct drm_dp_mst_topology_mgr *mgr,
+	uint8_t *guid)
+{
+	struct drm_dp_mst_branch *mstb;
+
+	/* find the port by iterating down */
+	mutex_lock(&mgr->lock);
+
+	mstb = get_mst_branch_device_by_guid_helper(mgr->mst_primary, guid);
+
+	if (mstb)
+		kref_get(&mstb->kref);
+
+	mutex_unlock(&mgr->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return mstb;
 }
 
@@ -1175,7 +1345,11 @@ static void drm_dp_check_and_send_link_address(struct drm_dp_mst_topology_mgr *m
 					       struct drm_dp_mst_branch *mstb)
 {
 	struct drm_dp_mst_port *port;
+<<<<<<< HEAD
 
+=======
+	struct drm_dp_mst_branch *mstb_child;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!mstb->link_address_sent) {
 		drm_dp_send_link_address(mgr, mstb);
 		mstb->link_address_sent = true;
@@ -1190,17 +1364,42 @@ static void drm_dp_check_and_send_link_address(struct drm_dp_mst_topology_mgr *m
 		if (!port->available_pbn)
 			drm_dp_send_enum_path_resources(mgr, mstb, port);
 
+<<<<<<< HEAD
 		if (port->mstb)
 			drm_dp_check_and_send_link_address(mgr, port->mstb);
+=======
+		if (port->mstb) {
+			mstb_child = drm_dp_get_validated_mstb_ref(mgr, port->mstb);
+			if (mstb_child) {
+				drm_dp_check_and_send_link_address(mgr, mstb_child);
+				drm_dp_put_mst_branch_device(mstb_child);
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
 static void drm_dp_mst_link_probe_work(struct work_struct *work)
 {
 	struct drm_dp_mst_topology_mgr *mgr = container_of(work, struct drm_dp_mst_topology_mgr, work);
+<<<<<<< HEAD
 
 	drm_dp_check_and_send_link_address(mgr, mgr->mst_primary);
 
+=======
+	struct drm_dp_mst_branch *mstb;
+
+	mutex_lock(&mgr->lock);
+	mstb = mgr->mst_primary;
+	if (mstb) {
+		kref_get(&mstb->kref);
+	}
+	mutex_unlock(&mgr->lock);
+	if (mstb) {
+		drm_dp_check_and_send_link_address(mgr, mstb);
+		drm_dp_put_mst_branch_device(mstb);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static bool drm_dp_validate_guid(struct drm_dp_mst_topology_mgr *mgr,
@@ -1255,7 +1454,10 @@ retry:
 				goto retry;
 			}
 			DRM_DEBUG_KMS("failed to dpcd write %d %d\n", tosend, ret);
+<<<<<<< HEAD
 			WARN(1, "fail\n");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			return -EIO;
 		}
@@ -1269,6 +1471,10 @@ static int set_hdr_from_dst_qlock(struct drm_dp_sideband_msg_hdr *hdr,
 				  struct drm_dp_sideband_msg_tx *txmsg)
 {
 	struct drm_dp_mst_branch *mstb = txmsg->dst;
+<<<<<<< HEAD
+=======
+	u8 req_type;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* both msg slots are full */
 	if (txmsg->seqno == -1) {
@@ -1285,7 +1491,17 @@ static int set_hdr_from_dst_qlock(struct drm_dp_sideband_msg_hdr *hdr,
 			txmsg->seqno = 1;
 		mstb->tx_slots[txmsg->seqno] = txmsg;
 	}
+<<<<<<< HEAD
 	hdr->broadcast = 0;
+=======
+
+	req_type = txmsg->msg[0] & 0x7f;
+	if (req_type == DP_CONNECTION_STATUS_NOTIFY ||
+		req_type == DP_RESOURCE_STATUS_NOTIFY)
+		hdr->broadcast = 1;
+	else
+		hdr->broadcast = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hdr->path_msg = txmsg->path_msg;
 	hdr->lct = mstb->lct;
 	hdr->lcr = mstb->lct - 1;
@@ -1386,6 +1602,7 @@ static void process_single_down_tx_qlock(struct drm_dp_mst_topology_mgr *mgr)
 }
 
 /* called holding qlock */
+<<<<<<< HEAD
 static void process_single_up_tx_qlock(struct drm_dp_mst_topology_mgr *mgr)
 {
 	struct drm_dp_sideband_msg_tx *txmsg;
@@ -1406,6 +1623,20 @@ static void process_single_up_tx_qlock(struct drm_dp_mst_topology_mgr *mgr)
 	} else if (ret)
 		DRM_DEBUG_KMS("failed to send msg in q %d\n", ret);
 	mgr->tx_up_in_progress = true;
+=======
+static void process_single_up_tx_qlock(struct drm_dp_mst_topology_mgr *mgr,
+				       struct drm_dp_sideband_msg_tx *txmsg)
+{
+	int ret;
+
+	/* construct a chunk from the first msg in the tx_msg queue */
+	ret = process_single_tx_qlock(mgr, txmsg, true);
+
+	if (ret != 1)
+		DRM_DEBUG_KMS("failed to send msg in q %d\n", ret);
+
+	txmsg->dst->tx_slots[txmsg->seqno] = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void drm_dp_queue_down_tx(struct drm_dp_mst_topology_mgr *mgr,
@@ -1454,6 +1685,12 @@ static int drm_dp_send_link_address(struct drm_dp_mst_topology_mgr *mgr,
 				       txmsg->reply.u.link_addr.ports[i].num_sdp_streams,
 				       txmsg->reply.u.link_addr.ports[i].num_sdp_stream_sinks);
 			}
+<<<<<<< HEAD
+=======
+
+			drm_dp_check_mstb_guid(mstb, txmsg->reply.u.link_addr.guid);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			for (i = 0; i < txmsg->reply.u.link_addr.nports; i++) {
 				drm_dp_add_port(mstb, mgr->dev, &txmsg->reply.u.link_addr.ports[i]);
 			}
@@ -1509,9 +1746,21 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
 	struct drm_dp_mst_branch *mstb;
 	int len, ret;
 
+<<<<<<< HEAD
 	mstb = drm_dp_get_validated_mstb_ref(mgr, port->parent);
 	if (!mstb)
 		return -EINVAL;
+=======
+	port = drm_dp_get_validated_port_ref(mgr, port);
+	if (!port)
+		return -EINVAL;
+
+	mstb = drm_dp_get_validated_mstb_ref(mgr, port->parent);
+	if (!mstb) {
+		drm_dp_put_port(port);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
 	if (!txmsg) {
@@ -1536,6 +1785,10 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
 	kfree(txmsg);
 fail_put:
 	drm_dp_put_mst_branch_device(mstb);
+<<<<<<< HEAD
+=======
+	drm_dp_put_port(port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -1618,7 +1871,17 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr)
 		req_payload.start_slot = cur_slots;
 		if (mgr->proposed_vcpis[i]) {
 			port = container_of(mgr->proposed_vcpis[i], struct drm_dp_mst_port, vcpi);
+<<<<<<< HEAD
 			req_payload.num_slots = mgr->proposed_vcpis[i]->num_slots;
+=======
+			port = drm_dp_get_validated_port_ref(mgr, port);
+			if (!port) {
+				mutex_unlock(&mgr->payload_lock);
+				return -EINVAL;
+			}
+			req_payload.num_slots = mgr->proposed_vcpis[i]->num_slots;
+			req_payload.vcpi = mgr->proposed_vcpis[i]->vcpi;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			port = NULL;
 			req_payload.num_slots = 0;
@@ -1634,15 +1897,28 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr)
 			if (req_payload.num_slots) {
 				drm_dp_create_payload_step1(mgr, mgr->proposed_vcpis[i]->vcpi, &req_payload);
 				mgr->payloads[i].num_slots = req_payload.num_slots;
+<<<<<<< HEAD
 			} else if (mgr->payloads[i].num_slots) {
 				mgr->payloads[i].num_slots = 0;
 				drm_dp_destroy_payload_step1(mgr, port, port->vcpi.vcpi, &mgr->payloads[i]);
+=======
+				mgr->payloads[i].vcpi = req_payload.vcpi;
+			} else if (mgr->payloads[i].num_slots) {
+				mgr->payloads[i].num_slots = 0;
+				drm_dp_destroy_payload_step1(mgr, port, mgr->payloads[i].vcpi, &mgr->payloads[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				req_payload.payload_state = mgr->payloads[i].payload_state;
 				mgr->payloads[i].start_slot = 0;
 			}
 			mgr->payloads[i].payload_state = req_payload.payload_state;
 		}
 		cur_slots += req_payload.num_slots;
+<<<<<<< HEAD
+=======
+
+		if (port)
+			drm_dp_put_port(port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	for (i = 0; i < mgr->max_payloads; i++) {
@@ -1790,6 +2066,7 @@ static int drm_dp_send_up_ack_reply(struct drm_dp_mst_topology_mgr *mgr,
 	drm_dp_encode_up_ack_reply(txmsg, req_type);
 
 	mutex_lock(&mgr->qlock);
+<<<<<<< HEAD
 	list_add_tail(&txmsg->next, &mgr->tx_msg_upq);
 	if (!mgr->tx_up_in_progress) {
 		process_single_up_tx_qlock(mgr);
@@ -1819,6 +2096,28 @@ static bool drm_dp_get_vc_payload_bw(int dp_link_bw,
 		break;
 	}
 	return true;
+=======
+
+	process_single_up_tx_qlock(mgr, txmsg);
+
+	mutex_unlock(&mgr->qlock);
+
+	kfree(txmsg);
+	return 0;
+}
+
+static int drm_dp_get_vc_payload_bw(int dp_link_bw, int dp_link_count)
+{
+	switch (dp_link_bw) {
+	case DP_LINK_BW_1_62:
+		return 3 * dp_link_count;
+	case DP_LINK_BW_2_7:
+		return 5 * dp_link_count;
+	case DP_LINK_BW_5_4:
+		return 10 * dp_link_count;
+	}
+	BUG();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1834,6 +2133,10 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 	int ret = 0;
 	struct drm_dp_mst_branch *mstb = NULL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&mgr->payload_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&mgr->lock);
 	if (mst_state == mgr->mst_state)
 		goto out_unlock;
@@ -1850,6 +2153,7 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 			goto out_unlock;
 		}
 
+<<<<<<< HEAD
 		if (!drm_dp_get_vc_payload_bw(mgr->dpcd[1],
 					      mgr->dpcd[2] & DP_MAX_LANE_COUNT_MASK,
 					      &mgr->pbn_div)) {
@@ -1857,6 +2161,9 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 			goto out_unlock;
 		}
 
+=======
+		mgr->pbn_div = drm_dp_get_vc_payload_bw(mgr->dpcd[1], mgr->dpcd[2] & DP_MAX_LANE_COUNT_MASK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mgr->total_pbn = 2560;
 		mgr->total_slots = DIV_ROUND_UP(mgr->total_pbn, mgr->pbn_div);
 		mgr->avail_slots = mgr->total_slots;
@@ -1873,6 +2180,7 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 		mgr->mst_primary = mstb;
 		kref_get(&mgr->mst_primary->kref);
 
+<<<<<<< HEAD
 		{
 			struct drm_dp_payload reset_pay;
 			reset_pay.start_slot = 0;
@@ -1882,10 +2190,15 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 
 		ret = drm_dp_dpcd_writeb(mgr->aux, DP_MSTM_CTRL,
 					 DP_MST_EN | DP_UP_REQ_EN | DP_UPSTREAM_IS_SRC);
+=======
+		ret = drm_dp_dpcd_writeb(mgr->aux, DP_MSTM_CTRL,
+							 DP_MST_EN | DP_UP_REQ_EN | DP_UPSTREAM_IS_SRC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret < 0) {
 			goto out_unlock;
 		}
 
+<<<<<<< HEAD
 
 		/* sort out guid */
 		ret = drm_dp_dpcd_read(mgr->aux, DP_GUID, mgr->guid, 16);
@@ -1898,6 +2211,13 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 		if (!mgr->guid_valid) {
 			ret = drm_dp_dpcd_write(mgr->aux, DP_GUID, mgr->guid, 16);
 			mgr->guid_valid = true;
+=======
+		{
+			struct drm_dp_payload reset_pay;
+			reset_pay.start_slot = 0;
+			reset_pay.num_slots = 0x3f;
+			drm_dp_dpcd_write_payload(mgr, 0, &reset_pay);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		queue_work(system_long_wq, &mgr->work);
@@ -1910,7 +2230,14 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 		/* this can fail if the device is gone */
 		drm_dp_dpcd_writeb(mgr->aux, DP_MSTM_CTRL, 0);
 		ret = 0;
+<<<<<<< HEAD
 		memset(mgr->payloads, 0, mgr->max_payloads * sizeof(struct drm_dp_payload));
+=======
+		memset(mgr->payloads, 0,
+		       mgr->max_payloads * sizeof(mgr->payloads[0]));
+		memset(mgr->proposed_vcpis, 0,
+		       mgr->max_payloads * sizeof(mgr->proposed_vcpis[0]));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		mgr->payload_mask = 0;
 		set_bit(0, &mgr->payload_mask);
 		mgr->vcpi_mask = 0;
@@ -1918,6 +2245,10 @@ int drm_dp_mst_topology_mgr_set_mst(struct drm_dp_mst_topology_mgr *mgr, bool ms
 
 out_unlock:
 	mutex_unlock(&mgr->lock);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&mgr->payload_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (mstb)
 		drm_dp_put_mst_branch_device(mstb);
 	return ret;
@@ -1959,6 +2290,11 @@ int drm_dp_mst_topology_mgr_resume(struct drm_dp_mst_topology_mgr *mgr)
 
 	if (mgr->mst_primary) {
 		int sret;
+<<<<<<< HEAD
+=======
+		u8 guid[16];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sret = drm_dp_dpcd_read(mgr->aux, DP_DPCD_REV, mgr->dpcd, DP_RECEIVER_CAP_SIZE);
 		if (sret != DP_RECEIVER_CAP_SIZE) {
 			DRM_DEBUG_KMS("dpcd read failed - undocked during suspend?\n");
@@ -1973,6 +2309,19 @@ int drm_dp_mst_topology_mgr_resume(struct drm_dp_mst_topology_mgr *mgr)
 			ret = -1;
 			goto out_unlock;
 		}
+<<<<<<< HEAD
+=======
+
+		/* Some hubs forget their guids after they resume */
+		sret = drm_dp_dpcd_read(mgr->aux, DP_GUID, guid, 16);
+		if (sret != 16) {
+			DRM_DEBUG_KMS("dpcd read failed - undocked during suspend?\n");
+			ret = -1;
+			goto out_unlock;
+		}
+		drm_dp_check_mstb_guid(mgr->mst_primary, guid);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = 0;
 	} else
 		ret = -1;
@@ -1983,7 +2332,11 @@ out_unlock:
 }
 EXPORT_SYMBOL(drm_dp_mst_topology_mgr_resume);
 
+<<<<<<< HEAD
 static void drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up)
+=======
+static bool drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int len;
 	u8 replyblock[32];
@@ -1998,12 +2351,20 @@ static void drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up)
 			       replyblock, len);
 	if (ret != len) {
 		DRM_DEBUG_KMS("failed to read DPCD down rep %d %d\n", len, ret);
+<<<<<<< HEAD
 		return;
+=======
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	ret = drm_dp_sideband_msg_build(msg, replyblock, len, true);
 	if (!ret) {
 		DRM_DEBUG_KMS("sideband msg build failed %d\n", replyblock[0]);
+<<<<<<< HEAD
 		return;
+=======
+		return false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	replylen = msg->curchunk_len + msg->curchunk_hdrlen;
 
@@ -2015,6 +2376,7 @@ static void drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up)
 		ret = drm_dp_dpcd_read(mgr->aux, basereg + curreply,
 				    replyblock, len);
 		if (ret != len) {
+<<<<<<< HEAD
 			DRM_DEBUG_KMS("failed to read a chunk\n");
 		}
 		ret = drm_dp_sideband_msg_build(msg, replyblock, len, false);
@@ -2023,13 +2385,38 @@ static void drm_dp_get_one_sb_msg(struct drm_dp_mst_topology_mgr *mgr, bool up)
 		curreply += len;
 		replylen -= len;
 	}
+=======
+			DRM_DEBUG_KMS("failed to read a chunk (len %d, ret %d)\n",
+				      len, ret);
+			return false;
+		}
+
+		ret = drm_dp_sideband_msg_build(msg, replyblock, len, false);
+		if (!ret) {
+			DRM_DEBUG_KMS("failed to build sideband msg\n");
+			return false;
+		}
+
+		curreply += len;
+		replylen -= len;
+	}
+	return true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int drm_dp_mst_handle_down_rep(struct drm_dp_mst_topology_mgr *mgr)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	drm_dp_get_one_sb_msg(mgr, false);
+=======
+	if (!drm_dp_get_one_sb_msg(mgr, false)) {
+		memset(&mgr->down_rep_recv, 0,
+		       sizeof(struct drm_dp_sideband_msg_rx));
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (mgr->down_rep_recv.have_eomt) {
 		struct drm_dp_sideband_msg_tx *txmsg;
@@ -2085,6 +2472,7 @@ static int drm_dp_mst_handle_down_rep(struct drm_dp_mst_topology_mgr *mgr)
 static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	drm_dp_get_one_sb_msg(mgr, true);
 
 	if (mgr->up_req_recv.have_eomt) {
@@ -2098,23 +2486,81 @@ static int drm_dp_mst_handle_up_req(struct drm_dp_mst_topology_mgr *mgr)
 			DRM_DEBUG_KMS("Got MST reply from unknown device %d\n", mgr->up_req_recv.initial_hdr.lct);
 			memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
 			return 0;
+=======
+
+	if (!drm_dp_get_one_sb_msg(mgr, true)) {
+		memset(&mgr->up_req_recv, 0,
+		       sizeof(struct drm_dp_sideband_msg_rx));
+		return 0;
+	}
+
+	if (mgr->up_req_recv.have_eomt) {
+		struct drm_dp_sideband_msg_req_body msg;
+		struct drm_dp_mst_branch *mstb = NULL;
+		bool seqno;
+
+		if (!mgr->up_req_recv.initial_hdr.broadcast) {
+			mstb = drm_dp_get_mst_branch_device(mgr,
+							    mgr->up_req_recv.initial_hdr.lct,
+							    mgr->up_req_recv.initial_hdr.rad);
+			if (!mstb) {
+				DRM_DEBUG_KMS("Got MST reply from unknown device %d\n", mgr->up_req_recv.initial_hdr.lct);
+				memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
+				return 0;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		seqno = mgr->up_req_recv.initial_hdr.seqno;
 		drm_dp_sideband_parse_req(&mgr->up_req_recv, &msg);
 
 		if (msg.req_type == DP_CONNECTION_STATUS_NOTIFY) {
+<<<<<<< HEAD
 			drm_dp_send_up_ack_reply(mgr, mstb, msg.req_type, seqno, false);
 			drm_dp_update_port(mstb, &msg.u.conn_stat);
+=======
+			drm_dp_send_up_ack_reply(mgr, mgr->mst_primary, msg.req_type, seqno, false);
+
+			if (!mstb)
+				mstb = drm_dp_get_mst_branch_device_by_guid(mgr, msg.u.conn_stat.guid);
+
+			if (!mstb) {
+				DRM_DEBUG_KMS("Got MST reply from unknown device %d\n", mgr->up_req_recv.initial_hdr.lct);
+				memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
+				return 0;
+			}
+
+			drm_dp_update_port(mstb, &msg.u.conn_stat);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			DRM_DEBUG_KMS("Got CSN: pn: %d ldps:%d ddps: %d mcs: %d ip: %d pdt: %d\n", msg.u.conn_stat.port_number, msg.u.conn_stat.legacy_device_plug_status, msg.u.conn_stat.displayport_device_plug_status, msg.u.conn_stat.message_capability_status, msg.u.conn_stat.input_port, msg.u.conn_stat.peer_device_type);
 			(*mgr->cbs->hotplug)(mgr);
 
 		} else if (msg.req_type == DP_RESOURCE_STATUS_NOTIFY) {
+<<<<<<< HEAD
 			drm_dp_send_up_ack_reply(mgr, mstb, msg.req_type, seqno, false);
 			DRM_DEBUG_KMS("Got RSN: pn: %d avail_pbn %d\n", msg.u.resource_stat.port_number, msg.u.resource_stat.available_pbn);
 		}
 
 		drm_dp_put_mst_branch_device(mstb);
+=======
+			drm_dp_send_up_ack_reply(mgr, mgr->mst_primary, msg.req_type, seqno, false);
+			if (!mstb)
+				mstb = drm_dp_get_mst_branch_device_by_guid(mgr, msg.u.resource_stat.guid);
+
+			if (!mstb) {
+				DRM_DEBUG_KMS("Got MST reply from unknown device %d\n", mgr->up_req_recv.initial_hdr.lct);
+				memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
+				return 0;
+			}
+
+			DRM_DEBUG_KMS("Got RSN: pn: %d avail_pbn %d\n", msg.u.resource_stat.port_number, msg.u.resource_stat.available_pbn);
+		}
+
+		if (mstb)
+			drm_dp_put_mst_branch_device(mstb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memset(&mgr->up_req_recv, 0, sizeof(struct drm_dp_sideband_msg_rx));
 	}
 	return ret;
@@ -2280,6 +2726,10 @@ bool drm_dp_mst_allocate_vcpi(struct drm_dp_mst_topology_mgr *mgr, struct drm_dp
 		DRM_DEBUG_KMS("payload: vcpi %d already allocated for pbn %d - requested pbn %d\n", port->vcpi.vcpi, port->vcpi.pbn, pbn);
 		if (pbn == port->vcpi.pbn) {
 			*slots = port->vcpi.num_slots;
+<<<<<<< HEAD
+=======
+			drm_dp_put_port(port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return true;
 		}
 	}
@@ -2387,6 +2837,7 @@ fail:
  */
 int drm_dp_check_act_status(struct drm_dp_mst_topology_mgr *mgr)
 {
+<<<<<<< HEAD
 	u8 status;
 	int ret;
 	int count = 0;
@@ -2397,12 +2848,26 @@ int drm_dp_check_act_status(struct drm_dp_mst_topology_mgr *mgr)
 		if (ret < 0) {
 			DRM_DEBUG_KMS("failed to read payload table status %d\n", ret);
 			goto fail;
+=======
+	int count = 0, ret;
+	u8 status;
+
+	do {
+		ret = drm_dp_dpcd_readb(mgr->aux,
+					DP_PAYLOAD_TABLE_UPDATE_STATUS,
+					&status);
+		if (ret < 0) {
+			DRM_DEBUG_KMS("failed to read payload table status %d\n",
+				      ret);
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (status & DP_PAYLOAD_ACT_HANDLED)
 			break;
 		count++;
 		udelay(100);
+<<<<<<< HEAD
 
 	} while (count < 30);
 
@@ -2414,6 +2879,16 @@ int drm_dp_check_act_status(struct drm_dp_mst_topology_mgr *mgr)
 	return 0;
 fail:
 	return ret;
+=======
+	} while (count < 30);
+
+	if (!(status & DP_PAYLOAD_ACT_HANDLED)) {
+		DRM_DEBUG_KMS("failed to get ACT bit %d after %d retries\n",
+			      status, count);
+		return -EINVAL;
+	}
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_dp_check_act_status);
 
@@ -2426,6 +2901,7 @@ EXPORT_SYMBOL(drm_dp_check_act_status);
  */
 int drm_dp_calc_pbn_mode(int clock, int bpp)
 {
+<<<<<<< HEAD
 	fixed20_12 pix_bw;
 	fixed20_12 fbpp;
 	fixed20_12 result;
@@ -2452,6 +2928,33 @@ int drm_dp_calc_pbn_mode(int clock, int bpp)
 	result.full = dfixed_ceil(result);
 	res = dfixed_trunc(result);
 	return res;
+=======
+	u64 kbps;
+	s64 peak_kbps;
+	u32 numerator;
+	u32 denominator;
+
+	kbps = clock * bpp;
+
+	/*
+	 * margin 5300ppm + 300ppm ~ 0.6% as per spec, factor is 1.006
+	 * The unit of 54/64Mbytes/sec is an arbitrary unit chosen based on
+	 * common multiplier to render an integer PBN for all link rate/lane
+	 * counts combinations
+	 * calculate
+	 * peak_kbps *= (1006/1000)
+	 * peak_kbps *= (64/54)
+	 * peak_kbps *= 8    convert to bytes
+	 */
+
+	numerator = 64 * 1006;
+	denominator = 54 * 8 * 1000 * 1000;
+
+	kbps *= numerator;
+	peak_kbps = drm_fixp_from_fraction(kbps, denominator);
+
+	return drm_fixp2int_ceil(peak_kbps);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_dp_calc_pbn_mode);
 
@@ -2459,11 +2962,31 @@ static int test_calc_pbn_mode(void)
 {
 	int ret;
 	ret = drm_dp_calc_pbn_mode(154000, 30);
+<<<<<<< HEAD
 	if (ret != 689)
 		return -EINVAL;
 	ret = drm_dp_calc_pbn_mode(234000, 30);
 	if (ret != 1047)
 		return -EINVAL;
+=======
+	if (ret != 689) {
+		DRM_ERROR("PBN calculation test failed - clock %d, bpp %d, expected PBN %d, actual PBN %d.\n",
+				154000, 30, 689, ret);
+		return -EINVAL;
+	}
+	ret = drm_dp_calc_pbn_mode(234000, 30);
+	if (ret != 1047) {
+		DRM_ERROR("PBN calculation test failed - clock %d, bpp %d, expected PBN %d, actual PBN %d.\n",
+				234000, 30, 1047, ret);
+		return -EINVAL;
+	}
+	ret = drm_dp_calc_pbn_mode(297000, 24);
+	if (ret != 1063) {
+		DRM_ERROR("PBN calculation test failed - clock %d, bpp %d, expected PBN %d, actual PBN %d.\n",
+				297000, 24, 1063, ret);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -2613,7 +3136,10 @@ int drm_dp_mst_topology_mgr_init(struct drm_dp_mst_topology_mgr *mgr,
 	mutex_init(&mgr->lock);
 	mutex_init(&mgr->qlock);
 	mutex_init(&mgr->payload_lock);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&mgr->tx_msg_upq);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&mgr->tx_msg_downq);
 	INIT_WORK(&mgr->work, drm_dp_mst_link_probe_work);
 	INIT_WORK(&mgr->tx_work, drm_dp_tx_work);
@@ -2688,6 +3214,10 @@ static int drm_dp_mst_i2c_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs
 		msg.u.i2c_read.transactions[i].i2c_dev_id = msgs[i].addr;
 		msg.u.i2c_read.transactions[i].num_bytes = msgs[i].len;
 		msg.u.i2c_read.transactions[i].bytes = msgs[i].buf;
+<<<<<<< HEAD
+=======
+		msg.u.i2c_read.transactions[i].no_stop_bit = !(msgs[i].flags & I2C_M_STOP);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	msg.u.i2c_read.read_i2c_device_id = msgs[num - 1].addr;
 	msg.u.i2c_read.num_bytes_read = msgs[num - 1].len;

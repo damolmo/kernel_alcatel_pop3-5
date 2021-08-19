@@ -202,6 +202,10 @@ journal_err_out:
 static int uuid_is_zero(__u8 u[16])
 {
 	int	i;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < 16; i++)
 		if (u[i])
 			return 0;
@@ -587,7 +591,11 @@ group_add_out:
 		if (err == 0)
 			err = err2;
 		mnt_drop_write_file(filp);
+<<<<<<< HEAD
 		if (!err && (o_group > EXT4_SB(sb)->s_groups_count) &&
+=======
+		if (!err && (o_group < EXT4_SB(sb)->s_groups_count) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    ext4_has_group_desc_csum(sb) &&
 		    test_opt(sb, INIT_INODE_TABLE))
 			err = ext4_register_li_request(sb, o_group);
@@ -643,7 +651,21 @@ resizefs_out:
 			goto encryption_policy_out;
 		}
 
+<<<<<<< HEAD
 		err = ext4_process_policy(&policy, inode);
+=======
+		err = mnt_want_write_file(filp);
+		if (err)
+			goto encryption_policy_out;
+
+		mutex_lock(&inode->i_mutex);
+
+		err = ext4_process_policy(&policy, inode);
+
+		mutex_unlock(&inode->i_mutex);
+
+		mnt_drop_write_file(filp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 encryption_policy_out:
 		return err;
 #else
@@ -669,7 +691,14 @@ encryption_policy_out:
 			err = ext4_journal_get_write_access(handle, sbi->s_sbh);
 			if (err)
 				goto pwsalt_err_journal;
+<<<<<<< HEAD
 			generate_random_uuid(sbi->s_es->s_encrypt_pw_salt);
+=======
+			lock_buffer(sbi->s_sbh);
+			generate_random_uuid(sbi->s_es->s_encrypt_pw_salt);
+			ext4_superblock_csum_set(sb);
+			unlock_buffer(sbi->s_sbh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = ext4_handle_dirty_metadata(handle, NULL,
 							 sbi->s_sbh);
 		pwsalt_err_journal:
@@ -681,8 +710,13 @@ encryption_policy_out:
 			if (err)
 				return err;
 		}
+<<<<<<< HEAD
 		if (copy_to_user((void *) arg, sbi->s_es->s_encrypt_pw_salt,
 				 16))
+=======
+		if (copy_to_user((void __user *) arg,
+				 sbi->s_es->s_encrypt_pw_salt, 16))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EFAULT;
 		return 0;
 	}
@@ -696,7 +730,11 @@ encryption_policy_out:
 		err = ext4_get_policy(inode, &policy);
 		if (err)
 			return err;
+<<<<<<< HEAD
 		if (copy_to_user((void *)arg, &policy, sizeof(policy)))
+=======
+		if (copy_to_user((void __user *)arg, &policy, sizeof(policy)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EFAULT;
 		return 0;
 #else

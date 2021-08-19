@@ -20,6 +20,7 @@
 /* Access user memory, but use MMU to avoid propagating kernel exceptions. */
 
 /*
+<<<<<<< HEAD
  * strnlen_user_asm takes the pointer in r0, and the length bound in r1.
  * It returns the length, including the terminating NUL, or zero on exception.
  * If length is greater than the bound, returns one plus the bound.
@@ -66,6 +67,8 @@ strncpy_from_user_fault:
 	.popsection
 
 /*
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * clear_user_asm takes the user target address in r0 and the
  * number of bytes to zero in r1.
  * It returns the number of uncopiable bytes (hopefully zero) in r0.

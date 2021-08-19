@@ -159,7 +159,11 @@ static inline int get_recursion_context(int *recursion)
 		rctx = 3;
 	else if (in_irq())
 		rctx = 2;
+<<<<<<< HEAD
 	else if (in_softirq())
+=======
+	else if (in_serving_softirq())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rctx = 1;
 	else
 		rctx = 0;

@@ -50,6 +50,10 @@ struct vhci_data {
 	wait_queue_head_t read_wait;
 	struct sk_buff_head readq;
 
+<<<<<<< HEAD
+=======
+	struct mutex open_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct delayed_work open_timeout;
 };
 
@@ -95,12 +99,22 @@ static int vhci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int vhci_create_device(struct vhci_data *data, __u8 opcode)
+=======
+static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct hci_dev *hdev;
 	struct sk_buff *skb;
 	__u8 dev_type;
 
+<<<<<<< HEAD
+=======
+	if (data->hdev)
+		return -EBADFD;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* bits 0-1 are dev_type (BR/EDR or AMP) */
 	dev_type = opcode & 0x03;
 
@@ -159,6 +173,20 @@ static int vhci_create_device(struct vhci_data *data, __u8 opcode)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int vhci_create_device(struct vhci_data *data, __u8 opcode)
+{
+	int err;
+
+	mutex_lock(&data->open_mutex);
+	err = __vhci_create_device(data, opcode);
+	mutex_unlock(&data->open_mutex);
+
+	return err;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline ssize_t vhci_get_user(struct vhci_data *data,
 				    struct iov_iter *from)
 {
@@ -197,11 +225,14 @@ static inline ssize_t vhci_get_user(struct vhci_data *data,
 		break;
 
 	case HCI_VENDOR_PKT:
+<<<<<<< HEAD
 		if (data->hdev) {
 			kfree_skb(skb);
 			return -EBADFD;
 		}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cancel_delayed_work_sync(&data->open_timeout);
 
 		opcode = *((__u8 *) skb->data);
@@ -328,6 +359,10 @@ static int vhci_open(struct inode *inode, struct file *file)
 	skb_queue_head_init(&data->readq);
 	init_waitqueue_head(&data->read_wait);
 
+<<<<<<< HEAD
+=======
+	mutex_init(&data->open_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_DELAYED_WORK(&data->open_timeout, vhci_open_timeout);
 
 	file->private_data = data;
@@ -341,15 +376,28 @@ static int vhci_open(struct inode *inode, struct file *file)
 static int vhci_release(struct inode *inode, struct file *file)
 {
 	struct vhci_data *data = file->private_data;
+<<<<<<< HEAD
 	struct hci_dev *hdev = data->hdev;
 
 	cancel_delayed_work_sync(&data->open_timeout);
 
+=======
+	struct hci_dev *hdev;
+
+	cancel_delayed_work_sync(&data->open_timeout);
+
+	hdev = data->hdev;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (hdev) {
 		hci_unregister_dev(hdev);
 		hci_free_dev(hdev);
 	}
 
+<<<<<<< HEAD
+=======
+	skb_queue_purge(&data->readq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	file->private_data = NULL;
 	kfree(data);
 

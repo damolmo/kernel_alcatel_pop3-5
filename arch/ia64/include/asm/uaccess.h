@@ -262,6 +262,7 @@ __copy_from_user (void *to, const void __user *from, unsigned long count)
 	__cu_len;									\
 })
 
+<<<<<<< HEAD
 #define copy_from_user(to, from, n)							\
 ({											\
 	void *__cu_to = (to);								\
@@ -273,6 +274,17 @@ __copy_from_user (void *to, const void __user *from, unsigned long count)
 		__cu_len = __copy_user((__force void __user *) __cu_to, __cu_from, __cu_len);	\
 	__cu_len;									\
 })
+=======
+static inline unsigned long
+copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	if (likely(__access_ok(from, n, get_fs())))
+		n = __copy_user((__force void __user *) to, from, n);
+	else
+		memset(to, 0, n);
+	return n;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define __copy_in_user(to, from, size)	__copy_user((to), (from), (size))
 

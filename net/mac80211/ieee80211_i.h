@@ -91,6 +91,10 @@ struct ieee80211_fragment_entry {
 	struct sk_buff_head skb_list;
 	int ccmp; /* Whether fragments were encrypted with CCMP */
 	u8 last_pn[6]; /* PN of the last fragment if CCMP was used */
+<<<<<<< HEAD
+=======
+	unsigned int key_color;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 
@@ -640,7 +644,10 @@ struct ieee80211_if_mesh {
 	const struct ieee80211_mesh_sync_ops *sync_ops;
 	s64 sync_offset_clockdrift_max;
 	spinlock_t sync_offset_lock;
+<<<<<<< HEAD
 	bool adjusting_tbtt;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* mesh power save */
 	enum nl80211_mesh_power_mode nonpeer_pm;
 	int ps_peers_light_sleep;
@@ -969,6 +976,10 @@ enum queue_stop_reason {
 	IEEE80211_QUEUE_STOP_REASON_OFFCHANNEL,
 	IEEE80211_QUEUE_STOP_REASON_FLUSH,
 	IEEE80211_QUEUE_STOP_REASON_TDLS_TEARDOWN,
+<<<<<<< HEAD
+=======
+	IEEE80211_QUEUE_STOP_REASON_IFTYPE_CHANGE,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	IEEE80211_QUEUE_STOP_REASONS,
 };

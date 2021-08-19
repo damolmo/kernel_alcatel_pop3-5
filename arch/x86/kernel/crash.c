@@ -22,6 +22,10 @@
 #include <linux/elfcore.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/overflow.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/processor.h>
 #include <asm/hardirq.h>
@@ -183,10 +187,16 @@ void native_machine_crash_shutdown(struct pt_regs *regs)
 }
 
 #ifdef CONFIG_KEXEC_FILE
+<<<<<<< HEAD
 static int get_nr_ram_ranges_callback(unsigned long start_pfn,
 				unsigned long nr_pfn, void *arg)
 {
 	int *nr_ranges = arg;
+=======
+static int get_nr_ram_ranges_callback(u64 start, u64 end, void *arg)
+{
+	unsigned int *nr_ranges = arg;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	(*nr_ranges)++;
 	return 0;
@@ -212,7 +222,11 @@ static void fill_up_crash_elf_data(struct crash_elf_data *ced,
 
 	ced->image = image;
 
+<<<<<<< HEAD
 	walk_system_ram_range(0, -1, &nr_ranges,
+=======
+	walk_system_ram_res(0, -1, &nr_ranges,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				get_nr_ram_ranges_callback);
 
 	ced->max_nr_ranges = nr_ranges;
@@ -574,7 +588,11 @@ int crash_setup_memmap_entries(struct kimage *image, struct boot_params *params)
 	struct crash_memmap_data cmd;
 	struct crash_mem *cmem;
 
+<<<<<<< HEAD
 	cmem = vzalloc(sizeof(struct crash_mem));
+=======
+	cmem = vzalloc(struct_size(cmem, ranges, 1));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!cmem)
 		return -ENOMEM;
 

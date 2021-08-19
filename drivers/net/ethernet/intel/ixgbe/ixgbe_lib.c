@@ -126,6 +126,11 @@ static void ixgbe_get_first_reg_idx(struct ixgbe_adapter *adapter, u8 tc,
 		break;
 	case ixgbe_mac_82599EB:
 	case ixgbe_mac_X540:
+<<<<<<< HEAD
+=======
+	case ixgbe_mac_X550:
+	case ixgbe_mac_X550EM_x:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (num_tcs > 4) {
 			/*
 			 * TCs    : TC0/1 TC2/3 TC4-7
@@ -305,6 +310,10 @@ static void ixgbe_cache_ring_register(struct ixgbe_adapter *adapter)
 	ixgbe_cache_ring_rss(adapter);
 }
 
+<<<<<<< HEAD
+=======
+#define IXGBE_RSS_64Q_MASK	0x3F
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define IXGBE_RSS_16Q_MASK	0xF
 #define IXGBE_RSS_8Q_MASK	0x7
 #define IXGBE_RSS_4Q_MASK	0x3
@@ -600,6 +609,10 @@ static bool ixgbe_set_sriov_queues(struct ixgbe_adapter *adapter)
  **/
 static bool ixgbe_set_rss_queues(struct ixgbe_adapter *adapter)
 {
+<<<<<<< HEAD
+=======
+	struct ixgbe_hw *hw = &adapter->hw;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ixgbe_ring_feature *f;
 	u16 rss_i;
 
@@ -608,7 +621,15 @@ static bool ixgbe_set_rss_queues(struct ixgbe_adapter *adapter)
 	rss_i = f->limit;
 
 	f->indices = rss_i;
+<<<<<<< HEAD
 	f->mask = IXGBE_RSS_16Q_MASK;
+=======
+
+	if (hw->mac.type < ixgbe_mac_X550)
+		f->mask = IXGBE_RSS_16Q_MASK;
+	else
+		f->mask = IXGBE_RSS_64Q_MASK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* disable ATR by default, it will be configured below */
 	adapter->flags &= ~IXGBE_FLAG_FDIR_HASH_CAPABLE;

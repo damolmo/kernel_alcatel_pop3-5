@@ -415,8 +415,13 @@ static int kvaser_usb_wait_msg(const struct kvaser_usb *dev, u8 id,
 			}
 
 			if (pos + tmp->len > actual_len) {
+<<<<<<< HEAD
 				dev_err(dev->udev->dev.parent,
 					"Format error\n");
+=======
+				dev_err_ratelimited(dev->udev->dev.parent,
+						    "Format error\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				break;
 			}
 
@@ -580,7 +585,11 @@ static int kvaser_usb_simple_msg_async(struct kvaser_usb_net_priv *priv,
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	buf = kmalloc(sizeof(struct kvaser_msg), GFP_ATOMIC);
+=======
+	buf = kzalloc(sizeof(struct kvaser_msg), GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!buf) {
 		usb_free_urb(urb);
 		return -ENOMEM;
@@ -850,7 +859,11 @@ static void kvaser_usb_rx_can_msg(const struct kvaser_usb *dev,
 
 	skb = alloc_can_skb(priv->netdev, &cf);
 	if (!skb) {
+<<<<<<< HEAD
 		stats->tx_dropped++;
+=======
+		stats->rx_dropped++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 	}
 
@@ -980,6 +993,11 @@ static void kvaser_usb_read_bulk_callback(struct urb *urb)
 	case 0:
 		break;
 	case -ENOENT:
+<<<<<<< HEAD
+=======
+	case -EPIPE:
+	case -EPROTO:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case -ESHUTDOWN:
 		return;
 	default:
@@ -988,7 +1006,11 @@ static void kvaser_usb_read_bulk_callback(struct urb *urb)
 		goto resubmit_urb;
 	}
 
+<<<<<<< HEAD
 	while (pos <= urb->actual_length - MSG_HEADER_LEN) {
+=======
+	while (pos <= (int)(urb->actual_length - MSG_HEADER_LEN)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		msg = urb->transfer_buffer + pos;
 
 		/* The Kvaser firmware can only read and write messages that
@@ -1006,7 +1028,12 @@ static void kvaser_usb_read_bulk_callback(struct urb *urb)
 		}
 
 		if (pos + msg->len > urb->actual_length) {
+<<<<<<< HEAD
 			dev_err(dev->udev->dev.parent, "Format error\n");
+=======
+			dev_err_ratelimited(dev->udev->dev.parent,
+					    "Format error\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 
@@ -1111,7 +1138,11 @@ static int kvaser_usb_set_opt_mode(const struct kvaser_usb_net_priv *priv)
 	struct kvaser_msg *msg;
 	int rc;
 
+<<<<<<< HEAD
 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
+=======
+	msg = kzalloc(sizeof(*msg), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!msg)
 		return -ENOMEM;
 
@@ -1224,7 +1255,11 @@ static int kvaser_usb_flush_queue(struct kvaser_usb_net_priv *priv)
 	struct kvaser_msg *msg;
 	int rc;
 
+<<<<<<< HEAD
 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
+=======
+	msg = kzalloc(sizeof(*msg), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!msg)
 		return -ENOMEM;
 
@@ -1251,7 +1286,12 @@ static int kvaser_usb_close(struct net_device *netdev)
 	if (err)
 		netdev_warn(netdev, "Cannot flush queue, error %d\n", err);
 
+<<<<<<< HEAD
 	if (kvaser_usb_send_simple_msg(dev, CMD_RESET_CHIP, priv->channel))
+=======
+	err = kvaser_usb_send_simple_msg(dev, CMD_RESET_CHIP, priv->channel);
+	if (err)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		netdev_warn(netdev, "Cannot reset card, error %d\n", err);
 
 	err = kvaser_usb_stop_chip(priv);

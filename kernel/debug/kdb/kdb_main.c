@@ -42,10 +42,13 @@
 #include <linux/slab.h>
 #include "kdb_private.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_EXTMEM
 #include <linux/exm_driver.h>
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define GREP_LEN 256
 char kdb_grep_string[GREP_LEN];
 int kdb_grepping_flag;
@@ -1140,10 +1143,14 @@ static int kdb_local(kdb_reason_t reason, int error, struct pt_regs *regs,
 	int diag;
 	struct task_struct *kdb_current =
 		kdb_curr_task(raw_smp_processor_id());
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_DEBUG
 	get_cpu_var(kdb_in_use) = 1;
 	put_cpu_var(kdb_in_use);
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	KDB_DEBUG_STATE("kdb_local 1", reason);
 	kdb_go_count = 0;
 	if (reason == KDB_REASON_DEBUG) {
@@ -1305,10 +1312,13 @@ do_full_getstr:
 			kdb_cmderror(diag);
 	}
 	KDB_DEBUG_STATE("kdb_local 9", diag);
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_DEBUG
 	get_cpu_var(kdb_in_use) = 0;
 	put_cpu_var(kdb_in_use);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return diag;
 }
 
@@ -1535,6 +1545,10 @@ static int kdb_md(int argc, const char **argv)
 	int symbolic = 0;
 	int valid = 0;
 	int phys = 0;
+<<<<<<< HEAD
+=======
+	int raw = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kdbgetintenv("MDCOUNT", &mdcount);
 	kdbgetintenv("RADIX", &radix);
@@ -1544,9 +1558,16 @@ static int kdb_md(int argc, const char **argv)
 	repeat = mdcount * 16 / bytesperword;
 
 	if (strcmp(argv[0], "mdr") == 0) {
+<<<<<<< HEAD
 		if (argc != 2)
 			return KDB_ARGCOUNT;
 		valid = 1;
+=======
+		if (argc == 2 || (argc == 0 && last_addr != 0))
+			valid = raw = 1;
+		else
+			return KDB_ARGCOUNT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (isdigit(argv[0][2])) {
 		bytesperword = (int)(argv[0][2] - '0');
 		if (bytesperword == 0) {
@@ -1582,7 +1603,14 @@ static int kdb_md(int argc, const char **argv)
 		radix = last_radix;
 		bytesperword = last_bytesperword;
 		repeat = last_repeat;
+<<<<<<< HEAD
 		mdcount = ((repeat * bytesperword) + 15) / 16;
+=======
+		if (raw)
+			mdcount = repeat;
+		else
+			mdcount = ((repeat * bytesperword) + 15) / 16;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (argc) {
@@ -1599,7 +1627,14 @@ static int kdb_md(int argc, const char **argv)
 			diag = kdbgetularg(argv[nextarg], &val);
 			if (!diag) {
 				mdcount = (int) val;
+<<<<<<< HEAD
 				repeat = mdcount * 16 / bytesperword;
+=======
+				if (raw)
+					repeat = mdcount;
+				else
+					repeat = mdcount * 16 / bytesperword;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 		if (argc >= nextarg+1) {
@@ -1609,8 +1644,20 @@ static int kdb_md(int argc, const char **argv)
 		}
 	}
 
+<<<<<<< HEAD
 	if (strcmp(argv[0], "mdr") == 0)
 		return kdb_mdr(addr, mdcount);
+=======
+	if (strcmp(argv[0], "mdr") == 0) {
+		int ret;
+		last_addr = addr;
+		ret = kdb_mdr(addr, mdcount);
+		last_addr += mdcount;
+		last_repeat = mdcount;
+		last_bytesperword = bytesperword; // to make REPEAT happy
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (radix) {
 	case 10:
@@ -2580,7 +2627,11 @@ static int kdb_per_cpu(int argc, const char **argv)
 		diag = kdbgetularg(argv[3], &whichcpu);
 		if (diag)
 			return diag;
+<<<<<<< HEAD
 		if (!cpu_online(whichcpu)) {
+=======
+		if (whichcpu >= nr_cpu_ids || !cpu_online(whichcpu)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			kdb_printf("cpu %ld is not online\n", whichcpu);
 			return KDB_BADCPUNUM;
 		}
@@ -2875,11 +2926,14 @@ void __init kdb_init(int lvl)
 
 	if (kdb_init_lvl == KDB_INIT_FULL || lvl <= kdb_init_lvl)
 		return;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTK_EXTMEM
 	init_debug_alloc_pool_aligned();
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = kdb_init_lvl; i < lvl; i++) {
 		switch (i) {
 		case KDB_NOT_INITIALIZED:

@@ -112,5 +112,9 @@ struct hif_device_usb {
 
 int ath9k_hif_usb_init(void);
 void ath9k_hif_usb_exit(void);
+<<<<<<< HEAD
+=======
+void ath9k_hif_usb_dealloc_urbs(struct hif_device_usb *hif_dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* HTC_USB_H */

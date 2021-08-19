@@ -61,7 +61,12 @@ ENTRY(efi_stub_entry)
 	 */
 	mov	x20, x0		// DTB address
 	ldr	x0, [sp, #16]	// relocated _text address
+<<<<<<< HEAD
 	mov	x21, x0
+=======
+	ldr	x21, =stext_offset
+	add	x21, x0, x21
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Calculate size of the kernel Image (same for original and copy).

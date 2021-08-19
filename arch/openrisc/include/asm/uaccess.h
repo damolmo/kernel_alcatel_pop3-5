@@ -215,7 +215,11 @@ do {									\
 	case 1: __get_user_asm(x, ptr, retval, "l.lbz"); break;		\
 	case 2: __get_user_asm(x, ptr, retval, "l.lhz"); break;		\
 	case 4: __get_user_asm(x, ptr, retval, "l.lwz"); break;		\
+<<<<<<< HEAD
 	case 8: __get_user_asm2(x, ptr, retval);			\
+=======
+	case 8: __get_user_asm2(x, ptr, retval); break;			\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default: (x) = __get_user_bad();				\
 	}								\
 } while (0)
@@ -273,6 +277,7 @@ __copy_tofrom_user(void *to, const void *from, unsigned long size);
 static inline unsigned long
 copy_from_user(void *to, const void *from, unsigned long n)
 {
+<<<<<<< HEAD
 	unsigned long over;
 
 	if (access_ok(VERIFY_READ, from, n))
@@ -282,11 +287,21 @@ copy_from_user(void *to, const void *from, unsigned long n)
 		return __copy_tofrom_user(to, from, n - over) + over;
 	}
 	return n;
+=======
+	unsigned long res = n;
+
+	if (likely(access_ok(VERIFY_READ, from, n)))
+		res = __copy_tofrom_user(to, from, n);
+	if (unlikely(res))
+		memset(to + (n - res), 0, res);
+	return res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline unsigned long
 copy_to_user(void *to, const void *from, unsigned long n)
 {
+<<<<<<< HEAD
 	unsigned long over;
 
 	if (access_ok(VERIFY_WRITE, to, n))
@@ -295,6 +310,10 @@ copy_to_user(void *to, const void *from, unsigned long n)
 		over = (unsigned long)to + n - TASK_SIZE;
 		return __copy_tofrom_user(to, from, n - over) + over;
 	}
+=======
+	if (likely(access_ok(VERIFY_WRITE, to, n)))
+		n = __copy_tofrom_user(to, from, n);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return n;
 }
 
@@ -303,6 +322,7 @@ extern unsigned long __clear_user(void *addr, unsigned long size);
 static inline __must_check unsigned long
 clear_user(void *addr, unsigned long size)
 {
+<<<<<<< HEAD
 
 	if (access_ok(VERIFY_WRITE, addr, size))
 		return __clear_user(addr, size);
@@ -310,6 +330,10 @@ clear_user(void *addr, unsigned long size)
 		unsigned long over = (unsigned long)addr + size - TASK_SIZE;
 		return __clear_user(addr, size - over) + over;
 	}
+=======
+	if (likely(access_ok(VERIFY_WRITE, addr, size)))
+		size = __clear_user(addr, size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return size;
 }
 

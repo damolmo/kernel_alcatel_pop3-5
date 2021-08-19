@@ -44,12 +44,15 @@
 # define INIT_TRACE_IRQFLAGS
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_PREEMPT_MONITOR) && defined(CONFIG_MTPROF)
 extern void MT_trace_softirqs_on(unsigned long ip);
 extern void MT_trace_softirqs_off(unsigned long ip);
 extern void MT_trace_hardirqs_on(void);
 extern void MT_trace_hardirqs_off(void);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if defined(CONFIG_IRQSOFF_TRACER) || \
 	defined(CONFIG_PREEMPT_TRACER)
  extern void stop_critical_timings(void);
@@ -92,6 +95,7 @@ extern void MT_trace_hardirqs_off(void);
  * if !TRACE_IRQFLAGS.
  */
 #ifdef CONFIG_TRACE_IRQFLAGS_SUPPORT
+<<<<<<< HEAD
 #if defined(CONFIG_PREEMPT_MONITOR) && defined(CONFIG_MTPROF)
 #define local_irq_enable() \
 	do { \
@@ -142,6 +146,8 @@ extern void MT_trace_hardirqs_off(void);
 		}                   \
 	} while (0)
 #else /* !CONFIG_PREEMPT_MONITOR*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define local_irq_enable() \
 	do { trace_hardirqs_on(); raw_local_irq_enable(); } while (0)
 #define local_irq_disable() \
@@ -163,7 +169,10 @@ extern void MT_trace_hardirqs_off(void);
 			raw_local_irq_restore(flags);	\
 		}					\
 	} while (0)
+<<<<<<< HEAD
 #endif /* !CONFIG_PREEMPT_MONITOR*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define local_save_flags(flags)				\
 	do {						\
 		raw_local_save_flags(flags);		\

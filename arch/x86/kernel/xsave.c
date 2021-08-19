@@ -394,7 +394,13 @@ int __restore_xstate_sig(void __user *buf, void __user *buf_fx, int size)
 		drop_fpu(tsk);
 
 		if (__copy_from_user(&fpu->state->xsave, buf_fx, state_size) ||
+<<<<<<< HEAD
 		    __copy_from_user(&env, buf, sizeof(env))) {
+=======
+		    __copy_from_user(&env, buf, sizeof(env)) ||
+		    (state_size > offsetof(struct xsave_struct, xsave_hdr) &&
+		     fpu->state->xsave.xsave_hdr.xcomp_bv)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			fpu_finit(fpu);
 			err = -1;
 		} else {

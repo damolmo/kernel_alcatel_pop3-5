@@ -314,10 +314,14 @@ static void serial_cleanup(struct tty_struct *tty)
 	serial = port->serial;
 	owner = serial->type->driver.owner;
 
+<<<<<<< HEAD
 	mutex_lock(&serial->disc_mutex);
 	if (!serial->disconnected)
 		usb_autopm_put_interface(serial->interface);
 	mutex_unlock(&serial->disc_mutex);
+=======
+	usb_autopm_put_interface(serial->interface);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	usb_serial_put(serial);
 	module_put(owner);
@@ -1061,7 +1065,12 @@ static int usb_serial_probe(struct usb_interface *interface,
 
 	serial->disconnected = 0;
 
+<<<<<<< HEAD
 	usb_serial_console_init(serial->port[0]->minor);
+=======
+	if (num_ports > 0)
+		usb_serial_console_init(serial->port[0]->minor);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 exit:
 	module_put(type->driver.owner);
 	return 0;
@@ -1290,6 +1299,10 @@ static void __exit usb_serial_exit(void)
 	tty_unregister_driver(usb_serial_tty_driver);
 	put_tty_driver(usb_serial_tty_driver);
 	bus_unregister(&usb_serial_bus_type);
+<<<<<<< HEAD
+=======
+	idr_destroy(&serial_minors);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -1335,6 +1348,12 @@ static int usb_serial_register(struct usb_serial_driver *driver)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Prevent individual ports from being unbound. */
+	driver->driver.suppress_bind_attrs = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	usb_serial_operations_init(driver);
 
 	/* Add this device to our list of devices */
@@ -1415,7 +1434,11 @@ int usb_serial_register_drivers(struct usb_serial_driver *const serial_drivers[]
 
 	rc = usb_register(udriver);
 	if (rc)
+<<<<<<< HEAD
 		return rc;
+=======
+		goto failed_usb_register;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (sd = serial_drivers; *sd; ++sd) {
 		(*sd)->usb_driver = udriver;
@@ -1433,6 +1456,11 @@ int usb_serial_register_drivers(struct usb_serial_driver *const serial_drivers[]
 	while (sd-- > serial_drivers)
 		usb_serial_deregister(*sd);
 	usb_deregister(udriver);
+<<<<<<< HEAD
+=======
+failed_usb_register:
+	kfree(udriver);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 EXPORT_SYMBOL_GPL(usb_serial_register_drivers);

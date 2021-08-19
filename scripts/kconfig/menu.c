@@ -364,6 +364,10 @@ void menu_finalize(struct menu *parent)
 			menu->parent = parent;
 			last_menu = menu;
 		}
+<<<<<<< HEAD
+=======
+		expr_free(basedep);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (last_menu) {
 			parent->list = parent->next;
 			parent->next = last_menu->next;

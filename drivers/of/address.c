@@ -260,7 +260,11 @@ struct of_pci_range *of_pci_range_parser_one(struct of_pci_range_parser *parser,
 	if (!parser->range || parser->range + parser->np > parser->end)
 		return NULL;
 
+<<<<<<< HEAD
 	range->pci_space = parser->range[0];
+=======
+	range->pci_space = be32_to_cpup(parser->range);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	range->flags = of_bus_pci_get_flags(parser->range);
 	range->pci_addr = of_read_number(parser->range + 1, ns);
 	range->cpu_addr = of_translate_address(parser->node,
@@ -845,10 +849,17 @@ struct device_node *of_find_matching_node_by_address(struct device_node *from,
 	struct resource res;
 
 	while (dn) {
+<<<<<<< HEAD
 		if (of_address_to_resource(dn, 0, &res))
 			continue;
 		if (res.start == base_address)
 			return dn;
+=======
+		if (!of_address_to_resource(dn, 0, &res) &&
+		    res.start == base_address)
+			return dn;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dn = of_find_matching_node(dn, matches);
 	}
 
@@ -1006,7 +1017,13 @@ EXPORT_SYMBOL_GPL(of_dma_get_range);
  */
 bool of_dma_is_coherent(struct device_node *np)
 {
+<<<<<<< HEAD
 	struct device_node *node = of_node_get(np);
+=======
+	struct device_node *node;
+
+	node = of_node_get(np);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	while (node) {
 		if (of_property_read_bool(node, "dma-coherent")) {

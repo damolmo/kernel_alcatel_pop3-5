@@ -26,3 +26,12 @@ switching-sched.txt
 	- Switching I/O schedulers at runtime
 writeback_cache_control.txt
 	- Control of volatile write back caches
+<<<<<<< HEAD
+=======
+mmc-max-speed.txt
+	- eMMC layer speed simulation, related to /sys/block/mmcblk*/
+          attributes:
+            max_read_speed
+            max_write_speed
+            cache_size
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

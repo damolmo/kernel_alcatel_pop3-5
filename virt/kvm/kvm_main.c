@@ -139,6 +139,10 @@ int vcpu_load(struct kvm_vcpu *vcpu)
 	put_cpu();
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(vcpu_load);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void vcpu_put(struct kvm_vcpu *vcpu)
 {
@@ -148,6 +152,10 @@ void vcpu_put(struct kvm_vcpu *vcpu)
 	preempt_enable();
 	mutex_unlock(&vcpu->mutex);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(vcpu_put);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void ack_flush(void *_completed)
 {
@@ -335,9 +343,14 @@ static void kvm_mmu_notifier_invalidate_range_start(struct mmu_notifier *mn,
 	 */
 	kvm->mmu_notifier_count++;
 	need_tlb_flush = kvm_unmap_hva_range(kvm, start, end);
+<<<<<<< HEAD
 	need_tlb_flush |= kvm->tlbs_dirty;
 	/* we've to flush the tlb before the pages can be freed */
 	if (need_tlb_flush)
+=======
+	/* we've to flush the tlb before the pages can be freed */
+	if (need_tlb_flush || kvm->tlbs_dirty)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kvm_flush_remote_tlbs(kvm);
 
 	spin_unlock(&kvm->mmu_lock);
@@ -460,6 +473,19 @@ static struct kvm *kvm_create_vm(unsigned long type)
 	if (!kvm)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&kvm->mmu_lock);
+	atomic_inc(&current->mm->mm_count);
+	kvm->mm = current->mm;
+	kvm_eventfd_init(kvm);
+	mutex_init(&kvm->lock);
+	mutex_init(&kvm->irq_lock);
+	mutex_init(&kvm->slots_lock);
+	atomic_set(&kvm->users_count, 1);
+	INIT_LIST_HEAD(&kvm->devices);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = kvm_arch_init_vm(kvm, type);
 	if (r)
 		goto out_err_no_disable;
@@ -500,6 +526,7 @@ static struct kvm *kvm_create_vm(unsigned long type)
 			goto out_err;
 	}
 
+<<<<<<< HEAD
 	spin_lock_init(&kvm->mmu_lock);
 	kvm->mm = current->mm;
 	atomic_inc(&kvm->mm->mm_count);
@@ -510,6 +537,8 @@ static struct kvm *kvm_create_vm(unsigned long type)
 	atomic_set(&kvm->users_count, 1);
 	INIT_LIST_HEAD(&kvm->devices);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = kvm_init_mmu_notifier(kvm);
 	if (r)
 		goto out_err;
@@ -531,6 +560,10 @@ out_err_no_disable:
 		kfree(kvm->buses[i]);
 	kvfree(kvm->memslots);
 	kvm_arch_free_vm(kvm);
+<<<<<<< HEAD
+=======
+	mmdrop(current->mm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ERR_PTR(r);
 }
 
@@ -611,8 +644,16 @@ static void kvm_destroy_vm(struct kvm *kvm)
 	list_del(&kvm->vm_list);
 	spin_unlock(&kvm_lock);
 	kvm_free_irq_routing(kvm);
+<<<<<<< HEAD
 	for (i = 0; i < KVM_NR_BUSES; i++)
 		kvm_io_bus_destroy(kvm->buses[i]);
+=======
+	for (i = 0; i < KVM_NR_BUSES; i++) {
+		if (kvm->buses[i])
+			kvm_io_bus_destroy(kvm->buses[i]);
+		kvm->buses[i] = NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kvm_coalesced_mmio_free(kvm);
 #if defined(CONFIG_MMU_NOTIFIER) && defined(KVM_ARCH_WANT_MMU_NOTIFIER)
 	mmu_notifier_unregister(&kvm->mmu_notifier, kvm->mm);
@@ -839,8 +880,12 @@ int __kvm_set_memory_region(struct kvm *kvm,
 		/* Check for overlaps */
 		r = -EEXIST;
 		kvm_for_each_memslot(slot, kvm->memslots) {
+<<<<<<< HEAD
 			if ((slot->id >= KVM_USER_MEM_SLOTS) ||
 			    (slot->id == mem->slot))
+=======
+			if (slot->id == mem->slot)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				continue;
 			if (!((base_gfn + npages <= slot->base_gfn) ||
 			      (base_gfn >= slot->base_gfn + slot->npages)))
@@ -1649,12 +1694,21 @@ int kvm_write_guest_cached(struct kvm *kvm, struct gfn_to_hva_cache *ghc,
 	if (slots->generation != ghc->generation)
 		kvm_gfn_to_hva_cache_init(kvm, ghc, ghc->gpa, ghc->len);
 
+<<<<<<< HEAD
 	if (unlikely(!ghc->memslot))
 		return kvm_write_guest(kvm, ghc->gpa, data, len);
 
 	if (kvm_is_error_hva(ghc->hva))
 		return -EFAULT;
 
+=======
+	if (kvm_is_error_hva(ghc->hva))
+		return -EFAULT;
+
+	if (unlikely(!ghc->memslot))
+		return kvm_write_guest(kvm, ghc->gpa, data, len);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = __copy_to_user((void __user *)ghc->hva, data, len);
 	if (r)
 		return -EFAULT;
@@ -1675,12 +1729,21 @@ int kvm_read_guest_cached(struct kvm *kvm, struct gfn_to_hva_cache *ghc,
 	if (slots->generation != ghc->generation)
 		kvm_gfn_to_hva_cache_init(kvm, ghc, ghc->gpa, ghc->len);
 
+<<<<<<< HEAD
 	if (unlikely(!ghc->memslot))
 		return kvm_read_guest(kvm, ghc->gpa, data, len);
 
 	if (kvm_is_error_hva(ghc->hva))
 		return -EFAULT;
 
+=======
+	if (kvm_is_error_hva(ghc->hva))
+		return -EFAULT;
+
+	if (unlikely(!ghc->memslot))
+		return kvm_read_guest(kvm, ghc->gpa, data, len);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = __copy_from_user(data, (void __user *)ghc->hva, len);
 	if (r)
 		return -EFAULT;
@@ -2292,6 +2355,12 @@ static long kvm_device_ioctl(struct file *filp, unsigned int ioctl,
 {
 	struct kvm_device *dev = filp->private_data;
 
+<<<<<<< HEAD
+=======
+	if (dev->kvm->mm != current->mm)
+		return -EIO;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (ioctl) {
 	case KVM_SET_DEVICE_ATTR:
 		return kvm_device_ioctl_attr(dev, dev->ops->set_attr, arg);
@@ -2392,14 +2461,24 @@ static int kvm_ioctl_create_device(struct kvm *kvm,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = anon_inode_getfd(ops->name, &kvm_device_fops, dev, O_RDWR | O_CLOEXEC);
 	if (ret < 0) {
+=======
+	kvm_get_kvm(kvm);
+	ret = anon_inode_getfd(ops->name, &kvm_device_fops, dev, O_RDWR | O_CLOEXEC);
+	if (ret < 0) {
+		kvm_put_kvm(kvm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ops->destroy(dev);
 		return ret;
 	}
 
 	list_add(&dev->vm_node, &kvm->devices);
+<<<<<<< HEAD
 	kvm_get_kvm(kvm);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cd->fd = ret;
 	return 0;
 }
@@ -2558,7 +2637,11 @@ static long kvm_vm_ioctl(struct file *filp,
 		if (copy_from_user(&routing, argp, sizeof(routing)))
 			goto out;
 		r = -EINVAL;
+<<<<<<< HEAD
 		if (routing.nr >= KVM_MAX_IRQ_ROUTES)
+=======
+		if (routing.nr > KVM_MAX_IRQ_ROUTES)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		if (routing.flags)
 			goto out;
@@ -2875,10 +2958,32 @@ static void kvm_io_bus_destroy(struct kvm_io_bus *bus)
 static inline int kvm_io_bus_cmp(const struct kvm_io_range *r1,
                                  const struct kvm_io_range *r2)
 {
+<<<<<<< HEAD
 	if (r1->addr < r2->addr)
 		return -1;
 	if (r1->addr + r1->len > r2->addr + r2->len)
 		return 1;
+=======
+	gpa_t addr1 = r1->addr;
+	gpa_t addr2 = r2->addr;
+
+	if (addr1 < addr2)
+		return -1;
+
+	/* If r2->len == 0, match the exact address.  If r2->len != 0,
+	 * accept any overlapping write.  Any order is acceptable for
+	 * overlapping ranges, because kvm_io_bus_get_first_dev ensures
+	 * we process all of them.
+	 */
+	if (r2->len) {
+		addr1 += r1->len;
+		addr2 += r2->len;
+	}
+
+	if (addr1 > addr2)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -2960,6 +3065,11 @@ int kvm_io_bus_write(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	};
 
 	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
+<<<<<<< HEAD
+=======
+	if (!bus)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = __kvm_io_bus_write(bus, &range, val);
 	return r < 0 ? r : 0;
 }
@@ -2977,6 +3087,11 @@ int kvm_io_bus_write_cookie(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	};
 
 	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
+<<<<<<< HEAD
+=======
+	if (!bus)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* First try the device referenced by cookie. */
 	if ((cookie >= 0) && (cookie < bus->dev_count) &&
@@ -3027,6 +3142,11 @@ int kvm_io_bus_read(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	};
 
 	bus = srcu_dereference(kvm->buses[bus_idx], &kvm->srcu);
+<<<<<<< HEAD
+=======
+	if (!bus)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	r = __kvm_io_bus_read(bus, &range, val);
 	return r < 0 ? r : 0;
 }
@@ -3039,6 +3159,12 @@ int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 	struct kvm_io_bus *new_bus, *bus;
 
 	bus = kvm->buses[bus_idx];
+<<<<<<< HEAD
+=======
+	if (!bus)
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* exclude ioeventfd which is limited by maximum fd */
 	if (bus->dev_count - bus->ioeventfd_count > NR_IOBUS_DEVS - 1)
 		return -ENOSPC;
@@ -3058,6 +3184,7 @@ int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 }
 
 /* Caller must hold slots_lock. */
+<<<<<<< HEAD
 int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 			      struct kvm_io_device *dev)
 {
@@ -3084,11 +3211,50 @@ int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 	new_bus->dev_count--;
 	memcpy(new_bus->range + i, bus->range + i + 1,
 	       (new_bus->dev_count - i) * sizeof(struct kvm_io_range));
+=======
+void kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
+			       struct kvm_io_device *dev)
+{
+	int i, j;
+	struct kvm_io_bus *new_bus, *bus;
+
+	bus = kvm->buses[bus_idx];
+	if (!bus)
+		return;
+
+	for (i = 0; i < bus->dev_count; i++)
+		if (bus->range[i].dev == dev) {
+			break;
+		}
+
+	if (i == bus->dev_count)
+		return;
+
+	new_bus = kzalloc(sizeof(*bus) + ((bus->dev_count - 1) *
+			  sizeof(struct kvm_io_range)), GFP_KERNEL);
+	if (new_bus) {
+		memcpy(new_bus, bus, sizeof(*bus) + i * sizeof(struct kvm_io_range));
+		new_bus->dev_count--;
+		memcpy(new_bus->range + i, bus->range + i + 1,
+		       (new_bus->dev_count - i) * sizeof(struct kvm_io_range));
+	} else {
+		pr_err("kvm: failed to shrink bus, removing it completely\n");
+		for (j = 0; j < bus->dev_count; j++) {
+			if (j == i)
+				continue;
+			kvm_iodevice_destructor(bus->range[j].dev);
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_assign_pointer(kvm->buses[bus_idx], new_bus);
 	synchronize_srcu_expedited(&kvm->srcu);
 	kfree(bus);
+<<<<<<< HEAD
 	return r;
+=======
+	return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct notifier_block kvm_cpu_notifier = {

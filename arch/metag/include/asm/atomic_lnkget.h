@@ -61,7 +61,11 @@ static inline int atomic_##op##_return(int i, atomic_t *v)		\
 		"	CMPT	%0, #HI(0x02000000)\n"			\
 		"	BNZ 1b\n"					\
 		: "=&d" (temp), "=&da" (result)				\
+<<<<<<< HEAD
 		: "da" (&v->counter), "bd" (i)				\
+=======
+		: "da" (&v->counter), "br" (i)				\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		: "cc");						\
 									\
 	smp_mb();							\

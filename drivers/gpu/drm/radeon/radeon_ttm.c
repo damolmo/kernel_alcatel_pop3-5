@@ -212,6 +212,11 @@ static int radeon_verify_access(struct ttm_buffer_object *bo, struct file *filp)
 {
 	struct radeon_bo *rbo = container_of(bo, struct radeon_bo, tbo);
 
+<<<<<<< HEAD
+=======
+	if (radeon_ttm_tt_has_userptr(bo->ttm))
+		return -EPERM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return drm_vma_node_verify_access(&rbo->gem_base.vma_node, filp);
 }
 
@@ -238,8 +243,13 @@ static int radeon_move_blit(struct ttm_buffer_object *bo,
 
 	rdev = radeon_get_rdev(bo->bdev);
 	ridx = radeon_copy_ring_index(rdev);
+<<<<<<< HEAD
 	old_start = old_mem->start << PAGE_SHIFT;
 	new_start = new_mem->start << PAGE_SHIFT;
+=======
+	old_start = (u64)old_mem->start << PAGE_SHIFT;
+	new_start = (u64)new_mem->start << PAGE_SHIFT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (old_mem->mem_type) {
 	case TTM_PL_VRAM:
@@ -735,7 +745,11 @@ static int radeon_ttm_tt_populate(struct ttm_tt *ttm)
 						       0, PAGE_SIZE,
 						       PCI_DMA_BIDIRECTIONAL);
 		if (pci_dma_mapping_error(rdev->pdev, gtt->ttm.dma_address[i])) {
+<<<<<<< HEAD
 			while (--i) {
+=======
+			while (i--) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				pci_unmap_page(rdev->pdev, gtt->ttm.dma_address[i],
 					       PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
 				gtt->ttm.dma_address[i] = 0;

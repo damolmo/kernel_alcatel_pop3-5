@@ -3,30 +3,44 @@
 
 #ifdef CONFIG_ARM_CPU_TOPOLOGY
 
+<<<<<<< HEAD
+=======
+#include <linux/cpufreq.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/cpumask.h>
 
 struct cputopo_arm {
 	int thread_id;
 	int core_id;
 	int socket_id;
+<<<<<<< HEAD
 	unsigned int partno;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cpumask_t thread_sibling;
 	cpumask_t core_sibling;
 };
 
 extern struct cputopo_arm cpu_topology[NR_CPUS];
+<<<<<<< HEAD
 extern unsigned long arch_get_max_cpu_capacity(int);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define topology_physical_package_id(cpu)	(cpu_topology[cpu].socket_id)
 #define topology_core_id(cpu)		(cpu_topology[cpu].core_id)
 #define topology_core_cpumask(cpu)	(&cpu_topology[cpu].core_sibling)
 #define topology_thread_cpumask(cpu)	(&cpu_topology[cpu].thread_sibling)
+<<<<<<< HEAD
 #define topology_max_cpu_capacity(cpu)	(arch_get_max_cpu_capacity(cpu))
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void init_cpu_topology(void);
 void store_cpu_topology(unsigned int cpuid);
 const struct cpumask *cpu_coregroup_mask(int cpu);
 
+<<<<<<< HEAD
 /* Extras of CPU & Cluster functions */
 extern int arch_cpu_is_big(unsigned int cpu);
 extern int arch_cpu_is_little(unsigned int cpu);
@@ -38,10 +52,20 @@ extern void arch_get_cluster_cpus(struct cpumask *cpus, int cluster_id);
 extern int arch_better_capacity(unsigned int cpu);
 
 #else /* !CONFIG_ARM_CPU_TOPOLOGY */
+=======
+#ifdef CONFIG_CPU_FREQ
+#define arch_scale_freq_capacity cpufreq_scale_freq_capacity
+#endif
+#define arch_scale_cpu_capacity scale_cpu_capacity
+extern unsigned long scale_cpu_capacity(struct sched_domain *sd, int cpu);
+
+#else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline void init_cpu_topology(void) { }
 static inline void store_cpu_topology(unsigned int cpuid) { }
 
+<<<<<<< HEAD
 static inline int arch_cpu_is_big(unsigned int cpu) { return 0; }
 static inline int arch_cpu_is_little(unsigned int cpu) { return 1; }
 static inline int arch_is_multi_cluster(void) { return 0; }
@@ -64,6 +88,8 @@ static inline int arch_better_capacity(unsigned int cpu) { return 0; }
 
 #ifdef CONFIG_MTK_CPU_TOPOLOGY
 void arch_build_cpu_topology_domain(void);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #include <asm-generic/topology.h>

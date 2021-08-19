@@ -23,9 +23,13 @@ int version_string(LINUX_VERSION_CODE);
 #endif
 
 struct uts_namespace init_uts_ns = {
+<<<<<<< HEAD
 	.kref = {
 		.refcount	= ATOMIC_INIT(2),
 	},
+=======
+	.kref = KREF_INIT(2),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.name = {
 		.sysname	= UTS_SYSNAME,
 		.nodename	= UTS_NODENAME,

@@ -90,9 +90,12 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include "ubi.h"
+<<<<<<< HEAD
 #ifdef CONFIG_PWR_LOSS_MTK_SPOH
 #include <mach/power_loss_test.h>
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static int self_check_not_bad(const struct ubi_device *ubi, int pnum);
 static int self_check_peb_ec_hdr(const struct ubi_device *ubi, int pnum);
@@ -188,7 +191,11 @@ retry:
 		if (retries++ < UBI_IO_RETRIES) {
 			ubi_warn("error %d%s while reading %d bytes from PEB %d:%d, read only %zd bytes, retry",
 				 err, errstr, len, pnum, offset, read);
+<<<<<<< HEAD
 			/* yield(); */
+=======
+			yield();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto retry;
 		}
 
@@ -356,17 +363,24 @@ retry:
 	ei.priv     = (unsigned long)&wq;
 
 	err = mtd_erase(ubi->mtd, &ei);
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_SLC_BUFFER_SUPPORT
 	if (ubi_peb_istlc(ubi, pnum))
 		atomic_inc(&ubi->tlc_ec_count);
 	else
 #endif
 	atomic_inc(&ubi->ec_count); /*MTK*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err) {
 		if (retries++ < UBI_IO_RETRIES) {
 			ubi_warn("error %d while erasing PEB %d, retry",
 				 err, pnum);
+<<<<<<< HEAD
 			/* yield(); */
+=======
+			yield();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto retry;
 		}
 		ubi_err("cannot erase PEB %d, error %d", pnum, err);
@@ -384,7 +398,11 @@ retry:
 	if (ei.state == MTD_ERASE_FAILED) {
 		if (retries++ < UBI_IO_RETRIES) {
 			ubi_warn("error while erasing PEB %d, retry", pnum);
+<<<<<<< HEAD
 			/* yield(); */
+=======
+			yield();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto retry;
 		}
 		ubi_err("cannot erase PEB %d", pnum);
@@ -424,11 +442,15 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 	patt_count = ARRAY_SIZE(patterns);
 	ubi_assert(patt_count > 0);
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBI_SHARE_BUFFER
 	mutex_lock(&ubi_buf_mutex);
 #else
 	mutex_lock(&ubi->buf_mutex);
 #endif
+=======
+	mutex_lock(&ubi->buf_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < patt_count; i++) {
 		err = do_sync_erase(ubi, pnum);
 		if (err)
@@ -472,11 +494,15 @@ static int torture_peb(struct ubi_device *ubi, int pnum)
 	ubi_msg("PEB %d passed torture test, do not mark it as bad", pnum);
 
 out:
+<<<<<<< HEAD
 #ifdef CONFIG_UBI_SHARE_BUFFER
 	mutex_unlock(&ubi_buf_mutex);
 #else
 	mutex_unlock(&ubi->buf_mutex);
 #endif
+=======
+	mutex_unlock(&ubi->buf_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err == UBI_IO_BITFLIPS || mtd_is_eccerr(err)) {
 		/*
 		 * If a bit-flip or data integrity error was detected, the test
@@ -539,7 +565,11 @@ static int nor_erase_prepare(struct ubi_device *ubi, int pnum)
 	if (err != UBI_IO_BAD_HDR_EBADMSG && err != UBI_IO_BAD_HDR &&
 	    err != UBI_IO_FF){
 		err = mtd_write(ubi->mtd, addr, 4, &written, (void *)&data);
+<<<<<<< HEAD
 		if (err)
+=======
+		if(err)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto error;
 	}
 
@@ -874,9 +904,12 @@ int ubi_io_write_ec_hdr(struct ubi_device *ubi, int pnum,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PWR_LOSS_MTK_SPOH
 	PL_RESET_ON_CASE("NAND", "WRITE_EC_Header");
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = ubi_io_write(ubi, ec_hdr, pnum, 0, ubi->ec_hdr_alsize);
 	return err;
 }
@@ -927,6 +960,7 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 	if (vol_id >= UBI_INTERNAL_VOL_START && compat != UBI_COMPAT_DELETE &&
 	    compat != UBI_COMPAT_RO && compat != UBI_COMPAT_PRESERVE &&
 	    compat != UBI_COMPAT_REJECT) {
+<<<<<<< HEAD
 #if defined(CONFIG_MTK_SLC_BUFFER_SUPPORT) || defined(CONFIG_MTK_MLC_NAND_SUPPORT)
 		if (vol_id == UBI_LAYOUT_VOLUME_ID) {
 			ubi_err("bad compat");
@@ -938,6 +972,10 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 			goto bad;
 		}
 #endif
+=======
+		ubi_err("bad compat");
+		goto bad;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (vol_type != UBI_VID_DYNAMIC && vol_type != UBI_VID_STATIC) {
@@ -950,6 +988,14 @@ static int validate_vid_hdr(const struct ubi_device *ubi,
 		goto bad;
 	}
 
+<<<<<<< HEAD
+=======
+	if (data_size > ubi->leb_size) {
+		ubi_err("bad data_size");
+		goto bad;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (vol_type == UBI_VID_STATIC) {
 		/*
 		 * Although from high-level point of view static volumes may
@@ -1133,6 +1179,7 @@ int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 	{
 		int vol_id =  be32_to_cpu(vid_hdr->vol_id);
@@ -1144,12 +1191,15 @@ int ubi_io_write_vid_hdr(struct ubi_device *ubi, int pnum,
 		}
 	}
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	p = (char *)vid_hdr - ubi->vid_hdr_shift;
 	err = ubi_io_write(ubi, p, pnum, ubi->vid_hdr_aloffset,
 			   ubi->vid_hdr_alsize);
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 int ubi_io_write_vid_hdr_blb(struct ubi_device *ubi, int pnum,
 			 struct ubi_vid_hdr *vid_hdr)
@@ -1192,6 +1242,8 @@ int ubi_io_write_vid_hdr_blb(struct ubi_device *ubi, int pnum,
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * self_check_not_bad - ensure that a physical eraseblock is not bad.
  * @ubi: UBI device description object
@@ -1506,6 +1558,7 @@ error:
 	vfree(buf);
 	return err;
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTD_UBI_LOWPAGE_BACKUP
 /* Read one page with oob one time */
@@ -1621,3 +1674,5 @@ int ubi_io_fill_vid_hdr(struct ubi_device *ubi, int pnum, struct ubi_vid_hdr *vi
 }
 
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

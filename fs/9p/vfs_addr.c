@@ -49,8 +49,14 @@
  * @page: structure to page
  *
  */
+<<<<<<< HEAD
 static int v9fs_fid_readpage(struct p9_fid *fid, struct page *page)
 {
+=======
+static int v9fs_fid_readpage(void *data, struct page *page)
+{
+	struct p9_fid *fid = data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int retval;
 	loff_t offset;
 	char *buffer;
@@ -123,7 +129,12 @@ static int v9fs_vfs_readpages(struct file *filp, struct address_space *mapping,
 	if (ret == 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = read_cache_pages(mapping, pages, (void *)v9fs_vfs_readpage, filp);
+=======
+	ret = read_cache_pages(mapping, pages, v9fs_fid_readpage,
+			filp->private_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	p9_debug(P9_DEBUG_VFS, "  = %d\n", ret);
 	return ret;
 }

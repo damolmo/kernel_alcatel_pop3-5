@@ -61,7 +61,11 @@ static int vexpress_syscfg_exec(struct vexpress_syscfg_func *func,
 	int tries;
 	long timeout;
 
+<<<<<<< HEAD
 	if (WARN_ON(index > func->num_templates))
+=======
+	if (WARN_ON(index >= func->num_templates))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	command = readl(syscfg->base + SYS_CFGCTRL);

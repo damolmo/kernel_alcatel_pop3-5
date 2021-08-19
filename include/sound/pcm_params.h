@@ -272,11 +272,20 @@ static inline int snd_interval_empty(const struct snd_interval *i)
 static inline int snd_interval_single(const struct snd_interval *i)
 {
 	return (i->min == i->max || 
+<<<<<<< HEAD
 		(i->min + 1 == i->max && i->openmax));
+=======
+		(i->min + 1 == i->max && (i->openmin || i->openmax)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int snd_interval_value(const struct snd_interval *i)
 {
+<<<<<<< HEAD
+=======
+	if (i->openmin && !i->openmax)
+		return i->max;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return i->min;
 }
 

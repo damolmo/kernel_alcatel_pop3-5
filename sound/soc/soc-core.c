@@ -1868,6 +1868,12 @@ static int soc_cleanup_card_resources(struct snd_soc_card *card)
 	for (i = 0; i < card->num_aux_devs; i++)
 		soc_remove_aux_dev(card, i);
 
+<<<<<<< HEAD
+=======
+	/* free the ALSA card at first; this syncs with pending operations */
+	snd_card_free(card->snd_card);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* remove and free each DAI */
 	soc_remove_dai_links(card);
 
@@ -1879,9 +1885,13 @@ static int soc_cleanup_card_resources(struct snd_soc_card *card)
 
 	snd_soc_dapm_free(&card->dapm);
 
+<<<<<<< HEAD
 	snd_card_free(card->snd_card);
 	return 0;
 
+=======
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* removes a socdev */

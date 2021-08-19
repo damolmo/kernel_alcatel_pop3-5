@@ -576,6 +576,10 @@ static irqreturn_t cp_interrupt (int irq, void *dev_instance)
 	struct cp_private *cp;
 	int handled = 0;
 	u16 status;
+<<<<<<< HEAD
+=======
+	u16 mask;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (unlikely(dev == NULL))
 		return IRQ_NONE;
@@ -583,6 +587,13 @@ static irqreturn_t cp_interrupt (int irq, void *dev_instance)
 
 	spin_lock(&cp->lock);
 
+<<<<<<< HEAD
+=======
+	mask = cpr16(IntrMask);
+	if (!mask)
+		goto out_unlock;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	status = cpr16(IntrStatus);
 	if (!status || (status == 0xFFFF))
 		goto out_unlock;

@@ -13,6 +13,10 @@
 #include <linux/page-debug-flags.h>
 #include <linux/uprobes.h>
 #include <linux/page-flags-layout.h>
+<<<<<<< HEAD
+=======
+#include <linux/workqueue.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/page.h>
 #include <asm/mmu.h>
 
@@ -350,7 +354,11 @@ struct kioctx_table;
 struct mm_struct {
 	struct vm_area_struct *mmap;		/* list of VMAs */
 	struct rb_root mm_rb;
+<<<<<<< HEAD
 	u32 vmacache_seqnum;                   /* per-thread vmacache */
+=======
+	u64 vmacache_seqnum;                   /* per-thread vmacache */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_MMU
 	unsigned long (*get_unmapped_area) (struct file *filp,
 				unsigned long addr, unsigned long len,
@@ -424,6 +432,10 @@ struct mm_struct {
 	 */
 	struct task_struct __rcu *owner;
 #endif
+<<<<<<< HEAD
+=======
+	struct user_namespace *user_ns;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* store ref to file /proc/<pid>/exe symlink points to */
 	struct file *exe_file;
@@ -459,6 +471,10 @@ struct mm_struct {
 	bool tlb_flush_pending;
 #endif
 	struct uprobes_state uprobes_state;
+<<<<<<< HEAD
+=======
+	struct work_struct async_put_work;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static inline void mm_init_cpumask(struct mm_struct *mm)

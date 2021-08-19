@@ -220,7 +220,11 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 	 */
 	BUILD_BUG_ON(sizeof(a->u) > sizeof(void *)*2);
 
+<<<<<<< HEAD
 	audit_log_format(ab, " pid=%d comm=", task_pid_nr(tsk));
+=======
+	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	audit_log_untrustedstring(ab, tsk->comm);
 
 	switch (a->type) {
@@ -264,7 +268,13 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		struct inode *inode;
 
 		audit_log_format(ab, " name=");
+<<<<<<< HEAD
 		audit_log_untrustedstring(ab, a->u.dentry->d_name.name);
+=======
+		spin_lock(&a->u.dentry->d_lock);
+		audit_log_untrustedstring(ab, a->u.dentry->d_name.name);
+		spin_unlock(&a->u.dentry->d_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		inode = a->u.dentry->d_inode;
 		if (inode) {
@@ -282,8 +292,14 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		dentry = d_find_alias(inode);
 		if (dentry) {
 			audit_log_format(ab, " name=");
+<<<<<<< HEAD
 			audit_log_untrustedstring(ab,
 					 dentry->d_name.name);
+=======
+			spin_lock(&dentry->d_lock);
+			audit_log_untrustedstring(ab, dentry->d_name.name);
+			spin_unlock(&dentry->d_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dput(dentry);
 		}
 		audit_log_format(ab, " dev=");
@@ -294,7 +310,11 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 	case LSM_AUDIT_DATA_TASK:
 		tsk = a->u.tsk;
 		if (tsk) {
+<<<<<<< HEAD
 			pid_t pid = task_pid_nr(tsk);
+=======
+			pid_t pid = task_tgid_nr(tsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (pid) {
 				audit_log_format(ab, " pid=%d comm=", pid);
 				audit_log_untrustedstring(ab, tsk->comm);
@@ -305,6 +325,10 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 		if (a->u.net->sk) {
 			struct sock *sk = a->u.net->sk;
 			struct unix_sock *u;
+<<<<<<< HEAD
+=======
+			struct unix_address *addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			int len = 0;
 			char *p = NULL;
 
@@ -335,14 +359,25 @@ static void dump_common_audit_data(struct audit_buffer *ab,
 #endif
 			case AF_UNIX:
 				u = unix_sk(sk);
+<<<<<<< HEAD
+=======
+				addr = smp_load_acquire(&u->addr);
+				if (!addr)
+					break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (u->path.dentry) {
 					audit_log_d_path(ab, " path=", &u->path);
 					break;
 				}
+<<<<<<< HEAD
 				if (!u->addr)
 					break;
 				len = u->addr->len-sizeof(short);
 				p = &u->addr->name->sun_path[0];
+=======
+				len = addr->len-sizeof(short);
+				p = &addr->name->sun_path[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				audit_log_format(ab, " path=");
 				if (*p)
 					audit_log_untrustedstring(ab, p);

@@ -9,7 +9,11 @@ btrfs-y += super.o ctree.o extent-tree.o print-tree.o root-tree.o dir-item.o \
 	   export.o tree-log.o free-space-cache.o zlib.o lzo.o \
 	   compression.o delayed-ref.o relocation.o delayed-inode.o scrub.o \
 	   reada.o backref.o ulist.o qgroup.o send.o dev-replace.o raid56.o \
+<<<<<<< HEAD
 	   uuid-tree.o props.o hash.o
+=======
+	   uuid-tree.o props.o hash.o tree-checker.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 btrfs-$(CONFIG_BTRFS_FS_POSIX_ACL) += acl.o
 btrfs-$(CONFIG_BTRFS_FS_CHECK_INTEGRITY) += check-integrity.o

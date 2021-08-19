@@ -708,7 +708,11 @@ static const struct dss_features omap34xx_dss_feats __initconst = {
 };
 
 static const struct dss_features omap3630_dss_feats __initconst = {
+<<<<<<< HEAD
 	.fck_div_max		=	32,
+=======
+	.fck_div_max		=	31,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.dss_fck_multiplier	=	1,
 	.parent_clk_name	=	"dpll4_ck",
 	.dpi_select_source	=	&dss_dpi_select_source_omap2_omap3,

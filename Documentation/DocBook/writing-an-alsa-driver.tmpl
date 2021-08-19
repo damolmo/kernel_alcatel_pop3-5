@@ -2181,10 +2181,13 @@ struct _snd_pcm_runtime {
 	struct snd_pcm_hardware hw;
 	struct snd_pcm_hw_constraints hw_constraints;
 
+<<<<<<< HEAD
 	/* -- interrupt callbacks -- */
 	void (*transfer_ack_begin)(struct snd_pcm_substream *substream);
 	void (*transfer_ack_end)(struct snd_pcm_substream *substream);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* -- timer -- */
 	unsigned int timer_resolution;	/* timer resolution */
 
@@ -2209,9 +2212,14 @@ struct _snd_pcm_runtime {
 	  For the operators (callbacks) of each sound driver, most of
 	these records are supposed to be read-only.  Only the PCM
 	middle-layer changes / updates them.  The exceptions are
+<<<<<<< HEAD
 	the hardware description (hw), interrupt callbacks
 	(transfer_ack_xxx), DMA buffer information, and the private
 	data.  Besides, if you use the standard buffer allocation
+=======
+	the hardware description (hw) DMA buffer information and the
+	private data.  Besides, if you use the standard buffer allocation
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	method via <function>snd_pcm_lib_malloc_pages()</function>,
 	you don't need to set the DMA buffer information by yourself.
 	</para>
@@ -2538,6 +2546,7 @@ struct _snd_pcm_runtime {
         </para>
 	</section>
 
+<<<<<<< HEAD
 	<section id="pcm-interface-runtime-intr">
 	<title>Interrupt Callbacks</title>
 	<para>
@@ -2548,6 +2557,8 @@ struct _snd_pcm_runtime {
 	</para>
 	</section>
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
     </section>
 
     <section id="pcm-interface-operators">

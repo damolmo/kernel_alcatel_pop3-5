@@ -394,7 +394,15 @@ static int __init_refok impd1_probe(struct lm_device *dev)
 					      sizeof(*lookup) + 3 * sizeof(struct gpiod_lookup),
 					      GFP_KERNEL);
 			chipname = devm_kstrdup(&dev->dev, devname, GFP_KERNEL);
+<<<<<<< HEAD
 			mmciname = kasprintf(GFP_KERNEL, "lm%x:00700", dev->id);
+=======
+			mmciname = devm_kasprintf(&dev->dev, GFP_KERNEL,
+						  "lm%x:00700", dev->id);
+			if (!lookup || !chipname || !mmciname)
+				return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			lookup->dev_id = mmciname;
 			/*
 			 * Offsets on GPIO block 1:

@@ -136,6 +136,7 @@ static void l2c_disable(void)
 	dsb(st);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CACHE_PL310
 static inline void cache_wait(void __iomem *reg, unsigned long mask)
 {
@@ -203,6 +204,8 @@ static void l2x0_disable(void)
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void l2c_save(void __iomem *base)
 {
 	l2x0_saved_regs.aux_ctrl = readl_relaxed(l2x0_base + L2X0_AUX_CTRL);
@@ -1257,6 +1260,7 @@ static unsigned long calc_range_end(unsigned long start, unsigned long end)
 static void aurora_pa_range(unsigned long start, unsigned long end,
 			unsigned long offset)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&l2x0_lock, flags);
@@ -1265,6 +1269,17 @@ static void aurora_pa_range(unsigned long start, unsigned long end,
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 
 	cache_sync();
+=======
+	void __iomem *base = l2x0_base;
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&l2x0_lock, flags);
+	writel_relaxed(start, base + AURORA_RANGE_BASE_ADDR_REG);
+	writel_relaxed(end, base + offset);
+	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+
+	writel_relaxed(0, base + AURORA_SYNC_REG);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void aurora_inv_range(unsigned long start, unsigned long end)
@@ -1324,6 +1339,40 @@ static void aurora_flush_range(unsigned long start, unsigned long end)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void aurora_flush_all(void)
+{
+	void __iomem *base = l2x0_base;
+	unsigned long flags;
+
+	/* clean all ways */
+	raw_spin_lock_irqsave(&l2x0_lock, flags);
+	__l2c_op_way(base + L2X0_CLEAN_INV_WAY);
+	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+
+	writel_relaxed(0, base + AURORA_SYNC_REG);
+}
+
+static void aurora_cache_sync(void)
+{
+	writel_relaxed(0, l2x0_base + AURORA_SYNC_REG);
+}
+
+static void aurora_disable(void)
+{
+	void __iomem *base = l2x0_base;
+	unsigned long flags;
+
+	raw_spin_lock_irqsave(&l2x0_lock, flags);
+	__l2c_op_way(base + L2X0_CLEAN_INV_WAY);
+	writel_relaxed(0, base + AURORA_SYNC_REG);
+	l2c_write_sec(0, base, L2X0_CTRL);
+	dsb(st);
+	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void aurora_save(void __iomem *base)
 {
 	l2x0_saved_regs.ctrl = readl_relaxed(base + L2X0_CTRL);
@@ -1398,9 +1447,15 @@ static const struct l2c_init_data of_aurora_with_outer_data __initconst = {
 		.inv_range   = aurora_inv_range,
 		.clean_range = aurora_clean_range,
 		.flush_range = aurora_flush_range,
+<<<<<<< HEAD
 		.flush_all   = l2x0_flush_all,
 		.disable     = l2x0_disable,
 		.sync        = l2x0_cache_sync,
+=======
+		.flush_all   = aurora_flush_all,
+		.disable     = aurora_disable,
+		.sync	     = aurora_cache_sync,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.resume      = aurora_resume,
 	},
 };

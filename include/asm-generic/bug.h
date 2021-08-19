@@ -44,6 +44,7 @@ struct bug_entry {
  * really the *only* solution?  There are usually better options, where
  * users don't need to reboot ASAP and can mostly shut down cleanly.
  */
+<<<<<<< HEAD
 #ifdef __aarch64__
 #define BUG() do { \
 	printk("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
@@ -55,6 +56,12 @@ struct bug_entry {
 #ifndef HAVE_ARCH_BUG
 #define BUG() do { \
 	printk("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
+=======
+#ifndef HAVE_ARCH_BUG
+#define BUG() do { \
+	printk("BUG: failure at %s:%d/%s()!\n", __FILE__, __LINE__, __func__); \
+	barrier_before_unreachable(); \
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	panic("BUG!"); \
 } while (0)
 #endif
@@ -150,7 +157,11 @@ extern void warn_slowpath_null(const char *file, const int line);
 #endif
 
 #ifndef HAVE_ARCH_BUG_ON
+<<<<<<< HEAD
 #define BUG_ON(condition) do { if (condition) ; } while (0)
+=======
+#define BUG_ON(condition) do { if (condition) BUG(); } while (0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 #ifndef HAVE_ARCH_WARN_ON

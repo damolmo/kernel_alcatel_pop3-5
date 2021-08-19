@@ -26,7 +26,11 @@
  * as fixes will need to be made in multiple places.  The performance gain
  * is worth it.
  */
+<<<<<<< HEAD
 
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.set noat
 	.set noreorder
 .text
@@ -229,6 +233,10 @@ end_b:
 	nop
 	ret $31,($26),1		# L0 :
 	.end ___memset
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(___memset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * This is the original body of code, prior to replication and
@@ -406,6 +414,10 @@ end:
 	nop
 	ret $31,($26),1		# L0 :
 	.end __constant_c_memset
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__constant_c_memset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * This is a replicant of the __constant_c_memset code, rescheduled
@@ -594,6 +606,15 @@ end_w:
 	ret $31,($26),1		# L0 :
 
 	.end __memsetw
+<<<<<<< HEAD
 
 memset = ___memset
 __memset = ___memset
+=======
+	EXPORT_SYMBOL(__memsetw)
+
+memset = ___memset
+__memset = ___memset
+	EXPORT_SYMBOL(memset)
+	EXPORT_SYMBOL(__memset)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -17,6 +17,10 @@
 
 struct priv {
 	struct mcb_bus *bus;
+<<<<<<< HEAD
+=======
+	phys_addr_t mapbase;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void __iomem *base;
 };
 
@@ -31,8 +35,13 @@ static int mcb_pci_get_irq(struct mcb_device *mdev)
 
 static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
+<<<<<<< HEAD
 	struct priv *priv;
 	phys_addr_t mapbase;
+=======
+	struct resource *res;
+	struct priv *priv;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 	int num_cells;
 	unsigned long flags;
@@ -47,12 +56,18 @@ static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	mapbase = pci_resource_start(pdev, 0);
 	if (!mapbase) {
+=======
+	priv->mapbase = pci_resource_start(pdev, 0);
+	if (!priv->mapbase) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(&pdev->dev, "No PCI resource\n");
 		goto err_start;
 	}
 
+<<<<<<< HEAD
 	ret = pci_request_region(pdev, 0, KBUILD_MODNAME);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to request PCI BARs\n");
@@ -60,6 +75,17 @@ static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 
 	priv->base = pci_iomap(pdev, 0, 0);
+=======
+	res = request_mem_region(priv->mapbase, CHAM_HEADER_SIZE,
+				 KBUILD_MODNAME);
+	if (IS_ERR(res)) {
+		dev_err(&pdev->dev, "Failed to request PCI memory\n");
+		ret = PTR_ERR(res);
+		goto err_start;
+	}
+
+	priv->base = ioremap(priv->mapbase, CHAM_HEADER_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!priv->base) {
 		dev_err(&pdev->dev, "Cannot ioremap\n");
 		ret = -ENOMEM;
@@ -84,7 +110,11 @@ static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	priv->bus->get_irq = mcb_pci_get_irq;
 
+<<<<<<< HEAD
 	ret = chameleon_parse_cells(priv->bus, mapbase, priv->base);
+=======
+	ret = chameleon_parse_cells(priv->bus, priv->mapbase, priv->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret < 0)
 		goto err_drvdata;
 	num_cells = ret;
@@ -93,8 +123,15 @@ static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	mcb_bus_add_devices(priv->bus);
 
+<<<<<<< HEAD
 err_drvdata:
 	pci_iounmap(pdev, priv->base);
+=======
+	return 0;
+
+err_drvdata:
+	iounmap(priv->base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_ioremap:
 	pci_release_region(pdev, 0);
 err_start:
@@ -107,6 +144,13 @@ static void mcb_pci_remove(struct pci_dev *pdev)
 	struct priv *priv = pci_get_drvdata(pdev);
 
 	mcb_release_bus(priv->bus);
+<<<<<<< HEAD
+=======
+
+	iounmap(priv->base);
+	release_region(priv->mapbase, CHAM_HEADER_SIZE);
+	pci_disable_device(pdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static const struct pci_device_id mcb_pci_tbl[] = {

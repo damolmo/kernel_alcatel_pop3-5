@@ -93,6 +93,10 @@ enum {
 
 #define MWIFIEX_MAX_TOTAL_SCAN_TIME	(MWIFIEX_TIMER_10S - MWIFIEX_TIMER_1S)
 
+<<<<<<< HEAD
+=======
+#define WPA_GTK_OUI_OFFSET				2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define RSN_GTK_OUI_OFFSET				2
 
 #define MWIFIEX_OUI_NOT_PRESENT			0

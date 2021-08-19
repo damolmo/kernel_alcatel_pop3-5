@@ -26,10 +26,17 @@
 
 int can_do_mlock(void)
 {
+<<<<<<< HEAD
 	if (capable(CAP_IPC_LOCK))
 		return 1;
 	if (rlimit(RLIMIT_MEMLOCK) != 0)
 		return 1;
+=======
+	if (rlimit(RLIMIT_MEMLOCK) != 0)
+		return 1;
+	if (capable(CAP_IPC_LOCK))
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 EXPORT_SYMBOL(can_do_mlock);
@@ -172,7 +179,11 @@ static void __munlock_isolation_failed(struct page *page)
  */
 unsigned int munlock_vma_page(struct page *page)
 {
+<<<<<<< HEAD
 	unsigned int nr_pages;
+=======
+	int nr_pages;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct zone *zone = page_zone(page);
 
 	/* For try_to_munlock() and to serialize with page migration */
@@ -333,7 +344,11 @@ static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
 {
 	int i;
 	int nr = pagevec_count(pvec);
+<<<<<<< HEAD
 	int delta_munlocked;
+=======
+	int delta_munlocked = -nr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct pagevec pvec_putback;
 	int pgrescued = 0;
 
@@ -353,6 +368,11 @@ static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
 				continue;
 			else
 				__munlock_isolation_failed(page);
+<<<<<<< HEAD
+=======
+		} else {
+			delta_munlocked++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		/*
@@ -364,7 +384,10 @@ static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
 		pagevec_add(&pvec_putback, pvec->pages[i]);
 		pvec->pages[i] = NULL;
 	}
+<<<<<<< HEAD
 	delta_munlocked = -nr + pagevec_count(&pvec_putback);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__mod_zone_page_state(zone, NR_MLOCK, delta_munlocked);
 	spin_unlock_irq(&zone->lru_lock);
 
@@ -559,6 +582,10 @@ static int mlock_fixup(struct vm_area_struct *vma, struct vm_area_struct **prev,
 	int nr_pages;
 	int ret = 0;
 	int lock = !!(newflags & VM_LOCKED);
+<<<<<<< HEAD
+=======
+	vm_flags_t old_flags = vma->vm_flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (newflags == vma->vm_flags || (vma->vm_flags & VM_SPECIAL) ||
 	    is_vm_hugetlb_page(vma) || vma == get_gate_vma(current->mm))
@@ -592,6 +619,11 @@ success:
 	nr_pages = (end - start) >> PAGE_SHIFT;
 	if (!lock)
 		nr_pages = -nr_pages;
+<<<<<<< HEAD
+=======
+	else if (old_flags & VM_LOCKED)
+		nr_pages = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mm->locked_vm += nr_pages;
 
 	/*

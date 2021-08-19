@@ -10,6 +10,11 @@
 # are not supported by all versions of the compiler
 # ==========================================================================
 
+<<<<<<< HEAD
+=======
+KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
 endif
@@ -24,6 +29,11 @@ warning-1 += $(call cc-option, -Wmissing-prototypes)
 warning-1 += -Wold-style-definition
 warning-1 += $(call cc-option, -Wmissing-include-dirs)
 warning-1 += $(call cc-option, -Wunused-but-set-variable)
+<<<<<<< HEAD
+=======
+warning-1 += $(call cc-option, -Wunused-const-variable)
+warning-1 += $(call cc-option, -Wpacked-not-aligned)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 warning-1 += $(call cc-disable-warning, missing-field-initializers)
 
 warning-2 := -Waggregate-return
@@ -60,9 +70,16 @@ ifeq ($(COMPILER),clang)
 KBUILD_CFLAGS += $(call cc-disable-warning, initializer-overrides)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-value)
 KBUILD_CFLAGS += $(call cc-disable-warning, format)
+<<<<<<< HEAD
 KBUILD_CFLAGS += $(call cc-disable-warning, unknown-warning-option)
 KBUILD_CFLAGS += $(call cc-disable-warning, sign-compare)
 KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
 KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+=======
+KBUILD_CFLAGS += $(call cc-disable-warning, sign-compare)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
+KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endif
 endif

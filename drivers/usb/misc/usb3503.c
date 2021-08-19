@@ -291,6 +291,11 @@ static int usb3503_probe(struct usb3503 *hub)
 	if (gpio_is_valid(hub->gpio_reset)) {
 		err = devm_gpio_request_one(dev, hub->gpio_reset,
 				GPIOF_OUT_INIT_LOW, "usb3503 reset");
+<<<<<<< HEAD
+=======
+		/* Datasheet defines a hardware reset to be at least 100us */
+		usleep_range(100, 10000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err) {
 			dev_err(dev,
 				"unable to request GPIO %d as reset pin (%d)\n",

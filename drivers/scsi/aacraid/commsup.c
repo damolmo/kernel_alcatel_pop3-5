@@ -83,9 +83,18 @@ static int fib_map_alloc(struct aac_dev *dev)
 
 void aac_fib_map_free(struct aac_dev *dev)
 {
+<<<<<<< HEAD
 	pci_free_consistent(dev->pdev,
 	  dev->max_fib_size * (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB),
 	  dev->hw_fib_va, dev->hw_fib_pa);
+=======
+	if (dev->hw_fib_va && dev->max_fib_size) {
+		pci_free_consistent(dev->pdev,
+		(dev->max_fib_size *
+		(dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB)),
+		dev->hw_fib_va, dev->hw_fib_pa);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->hw_fib_va = NULL;
 	dev->hw_fib_pa = 0;
 }
@@ -587,10 +596,17 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 					}
 					return -EFAULT;
 				}
+<<<<<<< HEAD
 				/* We used to udelay() here but that absorbed
 				 * a CPU when a timeout occured. Not very
 				 * useful. */
 				cpu_relax();
+=======
+				/*
+				 * Allow other processes / CPUS to use core
+				 */
+				schedule();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		} else if (down_interruptible(&fibptr->event_wait)) {
 			/* Do nothing ... satisfy
@@ -1267,9 +1283,16 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	host = aac->scsi_host_ptr;
 	scsi_block_requests(host);
 	aac_adapter_disable_int(aac);
+<<<<<<< HEAD
 	if (aac->thread->pid != current->pid) {
 		spin_unlock_irq(host->host_lock);
 		kthread_stop(aac->thread);
+=======
+	if (aac->thread && aac->thread->pid != current->pid) {
+		spin_unlock_irq(host->host_lock);
+		kthread_stop(aac->thread);
+		aac->thread = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		jafo = 1;
 	}
 
@@ -1340,6 +1363,10 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 					  aac->name);
 		if (IS_ERR(aac->thread)) {
 			retval = PTR_ERR(aac->thread);
+<<<<<<< HEAD
+=======
+			aac->thread = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out;
 		}
 	}
@@ -1918,6 +1945,13 @@ int aac_command_thread(void *data)
 		if (difference <= 0)
 			difference = 1;
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
+=======
+
+		if (kthread_should_stop())
+			break;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		schedule_timeout(difference);
 
 		if (kthread_should_stop())

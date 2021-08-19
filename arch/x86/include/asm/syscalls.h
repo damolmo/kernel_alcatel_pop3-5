@@ -21,7 +21,11 @@ asmlinkage long sys_ioperm(unsigned long, unsigned long, int);
 asmlinkage long sys_iopl(unsigned int);
 
 /* kernel/ldt.c */
+<<<<<<< HEAD
 asmlinkage int sys_modify_ldt(int, void __user *, unsigned long);
+=======
+asmlinkage long sys_modify_ldt(int, void __user *, unsigned long);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* kernel/signal.c */
 asmlinkage long sys_rt_sigreturn(void);

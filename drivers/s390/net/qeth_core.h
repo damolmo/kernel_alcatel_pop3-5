@@ -593,6 +593,14 @@ struct qeth_cmd_buffer {
 	void (*callback) (struct qeth_channel *, struct qeth_cmd_buffer *);
 };
 
+<<<<<<< HEAD
+=======
+static inline struct qeth_ipa_cmd *__ipa_cmd(struct qeth_cmd_buffer *iob)
+{
+	return (struct qeth_ipa_cmd *)(iob->data + IPA_PDU_HEADER_SIZE);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * definition of a qeth channel, used for read and write
  */
@@ -722,6 +730,10 @@ enum qeth_discipline_id {
 };
 
 struct qeth_discipline {
+<<<<<<< HEAD
+=======
+	const struct device_type *devtype;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void (*start_poll)(struct ccw_device *, int, unsigned long);
 	qdio_handler_t *input_handler;
 	qdio_handler_t *output_handler;
@@ -887,6 +899,12 @@ extern struct qeth_discipline qeth_l2_discipline;
 extern struct qeth_discipline qeth_l3_discipline;
 extern const struct attribute_group *qeth_generic_attr_groups[];
 extern const struct attribute_group *qeth_osn_attr_groups[];
+<<<<<<< HEAD
+=======
+extern const struct attribute_group qeth_device_attr_group;
+extern const struct attribute_group qeth_device_blkt_group;
+extern const struct device_type qeth_generic_devtype;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern struct workqueue_struct *qeth_wq;
 
 int qeth_card_hw_is_reachable(struct qeth_card *);

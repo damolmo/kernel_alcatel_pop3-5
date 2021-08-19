@@ -127,3 +127,16 @@ void flush_cache_all_hexagon(void)
 	local_irq_restore(flags);
 	mb();
 }
+<<<<<<< HEAD
+=======
+
+void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
+		       unsigned long vaddr, void *dst, void *src, int len)
+{
+	memcpy(dst, src, len);
+	if (vma->vm_flags & VM_EXEC) {
+		flush_icache_range((unsigned long) dst,
+		(unsigned long) dst + len);
+	}
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

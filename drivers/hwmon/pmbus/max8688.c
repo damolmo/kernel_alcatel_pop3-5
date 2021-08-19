@@ -44,7 +44,11 @@ static int max8688_read_word_data(struct i2c_client *client, int page, int reg)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (page)
+=======
+	if (page > 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENXIO;
 
 	switch (reg) {

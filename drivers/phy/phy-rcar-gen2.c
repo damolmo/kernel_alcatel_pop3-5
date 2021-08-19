@@ -292,6 +292,10 @@ static int rcar_gen2_phy_probe(struct platform_device *pdev)
 		error = of_property_read_u32(np, "reg", &channel_num);
 		if (error || channel_num > 2) {
 			dev_err(dev, "Invalid \"reg\" property\n");
+<<<<<<< HEAD
+=======
+			of_node_put(np);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return error;
 		}
 		channel->select_mask = select_mask[channel_num];
@@ -307,6 +311,10 @@ static int rcar_gen2_phy_probe(struct platform_device *pdev)
 						   &rcar_gen2_phy_ops, NULL);
 			if (IS_ERR(phy->phy)) {
 				dev_err(dev, "Failed to create PHY\n");
+<<<<<<< HEAD
+=======
+				of_node_put(np);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return PTR_ERR(phy->phy);
 			}
 			phy_set_drvdata(phy->phy, phy);

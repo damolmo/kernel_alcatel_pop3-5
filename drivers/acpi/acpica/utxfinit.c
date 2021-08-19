@@ -175,10 +175,19 @@ acpi_status __init acpi_enable_subsystem(u32 flags)
 	 * Obtain a permanent mapping for the FACS. This is required for the
 	 * Global Lock and the Firmware Waking Vector
 	 */
+<<<<<<< HEAD
 	status = acpi_tb_initialize_facs();
 	if (ACPI_FAILURE(status)) {
 		ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
 		return_ACPI_STATUS(status);
+=======
+	if (!(flags & ACPI_NO_FACS_INIT)) {
+		status = acpi_tb_initialize_facs();
+		if (ACPI_FAILURE(status)) {
+			ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
+			return_ACPI_STATUS(status);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 #endif				/* !ACPI_REDUCED_HARDWARE */
 

@@ -308,6 +308,17 @@ acpi_status acpi_ns_evaluate(struct acpi_evaluate_info *info)
 		/* Map AE_CTRL_RETURN_VALUE to AE_OK, we are done with it */
 
 		status = AE_OK;
+<<<<<<< HEAD
+=======
+	} else if (ACPI_FAILURE(status)) {
+
+		/* If return_object exists, delete it */
+
+		if (info->return_object) {
+			acpi_ut_remove_reference(info->return_object);
+			info->return_object = NULL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ACPI_DEBUG_PRINT((ACPI_DB_NAMES,

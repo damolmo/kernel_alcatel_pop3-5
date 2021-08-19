@@ -319,7 +319,11 @@ static unsigned long pnv_get_proc_freq(unsigned int cpu)
 {
 	unsigned long ret_freq;
 
+<<<<<<< HEAD
 	ret_freq = cpufreq_quick_get(cpu) * 1000ul;
+=======
+	ret_freq = cpufreq_get(cpu) * 1000ul;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If the backend cpufreq driver does not exist,

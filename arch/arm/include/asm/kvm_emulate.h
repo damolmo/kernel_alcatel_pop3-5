@@ -38,6 +38,19 @@ static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
 	vcpu->arch.hcr = HCR_GUEST_MASK;
 }
 
+<<<<<<< HEAD
+=======
+static inline unsigned long vcpu_get_hcr(struct kvm_vcpu *vcpu)
+{
+	return vcpu->arch.hcr;
+}
+
+static inline void vcpu_set_hcr(struct kvm_vcpu *vcpu, unsigned long hcr)
+{
+	vcpu->arch.hcr = hcr;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline bool vcpu_mode_is_32bit(struct kvm_vcpu *vcpu)
 {
 	return 1;

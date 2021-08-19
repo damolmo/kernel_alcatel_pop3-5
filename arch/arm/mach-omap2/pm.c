@@ -231,7 +231,11 @@ static void omap_pm_end(void)
 	cpu_idle_poll_ctrl(false);
 }
 
+<<<<<<< HEAD
 static void omap_pm_finish(void)
+=======
+static void omap_pm_wake(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (cpu_is_omap34xx())
 		omap_prcm_irq_complete();
@@ -241,7 +245,11 @@ static const struct platform_suspend_ops omap_pm_ops = {
 	.begin		= omap_pm_begin,
 	.end		= omap_pm_end,
 	.enter		= omap_pm_enter,
+<<<<<<< HEAD
 	.finish		= omap_pm_finish,
+=======
+	.wake		= omap_pm_wake,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.valid		= suspend_valid_only_mem,
 };
 

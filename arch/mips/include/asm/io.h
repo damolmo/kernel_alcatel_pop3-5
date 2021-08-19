@@ -141,6 +141,7 @@ static inline void * phys_to_virt(unsigned long address)
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
  */
+<<<<<<< HEAD
 static inline unsigned long isa_virt_to_bus(volatile void * address)
 {
 	return (unsigned long)address - PAGE_OFFSET;
@@ -149,6 +150,16 @@ static inline unsigned long isa_virt_to_bus(volatile void * address)
 static inline void * isa_bus_to_virt(unsigned long address)
 {
 	return (void *)(address + PAGE_OFFSET);
+=======
+static inline unsigned long isa_virt_to_bus(volatile void *address)
+{
+	return virt_to_phys(address);
+}
+
+static inline void *isa_bus_to_virt(unsigned long address)
+{
+	return phys_to_virt(address);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define isa_page_to_bus page_to_phys
@@ -375,6 +386,11 @@ static inline type pfx##read##bwlq(const volatile void __iomem *mem)	\
 		BUG();							\
 	}								\
 									\
+<<<<<<< HEAD
+=======
+	/* prevent prefetching of coherent DMA data prematurely */	\
+	rmb();								\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return pfx##ioswab##bwlq(__mem, __val);				\
 }
 
@@ -410,6 +426,11 @@ static inline type pfx##in##bwlq##p(unsigned long port)			\
 	__val = *__addr;						\
 	slow;								\
 									\
+<<<<<<< HEAD
+=======
+	/* prevent prefetching of coherent DMA data prematurely */	\
+	rmb();								\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return pfx##ioswab##bwlq(__addr, __val);			\
 }
 

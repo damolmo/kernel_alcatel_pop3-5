@@ -115,6 +115,10 @@ struct cdns_spi {
 	void __iomem *regs;
 	struct clk *ref_clk;
 	struct clk *pclk;
+<<<<<<< HEAD
+=======
+	unsigned int clk_rate;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 speed_hz;
 	const u8 *txbuf;
 	u8 *rxbuf;
@@ -252,7 +256,11 @@ static void cdns_spi_config_clock_freq(struct spi_device *spi,
 	u32 ctrl_reg, baud_rate_val;
 	unsigned long frequency;
 
+<<<<<<< HEAD
 	frequency = clk_get_rate(xspi->ref_clk);
+=======
+	frequency = xspi->clk_rate;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ctrl_reg = cdns_spi_read(xspi, CDNS_SPI_CR_OFFSET);
 
@@ -554,8 +562,14 @@ static int cdns_spi_probe(struct platform_device *pdev)
 	master->set_cs = cdns_spi_chipselect;
 	master->mode_bits = SPI_CPOL | SPI_CPHA;
 
+<<<<<<< HEAD
 	/* Set to default valid value */
 	master->max_speed_hz = clk_get_rate(xspi->ref_clk) / 4;
+=======
+	xspi->clk_rate = clk_get_rate(xspi->ref_clk);
+	/* Set to default valid value */
+	master->max_speed_hz = xspi->clk_rate / 4;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	xspi->speed_hz = master->max_speed_hz;
 
 	master->bits_per_word_mask = SPI_BPW_MASK(8);

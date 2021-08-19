@@ -88,6 +88,30 @@ static int adau17x1_pll_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int adau17x1_adc_fixup(struct snd_soc_dapm_widget *w,
+	struct snd_kcontrol *kcontrol, int event)
+{
+	struct snd_soc_codec *codec = snd_soc_dapm_to_codec(w->dapm);
+	struct adau *adau = snd_soc_codec_get_drvdata(codec);
+
+	/*
+	 * If we are capturing, toggle the ADOSR bit in Converter Control 0 to
+	 * avoid losing SNR (workaround from ADI). This must be done after
+	 * the ADC(s) have been enabled. According to the data sheet, it is
+	 * normally illegal to set this bit when the sampling rate is 96 kHz,
+	 * but according to ADI it is acceptable for this workaround.
+	 */
+	regmap_update_bits(adau->regmap, ADAU17X1_CONVERTER0,
+		ADAU17X1_CONVERTER0_ADOSR, ADAU17X1_CONVERTER0_ADOSR);
+	regmap_update_bits(adau->regmap, ADAU17X1_CONVERTER0,
+		ADAU17X1_CONVERTER0_ADOSR, 0);
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const char * const adau17x1_mono_stereo_text[] = {
 	"Stereo",
 	"Mono Left Channel (L+R)",
@@ -119,7 +143,12 @@ static const struct snd_soc_dapm_widget adau17x1_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("Right DAC Mode Mux", SND_SOC_NOPM, 0, 0,
 		&adau17x1_dac_mode_mux),
 
+<<<<<<< HEAD
 	SND_SOC_DAPM_ADC("Left Decimator", NULL, ADAU17X1_ADC_CONTROL, 0, 0),
+=======
+	SND_SOC_DAPM_ADC_E("Left Decimator", NULL, ADAU17X1_ADC_CONTROL, 0, 0,
+			   adau17x1_adc_fixup, SND_SOC_DAPM_POST_PMU),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SND_SOC_DAPM_ADC("Right Decimator", NULL, ADAU17X1_ADC_CONTROL, 1, 0),
 	SND_SOC_DAPM_DAC("Left DAC", NULL, ADAU17X1_DAC_CONTROL0, 0, 0),
 	SND_SOC_DAPM_DAC("Right DAC", NULL, ADAU17X1_DAC_CONTROL0, 1, 0),

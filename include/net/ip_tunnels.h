@@ -12,6 +12,10 @@
 #include <net/ip.h>
 #include <net/netns/generic.h>
 #include <net/rtnetlink.h>
+<<<<<<< HEAD
+=======
+#include <net/dst_cache.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #if IS_ENABLED(CONFIG_IPV6)
 #include <net/ipv6.h>
@@ -46,11 +50,14 @@ struct ip_tunnel_prl_entry {
 	struct rcu_head			rcu_head;
 };
 
+<<<<<<< HEAD
 struct ip_tunnel_dst {
 	struct dst_entry __rcu 		*dst;
 	__be32				 saddr;
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct ip_tunnel {
 	struct ip_tunnel __rcu	*next;
 	struct hlist_node hash_node;
@@ -67,7 +74,11 @@ struct ip_tunnel {
 	int		tun_hlen;	/* Precalculated header length */
 	int		mlink;
 
+<<<<<<< HEAD
 	struct ip_tunnel_dst __percpu *dst_cache;
+=======
+	struct dst_cache dst_cache;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct ip_tunnel_parm parms;
 
@@ -148,7 +159,10 @@ int ip_tunnel_changelink(struct net_device *dev, struct nlattr *tb[],
 int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
 		      struct ip_tunnel_parm *p);
 void ip_tunnel_setup(struct net_device *dev, int net_id);
+<<<<<<< HEAD
 void ip_tunnel_dst_reset_all(struct ip_tunnel *t);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ip_tunnel_encap_setup(struct ip_tunnel *t,
 			  struct ip_tunnel_encap *ipencap);
 
@@ -186,12 +200,20 @@ static inline void iptunnel_xmit_stats(int err,
 				       struct pcpu_sw_netstats __percpu *stats)
 {
 	if (err > 0) {
+<<<<<<< HEAD
 		struct pcpu_sw_netstats *tstats = this_cpu_ptr(stats);
+=======
+		struct pcpu_sw_netstats *tstats = get_cpu_ptr(stats);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		u64_stats_update_begin(&tstats->syncp);
 		tstats->tx_bytes += err;
 		tstats->tx_packets++;
 		u64_stats_update_end(&tstats->syncp);
+<<<<<<< HEAD
+=======
+		put_cpu_ptr(tstats);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (err < 0) {
 		err_stats->tx_errors++;
 		err_stats->tx_aborted_errors++;

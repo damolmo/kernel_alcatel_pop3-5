@@ -73,6 +73,7 @@ STRTO_H(strtouint, unsigned int)
 STRTO_H(strtoll, long long)
 STRTO_H(strtoull, unsigned long long)
 
+<<<<<<< HEAD
 ssize_t bch_hprint(char *buf, int64_t v)
 {
 	static const char units[] = "?kMGTPEZY";
@@ -91,6 +92,46 @@ ssize_t bch_hprint(char *buf, int64_t v)
 		snprintf(dec, sizeof(dec), ".%i", t / 100);
 
 	return sprintf(buf, "%lli%s%c", v, dec, units[u]);
+=======
+/**
+ * bch_hprint() - formats @v to human readable string for sysfs.
+ *
+ * @v - signed 64 bit integer
+ * @buf - the (at least 8 byte) buffer to format the result into.
+ *
+ * Returns the number of bytes used by format.
+ */
+ssize_t bch_hprint(char *buf, int64_t v)
+{
+	static const char units[] = "?kMGTPEZY";
+	int u = 0, t;
+
+	uint64_t q;
+
+	if (v < 0)
+		q = -v;
+	else
+		q = v;
+
+	/* For as long as the number is more than 3 digits, but at least
+	 * once, shift right / divide by 1024.  Keep the remainder for
+	 * a digit after the decimal point.
+	 */
+	do {
+		u++;
+
+		t = q & ~(~0 << 10);
+		q >>= 10;
+	} while (q >= 1000);
+
+	if (v < 0)
+		/* '-', up to 3 digits, '.', 1 digit, 1 character, null;
+		 * yields 8 bytes.
+		 */
+		return sprintf(buf, "-%llu.%i%c", q, t * 10 / 1024, units[u]);
+	else
+		return sprintf(buf, "%llu.%i%c", q, t * 10 / 1024, units[u]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 ssize_t bch_snprint_string_list(char *buf, size_t size, const char * const list[],

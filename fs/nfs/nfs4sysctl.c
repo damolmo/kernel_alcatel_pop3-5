@@ -31,7 +31,11 @@ static struct ctl_table nfs4_cb_sysctls[] = {
 		.data = &nfs_idmap_cache_timeout,
 		.maxlen = sizeof(int),
 		.mode = 0644,
+<<<<<<< HEAD
 		.proc_handler = proc_dointvec_jiffies,
+=======
+		.proc_handler = proc_dointvec,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	},
 	{ }
 };

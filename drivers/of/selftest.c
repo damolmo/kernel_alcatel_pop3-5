@@ -451,6 +451,7 @@ static void __init of_selftest_changeset(void)
 	struct property *ppadd, padd = { .name = "prop-add", .length = 0, .value = "" };
 	struct property *ppupdate, pupdate = { .name = "prop-update", .length = 5, .value = "abcd" };
 	struct property *ppremove;
+<<<<<<< HEAD
 	struct device_node *n1, *n2, *n21, *nremove, *parent;
 	struct of_changeset chgset;
 
@@ -460,6 +461,17 @@ static void __init of_selftest_changeset(void)
 	n2 = __of_node_alloc("/testcase-data/changeset/n2", GFP_KERNEL);
 	selftest(n2, "testcase setup failure\n");
 	n21 = __of_node_alloc("/testcase-data/changeset/n2/n21", GFP_KERNEL);
+=======
+	struct device_node *n1, *n2, *n21, *nremove, *parent, *np;
+	struct of_changeset chgset;
+
+	of_changeset_init(&chgset);
+	n1 = __of_node_dup(NULL, "/testcase-data/changeset/n1");
+	selftest(n1, "testcase setup failure\n");
+	n2 = __of_node_dup(NULL, "/testcase-data/changeset/n2");
+	selftest(n2, "testcase setup failure\n");
+	n21 = __of_node_dup(NULL, "%s/%s", "/testcase-data/changeset/n2", "n21");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	selftest(n21, "testcase setup failure %p\n", n21);
 	nremove = of_find_node_by_path("/testcase-data/changeset/node-remove");
 	selftest(nremove, "testcase setup failure\n");
@@ -487,6 +499,15 @@ static void __init of_selftest_changeset(void)
 	selftest(!of_changeset_apply(&chgset), "apply failed\n");
 	mutex_unlock(&of_mutex);
 
+<<<<<<< HEAD
+=======
+	/* Make sure node names are constructed correctly */
+	selftest((np = of_find_node_by_path("/testcase-data/changeset/n2/n21")),
+		 "'%s' not added\n", n21->full_name);
+	if (np)
+		of_node_put(np);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&of_mutex);
 	selftest(!of_changeset_revert(&chgset), "revert failed\n");
 	mutex_unlock(&of_mutex);

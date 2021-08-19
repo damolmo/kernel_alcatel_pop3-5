@@ -50,8 +50,12 @@ static inline int nilfs_add_nondir(struct dentry *dentry, struct inode *inode)
 {
 	int err = nilfs_add_link(dentry, inode);
 	if (!err) {
+<<<<<<< HEAD
 		d_instantiate(dentry, inode);
 		unlock_new_inode(inode);
+=======
+		d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 	inode_dec_link_count(inode);
@@ -249,8 +253,12 @@ static int nilfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_fail;
 
 	nilfs_mark_inode_dirty(inode);
+<<<<<<< HEAD
 	d_instantiate(dentry, inode);
 	unlock_new_inode(inode);
+=======
+	d_instantiate_new(dentry, inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	if (!err)
 		err = nilfs_transaction_commit(dir->i_sb);

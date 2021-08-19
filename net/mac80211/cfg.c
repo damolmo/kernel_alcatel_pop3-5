@@ -210,7 +210,11 @@ static int ieee80211_add_key(struct wiphy *wiphy, struct net_device *dev,
 	case NL80211_IFTYPE_AP:
 	case NL80211_IFTYPE_AP_VLAN:
 		/* Keys without a station are used for TX only */
+<<<<<<< HEAD
 		if (key->sta && test_sta_flag(key->sta, WLAN_STA_MFP))
+=======
+		if (sta && test_sta_flag(sta, WLAN_STA_MFP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			key->conf.flags |= IEEE80211_KEY_FLAG_RX_MGMT;
 		break;
 	case NL80211_IFTYPE_ADHOC:
@@ -276,7 +280,11 @@ static int ieee80211_del_key(struct wiphy *wiphy, struct net_device *dev,
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	ieee80211_key_free(key, true);
+=======
+	ieee80211_key_free(key, sdata->vif.type == NL80211_IFTYPE_STATION);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = 0;
  out_unlock:
@@ -865,7 +873,11 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev)
 
 	/* free all potentially still buffered bcast frames */
 	local->total_ps_buffered -= skb_queue_len(&sdata->u.ap.ps.bc_buf);
+<<<<<<< HEAD
 	skb_queue_purge(&sdata->u.ap.ps.bc_buf);
+=======
+	ieee80211_purge_tx_queue(&local->hw, &sdata->u.ap.ps.bc_buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&local->mtx);
 	ieee80211_vif_copy_chanctx_to_vlans(sdata, true);
@@ -875,6 +887,7 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Layer 2 Update frame (802.2 Type 1 LLC XID Update response) */
 struct iapp_layer2_update {
 	u8 da[ETH_ALEN];	/* broadcast */
@@ -919,6 +932,8 @@ static void ieee80211_send_layer2_update(struct sta_info *sta)
 	netif_rx_ni(skb);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int sta_apply_auth_flags(struct ieee80211_local *local,
 				struct sta_info *sta,
 				u32 mask, u32 set)
@@ -1162,7 +1177,10 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
 	struct sta_info *sta;
 	struct ieee80211_sub_if_data *sdata;
 	int err;
+<<<<<<< HEAD
 	int layer2_update;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (params->vlan) {
 		sdata = IEEE80211_DEV_TO_SUB_IF(params->vlan);
@@ -1179,6 +1197,14 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
 	if (is_multicast_ether_addr(mac))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (params->sta_flags_set & BIT(NL80211_STA_FLAG_TDLS_PEER) &&
+	    sdata->vif.type == NL80211_IFTYPE_STATION &&
+	    !sdata->u.mgd.associated)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sta = sta_info_alloc(sdata, mac, GFP_KERNEL);
 	if (!sta)
 		return -ENOMEM;
@@ -1207,18 +1233,24 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
 	if (!test_sta_flag(sta, WLAN_STA_TDLS_PEER))
 		rate_control_rate_init(sta);
 
+<<<<<<< HEAD
 	layer2_update = sdata->vif.type == NL80211_IFTYPE_AP_VLAN ||
 		sdata->vif.type == NL80211_IFTYPE_AP;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = sta_info_insert_rcu(sta);
 	if (err) {
 		rcu_read_unlock();
 		return err;
 	}
 
+<<<<<<< HEAD
 	if (layer2_update)
 		ieee80211_send_layer2_update(sta);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rcu_read_unlock();
 
 	return 0;
@@ -1322,7 +1354,13 @@ static int ieee80211_change_station(struct wiphy *wiphy,
 				atomic_inc(&sta->sdata->bss->num_mcast_sta);
 		}
 
+<<<<<<< HEAD
 		ieee80211_send_layer2_update(sta);
+=======
+		if (sta->sta_state == IEEE80211_STA_AUTHORIZED)
+			cfg80211_send_layer2_update(sta->sdata->dev,
+						    sta->sta.addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	err = sta_apply_parameters(local, sta, params);
@@ -1724,6 +1762,10 @@ static int ieee80211_leave_mesh(struct wiphy *wiphy, struct net_device *dev)
 	ieee80211_stop_mesh(sdata);
 	mutex_lock(&sdata->local->mtx);
 	ieee80211_vif_release_channel(sdata);
+<<<<<<< HEAD
+=======
+	kfree(sdata->u.mesh.ie);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&sdata->local->mtx);
 
 	return 0;
@@ -2358,11 +2400,20 @@ static int ieee80211_set_bitrate_mask(struct wiphy *wiphy,
 		if (!sband)
 			continue;
 
+<<<<<<< HEAD
 		for (j = 0; j < IEEE80211_HT_MCS_MASK_LEN; j++)
 			if (~sdata->rc_rateidx_mcs_mask[i][j]) {
 				sdata->rc_has_mcs_mask[i] = true;
 				break;
 			}
+=======
+		for (j = 0; j < IEEE80211_HT_MCS_MASK_LEN; j++) {
+			if (sdata->rc_rateidx_mcs_mask[i][j] != 0xff) {
+				sdata->rc_has_mcs_mask[i] = true;
+				break;
+			}
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -2769,7 +2820,11 @@ cfg80211_beacon_dup(struct cfg80211_beacon_data *beacon)
 	}
 	if (beacon->probe_resp_len) {
 		new_beacon->probe_resp_len = beacon->probe_resp_len;
+<<<<<<< HEAD
 		beacon->probe_resp = pos;
+=======
+		new_beacon->probe_resp = pos;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(pos, beacon->probe_resp, beacon->probe_resp_len);
 		pos += beacon->probe_resp_len;
 	}

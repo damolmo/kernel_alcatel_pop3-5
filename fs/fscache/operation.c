@@ -37,7 +37,12 @@ void fscache_enqueue_operation(struct fscache_operation *op)
 	ASSERT(op->processor != NULL);
 	ASSERT(fscache_object_is_available(op->object));
 	ASSERTCMP(atomic_read(&op->usage), >, 0);
+<<<<<<< HEAD
 	ASSERTCMP(op->state, ==, FSCACHE_OP_ST_IN_PROGRESS);
+=======
+	ASSERTIFCMP(op->state != FSCACHE_OP_ST_IN_PROGRESS,
+		    op->state, ==,  FSCACHE_OP_ST_CANCELLED);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	fscache_stat(&fscache_n_op_enqueue);
 	switch (op->flags & FSCACHE_OP_TYPE) {
@@ -401,7 +406,12 @@ void fscache_put_operation(struct fscache_operation *op)
 	struct fscache_cache *cache;
 
 	_enter("{OBJ%x OP%x,%d}",
+<<<<<<< HEAD
 	       op->object->debug_id, op->debug_id, atomic_read(&op->usage));
+=======
+	       op->object ? op->object->debug_id : 0,
+	       op->debug_id, atomic_read(&op->usage));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ASSERTCMP(atomic_read(&op->usage), >, 0);
 

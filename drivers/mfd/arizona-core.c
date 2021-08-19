@@ -892,10 +892,13 @@ int arizona_dev_init(struct arizona *arizona)
 			     arizona->pdata.gpio_defaults[i]);
 	}
 
+<<<<<<< HEAD
 	pm_runtime_set_autosuspend_delay(arizona->dev, 100);
 	pm_runtime_use_autosuspend(arizona->dev);
 	pm_runtime_enable(arizona->dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Chip default */
 	if (!arizona->pdata.clk32k_src)
 		arizona->pdata.clk32k_src = ARIZONA_32KZ_MCLK2;
@@ -992,11 +995,23 @@ int arizona_dev_init(struct arizona *arizona)
 					   arizona->pdata.spk_fmt[i]);
 	}
 
+<<<<<<< HEAD
+=======
+	pm_runtime_set_active(arizona->dev);
+	pm_runtime_enable(arizona->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Set up for interrupts */
 	ret = arizona_irq_init(arizona);
 	if (ret != 0)
 		goto err_reset;
 
+<<<<<<< HEAD
+=======
+	pm_runtime_set_autosuspend_delay(arizona->dev, 100);
+	pm_runtime_use_autosuspend(arizona->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	arizona_request_irq(arizona, ARIZONA_IRQ_CLKGEN_ERR, "CLKGEN error",
 			    arizona_clkgen_err, arizona);
 	arizona_request_irq(arizona, ARIZONA_IRQ_OVERCLOCKED, "Overclocked",
@@ -1024,10 +1039,13 @@ int arizona_dev_init(struct arizona *arizona)
 		goto err_irq;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 	regulator_disable(arizona->dcvdd);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 err_irq:

@@ -91,11 +91,16 @@ u64 notrace trace_clock_global(void)
 {
 	unsigned long flags;
 	int this_cpu;
+<<<<<<< HEAD
 	u64 now;
+=======
+	u64 now, prev_time;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	local_irq_save(flags);
 
 	this_cpu = raw_smp_processor_id();
+<<<<<<< HEAD
 	now = sched_clock_cpu(this_cpu);
 	/*
 	 * If in an NMI context then dont risk lockups and return the
@@ -118,6 +123,46 @@ u64 notrace trace_clock_global(void)
 
 	arch_spin_unlock(&trace_clock_struct.lock);
 
+=======
+
+	/*
+	 * The global clock "guarantees" that the events are ordered
+	 * between CPUs. But if two events on two different CPUS call
+	 * trace_clock_global at roughly the same time, it really does
+	 * not matter which one gets the earlier time. Just make sure
+	 * that the same CPU will always show a monotonic clock.
+	 *
+	 * Use a read memory barrier to get the latest written
+	 * time that was recorded.
+	 */
+	smp_rmb();
+	prev_time = READ_ONCE(trace_clock_struct.prev_time);
+	now = sched_clock_cpu(this_cpu);
+
+	/* Make sure that now is always greater than prev_time */
+	if ((s64)(now - prev_time) < 0)
+		now = prev_time + 1;
+
+	/*
+	 * If in an NMI context then dont risk lockups and simply return
+	 * the current time.
+	 */
+	if (unlikely(in_nmi()))
+		goto out;
+
+	/* Tracing can cause strange recursion, always use a try lock */
+	if (arch_spin_trylock(&trace_clock_struct.lock)) {
+		/* Reread prev_time in case it was already updated */
+		prev_time = READ_ONCE(trace_clock_struct.prev_time);
+		if ((s64)(now - prev_time) < 0)
+			now = prev_time + 1;
+
+		trace_clock_struct.prev_time = now;
+
+		/* The unlock acts as the wmb for the above rmb */
+		arch_spin_unlock(&trace_clock_struct.lock);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  out:
 	local_irq_restore(flags);
 

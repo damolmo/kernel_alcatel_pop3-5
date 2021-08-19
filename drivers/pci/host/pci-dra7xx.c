@@ -289,7 +289,12 @@ static int add_pcie_port(struct dra7xx_pcie *dra7xx,
 	}
 
 	ret = devm_request_irq(&pdev->dev, pp->irq,
+<<<<<<< HEAD
 			       dra7xx_pcie_msi_irq_handler, IRQF_SHARED,
+=======
+			       dra7xx_pcie_msi_irq_handler,
+			       IRQF_SHARED | IRQF_NO_THREAD,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       "dra7-pcie-msi",	pp);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to request irq\n");

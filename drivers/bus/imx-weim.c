@@ -150,7 +150,11 @@ static int __init weim_parse_dt(struct platform_device *pdev,
 			return ret;
 	}
 
+<<<<<<< HEAD
 	for_each_child_of_node(pdev->dev.of_node, child) {
+=======
+	for_each_available_child_of_node(pdev->dev.of_node, child) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!child->name)
 			continue;
 

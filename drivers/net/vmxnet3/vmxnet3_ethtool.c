@@ -589,6 +589,11 @@ vmxnet3_get_rss(struct net_device *netdev, u32 *p, u8 *key)
 	struct UPT1_RSSConf *rssConf = adapter->rss_conf;
 	unsigned int n = rssConf->indTableSize;
 
+<<<<<<< HEAD
+=======
+	if (n > UPT1_RSS_MAX_IND_TABLE_SIZE)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (n--)
 		p[n] = rssConf->indTable[n];
 	return 0;

@@ -581,7 +581,18 @@ static void iwl_pcie_txq_unmap(struct iwl_trans *trans, int txq_id)
 {
 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
 	struct iwl_txq *txq = &trans_pcie->txq[txq_id];
+<<<<<<< HEAD
 	struct iwl_queue *q = &txq->q;
+=======
+	struct iwl_queue *q;
+
+	if (!txq) {
+		IWL_ERR(trans, "Trying to free a queue that wasn't allocated?\n");
+		return;
+	}
+
+	q = &txq->q;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_bh(&txq->lock);
 	while (q->write_ptr != q->read_ptr) {
@@ -1220,6 +1231,10 @@ static int iwl_pcie_enqueue_hcmd(struct iwl_trans *trans,
 	u32 cmd_pos;
 	const u8 *cmddata[IWL_MAX_CMD_TBS_PER_TFD];
 	u16 cmdlen[IWL_MAX_CMD_TBS_PER_TFD];
+<<<<<<< HEAD
+=======
+	unsigned long flags2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	copy_size = sizeof(out_cmd->hdr);
 	cmd_size = sizeof(out_cmd->hdr);
@@ -1292,10 +1307,17 @@ static int iwl_pcie_enqueue_hcmd(struct iwl_trans *trans,
 		goto free_dup_buf;
 	}
 
+<<<<<<< HEAD
 	spin_lock_bh(&txq->lock);
 
 	if (iwl_queue_space(q) < ((cmd->flags & CMD_ASYNC) ? 2 : 1)) {
 		spin_unlock_bh(&txq->lock);
+=======
+	spin_lock_irqsave(&txq->lock, flags2);
+
+	if (iwl_queue_space(q) < ((cmd->flags & CMD_ASYNC) ? 2 : 1)) {
+		spin_unlock_irqrestore(&txq->lock, flags2);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		IWL_ERR(trans, "No space in command queue\n");
 		iwl_op_mode_cmd_queue_full(trans->op_mode);
@@ -1367,9 +1389,15 @@ static int iwl_pcie_enqueue_hcmd(struct iwl_trans *trans,
 
 	/* start the TFD with the scratchbuf */
 	scratch_size = min_t(int, copy_size, IWL_HCMD_SCRATCHBUF_SIZE);
+<<<<<<< HEAD
 	memcpy(&txq->scratchbufs[q->write_ptr], &out_cmd->hdr, scratch_size);
 	iwl_pcie_txq_build_tfd(trans, txq,
 			       iwl_pcie_get_scratchbuf_dma(txq, q->write_ptr),
+=======
+	memcpy(&txq->scratchbufs[idx], &out_cmd->hdr, scratch_size);
+	iwl_pcie_txq_build_tfd(trans, txq,
+			       iwl_pcie_get_scratchbuf_dma(txq, idx),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       scratch_size, true);
 
 	/* map first command fragment, if any remains */
@@ -1459,7 +1487,11 @@ static int iwl_pcie_enqueue_hcmd(struct iwl_trans *trans,
 	spin_unlock_irqrestore(&trans_pcie->reg_lock, flags);
 
  out:
+<<<<<<< HEAD
 	spin_unlock_bh(&txq->lock);
+=======
+	spin_unlock_irqrestore(&txq->lock, flags2);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  free_dup_buf:
 	if (idx < 0)
 		kfree(dup_buf);

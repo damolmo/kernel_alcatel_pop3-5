@@ -254,7 +254,12 @@ bfad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	struct bfad_s *bfad = port->bfad;
 	struct bfa_s *bfa = &bfad->bfa;
 	struct bfa_ioc_s *ioc = &bfa->ioc;
+<<<<<<< HEAD
 	int addr, len, rc, i;
+=======
+	int addr, rc, i;
+	u32 len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 *regbuf;
 	void __iomem *rb, *reg_addr;
 	unsigned long flags;
@@ -274,7 +279,11 @@ bfad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	}
 
 	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
+<<<<<<< HEAD
 	if (rc < 2) {
+=======
+	if (rc < 2 || len > (UINT_MAX >> 2)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		printk(KERN_INFO
 			"bfad[%d]: %s failed to read user buf\n",
 			bfad->inst_no, __func__);

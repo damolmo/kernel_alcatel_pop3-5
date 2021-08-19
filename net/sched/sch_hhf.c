@@ -4,12 +4,19 @@
  * Copyright (C) 2013 Nandita Dukkipati <nanditad@google.com>
  */
 
+<<<<<<< HEAD
 #include <linux/jhash.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/jiffies.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <net/flow_keys.h>
+=======
+#include <linux/siphash.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <net/pkt_sched.h>
 #include <net/sock.h>
 
@@ -126,7 +133,11 @@ struct wdrr_bucket {
 
 struct hhf_sched_data {
 	struct wdrr_bucket buckets[WDRR_BUCKET_CNT];
+<<<<<<< HEAD
 	u32		   perturbation;   /* hash perturbation */
+=======
+	siphash_key_t	   perturbation;   /* hash perturbation */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32		   quantum;        /* psched_mtu(qdisc_dev(sch)); */
 	u32		   drop_overlimit; /* number of times max qdisc packet
 					    * limit was hit
@@ -176,6 +187,7 @@ static u32 hhf_time_stamp(void)
 	return jiffies;
 }
 
+<<<<<<< HEAD
 static unsigned int skb_hash(const struct hhf_sched_data *q,
 			     const struct sk_buff *skb)
 {
@@ -192,6 +204,8 @@ static unsigned int skb_hash(const struct hhf_sched_data *q,
 	return hash;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Looks up a heavy-hitter flow in a chaining list of table T. */
 static struct hh_flow_state *seek_list(const u32 hash,
 				       struct list_head *head,
@@ -280,7 +294,11 @@ static enum wdrr_bucket_idx hhf_classify(struct sk_buff *skb, struct Qdisc *sch)
 	}
 
 	/* Get hashed flow-id of the skb. */
+<<<<<<< HEAD
 	hash = skb_hash(q, skb);
+=======
+	hash = skb_get_hash_perturb(skb, &q->perturbation);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Check if this packet belongs to an already established HH flow. */
 	flow_pos = hash & HHF_BIT_MASK;
@@ -390,6 +408,10 @@ static int hhf_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	struct hhf_sched_data *q = qdisc_priv(sch);
 	enum wdrr_bucket_idx idx;
 	struct wdrr_bucket *bucket;
+<<<<<<< HEAD
+=======
+	unsigned int prev_backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	idx = hhf_classify(skb, sch);
 
@@ -417,6 +439,10 @@ static int hhf_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 	if (++sch->q.qlen <= sch->limit)
 		return NET_XMIT_SUCCESS;
 
+<<<<<<< HEAD
+=======
+	prev_backlog = sch->qstats.backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	q->drop_overlimit++;
 	/* Return Congestion Notification only if we dropped a packet from this
 	 * bucket.
@@ -425,7 +451,11 @@ static int hhf_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return NET_XMIT_CN;
 
 	/* As we dropped a packet, better let upper stack know this. */
+<<<<<<< HEAD
 	qdisc_tree_decrease_qlen(sch, 1);
+=======
+	qdisc_tree_reduce_backlog(sch, 1, prev_backlog - sch->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NET_XMIT_SUCCESS;
 }
 
@@ -507,6 +537,12 @@ static void hhf_destroy(struct Qdisc *sch)
 		hhf_free(q->hhf_valid_bits[i]);
 	}
 
+<<<<<<< HEAD
+=======
+	if (!q->hh_flows)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < HH_FLOWS_CNT; i++) {
 		struct hh_flow_state *flow, *next;
 		struct list_head *head = &q->hh_flows[i];
@@ -535,7 +571,11 @@ static int hhf_change(struct Qdisc *sch, struct nlattr *opt)
 {
 	struct hhf_sched_data *q = qdisc_priv(sch);
 	struct nlattr *tb[TCA_HHF_MAX + 1];
+<<<<<<< HEAD
 	unsigned int qlen;
+=======
+	unsigned int qlen, prev_backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 	u64 non_hh_quantum;
 	u32 new_quantum = q->quantum;
@@ -555,7 +595,11 @@ static int hhf_change(struct Qdisc *sch, struct nlattr *opt)
 		new_hhf_non_hh_weight = nla_get_u32(tb[TCA_HHF_NON_HH_WEIGHT]);
 
 	non_hh_quantum = (u64)new_quantum * new_hhf_non_hh_weight;
+<<<<<<< HEAD
 	if (non_hh_quantum > INT_MAX)
+=======
+	if (non_hh_quantum == 0 || non_hh_quantum > INT_MAX)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	sch_tree_lock(sch);
@@ -585,12 +629,21 @@ static int hhf_change(struct Qdisc *sch, struct nlattr *opt)
 	}
 
 	qlen = sch->q.qlen;
+<<<<<<< HEAD
+=======
+	prev_backlog = sch->qstats.backlog;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (sch->q.qlen > sch->limit) {
 		struct sk_buff *skb = hhf_dequeue(sch);
 
 		kfree_skb(skb);
 	}
+<<<<<<< HEAD
 	qdisc_tree_decrease_qlen(sch, qlen - sch->q.qlen);
+=======
+	qdisc_tree_reduce_backlog(sch, qlen - sch->q.qlen,
+				  prev_backlog - sch->qstats.backlog);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sch_tree_unlock(sch);
 	return 0;
@@ -603,7 +656,11 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt)
 
 	sch->limit = 1000;
 	q->quantum = psched_mtu(qdisc_dev(sch));
+<<<<<<< HEAD
 	q->perturbation = prandom_u32();
+=======
+	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&q->new_buckets);
 	INIT_LIST_HEAD(&q->old_buckets);
 
@@ -640,7 +697,13 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt)
 			q->hhf_arrays[i] = hhf_zalloc(HHF_ARRAYS_LEN *
 						      sizeof(u32));
 			if (!q->hhf_arrays[i]) {
+<<<<<<< HEAD
 				hhf_destroy(sch);
+=======
+				/* Note: hhf_destroy() will be called
+				 * by our caller.
+				 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return -ENOMEM;
 			}
 		}
@@ -651,7 +714,13 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt)
 			q->hhf_valid_bits[i] = hhf_zalloc(HHF_ARRAYS_LEN /
 							  BITS_PER_BYTE);
 			if (!q->hhf_valid_bits[i]) {
+<<<<<<< HEAD
 				hhf_destroy(sch);
+=======
+				/* Note: hhf_destroy() will be called
+				 * by our caller.
+				 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return -ENOMEM;
 			}
 		}

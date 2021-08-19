@@ -333,7 +333,11 @@ void omap44xx_prm_reconfigure_io_chain(void)
  * to occur, WAKEUPENABLE bits must be set in the pad mux registers, and
  * omap44xx_prm_reconfigure_io_chain() must be called.  No return value.
  */
+<<<<<<< HEAD
 static void __init omap44xx_prm_enable_io_wakeup(void)
+=======
+static void omap44xx_prm_enable_io_wakeup(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	s32 inst = omap4_prmst_get_prm_dev_inst();
 

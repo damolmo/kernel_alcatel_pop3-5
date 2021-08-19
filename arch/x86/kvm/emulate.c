@@ -25,6 +25,10 @@
 #include <linux/module.h>
 #include <asm/kvm_emulate.h>
 #include <linux/stringify.h>
+<<<<<<< HEAD
+=======
+#include <asm/nospec-branch.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "x86.h"
 #include "tss.h"
@@ -166,6 +170,10 @@
 #define CheckPerm   ((u64)1 << 49)  /* Has valid check_perm field */
 #define NoBigReal   ((u64)1 << 50)  /* No big real mode */
 #define PrivUD      ((u64)1 << 51)  /* #UD instead of #GP on CPL > 0 */
+<<<<<<< HEAD
+=======
+#define Aligned16   ((u64)1 << 55)  /* Aligned to 16 byte boundary (e.g. FXSAVE) */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define DstXacc     (DstAccLo | SrcAccHi | SrcWrite)
 
@@ -419,6 +427,29 @@ FOP_END;
 FOP_START(salc) "pushf; sbb %al, %al; popf \n\t" FOP_RET
 FOP_END;
 
+<<<<<<< HEAD
+=======
+/*
+ * XXX: inoutclob user must know where the argument is being expanded.
+ *      Relying on CC_HAVE_ASM_GOTO would allow us to remove _fault.
+ */
+#define asm_safe(insn, inoutclob...) \
+({ \
+	int _fault = 0; \
+ \
+	asm volatile("1:" insn "\n" \
+	             "2:\n" \
+	             ".pushsection .fixup, \"ax\"\n" \
+	             "3: movl $1, %[_fault]\n" \
+	             "   jmp  2b\n" \
+	             ".popsection\n" \
+	             _ASM_EXTABLE(1b, 3b) \
+	             : [_fault] "+qm"(_fault) inoutclob ); \
+ \
+	_fault ? X86EMUL_UNHANDLEABLE : X86EMUL_CONTINUE; \
+})
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int emulator_check_intercept(struct x86_emulate_ctxt *ctxt,
 				    enum x86_intercept intercept,
 				    enum x86_intercept_stage stage)
@@ -624,6 +655,7 @@ static void set_segment_selector(struct x86_emulate_ctxt *ctxt, u16 selector,
  * depending on whether they're AVX encoded or not.
  *
  * Also included is CMPXCHG16B which is not a vector instruction, yet it is
+<<<<<<< HEAD
  * subject to the same check.
  */
 static bool insn_aligned(struct x86_emulate_ctxt *ctxt, unsigned size)
@@ -639,6 +671,26 @@ static bool insn_aligned(struct x86_emulate_ctxt *ctxt, unsigned size)
 		return false;
 	else
 		return true;
+=======
+ * subject to the same check.  FXSAVE and FXRSTOR are checked here too as their
+ * 512 bytes of data must be aligned to a 16 byte boundary.
+ */
+static unsigned insn_alignment(struct x86_emulate_ctxt *ctxt, unsigned size)
+{
+	if (likely(size < 16))
+		return 1;
+
+	if (ctxt->d & Aligned)
+		return size;
+	else if (ctxt->d & Unaligned)
+		return 1;
+	else if (ctxt->d & Avx)
+		return 1;
+	else if (ctxt->d & Aligned16)
+		return 16;
+	else
+		return size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __linearize(struct x86_emulate_ctxt *ctxt,
@@ -658,7 +710,12 @@ static int __linearize(struct x86_emulate_ctxt *ctxt,
 	*max_size = 0;
 	switch (ctxt->mode) {
 	case X86EMUL_MODE_PROT64:
+<<<<<<< HEAD
 		if (((signed long)la << 16) >> 16 != la)
+=======
+		*linear = la;
+		if (is_noncanonical_address(la))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return emulate_gp(ctxt, 0);
 
 		*max_size = min_t(u64, ~0u, (1ull << 48) - la);
@@ -666,6 +723,10 @@ static int __linearize(struct x86_emulate_ctxt *ctxt,
 			goto bad;
 		break;
 	default:
+<<<<<<< HEAD
+=======
+		*linear = la = (u32)la;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		usable = ctxt->ops->get_segment(ctxt, &sel, &desc, NULL,
 						addr.seg);
 		if (!usable)
@@ -718,7 +779,11 @@ static int __linearize(struct x86_emulate_ctxt *ctxt,
 	}
 	if (fetch ? ctxt->mode != X86EMUL_MODE_PROT64 : ctxt->ad_bytes != 8)
 		la &= (u32)-1;
+<<<<<<< HEAD
 	if (insn_aligned(ctxt, size) && ((la & (size - 1)) != 0))
+=======
+	if (la & (insn_alignment(ctxt, size) - 1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return emulate_gp(ctxt, 0);
 	*linear = la;
 	return X86EMUL_CONTINUE;
@@ -917,8 +982,13 @@ static u8 test_cc(unsigned int condition, unsigned long flags)
 	void (*fop)(void) = (void *)em_setcc + 4 * (condition & 0xf);
 
 	flags = (flags & EFLAGS_MASK) | X86_EFLAGS_IF;
+<<<<<<< HEAD
 	asm("push %[flags]; popf; call *%[fastop]"
 	    : "=a"(rc) : [fastop]"r"(fop), [flags]"r"(flags));
+=======
+	asm("push %[flags]; popf; " CALL_NOSPEC
+	    : "=a"(rc) : [thunk_target]"r"(fop), [flags]"r"(flags));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -1468,7 +1538,10 @@ static int write_segment_descriptor(struct x86_emulate_ctxt *ctxt,
 				    &ctxt->exception);
 }
 
+<<<<<<< HEAD
 /* Does not support long mode */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
 				     u16 selector, int seg, u8 cpl,
 				     bool in_task_switch,
@@ -1505,6 +1578,7 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
 
 	rpl = selector & 3;
 
+<<<<<<< HEAD
 	/* NULL selector is not valid for TR, CS and SS (except for long mode) */
 	if ((seg == VCPU_SREG_CS
 	     || (seg == VCPU_SREG_SS
@@ -1513,12 +1587,41 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
 	    && null_selector)
 		goto exception;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* TR should be in GDT only */
 	if (seg == VCPU_SREG_TR && (selector & (1 << 2)))
 		goto exception;
 
+<<<<<<< HEAD
 	if (null_selector) /* for NULL selector skip all following checks */
 		goto load;
+=======
+	/* NULL selector is not valid for TR, CS and (except for long mode) SS */
+	if (null_selector) {
+		if (seg == VCPU_SREG_CS || seg == VCPU_SREG_TR)
+			goto exception;
+
+		if (seg == VCPU_SREG_SS) {
+			if (ctxt->mode != X86EMUL_MODE_PROT64 || rpl != cpl)
+				goto exception;
+
+			/*
+			 * ctxt->ops->set_segment expects the CPL to be in
+			 * SS.DPL, so fake an expand-up 32-bit data segment.
+			 */
+			seg_desc.type = 3;
+			seg_desc.p = 1;
+			seg_desc.s = 1;
+			seg_desc.dpl = cpl;
+			seg_desc.d = 1;
+			seg_desc.g = 1;
+		}
+
+		/* Skip all following checks */
+		goto load;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = read_segment_descriptor(ctxt, selector, &seg_desc, &desc_addr);
 	if (ret != X86EMUL_CONTINUE)
@@ -1624,6 +1727,24 @@ static int load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
 				   u16 selector, int seg)
 {
 	u8 cpl = ctxt->ops->cpl(ctxt);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * None of MOV, POP and LSS can load a NULL selector in CPL=3, but
+	 * they can load it at CPL<3 (Intel's manual says only LSS can,
+	 * but it's wrong).
+	 *
+	 * However, the Intel manual says that putting IST=1/DPL=3 in
+	 * an interrupt gate will result in SS=3 (the AMD manual instead
+	 * says it doesn't), so allow SS=3 in __load_segment_descriptor
+	 * and only forbid it here.
+	 */
+	if (seg == VCPU_SREG_SS && selector == 3 &&
+	    ctxt->mode == X86EMUL_MODE_PROT64)
+		return emulate_exception(ctxt, GP_VECTOR, 0, true);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return __load_segment_descriptor(ctxt, selector, seg, cpl, false, NULL);
 }
 
@@ -2018,6 +2139,7 @@ static int em_iret(struct x86_emulate_ctxt *ctxt)
 static int em_jmp_far(struct x86_emulate_ctxt *ctxt)
 {
 	int rc;
+<<<<<<< HEAD
 	unsigned short sel, old_sel;
 	struct desc_struct old_desc, new_desc;
 	const struct x86_emulate_ops *ops = ctxt->ops;
@@ -2028,6 +2150,12 @@ static int em_jmp_far(struct x86_emulate_ctxt *ctxt)
 		ops->get_segment(ctxt, &old_sel, &old_desc, NULL,
 				 VCPU_SREG_CS);
 
+=======
+	unsigned short sel;
+	struct desc_struct new_desc;
+	u8 cpl = ctxt->ops->cpl(ctxt);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(&sel, ctxt->src.valptr + ctxt->op_bytes, 2);
 
 	rc = __load_segment_descriptor(ctxt, sel, VCPU_SREG_CS, cpl, false,
@@ -2036,12 +2164,19 @@ static int em_jmp_far(struct x86_emulate_ctxt *ctxt)
 		return rc;
 
 	rc = assign_eip_far(ctxt, ctxt->src.val, new_desc.l);
+<<<<<<< HEAD
 	if (rc != X86EMUL_CONTINUE) {
 		WARN_ON(ctxt->mode != X86EMUL_MODE_PROT64);
 		/* assigning eip failed; restore the old cs */
 		ops->set_segment(ctxt, old_sel, &old_desc, 0, VCPU_SREG_CS);
 		return rc;
 	}
+=======
+	/* Error handling is not implemented. */
+	if (rc != X86EMUL_CONTINUE)
+		return X86EMUL_UNHANDLEABLE;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -2110,6 +2245,7 @@ static int em_ret_far(struct x86_emulate_ctxt *ctxt)
 {
 	int rc;
 	unsigned long eip, cs;
+<<<<<<< HEAD
 	u16 old_cs;
 	int cpl = ctxt->ops->cpl(ctxt);
 	struct desc_struct old_desc, new_desc;
@@ -2118,6 +2254,10 @@ static int em_ret_far(struct x86_emulate_ctxt *ctxt)
 	if (ctxt->mode == X86EMUL_MODE_PROT64)
 		ops->get_segment(ctxt, &old_cs, &old_desc, NULL,
 				 VCPU_SREG_CS);
+=======
+	int cpl = ctxt->ops->cpl(ctxt);
+	struct desc_struct new_desc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rc = emulate_pop(ctxt, &eip, ctxt->op_bytes);
 	if (rc != X86EMUL_CONTINUE)
@@ -2133,10 +2273,17 @@ static int em_ret_far(struct x86_emulate_ctxt *ctxt)
 	if (rc != X86EMUL_CONTINUE)
 		return rc;
 	rc = assign_eip_far(ctxt, eip, new_desc.l);
+<<<<<<< HEAD
 	if (rc != X86EMUL_CONTINUE) {
 		WARN_ON(ctxt->mode != X86EMUL_MODE_PROT64);
 		ops->set_segment(ctxt, old_cs, &old_desc, 0, VCPU_SREG_CS);
 	}
+=======
+	/* Error handling is not implemented. */
+	if (rc != X86EMUL_CONTINUE)
+		return X86EMUL_UNHANDLEABLE;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -2325,6 +2472,10 @@ static int em_syscall(struct x86_emulate_ctxt *ctxt)
 		ctxt->eflags &= ~(EFLG_VM | EFLG_IF);
 	}
 
+<<<<<<< HEAD
+=======
+	ctxt->tf = (ctxt->eflags & X86_EFLAGS_TF) != 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return X86EMUL_CONTINUE;
 }
 
@@ -3482,6 +3633,15 @@ static int em_clflush(struct x86_emulate_ctxt *ctxt)
 	return X86EMUL_CONTINUE;
 }
 
+<<<<<<< HEAD
+=======
+static int em_clflushopt(struct x86_emulate_ctxt *ctxt)
+{
+	/* emulating clflushopt regardless of cpuid */
+	return X86EMUL_CONTINUE;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static bool valid_cr(int nr)
 {
 	switch (nr) {
@@ -3821,7 +3981,11 @@ static const struct opcode group11[] = {
 };
 
 static const struct gprefix pfx_0f_ae_7 = {
+<<<<<<< HEAD
 	I(SrcMem | ByteOp, em_clflush), N, N, N,
+=======
+	I(SrcMem | ByteOp, em_clflush), I(SrcMem | ByteOp, em_clflushopt), N, N,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static const struct group_dual group15 = { {
@@ -4385,6 +4549,11 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
 	bool op_prefix = false;
 	bool has_seg_override = false;
 	struct opcode opcode;
+<<<<<<< HEAD
+=======
+	u16 dummy;
+	struct desc_struct desc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ctxt->memop.type = OP_NONE;
 	ctxt->memopp = NULL;
@@ -4392,6 +4561,10 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
 	ctxt->fetch.ptr = ctxt->fetch.data;
 	ctxt->fetch.end = ctxt->fetch.data + insn_len;
 	ctxt->opcode_len = 1;
+<<<<<<< HEAD
+=======
+	ctxt->intercept = x86_intercept_none;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (insn_len > 0)
 		memcpy(ctxt->fetch.data, insn, insn_len);
 	else {
@@ -4403,6 +4576,14 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
 	switch (mode) {
 	case X86EMUL_MODE_REAL:
 	case X86EMUL_MODE_VM86:
+<<<<<<< HEAD
+=======
+		def_op_bytes = def_ad_bytes = 2;
+		ctxt->ops->get_segment(ctxt, &dummy, &desc, NULL, VCPU_SREG_CS);
+		if (desc.d)
+			def_op_bytes = def_ad_bytes = 4;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case X86EMUL_MODE_PROT16:
 		def_op_bytes = def_ad_bytes = 2;
 		break;
@@ -4439,6 +4620,7 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
 				ctxt->ad_bytes = def_ad_bytes ^ 6;
 			break;
 		case 0x26:	/* ES override */
+<<<<<<< HEAD
 		case 0x2e:	/* CS override */
 		case 0x36:	/* SS override */
 		case 0x3e:	/* DS override */
@@ -4449,6 +4631,30 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len)
 		case 0x65:	/* GS override */
 			has_seg_override = true;
 			ctxt->seg_override = ctxt->b & 7;
+=======
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_ES;
+			break;
+		case 0x2e:	/* CS override */
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_CS;
+			break;
+		case 0x36:	/* SS override */
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_SS;
+			break;
+		case 0x3e:	/* DS override */
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_DS;
+			break;
+		case 0x64:	/* FS override */
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_FS;
+			break;
+		case 0x65:	/* GS override */
+			has_seg_override = true;
+			ctxt->seg_override = VCPU_SREG_GS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case 0x40 ... 0x4f: /* REX */
 			if (mode != X86EMUL_MODE_PROT64)
@@ -4619,10 +4825,19 @@ done_prefixes:
 	/* Decode and fetch the destination operand: register or memory. */
 	rc = decode_operand(ctxt, &ctxt->dst, (ctxt->d >> DstShift) & OpMask);
 
+<<<<<<< HEAD
 	if (ctxt->rip_relative)
 		ctxt->memopp->addr.mem.ea += ctxt->_eip;
 
 done:
+=======
+	if (ctxt->rip_relative && likely(ctxt->memopp))
+		ctxt->memopp->addr.mem.ea += ctxt->_eip;
+
+done:
+	if (rc == X86EMUL_PROPAGATE_FAULT)
+		ctxt->have_exception = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return (rc != X86EMUL_CONTINUE) ? EMULATION_FAILED : EMULATION_OK;
 }
 
@@ -4653,6 +4868,7 @@ static bool string_insn_completed(struct x86_emulate_ctxt *ctxt)
 
 static int flush_pending_x87_faults(struct x86_emulate_ctxt *ctxt)
 {
+<<<<<<< HEAD
 	bool fault = false;
 
 	ctxt->ops->get_fpu(ctxt);
@@ -4668,6 +4884,15 @@ static int flush_pending_x87_faults(struct x86_emulate_ctxt *ctxt)
 	ctxt->ops->put_fpu(ctxt);
 
 	if (unlikely(fault))
+=======
+	int rc;
+
+	ctxt->ops->get_fpu(ctxt);
+	rc = asm_safe("fwait");
+	ctxt->ops->put_fpu(ctxt);
+
+	if (unlikely(rc != X86EMUL_CONTINUE))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return emulate_exception(ctxt, MF_VECTOR, 0, false);
 
 	return X86EMUL_CONTINUE;
@@ -4685,9 +4910,15 @@ static int fastop(struct x86_emulate_ctxt *ctxt, void (*fop)(struct fastop *))
 	ulong flags = (ctxt->eflags & EFLAGS_MASK) | X86_EFLAGS_IF;
 	if (!(ctxt->d & ByteOp))
 		fop += __ffs(ctxt->dst.bytes) * FASTOP_SIZE;
+<<<<<<< HEAD
 	asm("push %[flags]; popf; call *%[fastop]; pushf; pop %[flags]\n"
 	    : "+a"(ctxt->dst.val), "+d"(ctxt->src.val), [flags]"+D"(flags),
 	      [fastop]"+S"(fop)
+=======
+	asm("push %[flags]; popf; " CALL_NOSPEC "; pushf; pop %[flags]\n"
+	    : "+a"(ctxt->dst.val), "+d"(ctxt->src.val), [flags]"+D"(flags),
+	      [thunk_target]"+S"(fop)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    : "c"(ctxt->src2.val));
 	ctxt->eflags = (ctxt->eflags & ~EFLAGS_MASK) | (flags & EFLAGS_MASK);
 	if (!fop) /* exception is returned in fop variable */

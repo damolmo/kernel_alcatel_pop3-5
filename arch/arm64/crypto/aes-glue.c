@@ -205,10 +205,16 @@ static int ctr_encrypt(struct blkcipher_desc *desc, struct scatterlist *dst,
 		err = blkcipher_walk_done(desc, &walk,
 					  walk.nbytes % AES_BLOCK_SIZE);
 	}
+<<<<<<< HEAD
 	if (nbytes) {
 		u8 *tdst = walk.dst.virt.addr + blocks * AES_BLOCK_SIZE;
 		u8 *tsrc = walk.src.virt.addr + blocks * AES_BLOCK_SIZE;
 
+=======
+	if (walk.nbytes % AES_BLOCK_SIZE) {
+		u8 *tdst = walk.dst.virt.addr + blocks * AES_BLOCK_SIZE;
+		u8 *tsrc = walk.src.virt.addr + blocks * AES_BLOCK_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u8 __aligned(8) tail[AES_BLOCK_SIZE];
 
 		/*

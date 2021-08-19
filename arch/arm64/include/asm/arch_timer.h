@@ -21,6 +21,10 @@
 
 #include <asm/barrier.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/bug.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/init.h>
 #include <linux/types.h>
 
@@ -106,12 +110,20 @@ static inline void arch_timer_set_cntkctl(u32 cntkctl)
 
 static inline u64 arch_counter_get_cntpct(void)
 {
+<<<<<<< HEAD
 	u64 cval;
 
 	isb();
 	asm volatile("mrs %0, cntpct_el0" : "=r" (cval));
 
 	return cval;
+=======
+	/*
+	 * AArch64 kernel and user space mandate the use of CNTVCT.
+	 */
+	BUG();
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline u64 arch_counter_get_cntvct(void)

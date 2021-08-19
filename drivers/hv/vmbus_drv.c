@@ -35,6 +35,10 @@
 #include <asm/hyperv.h>
 #include <asm/hypervisor.h>
 #include <asm/mshyperv.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "hyperv_vmbus.h"
 
 static struct acpi_device  *hv_acpi_dev;
@@ -258,6 +262,11 @@ static ssize_t out_intr_mask_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->outbound, &outbound);
 	return sprintf(buf, "%d\n", outbound.current_interrupt_mask);
 }
@@ -271,6 +280,11 @@ static ssize_t out_read_index_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->outbound, &outbound);
 	return sprintf(buf, "%d\n", outbound.current_read_index);
 }
@@ -285,6 +299,11 @@ static ssize_t out_write_index_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->outbound, &outbound);
 	return sprintf(buf, "%d\n", outbound.current_write_index);
 }
@@ -299,6 +318,11 @@ static ssize_t out_read_bytes_avail_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->outbound, &outbound);
 	return sprintf(buf, "%d\n", outbound.bytes_avail_toread);
 }
@@ -313,6 +337,11 @@ static ssize_t out_write_bytes_avail_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->outbound, &outbound);
 	return sprintf(buf, "%d\n", outbound.bytes_avail_towrite);
 }
@@ -326,6 +355,11 @@ static ssize_t in_intr_mask_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->inbound, &inbound);
 	return sprintf(buf, "%d\n", inbound.current_interrupt_mask);
 }
@@ -339,6 +373,11 @@ static ssize_t in_read_index_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->inbound, &inbound);
 	return sprintf(buf, "%d\n", inbound.current_read_index);
 }
@@ -352,6 +391,11 @@ static ssize_t in_write_index_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->inbound, &inbound);
 	return sprintf(buf, "%d\n", inbound.current_write_index);
 }
@@ -366,6 +410,11 @@ static ssize_t in_read_bytes_avail_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->inbound, &inbound);
 	return sprintf(buf, "%d\n", inbound.bytes_avail_toread);
 }
@@ -380,6 +429,11 @@ static ssize_t in_write_bytes_avail_show(struct device *dev,
 
 	if (!hv_dev->channel)
 		return -ENODEV;
+<<<<<<< HEAD
+=======
+	if (hv_dev->channel->state != CHANNEL_OPENED_STATE)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hv_ringbuffer_get_debuginfo(&hv_dev->channel->inbound, &inbound);
 	return sprintf(buf, "%d\n", inbound.bytes_avail_towrite);
 }
@@ -669,6 +723,11 @@ static void vmbus_isr(void)
 	/* Check if there are actual msgs to be processed */
 	if (msg->header.message_type != HVMSG_NONE)
 		tasklet_schedule(&msg_dpc);
+<<<<<<< HEAD
+=======
+
+	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -709,12 +768,21 @@ static int vmbus_bus_init(int irq)
 	on_each_cpu(hv_synic_init, NULL, 1);
 	ret = vmbus_connect();
 	if (ret)
+<<<<<<< HEAD
 		goto err_alloc;
+=======
+		goto err_connect;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vmbus_request_offers();
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_connect:
+	on_each_cpu(hv_synic_cleanup, NULL, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_alloc:
 	hv_synic_free();
 	hv_remove_vmbus_irq();
@@ -722,7 +790,11 @@ err_alloc:
 	bus_unregister(&hv_bus);
 
 err_cleanup:
+<<<<<<< HEAD
 	hv_cleanup();
+=======
+	hv_cleanup(false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -962,7 +1034,11 @@ static void __exit vmbus_exit(void)
 	hv_remove_vmbus_irq();
 	vmbus_free_channels();
 	bus_unregister(&hv_bus);
+<<<<<<< HEAD
 	hv_cleanup();
+=======
+	hv_cleanup(false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	acpi_bus_unregister_driver(&vmbus_acpi_driver);
 }
 

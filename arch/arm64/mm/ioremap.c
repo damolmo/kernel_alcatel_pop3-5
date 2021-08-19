@@ -62,7 +62,10 @@ static void __iomem *__ioremap_caller(phys_addr_t phys_addr, size_t size,
 	if (!area)
 		return NULL;
 	addr = (unsigned long)area->addr;
+<<<<<<< HEAD
 	area->phys_addr = phys_addr;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = ioremap_page_range(addr, addr + size, phys_addr, prot);
 	if (err) {
@@ -104,6 +107,7 @@ void __iomem *ioremap_cache(phys_addr_t phys_addr, size_t size)
 }
 EXPORT_SYMBOL(ioremap_cache);
 
+<<<<<<< HEAD
 static pte_t bm_pte[PTRS_PER_PTE] __page_aligned_bss;
 #if CONFIG_ARM64_PGTABLE_LEVELS > 2
 static pmd_t bm_pmd[PTRS_PER_PMD] __page_aligned_bss;
@@ -198,3 +202,12 @@ void __init __early_set_fixmap(enum fixed_addresses idx,
 		flush_tlb_kernel_range(addr, addr+PAGE_SIZE);
 	}
 }
+=======
+/*
+ * Must be called after early_fixmap_init
+ */
+void __init early_ioremap_init(void)
+{
+	early_ioremap_setup();
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

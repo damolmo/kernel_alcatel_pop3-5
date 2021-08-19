@@ -38,13 +38,21 @@ typedef struct { pteval_t pte; } pte_t;
 #define pte_val(x)	((x).pte)
 #define __pte(x)	((pte_t) { (x) } )
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 2
+=======
+#if CONFIG_PGTABLE_LEVELS > 2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef struct { pmdval_t pmd; } pmd_t;
 #define pmd_val(x)	((x).pmd)
 #define __pmd(x)	((pmd_t) { (x) } )
 #endif
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 3
+=======
+#if CONFIG_PGTABLE_LEVELS > 3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef struct { pudval_t pud; } pud_t;
 #define pud_val(x)	((x).pud)
 #define __pud(x)	((pud_t) { (x) } )
@@ -64,13 +72,21 @@ typedef pteval_t pte_t;
 #define pte_val(x)	(x)
 #define __pte(x)	(x)
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 2
+=======
+#if CONFIG_PGTABLE_LEVELS > 2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef pmdval_t pmd_t;
 #define pmd_val(x)	(x)
 #define __pmd(x)	(x)
 #endif
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS > 3
+=======
+#if CONFIG_PGTABLE_LEVELS > 3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 typedef pudval_t pud_t;
 #define pud_val(x)	(x)
 #define __pud(x)	(x)
@@ -86,9 +102,15 @@ typedef pteval_t pgprot_t;
 
 #endif /* STRICT_MM_TYPECHECKS */
 
+<<<<<<< HEAD
 #if CONFIG_ARM64_PGTABLE_LEVELS == 2
 #include <asm-generic/pgtable-nopmd.h>
 #elif CONFIG_ARM64_PGTABLE_LEVELS == 3
+=======
+#if CONFIG_PGTABLE_LEVELS == 2
+#include <asm-generic/pgtable-nopmd.h>
+#elif CONFIG_PGTABLE_LEVELS == 3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm-generic/pgtable-nopud.h>
 #endif
 

@@ -536,7 +536,18 @@ static unsigned int tcmu_handle_completions(struct tcmu_dev *udev)
 		struct tcmu_cmd_entry *entry = (void *) mb + CMDR_OFF + udev->cmdr_last_cleaned;
 		struct tcmu_cmd *cmd;
 
+<<<<<<< HEAD
 		tcmu_flush_dcache_range(entry, sizeof(*entry));
+=======
+		/*
+		 * Flush max. up to end of cmd ring since current entry might
+		 * be a padding that is shorter than sizeof(*entry)
+		 */
+		size_t ring_left = head_to_end(udev->cmdr_last_cleaned,
+					       udev->cmdr_size);
+		tcmu_flush_dcache_range(entry, ring_left < sizeof(*entry) ?
+					ring_left : sizeof(*entry));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (tcmu_hdr_get_op(&entry->hdr) == TCMU_OP_PAD) {
 			UPDATE_HEAD(udev->cmdr_last_cleaned, tcmu_hdr_get_len(&entry->hdr), udev->cmdr_size);
@@ -587,8 +598,11 @@ static int tcmu_check_expired_cmd(int id, void *p, void *data)
 	target_complete_cmd(cmd->se_cmd, SAM_STAT_CHECK_CONDITION);
 	cmd->se_cmd = NULL;
 
+<<<<<<< HEAD
 	kmem_cache_free(tcmu_cmd_cache, cmd);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -848,7 +862,11 @@ static int tcmu_configure_device(struct se_device *dev)
 	info->version = "1";
 
 	info->mem[0].name = "tcm-user command & data buffer";
+<<<<<<< HEAD
 	info->mem[0].addr = (phys_addr_t) udev->mb_addr;
+=======
+	info->mem[0].addr = (phys_addr_t)(uintptr_t)udev->mb_addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	info->mem[0].size = TCMU_RING_SIZE;
 	info->mem[0].memtype = UIO_MEM_VIRTUAL;
 

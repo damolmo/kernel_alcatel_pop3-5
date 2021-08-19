@@ -203,7 +203,17 @@ static void __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
 	struct btree_node *right = r->n;
 	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
 	uint32_t nr_right = le32_to_cpu(right->header.nr_entries);
+<<<<<<< HEAD
 	unsigned threshold = 2 * merge_threshold(left) + 1;
+=======
+	/*
+	 * Ensure the number of entries in each child will be greater
+	 * than or equal to (max_entries / 3 + 1), so no matter which
+	 * child is used for removal, the number will still be not
+	 * less than (max_entries / 3).
+	 */
+	unsigned int threshold = 2 * (merge_threshold(left) + 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (nr_left + nr_right < threshold) {
 		/*
@@ -301,6 +311,7 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 {
 	int s;
 	uint32_t max_entries = le32_to_cpu(left->header.max_entries);
+<<<<<<< HEAD
 	unsigned target = (nr_left + nr_center + nr_right) / 3;
 	BUG_ON(target > max_entries);
 
@@ -311,11 +322,29 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 			/* not enough in central node */
 			shift(left, center, nr_center);
 			s = nr_center - target;
+=======
+	unsigned total = nr_left + nr_center + nr_right;
+	unsigned target_right = total / 3;
+	unsigned remainder = (target_right * 3) != total;
+	unsigned target_left = target_right + remainder;
+
+	BUG_ON(target_left > max_entries);
+	BUG_ON(target_right > max_entries);
+
+	if (nr_left < nr_right) {
+		s = nr_left - target_left;
+
+		if (s < 0 && nr_center < -s) {
+			/* not enough in central node */
+			shift(left, center, -nr_center);
+			s += nr_center;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			shift(left, right, s);
 			nr_right += s;
 		} else
 			shift(left, center, s);
 
+<<<<<<< HEAD
 		shift(center, right, target - nr_right);
 
 	} else {
@@ -324,12 +353,26 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 			/* not enough in central node */
 			shift(center, right, nr_center);
 			s = target - nr_center;
+=======
+		shift(center, right, target_right - nr_right);
+
+	} else {
+		s = target_right - nr_right;
+		if (s > 0 && nr_center < s) {
+			/* not enough in central node */
+			shift(center, right, nr_center);
+			s -= nr_center;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			shift(left, right, s);
 			nr_left -= s;
 		} else
 			shift(center, right, s);
 
+<<<<<<< HEAD
 		shift(left, center, nr_left - target);
+=======
+		shift(left, center, nr_left - target_left);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	*key_ptr(parent, c->index) = center->keys[0];
@@ -544,6 +587,7 @@ static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 	return r;
 }
 
+<<<<<<< HEAD
 static struct dm_btree_value_type le64_type = {
 	.context = NULL,
 	.size = sizeof(__le64),
@@ -552,6 +596,8 @@ static struct dm_btree_value_type le64_type = {
 	.equal = NULL
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, dm_block_t *new_root)
 {
@@ -559,12 +605,22 @@ int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 	int index = 0, r = 0;
 	struct shadow_spine spine;
 	struct btree_node *n;
+<<<<<<< HEAD
 
+=======
+	struct dm_btree_value_type le64_vt;
+
+	init_le64_type(info->tm, &le64_vt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	init_shadow_spine(&spine, info);
 	for (level = 0; level < info->levels; level++) {
 		r = remove_raw(&spine, info,
 			       (level == last_level ?
+<<<<<<< HEAD
 				&info->value_type : &le64_type),
+=======
+				&info->value_type : &le64_vt),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       root, keys[level], (unsigned *)&index);
 		if (r < 0)
 			break;

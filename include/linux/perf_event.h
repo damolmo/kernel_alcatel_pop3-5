@@ -455,11 +455,14 @@ struct perf_event {
 #endif /* CONFIG_PERF_EVENTS */
 };
 
+<<<<<<< HEAD
 enum perf_event_context_type {
 	task_context,
 	cpu_context,
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * struct perf_event_context - event context structure
  *
@@ -467,7 +470,10 @@ enum perf_event_context_type {
  */
 struct perf_event_context {
 	struct pmu			*pmu;
+<<<<<<< HEAD
 	enum perf_event_context_type	type;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Protect the states of the events in the list,
 	 * nr_active, and the list:
@@ -660,6 +666,10 @@ static inline int is_software_event(struct perf_event *event)
 
 extern struct static_key perf_swevent_enabled[PERF_COUNT_SW_MAX];
 
+<<<<<<< HEAD
+=======
+extern void ___perf_sw_event(u32, u64, struct pt_regs *, u64);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void __perf_sw_event(u32, u64, struct pt_regs *, u64);
 
 #ifndef perf_arch_fetch_caller_regs
@@ -684,6 +694,7 @@ static inline void perf_fetch_caller_regs(struct pt_regs *regs)
 static __always_inline void
 perf_sw_event(u32 event_id, u64 nr, struct pt_regs *regs, u64 addr)
 {
+<<<<<<< HEAD
 	struct pt_regs hot_regs;
 
 	if (static_key_false(&perf_swevent_enabled[event_id])) {
@@ -692,6 +703,27 @@ perf_sw_event(u32 event_id, u64 nr, struct pt_regs *regs, u64 addr)
 			regs = &hot_regs;
 		}
 		__perf_sw_event(event_id, nr, regs, addr);
+=======
+	if (static_key_false(&perf_swevent_enabled[event_id]))
+		__perf_sw_event(event_id, nr, regs, addr);
+}
+
+DECLARE_PER_CPU(struct pt_regs, __perf_regs[4]);
+
+/*
+ * 'Special' version for the scheduler, it hard assumes no recursion,
+ * which is guaranteed by us not actually scheduling inside other swevents
+ * because those disable preemption.
+ */
+static __always_inline void
+perf_sw_event_sched(u32 event_id, u64 nr, u64 addr)
+{
+	if (static_key_false(&perf_swevent_enabled[event_id])) {
+		struct pt_regs *regs = this_cpu_ptr(&__perf_regs[0]);
+
+		perf_fetch_caller_regs(regs);
+		___perf_sw_event(event_id, nr, regs, addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -707,7 +739,11 @@ static inline void perf_event_task_sched_in(struct task_struct *prev,
 static inline void perf_event_task_sched_out(struct task_struct *prev,
 					     struct task_struct *next)
 {
+<<<<<<< HEAD
 	perf_sw_event(PERF_COUNT_SW_CONTEXT_SWITCHES, 1, NULL, 0);
+=======
+	perf_sw_event_sched(PERF_COUNT_SW_CONTEXT_SWITCHES, 1, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (static_key_false(&perf_sched_events.key))
 		__perf_event_task_sched_out(prev, next);
@@ -749,6 +785,14 @@ extern int perf_cpu_time_max_percent_handler(struct ctl_table *table, int write,
 		loff_t *ppos);
 
 
+<<<<<<< HEAD
+=======
+static inline bool perf_paranoid_any(void)
+{
+	return sysctl_perf_event_paranoid > 2;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline bool perf_paranoid_tracepoint_raw(void)
 {
 	return sysctl_perf_event_paranoid > -1;
@@ -818,6 +862,11 @@ static inline int perf_event_refresh(struct perf_event *event, int refresh)
 static inline void
 perf_sw_event(u32 event_id, u64 nr, struct pt_regs *regs, u64 addr)	{ }
 static inline void
+<<<<<<< HEAD
+=======
+perf_sw_event_sched(u32 event_id, u64 nr, u64 addr)			{ }
+static inline void
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 perf_bp_event(struct perf_event *event, void *data)			{ }
 
 static inline int perf_register_guest_info_callbacks

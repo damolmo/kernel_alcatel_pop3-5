@@ -394,7 +394,13 @@ static bool
 gmbus_is_index_read(struct i2c_msg *msgs, int i, int num)
 {
 	return (i + 1 < num &&
+<<<<<<< HEAD
 		!(msgs[i].flags & I2C_M_RD) && msgs[i].len <= 2 &&
+=======
+		msgs[i].addr == msgs[i + 1].addr &&
+		!(msgs[i].flags & I2C_M_RD) &&
+		(msgs[i].len == 1 || msgs[i].len == 2) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		(msgs[i + 1].flags & I2C_M_RD));
 }
 
@@ -626,7 +632,11 @@ int intel_setup_gmbus(struct drm_device *dev)
 	return 0;
 
 err:
+<<<<<<< HEAD
 	while (--i) {
+=======
+	while (i--) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct intel_gmbus *bus = &dev_priv->gmbus[i];
 		i2c_del_adapter(&bus->adapter);
 	}

@@ -594,8 +594,14 @@ static void hide_softcursor(struct vc_data *vc)
 
 static void hide_cursor(struct vc_data *vc)
 {
+<<<<<<< HEAD
 	if (vc == sel_cons)
 		clear_selection();
+=======
+	if (vc_is_sel(vc))
+		clear_selection();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vc->vc_sw->con_cursor(vc, CM_ERASE);
 	hide_softcursor(vc);
 }
@@ -606,7 +612,11 @@ static void set_cursor(struct vc_data *vc)
 	    vc->vc_mode == KD_GRAPHICS)
 		return;
 	if (vc->vc_deccm) {
+<<<<<<< HEAD
 		if (vc == sel_cons)
+=======
+		if (vc_is_sel(vc))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			clear_selection();
 		add_softcursor(vc);
 		if ((vc->vc_cursor_type & 0x0f) != 1)
@@ -750,6 +760,20 @@ static void visual_init(struct vc_data *vc, int num, int init)
 	vc->vc_screenbuf_size = vc->vc_rows * vc->vc_size_row;
 }
 
+<<<<<<< HEAD
+=======
+static void vc_port_destruct(struct tty_port *port)
+{
+	struct vc_data *vc = container_of(port, struct vc_data, port);
+
+	kfree(vc);
+}
+
+static const struct tty_port_operations vc_port_ops = {
+	.destruct = vc_port_destruct,
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int vc_allocate(unsigned int currcons)	/* return 0 on success */
 {
 	WARN_CONSOLE_UNLOCKED();
@@ -775,6 +799,10 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
 		return -ENOMEM;
 	    vc_cons[currcons].d = vc;
 	    tty_port_init(&vc->port);
+<<<<<<< HEAD
+=======
+	    vc->port.ops = &vc_port_ops;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
 	    visual_init(vc, currcons, 1);
 	    if (!*vc->vc_uni_pagedir_loc)
@@ -804,7 +832,11 @@ static inline int resize_screen(struct vc_data *vc, int width, int height,
 	/* Resizes the resolution of the display adapater */
 	int err = 0;
 
+<<<<<<< HEAD
 	if (vc->vc_mode != KD_GRAPHICS && vc->vc_sw->con_resize)
+=======
+	if (vc->vc_sw->con_resize)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = vc->vc_sw->con_resize(vc, width, height, user);
 
 	return err;
@@ -842,7 +874,11 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
 	unsigned int old_rows, old_row_size;
 	unsigned int new_cols, new_rows, new_row_size, new_screen_size;
 	unsigned int user;
+<<<<<<< HEAD
 	unsigned short *newscreen;
+=======
+	unsigned short *oldscreen, *newscreen;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	WARN_CONSOLE_UNLOCKED();
 
@@ -863,10 +899,21 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
 	if (new_cols == vc->vc_cols && new_rows == vc->vc_rows)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (new_screen_size > (4 << 20))
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	newscreen = kmalloc(new_screen_size, GFP_USER);
 	if (!newscreen)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	if (vc_is_sel(vc))
+		clear_selection();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	old_rows = vc->vc_rows;
 	old_row_size = vc->vc_size_row;
 
@@ -919,10 +966,18 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
 	if (new_scr_end > new_origin)
 		scr_memsetw((void *)new_origin, vc->vc_video_erase_char,
 			    new_scr_end - new_origin);
+<<<<<<< HEAD
 	kfree(vc->vc_screenbuf);
 	vc->vc_screenbuf = newscreen;
 	vc->vc_screenbuf_size = new_screen_size;
 	set_origin(vc);
+=======
+	oldscreen = vc->vc_screenbuf;
+	vc->vc_screenbuf = newscreen;
+	vc->vc_screenbuf_size = new_screen_size;
+	set_origin(vc);
+	kfree(oldscreen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* do part of a reset_terminal() */
 	vc->vc_top = 0;
@@ -944,6 +999,10 @@ static int vc_do_resize(struct tty_struct *tty, struct vc_data *vc,
 	if (CON_IS_VISIBLE(vc))
 		update_screen(vc);
 	vt_event_post(VT_EVENT_RESIZE, vc->vc_num, vc->vc_num);
+<<<<<<< HEAD
+=======
+	notify_update(vc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -1164,7 +1223,11 @@ static void csi_J(struct vc_data *vc, int vpar)
 			break;
 		case 3: /* erase scroll-back buffer (and whole display) */
 			scr_memsetw(vc->vc_screenbuf, vc->vc_video_erase_char,
+<<<<<<< HEAD
 				    vc->vc_screenbuf_size >> 1);
+=======
+				    vc->vc_screenbuf_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			set_origin(vc);
 			if (CON_IS_VISIBLE(vc))
 				update_screen(vc);
@@ -1298,6 +1361,14 @@ static void csi_m(struct vc_data *vc)
 			case 3:
 				vc->vc_italic = 1;
 				break;
+<<<<<<< HEAD
+=======
+			case 21:
+				/*
+				 * No console drivers support double underline, so
+				 * convert it to a single underline.
+				 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			case 4:
 				vc->vc_underline = 1;
 				break;
@@ -1334,7 +1405,10 @@ static void csi_m(struct vc_data *vc)
 				vc->vc_disp_ctrl = 1;
 				vc->vc_toggle_meta = 1;
 				break;
+<<<<<<< HEAD
 			case 21:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			case 22:
 				vc->vc_intensity = 1;
 				break;
@@ -1700,7 +1774,11 @@ static void reset_terminal(struct vc_data *vc, int do_clear)
 	default_attr(vc);
 	update_attr(vc);
 
+<<<<<<< HEAD
 	vc->vc_tab_stop[0]	= 0x01010100;
+=======
+	vc->vc_tab_stop[0]	=
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vc->vc_tab_stop[1]	=
 	vc->vc_tab_stop[2]	=
 	vc->vc_tab_stop[3]	=
@@ -1743,7 +1821,11 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
 		vc->vc_pos -= (vc->vc_x << 1);
 		while (vc->vc_x < vc->vc_cols - 1) {
 			vc->vc_x++;
+<<<<<<< HEAD
 			if (vc->vc_tab_stop[vc->vc_x >> 5] & (1 << (vc->vc_x & 31)))
+=======
+			if (vc->vc_tab_stop[7 & (vc->vc_x >> 5)] & (1 << (vc->vc_x & 31)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				break;
 		}
 		vc->vc_pos += (vc->vc_x << 1);
@@ -1803,7 +1885,11 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
 			lf(vc);
 			return;
 		case 'H':
+<<<<<<< HEAD
 			vc->vc_tab_stop[vc->vc_x >> 5] |= (1 << (vc->vc_x & 31));
+=======
+			vc->vc_tab_stop[7 & (vc->vc_x >> 5)] |= (1 << (vc->vc_x & 31));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return;
 		case 'Z':
 			respond_ID(tty);
@@ -1996,7 +2082,11 @@ static void do_con_trol(struct tty_struct *tty, struct vc_data *vc, int c)
 			return;
 		case 'g':
 			if (!vc->vc_par[0])
+<<<<<<< HEAD
 				vc->vc_tab_stop[vc->vc_x >> 5] &= ~(1 << (vc->vc_x & 31));
+=======
+				vc->vc_tab_stop[7 & (vc->vc_x >> 5)] &= ~(1 << (vc->vc_x & 31));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			else if (vc->vc_par[0] == 3) {
 				vc->vc_tab_stop[0] =
 					vc->vc_tab_stop[1] =
@@ -2439,7 +2529,11 @@ static void console_callback(struct work_struct *ignored)
 	if (scrollback_delta) {
 		struct vc_data *vc = vc_cons[fg_console].d;
 		clear_selection();
+<<<<<<< HEAD
 		if (vc->vc_mode == KD_TEXT)
+=======
+		if (vc->vc_mode == KD_TEXT && vc->vc_sw->con_scrolldelta)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			vc->vc_sw->con_scrolldelta(vc, scrollback_delta);
 		scrollback_delta = 0;
 	}
@@ -2510,7 +2604,10 @@ int vt_kmsg_redirect(int new)
 	else
 		return kmsg_con;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(vt_kmsg_redirect);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  *	Console on virtual terminal
@@ -2657,9 +2754,13 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
 	switch (type)
 	{
 		case TIOCL_SETSEL:
+<<<<<<< HEAD
 			console_lock();
 			ret = set_selection((struct tiocl_selection __user *)(p+1), tty);
 			console_unlock();
+=======
+			ret = set_selection((struct tiocl_selection __user *)(p+1), tty);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case TIOCL_PASTESEL:
 			ret = paste_selection(tty);
@@ -2683,13 +2784,21 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
 	 * related to the kernel should not use this.
 	 */
 			data = vt_get_shift_state();
+<<<<<<< HEAD
 			ret = __put_user(data, p);
+=======
+			ret = put_user(data, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case TIOCL_GETMOUSEREPORTING:
 			console_lock();	/* May be overkill */
 			data = mouse_reporting();
 			console_unlock();
+<<<<<<< HEAD
 			ret = __put_user(data, p);
+=======
+			ret = put_user(data, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case TIOCL_SETVESABLANK:
 			console_lock();
@@ -2698,7 +2807,11 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
 			break;
 		case TIOCL_GETKMSGREDIRECT:
 			data = vt_get_kmsg_redirect();
+<<<<<<< HEAD
 			ret = __put_user(data, p);
+=======
+			ret = put_user(data, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		case TIOCL_SETKMSGREDIRECT:
 			if (!capable(CAP_SYS_ADMIN)) {
@@ -2865,6 +2978,10 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
 
 	tty->driver_data = vc;
 	vc->port.tty = tty;
+<<<<<<< HEAD
+=======
+	tty_port_get(&vc->port);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!tty->winsize.ws_row && !tty->winsize.ws_col) {
 		tty->winsize.ws_row = vc_cons[currcons].d->vc_rows;
@@ -2900,6 +3017,16 @@ static void con_shutdown(struct tty_struct *tty)
 	console_unlock();
 }
 
+<<<<<<< HEAD
+=======
+static void con_cleanup(struct tty_struct *tty)
+{
+	struct vc_data *vc = tty->driver_data;
+
+	tty_port_put(&vc->port);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int default_color           = 7; /* white */
 static int default_italic_color    = 2; // green (ASCII)
 static int default_underline_color = 3; // cyan (ASCII)
@@ -3024,7 +3151,12 @@ static const struct tty_operations con_ops = {
 	.throttle = con_throttle,
 	.unthrottle = con_unthrottle,
 	.resize = vt_resize,
+<<<<<<< HEAD
 	.shutdown = con_shutdown
+=======
+	.shutdown = con_shutdown,
+	.cleanup = con_cleanup,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static struct cdev vc0_cdev;
@@ -3592,9 +3724,16 @@ static int do_register_con_driver(const struct consw *csw, int first, int last)
 		goto err;
 
 	desc = csw->con_startup();
+<<<<<<< HEAD
 
 	if (!desc)
 		goto err;
+=======
+	if (!desc) {
+		retval = -ENODEV;
+		goto err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	retval = -EINVAL;
 
@@ -4164,6 +4303,7 @@ static int con_font_default(struct vc_data *vc, struct console_font_op *op)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int con_font_copy(struct vc_data *vc, struct console_font_op *op)
 {
 	int con = op->height;
@@ -4185,6 +4325,8 @@ static int con_font_copy(struct vc_data *vc, struct console_font_op *op)
 	return rc;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int con_font_op(struct vc_data *vc, struct console_font_op *op)
 {
 	switch (op->op) {
@@ -4195,7 +4337,12 @@ int con_font_op(struct vc_data *vc, struct console_font_op *op)
 	case KD_FONT_OP_SET_DEFAULT:
 		return con_font_default(vc, op);
 	case KD_FONT_OP_COPY:
+<<<<<<< HEAD
 		return con_font_copy(vc, op);
+=======
+		/* was buggy and never really used */
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return -ENOSYS;
 }

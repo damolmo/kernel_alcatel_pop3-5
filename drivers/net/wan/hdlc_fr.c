@@ -275,6 +275,7 @@ static inline struct net_device **get_dev_p(struct pvc_device *pvc,
 
 static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 {
+<<<<<<< HEAD
 	u16 head_len;
 	struct sk_buff *skb = *skb_p;
 
@@ -308,11 +309,59 @@ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 		if (skb_headroom(skb) < head_len) {
 			struct sk_buff *skb2 = skb_realloc_headroom(skb,
 								    head_len);
+=======
+	struct sk_buff *skb = *skb_p;
+
+	if (!skb->dev) { /* Control packets */
+		switch (dlci) {
+		case LMI_CCITT_ANSI_DLCI:
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_CCITT_ANSI_LMI;
+			break;
+
+		case LMI_CISCO_DLCI:
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_CISCO_LMI;
+			break;
+
+		default:
+			return -EINVAL;
+		}
+
+	} else if (skb->dev->type == ARPHRD_DLCI) {
+		switch (skb->protocol) {
+		case htons(ETH_P_IP):
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_IP;
+			break;
+
+		case htons(ETH_P_IPV6):
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_IPV6;
+			break;
+
+		default:
+			skb_push(skb, 10);
+			skb->data[3] = FR_PAD;
+			skb->data[4] = NLPID_SNAP;
+			/* OUI 00-00-00 indicates an Ethertype follows */
+			skb->data[5] = 0x00;
+			skb->data[6] = 0x00;
+			skb->data[7] = 0x00;
+			/* This should be an Ethertype: */
+			*(__be16 *)(skb->data + 8) = skb->protocol;
+		}
+
+	} else if (skb->dev->type == ARPHRD_ETHER) {
+		if (skb_headroom(skb) < 10) {
+			struct sk_buff *skb2 = skb_realloc_headroom(skb, 10);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!skb2)
 				return -ENOBUFS;
 			dev_kfree_skb(skb);
 			skb = *skb_p = skb2;
 		}
+<<<<<<< HEAD
 		skb_push(skb, head_len);
 		skb->data[3] = FR_PAD;
 		skb->data[4] = NLPID_SNAP;
@@ -332,6 +381,21 @@ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 		skb->data[6] = FR_PAD;
 		skb->data[7] = FR_PAD;
 		*(__be16*)(skb->data + 8) = skb->protocol;
+=======
+		skb_push(skb, 10);
+		skb->data[3] = FR_PAD;
+		skb->data[4] = NLPID_SNAP;
+		/* OUI 00-80-C2 stands for the 802.1 organization */
+		skb->data[5] = 0x00;
+		skb->data[6] = 0x80;
+		skb->data[7] = 0xC2;
+		/* PID 00-07 stands for Ethernet frames without FCS */
+		skb->data[8] = 0x00;
+		skb->data[9] = 0x07;
+
+	} else {
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	dlci_to_q922(skb->data, dlci);
@@ -427,14 +491,24 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
 				skb_put(skb, pad);
 				memset(skb->data + len, 0, pad);
 			}
+<<<<<<< HEAD
 			skb->protocol = cpu_to_be16(ETH_P_802_3);
 		}
+=======
+		}
+		skb->dev = dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!fr_hard_header(&skb, pvc->dlci)) {
 			dev->stats.tx_bytes += skb->len;
 			dev->stats.tx_packets++;
 			if (pvc->state.fecn) /* TX Congestion counter */
 				dev->stats.tx_compressed++;
 			skb->dev = pvc->frad;
+<<<<<<< HEAD
+=======
+			skb->protocol = htons(ETH_P_HDLC);
+			skb_reset_network_header(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			dev_queue_xmit(skb);
 			return NETDEV_TX_OK;
 		}
@@ -494,10 +568,15 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
 	memset(skb->data, 0, len);
 	skb_reserve(skb, 4);
 	if (lmi == LMI_CISCO) {
+<<<<<<< HEAD
 		skb->protocol = cpu_to_be16(NLPID_CISCO_LMI);
 		fr_hard_header(&skb, LMI_CISCO_DLCI);
 	} else {
 		skb->protocol = cpu_to_be16(NLPID_CCITT_ANSI_LMI);
+=======
+		fr_hard_header(&skb, LMI_CISCO_DLCI);
+	} else {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fr_hard_header(&skb, LMI_CCITT_ANSI_DLCI);
 	}
 	data = skb_tail_pointer(skb);
@@ -557,6 +636,10 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
 	skb_put(skb, i);
 	skb->priority = TC_PRIO_CONTROL;
 	skb->dev = dev;
+<<<<<<< HEAD
+=======
+	skb->protocol = htons(ETH_P_HDLC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	skb_reset_network_header(skb);
 
 	dev_queue_xmit(skb);

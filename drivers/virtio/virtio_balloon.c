@@ -178,6 +178,11 @@ static void leak_balloon(struct virtio_balloon *vb, size_t num)
 	num = min(num, ARRAY_SIZE(vb->pfns));
 
 	mutex_lock(&vb->balloon_lock);
+<<<<<<< HEAD
+=======
+	/* We can't release more pages than taken */
+	num = min(num, (size_t)vb->num_pages);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (vb->num_pfns = 0; vb->num_pfns < num;
 	     vb->num_pfns += VIRTIO_BALLOON_PAGES_PER_PAGE) {
 		page = balloon_page_dequeue(vb_dev_info);
@@ -194,8 +199,13 @@ static void leak_balloon(struct virtio_balloon *vb, size_t num)
 	 */
 	if (vb->num_pfns != 0)
 		tell_host(vb, vb->deflate_vq);
+<<<<<<< HEAD
 	mutex_unlock(&vb->balloon_lock);
 	release_pages_by_pfn(vb->pfns, vb->num_pfns);
+=======
+	release_pages_by_pfn(vb->pfns, vb->num_pfns);
+	mutex_unlock(&vb->balloon_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline void update_stat(struct virtio_balloon *vb, int idx,
@@ -217,12 +227,20 @@ static void update_balloon_stats(struct virtio_balloon *vb)
 	all_vm_events(events);
 	si_meminfo(&i);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VM_EVENT_COUNTERS
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_SWAP_IN,
 				pages_to_bytes(events[PSWPIN]));
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_SWAP_OUT,
 				pages_to_bytes(events[PSWPOUT]));
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_MAJFLT, events[PGMAJFAULT]);
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_MINFLT, events[PGFAULT]);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_MEMFREE,
 				pages_to_bytes(i.freeram));
 	update_stat(vb, idx++, VIRTIO_BALLOON_S_MEMTOT,
@@ -353,6 +371,11 @@ static int init_vqs(struct virtio_balloon *vb)
 		 * Prime this virtqueue with one buffer so the hypervisor can
 		 * use it to signal us later (it can't be broken yet!).
 		 */
+<<<<<<< HEAD
+=======
+		update_balloon_stats(vb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sg_init_one(&sg, vb->stats, sizeof vb->stats);
 		if (virtqueue_add_outbuf(vb->stats_vq, &sg, 1, vb, GFP_KERNEL)
 		    < 0)
@@ -412,7 +435,13 @@ static int virtballoon_migratepage(struct balloon_dev_info *vb_dev_info,
 	tell_host(vb, vb->inflate_vq);
 
 	/* balloon's page migration 2nd step -- deflate "page" */
+<<<<<<< HEAD
 	balloon_page_delete(page);
+=======
+	spin_lock_irqsave(&vb_dev_info->pages_lock, flags);
+	balloon_page_delete(page);
+	spin_unlock_irqrestore(&vb_dev_info->pages_lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vb->num_pfns = VIRTIO_BALLOON_PAGES_PER_PAGE;
 	set_page_pfns(vb->pfns, page);
 	tell_host(vb, vb->deflate_vq);

@@ -573,6 +573,16 @@ struct ldlm_lock *__ldlm_handle2lock(const struct lustre_handle *handle,
 	if (lock == NULL)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	if (lock->l_export && lock->l_export->exp_failed) {
+		CDEBUG(D_INFO, "lock export failed: lock %p, exp %p\n",
+		       lock, lock->l_export);
+		LDLM_LOCK_PUT(lock);
+		return NULL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* It's unlikely but possible that someone marked the lock as
 	 * destroyed after we did handle2object on it */
 	if (flags == 0 && ((lock->l_flags & LDLM_FL_DESTROYED)== 0)) {

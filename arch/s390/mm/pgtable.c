@@ -207,7 +207,11 @@ EXPORT_SYMBOL_GPL(gmap_alloc);
 static void gmap_flush_tlb(struct gmap *gmap)
 {
 	if (MACHINE_HAS_IDTE)
+<<<<<<< HEAD
 		__tlb_flush_asce(gmap->mm, gmap->asce);
+=======
+		__tlb_flush_idte(gmap->asce);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		__tlb_flush_global();
 }
@@ -246,7 +250,11 @@ void gmap_free(struct gmap *gmap)
 
 	/* Flush tlb. */
 	if (MACHINE_HAS_IDTE)
+<<<<<<< HEAD
 		__tlb_flush_asce(gmap->mm, gmap->asce);
+=======
+		__tlb_flush_idte(gmap->asce);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		__tlb_flush_global();
 
@@ -1358,11 +1366,35 @@ EXPORT_SYMBOL_GPL(s390_enable_skey);
  */
 bool gmap_test_and_clear_dirty(unsigned long address, struct gmap *gmap)
 {
+<<<<<<< HEAD
+=======
+	pgd_t *pgd;
+	pud_t *pud;
+	pmd_t *pmd;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pte_t *pte;
 	spinlock_t *ptl;
 	bool dirty = false;
 
+<<<<<<< HEAD
 	pte = get_locked_pte(gmap->mm, address, &ptl);
+=======
+	pgd = pgd_offset(gmap->mm, address);
+	pud = pud_alloc(gmap->mm, pgd, address);
+	if (!pud)
+		return false;
+	pmd = pmd_alloc(gmap->mm, pud, address);
+	if (!pmd)
+		return false;
+	/* We can't run guests backed by huge pages, but userspace can
+	 * still set them up and then try to migrate them without any
+	 * migration support.
+	 */
+	if (pmd_large(*pmd))
+		return true;
+
+	pte = pte_alloc_map_lock(gmap->mm, pmd, address, &ptl);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (unlikely(!pte))
 		return false;
 

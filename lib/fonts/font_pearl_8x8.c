@@ -13,8 +13,13 @@
 
 #define FONTDATAMAX 2048
 
+<<<<<<< HEAD
 static const unsigned char fontdata_pearl8x8[FONTDATAMAX] = {
 
+=======
+static const struct font_data fontdata_pearl8x8 = {
+   { 0, 0, FONTDATAMAX, 0 }, {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
    /* 0 0x00 '^@' */
    0x00, /* 00000000 */
    0x00, /* 00000000 */
@@ -2574,14 +2579,22 @@ static const unsigned char fontdata_pearl8x8[FONTDATAMAX] = {
    0x00, /* 00000000 */
    0x00, /* 00000000 */
    0x00, /* 00000000 */
+<<<<<<< HEAD
 
 };
+=======
+} };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 const struct font_desc font_pearl_8x8 = {
 	.idx	= PEARL8x8_IDX,
 	.name	= "PEARL8x8",
 	.width	= 8,
 	.height	= 8,
+<<<<<<< HEAD
 	.data	= fontdata_pearl8x8,
+=======
+	.data	= fontdata_pearl8x8.data,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.pref	= 2,
 };

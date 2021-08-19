@@ -143,16 +143,22 @@ int set_pages_rw(struct page *page, int numpages);
 
 void clflush_cache_range(void *addr, unsigned int size);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 void mark_rodata_ro(void);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern const int rodata_test_data;
 extern int kernel_set_to_readonly;
 void set_kernel_text_rw(void);
 void set_kernel_text_ro(void);
+<<<<<<< HEAD
 #else
 static inline void set_kernel_text_rw(void) { }
 static inline void set_kernel_text_ro(void) { }
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_DEBUG_RODATA_TEST
 int rodata_test(void);

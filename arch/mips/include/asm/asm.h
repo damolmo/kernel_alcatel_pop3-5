@@ -54,7 +54,12 @@
 		.align	2;				\
 		.type	symbol, @function;		\
 		.ent	symbol, 0;			\
+<<<<<<< HEAD
 symbol:		.frame	sp, 0, ra
+=======
+symbol:		.frame	sp, 0, ra;			\
+		.insn
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * NESTED - declare nested routine entry point
@@ -63,8 +68,14 @@ symbol:		.frame	sp, 0, ra
 		.globl	symbol;				\
 		.align	2;				\
 		.type	symbol, @function;		\
+<<<<<<< HEAD
 		.ent	symbol, 0;			 \
 symbol:		.frame	sp, framesize, rpc
+=======
+		.ent	symbol, 0;			\
+symbol:		.frame	sp, framesize, rpc;		\
+		.insn
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * END - mark end of function
@@ -86,7 +97,11 @@ symbol:
 #define FEXPORT(symbol)					\
 		.globl	symbol;				\
 		.type	symbol, @function;		\
+<<<<<<< HEAD
 symbol:
+=======
+symbol:		.insn
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * ABS - export absolute symbol

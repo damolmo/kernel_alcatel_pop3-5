@@ -9,6 +9,10 @@
 #include <linux/compiler.h>
 #include <linux/spinlock.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/fs.h>
@@ -76,8 +80,15 @@ static inline struct file *__fcheck_files(struct files_struct *files, unsigned i
 {
 	struct fdtable *fdt = rcu_dereference_raw(files->fdt);
 
+<<<<<<< HEAD
 	if (fd < fdt->max_fds)
 		return rcu_dereference_raw(fdt->fd[fd]);
+=======
+	if (fd < fdt->max_fds) {
+		fd = array_index_nospec(fd, fdt->max_fds);
+		return rcu_dereference_raw(fdt->fd[fd]);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NULL;
 }
 
@@ -115,6 +126,7 @@ extern int __close_fd(struct files_struct *files,
 
 extern struct kmem_cache *files_cachep;
 
+<<<<<<< HEAD
 /*M: add fdleak debug log*/
 #define FD_OVER_CHECK
 
@@ -122,4 +134,6 @@ extern struct kmem_cache *files_cachep;
 extern void fd_show_open_files(pid_t pid, struct files_struct *files, struct fdtable *fdt);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* __LINUX_FDTABLE_H */

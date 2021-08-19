@@ -430,7 +430,12 @@ int saa7164_downloadfirmware(struct saa7164_dev *dev)
 			__func__, fw->size);
 
 		if (fw->size != fwlength) {
+<<<<<<< HEAD
 			printk(KERN_ERR "xc5000: firmware incorrect size\n");
+=======
+			printk(KERN_ERR "saa7164: firmware incorrect size %zu != %u\n",
+				fw->size, fwlength);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = -ENOMEM;
 			goto out;
 		}

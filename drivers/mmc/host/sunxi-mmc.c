@@ -294,7 +294,11 @@ static void sunxi_mmc_init_idma_des(struct sunxi_mmc_host *host,
 				    struct mmc_data *data)
 {
 	struct sunxi_idma_des *pdes = (struct sunxi_idma_des *)host->sg_cpu;
+<<<<<<< HEAD
 	struct sunxi_idma_des *pdes_pa = (struct sunxi_idma_des *)host->sg_dma;
+=======
+	dma_addr_t next_desc = host->sg_dma;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i, max_len = (1 << host->idma_des_size_bits);
 
 	for (i = 0; i < data->sg_len; i++) {
@@ -306,8 +310,14 @@ static void sunxi_mmc_init_idma_des(struct sunxi_mmc_host *host,
 		else
 			pdes[i].buf_size = data->sg[i].length;
 
+<<<<<<< HEAD
 		pdes[i].buf_addr_ptr1 = sg_dma_address(&data->sg[i]);
 		pdes[i].buf_addr_ptr2 = (u32)&pdes_pa[i + 1];
+=======
+		next_desc += sizeof(struct sunxi_idma_des);
+		pdes[i].buf_addr_ptr1 = sg_dma_address(&data->sg[i]);
+		pdes[i].buf_addr_ptr2 = (u32)next_desc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	pdes[0].config |= SDXC_IDMAC_DES0_FD;

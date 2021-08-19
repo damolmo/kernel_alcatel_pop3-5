@@ -85,7 +85,11 @@ static void dump_tl1_traplog(struct tl1_traplog *p)
 
 void bad_trap(struct pt_regs *regs, long lvl)
 {
+<<<<<<< HEAD
 	char buffer[32];
+=======
+	char buffer[36];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	siginfo_t info;
 
 	if (notify_die(DIE_TRAP, "bad trap", regs,
@@ -116,7 +120,11 @@ void bad_trap(struct pt_regs *regs, long lvl)
 
 void bad_trap_tl1(struct pt_regs *regs, long lvl)
 {
+<<<<<<< HEAD
 	char buffer[32];
+=======
+	char buffer[36];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 	if (notify_die(DIE_TRAP_TL1, "bad trap tl1", regs,
 		       0, lvl, SIGTRAP) == NOTIFY_STOP)
@@ -2730,8 +2738,11 @@ void __init trap_init(void)
 		     TI_NEW_CHILD != offsetof(struct thread_info, new_child) ||
 		     TI_CURRENT_DS != offsetof(struct thread_info,
 						current_ds) ||
+<<<<<<< HEAD
 		     TI_RESTART_BLOCK != offsetof(struct thread_info,
 						  restart_block) ||
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		     TI_KUNA_REGS != offsetof(struct thread_info,
 					      kern_una_regs) ||
 		     TI_KUNA_INSN != offsetof(struct thread_info,

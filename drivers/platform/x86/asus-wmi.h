@@ -28,6 +28,10 @@
 #define _ASUS_WMI_H_
 
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/i8042.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define ASUS_WMI_KEY_IGNORE (-1)
 #define ASUS_WMI_BRN_DOWN	0x20
@@ -50,6 +54,12 @@ struct quirk_entry {
 	 * and let the ACPI interrupt to send out the key event.
 	 */
 	int no_display_toggle;
+<<<<<<< HEAD
+=======
+
+	bool (*i8042_filter)(unsigned char data, unsigned char str,
+			     struct serio *serio);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct asus_wmi_driver {

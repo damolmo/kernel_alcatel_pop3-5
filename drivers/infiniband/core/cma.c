@@ -434,6 +434,10 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
 	dgid = (union ib_gid *) &addr->sib_addr;
 	pkey = ntohs(addr->sib_pkey);
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry(cur_dev, &dev_list, list) {
 		if (rdma_node_get_transport(cur_dev->device->node_type) != RDMA_TRANSPORT_IB)
 			continue;
@@ -455,10 +459,15 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
 					cma_dev = cur_dev;
 					sgid = gid;
 					id_priv->id.port_num = p;
+<<<<<<< HEAD
+=======
+					goto found;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				}
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	if (!cma_dev)
 		return -ENODEV;
@@ -467,6 +476,16 @@ found:
 	cma_attach_to_dev(id_priv, cma_dev);
 	addr = (struct sockaddr_ib *) cma_src_addr(id_priv);
 	memcpy(&addr->sib_addr, &sgid, sizeof sgid);
+=======
+	mutex_unlock(&lock);
+	return -ENODEV;
+
+found:
+	cma_attach_to_dev(id_priv, cma_dev);
+	mutex_unlock(&lock);
+	addr = (struct sockaddr_ib *)cma_src_addr(id_priv);
+	memcpy(&addr->sib_addr, &sgid, sizeof(sgid));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cma_translate_ib(addr, &id_priv->id.route.addr.dev_addr);
 	return 0;
 }
@@ -512,6 +531,10 @@ struct rdma_cm_id *rdma_create_id(rdma_cm_event_handler event_handler,
 	INIT_LIST_HEAD(&id_priv->listen_list);
 	INIT_LIST_HEAD(&id_priv->mc_list);
 	get_random_bytes(&id_priv->seq_num, sizeof id_priv->seq_num);
+<<<<<<< HEAD
+=======
+	id_priv->seq_num &= 0x00ffffff;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return &id_priv->id;
 }
@@ -753,6 +776,12 @@ int rdma_init_qp_attr(struct rdma_cm_id *id, struct ib_qp_attr *qp_attr,
 		} else
 			ret = iw_cm_init_qp_attr(id_priv->cm_id.iw, qp_attr,
 						 qp_attr_mask);
+<<<<<<< HEAD
+=======
+		qp_attr->port_num = id_priv->id.port_num;
+		*qp_attr_mask |= IB_QP_PORT;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		ret = -ENOSYS;
@@ -1545,9 +1574,16 @@ static int iw_conn_req_handler(struct iw_cm_id *cm_id,
 		conn_id->cm_id.iw = NULL;
 		cma_exch(conn_id, RDMA_CM_DESTROYING);
 		mutex_unlock(&conn_id->handler_mutex);
+<<<<<<< HEAD
 		cma_deref_id(conn_id);
 		rdma_destroy_id(&conn_id->id);
 		goto out;
+=======
+		mutex_unlock(&listen_id->handler_mutex);
+		cma_deref_id(conn_id);
+		rdma_destroy_id(&conn_id->id);
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	mutex_unlock(&conn_id->handler_mutex);
@@ -1959,6 +1995,10 @@ static int cma_resolve_iboe_route(struct rdma_id_private *id_priv)
 err2:
 	kfree(route->path_rec);
 	route->path_rec = NULL;
+<<<<<<< HEAD
+=======
+	route->num_paths = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err1:
 	kfree(work);
 	return ret;
@@ -2184,7 +2224,12 @@ static int cma_bind_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
 	if (!src_addr || !src_addr->sa_family) {
 		src_addr = (struct sockaddr *) &id->route.addr.src_addr;
 		src_addr->sa_family = dst_addr->sa_family;
+<<<<<<< HEAD
 		if (dst_addr->sa_family == AF_INET6) {
+=======
+		if (IS_ENABLED(CONFIG_IPV6) &&
+		    dst_addr->sa_family == AF_INET6) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			((struct sockaddr_in6 *) src_addr)->sin6_scope_id =
 				((struct sockaddr_in6 *) dst_addr)->sin6_scope_id;
 		} else if (dst_addr->sa_family == AF_IB) {
@@ -2952,6 +2997,12 @@ static int cma_accept_iw(struct rdma_id_private *id_priv,
 	struct iw_cm_conn_param iw_param;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!conn_param)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = cma_modify_qp_rtr(id_priv, conn_param);
 	if (ret)
 		return ret;
@@ -3350,6 +3401,12 @@ int rdma_join_multicast(struct rdma_cm_id *id, struct sockaddr *addr,
 	struct cma_multicast *mc;
 	int ret;
 
+<<<<<<< HEAD
+=======
+	if (!id->device)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	id_priv = container_of(id, struct rdma_id_private, id);
 	if (!cma_comp(id_priv, RDMA_CM_ADDR_BOUND) &&
 	    !cma_comp(id_priv, RDMA_CM_ADDR_RESOLVED))
@@ -3632,7 +3689,11 @@ static int cma_get_id_stats(struct sk_buff *skb, struct netlink_callback *cb)
 					  RDMA_NL_RDMA_CM_ATTR_SRC_ADDR))
 				goto out;
 			if (ibnl_put_attr(skb, nlh,
+<<<<<<< HEAD
 					  rdma_addr_size(cma_src_addr(id_priv)),
+=======
+					  rdma_addr_size(cma_dst_addr(id_priv)),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					  cma_dst_addr(id_priv),
 					  RDMA_NL_RDMA_CM_ATTR_DST_ADDR))
 				goto out;

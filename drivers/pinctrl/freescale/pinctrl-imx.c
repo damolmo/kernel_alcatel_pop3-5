@@ -205,9 +205,15 @@ static int imx_pmx_set(struct pinctrl_dev *pctldev, unsigned selector,
 		pin_reg = &info->pin_regs[pin_id];
 
 		if (pin_reg->mux_reg == -1) {
+<<<<<<< HEAD
 			dev_err(ipctl->dev, "Pin(%s) does not support mux function\n",
 				info->pins[pin_id].name);
 			return -EINVAL;
+=======
+			dev_dbg(ipctl->dev, "Pin(%s) does not support mux function\n",
+				info->pins[pin_id].name);
+			continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		if (info->flags & SHARE_MUX_CONF_REG) {

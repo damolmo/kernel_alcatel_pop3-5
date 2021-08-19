@@ -50,6 +50,17 @@ AS		+= -EL
 LD		+= -EL
 endif
 
+<<<<<<< HEAD
+=======
+#
+# The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
+# later may result in code being generated that handles signed short and signed
+# char struct members incorrectly. So disable it.
+# (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65932)
+#
+KBUILD_CFLAGS	+= $(call cc-option,-fno-ipa-sra)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # This selects which instruction set is used.
 # Note that GCC does not numerically define an architecture version
 # macro, but instead defines a whole series of macros which makes
@@ -175,10 +186,13 @@ machine-$(CONFIG_ARCH_MV78XX0)		+= mv78xx0
 machine-$(CONFIG_ARCH_MVEBU)		+= mvebu
 machine-$(CONFIG_ARCH_MXC)		+= imx
 machine-$(CONFIG_ARCH_MEDIATEK)		+= mediatek
+<<<<<<< HEAD
 # only for 32-bit bringup, must refactor this later
 ifneq ($(CONFIG_ARCH_MEDIATEK),y)
 machine-$(CONFIG_MEDIATEK_SOLUTION)	+= mediatek
 endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 machine-$(CONFIG_ARCH_MXS)		+= mxs
 machine-$(CONFIG_ARCH_NETX)		+= netx
 machine-$(CONFIG_ARCH_NOMADIK)		+= nomadik
@@ -267,6 +281,10 @@ core-$(CONFIG_FPE_FASTFPE)	+= $(FASTFPE_OBJ)
 core-$(CONFIG_VFP)		+= arch/arm/vfp/
 core-$(CONFIG_XEN)		+= arch/arm/xen/
 core-$(CONFIG_KVM_ARM_HOST) 	+= arch/arm/kvm/
+<<<<<<< HEAD
+=======
+core-$(CONFIG_VDSO)		+= arch/arm/vdso/
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 # If we have a machine-specific directory, then include it in the build.
 core-y				+= arch/arm/kernel/ arch/arm/mm/ arch/arm/common/
@@ -295,6 +313,7 @@ endif
 
 all:	$(KBUILD_IMAGE) $(KBUILD_DTBS)
 
+<<<<<<< HEAD
 MTK_PLATFORM := $(CONFIG_MTK_PLATFORM:"%"=%)
 MTK_PROJECT := $(CONFIG_ARCH_MTK_PROJECT:"%"=%)
 export MTK_PLATFORM MTK_PROJECT MTK_TARGET_PROJECT
@@ -307,6 +326,10 @@ dtbs: $(DRVGEN_FILE_LIST)
 boot := arch/arm/boot
 
 
+=======
+boot := arch/arm/boot
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 archprepare:
 	$(Q)$(MAKE) $(build)=arch/arm/tools include/generated/mach-types.h
 
@@ -334,6 +357,15 @@ dtbs dtbs_install: prepare scripts
 zImage-dtb: vmlinux scripts dtbs
 	$(Q)$(MAKE) $(build)=$(boot) MACHINE=$(MACHINE) $(boot)/$@
 
+<<<<<<< HEAD
+=======
+PHONY += vdso_install
+vdso_install:
+ifeq ($(CONFIG_VDSO),y)
+	$(Q)$(MAKE) $(build)=arch/arm/vdso $@
+endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # We use MRPROPER_FILES and CLEAN_FILES now
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
@@ -358,4 +390,8 @@ define archhelp
   echo  '                  Install using (your) ~/bin/$(INSTALLKERNEL) or'
   echo  '                  (distribution) /sbin/$(INSTALLKERNEL) or'
   echo  '                  install to $$(INSTALL_PATH) and run lilo'
+<<<<<<< HEAD
+=======
+  echo  '  vdso_install  - Install unstripped vdso.so to $$(INSTALL_MOD_PATH)/vdso'
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 endef

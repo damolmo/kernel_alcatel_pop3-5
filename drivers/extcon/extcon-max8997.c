@@ -337,12 +337,19 @@ static int max8997_muic_handle_usb(struct max8997_muic_info *info,
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (usb_type == MAX8997_USB_HOST) {
 		ret = max8997_muic_set_path(info, info->path_usb, attached);
 		if (ret < 0) {
 			dev_err(info->dev, "failed to update muic register\n");
 			return ret;
 		}
+=======
+	ret = max8997_muic_set_path(info, info->path_usb, attached);
+	if (ret < 0) {
+		dev_err(info->dev, "failed to update muic register\n");
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	switch (usb_type) {

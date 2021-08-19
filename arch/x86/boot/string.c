@@ -14,6 +14,19 @@
 
 #include <linux/types.h>
 #include "ctype.h"
+<<<<<<< HEAD
+=======
+#include "string.h"
+
+/*
+ * Undef these macros so that the functions that we provide
+ * here will have the correct names regardless of how string.h
+ * may have chosen to #define them.
+ */
+#undef memcpy
+#undef memset
+#undef memcmp
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int memcmp(const void *s1, const void *s2, size_t len)
 {

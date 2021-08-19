@@ -50,17 +50,26 @@ void batadv_hardif_disable_interface(struct batadv_hard_iface *hard_iface,
 void batadv_hardif_remove_interfaces(void);
 int batadv_hardif_min_mtu(struct net_device *soft_iface);
 void batadv_update_min_mtu(struct net_device *soft_iface);
+<<<<<<< HEAD
 void batadv_hardif_free_rcu(struct rcu_head *rcu);
 
 /**
  * batadv_hardif_free_ref - decrement the hard interface refcounter and
  *  possibly free it
+=======
+void batadv_hardif_release(struct batadv_hard_iface *hard_iface);
+
+/**
+ * batadv_hardif_free_ref - decrement the hard interface refcounter and
+ *  possibly release it
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @hard_iface: the hard interface to free
  */
 static inline void
 batadv_hardif_free_ref(struct batadv_hard_iface *hard_iface)
 {
 	if (atomic_dec_and_test(&hard_iface->refcount))
+<<<<<<< HEAD
 		call_rcu(&hard_iface->rcu, batadv_hardif_free_rcu);
 }
 
@@ -74,6 +83,9 @@ batadv_hardif_free_ref_now(struct batadv_hard_iface *hard_iface)
 {
 	if (atomic_dec_and_test(&hard_iface->refcount))
 		batadv_hardif_free_rcu(&hard_iface->rcu);
+=======
+		batadv_hardif_release(hard_iface);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline struct batadv_hard_iface *

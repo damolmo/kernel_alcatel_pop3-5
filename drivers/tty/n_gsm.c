@@ -137,6 +137,12 @@ struct gsm_dlci {
 	struct mutex mutex;
 
 	/* Link layer */
+<<<<<<< HEAD
+=======
+	int mode;
+#define DLCI_MODE_ABM		0	/* Normal Asynchronous Balanced Mode */
+#define DLCI_MODE_ADM		1	/* Asynchronous Disconnected Mode */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spinlock_t lock;	/* Protects the internal state */
 	struct timer_list t1;	/* Retransmit timer for SABM and UA */
 	int retries;
@@ -678,11 +684,18 @@ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
  *	FIXME: lock against link layer control transmissions
  */
 
+<<<<<<< HEAD
 static void gsm_data_kick(struct gsm_mux *gsm)
 {
 	struct gsm_msg *msg, *nmsg;
 	int len;
 	int skip_sof = 0;
+=======
+static void gsm_data_kick(struct gsm_mux *gsm, struct gsm_dlci *dlci)
+{
+	struct gsm_msg *msg, *nmsg;
+	int len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_for_each_entry_safe(msg, nmsg, &gsm->tx_list, list) {
 		if (gsm->constipated && msg->addr)
@@ -704,6 +717,7 @@ static void gsm_data_kick(struct gsm_mux *gsm)
 			print_hex_dump_bytes("gsm_data_kick: ",
 					     DUMP_PREFIX_OFFSET,
 					     gsm->txframe, len);
+<<<<<<< HEAD
 
 		if (gsm->output(gsm, gsm->txframe + skip_sof,
 						len - skip_sof) < 0)
@@ -716,6 +730,25 @@ static void gsm_data_kick(struct gsm_mux *gsm)
 
 		list_del(&msg->list);
 		kfree(msg);
+=======
+		if (gsm->output(gsm, gsm->txframe, len) < 0)
+			break;
+		/* FIXME: Can eliminate one SOF in many more cases */
+		gsm->tx_bytes -= msg->len;
+
+		list_del(&msg->list);
+		kfree(msg);
+
+		if (dlci) {
+			tty_port_tty_wakeup(&dlci->port);
+		} else {
+			int i = 0;
+
+			for (i = 0; i < NUM_DLCI; i++)
+				if (gsm->dlci[i])
+					tty_port_tty_wakeup(&gsm->dlci[i]->port);
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -767,7 +800,11 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
 	/* Add to the actual output queue */
 	list_add_tail(&msg->list, &gsm->tx_list);
 	gsm->tx_bytes += msg->len;
+<<<<<<< HEAD
 	gsm_data_kick(gsm);
+=======
+	gsm_data_kick(gsm, dlci);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1228,7 +1265,11 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
 		gsm_control_reply(gsm, CMD_FCON, NULL, 0);
 		/* Kick the link in case it is idling */
 		spin_lock_irqsave(&gsm->tx_lock, flags);
+<<<<<<< HEAD
 		gsm_data_kick(gsm);
+=======
+		gsm_data_kick(gsm, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock_irqrestore(&gsm->tx_lock, flags);
 		break;
 	case CMD_FCOFF:
@@ -1380,7 +1421,17 @@ retry:
 	ctrl->data = data;
 	ctrl->len = clen;
 	gsm->pending_cmd = ctrl;
+<<<<<<< HEAD
 	gsm->cretries = gsm->n2;
+=======
+
+	/* If DLCI0 is in ADM mode skip retries, it won't respond */
+	if (gsm->dlci[0]->mode == DLCI_MODE_ADM)
+		gsm->cretries = 1;
+	else
+		gsm->cretries = gsm->n2;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mod_timer(&gsm->t2_timer, jiffies + gsm->t2 * HZ / 100);
 	gsm_control_transmit(gsm, ctrl);
 	spin_unlock_irqrestore(&gsm->control_lock, flags);
@@ -1467,6 +1518,13 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
  *	in which case an opening port goes back to closed and a closing port
  *	is simply put into closed state (any further frames from the other
  *	end will get a DM response)
+<<<<<<< HEAD
+=======
+ *
+ *	Some control dlci can stay in ADM mode with other dlci working just
+ *	fine. In that case we can just keep the control dlci open after the
+ *	DLCI_OPENING retries time out.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 
 static void gsm_dlci_t1(unsigned long data)
@@ -1480,8 +1538,21 @@ static void gsm_dlci_t1(unsigned long data)
 		if (dlci->retries) {
 			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+<<<<<<< HEAD
 		} else
 			gsm_dlci_close(dlci);
+=======
+		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+			if (debug & 8)
+				pr_info("DLCI %d opening in ADM mode.\n",
+					dlci->addr);
+			dlci->mode = DLCI_MODE_ADM;
+			gsm_dlci_open(dlci);
+		} else {
+			gsm_dlci_close(dlci);
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case DLCI_CLOSING:
 		dlci->retries--;
@@ -1499,8 +1570,13 @@ static void gsm_dlci_t1(unsigned long data)
  *	@dlci: DLCI to open
  *
  *	Commence opening a DLCI from the Linux side. We issue SABM messages
+<<<<<<< HEAD
  *	to the modem which should then reply with a UA, at which point we
  *	will move into open state. Opening is done asynchronously with retry
+=======
+ *	to the modem which should then reply with a UA or ADM, at which point
+ *	we will move into open state. Opening is done asynchronously with retry
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *	running off timers and the responses.
  */
 
@@ -2045,7 +2121,13 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm)
 		}
 	}
 	spin_unlock(&gsm_mux_lock);
+<<<<<<< HEAD
 	WARN_ON(i == MAX_MUX);
+=======
+	/* open failed before registering => nothing to do */
+	if (i == MAX_MUX)
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* In theory disconnecting DLCI 0 is sufficient but for some
 	   modems this is apparently not the case. */
@@ -2407,7 +2489,11 @@ static void gsmld_write_wakeup(struct tty_struct *tty)
 	/* Queue poll */
 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
 	spin_lock_irqsave(&gsm->tx_lock, flags);
+<<<<<<< HEAD
 	gsm_data_kick(gsm);
+=======
+	gsm_data_kick(gsm, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (gsm->tx_bytes < TX_THRESH_LO) {
 		gsm_dlci_data_sweep(gsm);
 	}
@@ -2869,11 +2955,28 @@ static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk)
 static int gsm_carrier_raised(struct tty_port *port)
 {
 	struct gsm_dlci *dlci = container_of(port, struct gsm_dlci, port);
+<<<<<<< HEAD
+=======
+	struct gsm_mux *gsm = dlci->gsm;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Not yet open so no carrier info */
 	if (dlci->state != DLCI_OPEN)
 		return 0;
 	if (debug & 2)
 		return 1;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Basic mode with control channel in ADM mode may not respond
+	 * to CMD_MSC at all and modem_rx is empty.
+	 */
+	if (gsm->encoding == 0 && gsm->dlci[0]->mode == DLCI_MODE_ADM &&
+	    !dlci->modem_rx)
+		return 1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return dlci->modem_rx & TIOCM_CD;
 }
 

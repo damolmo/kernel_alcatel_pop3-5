@@ -26,6 +26,11 @@
  *	$1,$2,$3,$4,$5,$6,$7
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Allow an exception for an insn; exit if we get one.  */
 #define EXI(x,y...)			\
 	99: x,##y;			\
@@ -143,3 +148,7 @@ $101:
 	ret $31,($28),1
 
 	.end __copy_user
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__copy_user)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -36,5 +36,9 @@
 					     for sequential scan */
 #define BLIST_TRY_VPD_PAGES	0x10000000 /* Attempt to read VPD pages */
 #define BLIST_NO_RSOC		0x20000000 /* don't try to issue RSOC */
+<<<<<<< HEAD
+=======
+#define BLIST_MAX_1024		0x40000000 /* maximum 1024 sector cdb length */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

@@ -122,8 +122,13 @@ SYSCALL_DEFINE5(kcmp, pid_t, pid1, pid_t, pid2, int, type,
 			&task2->signal->cred_guard_mutex);
 	if (ret)
 		goto err;
+<<<<<<< HEAD
 	if (!ptrace_may_access(task1, PTRACE_MODE_READ) ||
 	    !ptrace_may_access(task2, PTRACE_MODE_READ)) {
+=======
+	if (!ptrace_may_access(task1, PTRACE_MODE_READ_REALCREDS) ||
+	    !ptrace_may_access(task2, PTRACE_MODE_READ_REALCREDS)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -EPERM;
 		goto err_unlock;
 	}

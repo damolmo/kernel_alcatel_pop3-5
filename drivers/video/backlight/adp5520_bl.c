@@ -332,10 +332,25 @@ static int adp5520_bl_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, bl);
+<<<<<<< HEAD
 	ret |= adp5520_bl_setup(bl);
 	backlight_update_status(bl);
 
 	return ret;
+=======
+	ret = adp5520_bl_setup(bl);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to setup\n");
+		if (data->pdata->en_ambl_sens)
+			sysfs_remove_group(&bl->dev.kobj,
+					&adp5520_bl_attr_group);
+		return ret;
+	}
+
+	backlight_update_status(bl);
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int adp5520_bl_remove(struct platform_device *pdev)

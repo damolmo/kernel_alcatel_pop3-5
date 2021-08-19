@@ -752,8 +752,14 @@ static int knav_dma_probe(struct platform_device *pdev)
 	pm_runtime_enable(kdev->dev);
 	ret = pm_runtime_get_sync(kdev->dev);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(kdev->dev, "unable to enable pktdma, err %d\n", ret);
 		return ret;
+=======
+		pm_runtime_put_noidle(kdev->dev);
+		dev_err(kdev->dev, "unable to enable pktdma, err %d\n", ret);
+		goto err_pm_disable;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Initialise all packet dmas */
@@ -767,13 +773,28 @@ static int knav_dma_probe(struct platform_device *pdev)
 
 	if (list_empty(&kdev->list)) {
 		dev_err(dev, "no valid dma instance\n");
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		ret = -ENODEV;
+		goto err_put_sync;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	debugfs_create_file("knav_dma", S_IFREG | S_IRUGO, NULL, NULL,
 			    &knav_dma_debug_ops);
 
 	return ret;
+<<<<<<< HEAD
+=======
+
+err_put_sync:
+	pm_runtime_put_sync(kdev->dev);
+err_pm_disable:
+	pm_runtime_disable(kdev->dev);
+
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int knav_dma_remove(struct platform_device *pdev)

@@ -766,7 +766,11 @@ int simple_attr_open(struct inode *inode, struct file *file,
 {
 	struct simple_attr *attr;
 
+<<<<<<< HEAD
 	attr = kmalloc(sizeof(*attr), GFP_KERNEL);
+=======
+	attr = kzalloc(sizeof(*attr), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!attr)
 		return -ENOMEM;
 
@@ -806,9 +810,17 @@ ssize_t simple_attr_read(struct file *file, char __user *buf,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (*ppos) {		/* continued read */
 		size = strlen(attr->get_buf);
 	} else {		/* first read */
+=======
+	if (*ppos && attr->get_buf[0]) {
+		/* continued read */
+		size = strlen(attr->get_buf);
+	} else {
+		/* first read */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u64 val;
 		ret = attr->get(attr->data, &val);
 		if (ret)
@@ -830,7 +842,11 @@ ssize_t simple_attr_write(struct file *file, const char __user *buf,
 			  size_t len, loff_t *ppos)
 {
 	struct simple_attr *attr;
+<<<<<<< HEAD
 	u64 val;
+=======
+	unsigned long long val;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	size_t size;
 	ssize_t ret;
 
@@ -848,7 +864,13 @@ ssize_t simple_attr_write(struct file *file, const char __user *buf,
 		goto out;
 
 	attr->set_buf[size] = '\0';
+<<<<<<< HEAD
 	val = simple_strtoll(attr->set_buf, NULL, 0);
+=======
+	ret = kstrtoull(attr->set_buf, 0, &val);
+	if (ret)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = attr->set(attr->data, val);
 	if (ret == 0)
 		ret = len; /* on success, claim we got the whole input */
@@ -948,7 +970,11 @@ int __generic_file_fsync(struct file *file, loff_t start, loff_t end,
 
 	mutex_lock(&inode->i_mutex);
 	ret = sync_mapping_buffers(inode->i_mapping);
+<<<<<<< HEAD
 	if (!(inode->i_state & I_DIRTY))
+=======
+	if (!(inode->i_state & I_DIRTY_ALL))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	if (datasync && !(inode->i_state & I_DIRTY_DATASYNC))
 		goto out;

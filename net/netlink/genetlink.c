@@ -507,6 +507,23 @@ void *genlmsg_put(struct sk_buff *skb, u32 portid, u32 seq,
 }
 EXPORT_SYMBOL(genlmsg_put);
 
+<<<<<<< HEAD
+=======
+static int genl_lock_start(struct netlink_callback *cb)
+{
+	/* our ops are always const - netlink API doesn't propagate that */
+	const struct genl_ops *ops = cb->data;
+	int rc = 0;
+
+	if (ops->start) {
+		genl_lock();
+		rc = ops->start(cb);
+		genl_unlock();
+	}
+	return rc;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int genl_lock_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	/* our ops are always const - netlink API doesn't propagate that */
@@ -571,6 +588,10 @@ static int genl_family_rcv_msg(struct genl_family *family,
 				.module = family->module,
 				/* we have const, but the netlink API doesn't */
 				.data = (void *)ops,
+<<<<<<< HEAD
+=======
+				.start = genl_lock_start,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				.dump = genl_lock_dumpit,
 				.done = genl_lock_done,
 			};
@@ -582,6 +603,10 @@ static int genl_family_rcv_msg(struct genl_family *family,
 		} else {
 			struct netlink_dump_control c = {
 				.module = family->module,
+<<<<<<< HEAD
+=======
+				.start = ops->start,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				.dump = ops->dumpit,
 				.done = ops->done,
 			};
@@ -1042,6 +1067,10 @@ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 {
 	struct sk_buff *tmp;
 	struct net *net, *prev = NULL;
+<<<<<<< HEAD
+=======
+	bool delivered = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 
 	for_each_net_rcu(net) {
@@ -1053,14 +1082,29 @@ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 			}
 			err = nlmsg_multicast(prev->genl_sock, tmp,
 					      portid, group, flags);
+<<<<<<< HEAD
 			if (err)
+=======
+			if (!err)
+				delivered = true;
+			else if (err != -ESRCH)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				goto error;
 		}
 
 		prev = net;
 	}
 
+<<<<<<< HEAD
 	return nlmsg_multicast(prev->genl_sock, skb, portid, group, flags);
+=======
+	err = nlmsg_multicast(prev->genl_sock, skb, portid, group, flags);
+	if (!err)
+		delivered = true;
+	else if (err != -ESRCH)
+		return err;
+	return delivered ? 0 : -ESRCH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  error:
 	kfree_skb(skb);
 	return err;

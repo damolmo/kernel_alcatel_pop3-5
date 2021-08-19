@@ -22,6 +22,10 @@
 
 #include <net/inet_sock.h>
 #include <net/snmp.h>
+<<<<<<< HEAD
+=======
+#include <net/ip.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct icmp_err {
   int		errno;
@@ -39,7 +43,17 @@ struct net_proto_family;
 struct sk_buff;
 struct net;
 
+<<<<<<< HEAD
 void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info);
+=======
+void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+		 const struct ip_options *opt);
+static inline void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+{
+	__icmp_send(skb_in, type, code, info, &IPCB(skb_in)->opt);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int icmp_rcv(struct sk_buff *skb);
 void icmp_err(struct sk_buff *skb, u32 info);
 int icmp_init(void);

@@ -137,6 +137,7 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 		return retval;
 	}
 
+<<<<<<< HEAD
 	/* ipc_addid() locks msq upon success. */
 	id = ipc_addid(&msg_ids(ns), &msq->q_perm, ns->msg_ctlmni);
 	if (id < 0) {
@@ -144,6 +145,8 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 		return id;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	msq->q_stime = msq->q_rtime = 0;
 	msq->q_ctime = get_seconds();
 	msq->q_cbytes = msq->q_qnum = 0;
@@ -153,6 +156,16 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 	INIT_LIST_HEAD(&msq->q_receivers);
 	INIT_LIST_HEAD(&msq->q_senders);
 
+<<<<<<< HEAD
+=======
+	/* ipc_addid() locks msq upon success. */
+	id = ipc_addid(&msg_ids(ns), &msq->q_perm, ns->msg_ctlmni);
+	if (id < 0) {
+		ipc_rcu_putref(msq, msg_rcu_free);
+		return id;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ipc_unlock_object(&msq->q_perm);
 	rcu_read_unlock();
 
@@ -678,7 +691,11 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 		rcu_read_lock();
 		ipc_lock_object(&msq->q_perm);
 
+<<<<<<< HEAD
 		ipc_rcu_putref(msq, ipc_rcu_free);
+=======
+		ipc_rcu_putref(msq, msg_rcu_free);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* raced with RMID? */
 		if (!ipc_valid_object(&msq->q_perm)) {
 			err = -EIDRM;
@@ -740,7 +757,14 @@ static inline int convert_mode(long *msgtyp, int msgflg)
 	if (*msgtyp == 0)
 		return SEARCH_ANY;
 	if (*msgtyp < 0) {
+<<<<<<< HEAD
 		*msgtyp = -*msgtyp;
+=======
+		if (*msgtyp == LONG_MIN) /* -LONG_MIN is undefined */
+			*msgtyp = LONG_MAX;
+		else
+			*msgtyp = -*msgtyp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return SEARCH_LESSEQUAL;
 	}
 	if (msgflg & MSG_EXCEPT)

@@ -31,7 +31,11 @@ $(bootdir-y): $(addprefix $(obj)/,$(subdir-y)) \
 	      $(addprefix $(obj)/,$(host-progs))
 	$(Q)$(MAKE) $(build)=$(obj)/$@ $(MAKECMDGOALS)
 
+<<<<<<< HEAD
 OBJCOPYFLAGS = --strip-all -R .comment -R .note.gnu.build-id -O binary
+=======
+OBJCOPYFLAGS = --strip-all -R .comment -R .notes -O binary
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 vmlinux.bin: vmlinux FORCE
 	$(call if_changed,objcopy)

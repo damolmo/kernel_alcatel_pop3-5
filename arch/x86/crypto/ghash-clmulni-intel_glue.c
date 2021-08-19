@@ -218,6 +218,32 @@ static int ghash_async_final(struct ahash_request *req)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int ghash_async_import(struct ahash_request *req, const void *in)
+{
+	struct ahash_request *cryptd_req = ahash_request_ctx(req);
+	struct shash_desc *desc = cryptd_shash_desc(cryptd_req);
+	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
+
+	ghash_async_init(req);
+	memcpy(dctx, in, sizeof(*dctx));
+	return 0;
+
+}
+
+static int ghash_async_export(struct ahash_request *req, void *out)
+{
+	struct ahash_request *cryptd_req = ahash_request_ctx(req);
+	struct shash_desc *desc = cryptd_shash_desc(cryptd_req);
+	struct ghash_desc_ctx *dctx = shash_desc_ctx(desc);
+
+	memcpy(out, dctx, sizeof(*dctx));
+	return 0;
+
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ghash_async_digest(struct ahash_request *req)
 {
 	struct crypto_ahash *tfm = crypto_ahash_reqtfm(req);
@@ -285,12 +311,24 @@ static struct ahash_alg ghash_async_alg = {
 	.final		= ghash_async_final,
 	.setkey		= ghash_async_setkey,
 	.digest		= ghash_async_digest,
+<<<<<<< HEAD
 	.halg = {
 		.digestsize	= GHASH_DIGEST_SIZE,
+=======
+	.export		= ghash_async_export,
+	.import		= ghash_async_import,
+	.halg = {
+		.digestsize	= GHASH_DIGEST_SIZE,
+		.statesize = sizeof(struct ghash_desc_ctx),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.base = {
 			.cra_name		= "ghash",
 			.cra_driver_name	= "ghash-clmulni",
 			.cra_priority		= 400,
+<<<<<<< HEAD
+=======
+			.cra_ctxsize		= sizeof(struct ghash_async_ctx),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			.cra_flags		= CRYPTO_ALG_TYPE_AHASH | CRYPTO_ALG_ASYNC,
 			.cra_blocksize		= GHASH_BLOCK_SIZE,
 			.cra_type		= &crypto_ahash_type,

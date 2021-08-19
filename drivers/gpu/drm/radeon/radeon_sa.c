@@ -349,8 +349,18 @@ int radeon_sa_bo_new(struct radeon_device *rdev,
 			/* see if we can skip over some allocations */
 		} while (radeon_sa_bo_next_hole(sa_manager, fences, tries));
 
+<<<<<<< HEAD
 		spin_unlock(&sa_manager->wq.lock);
 		r = radeon_fence_wait_any(rdev, fences, false);
+=======
+		for (i = 0; i < RADEON_NUM_RINGS; ++i)
+			radeon_fence_ref(fences[i]);
+
+		spin_unlock(&sa_manager->wq.lock);
+		r = radeon_fence_wait_any(rdev, fences, false);
+		for (i = 0; i < RADEON_NUM_RINGS; ++i)
+			radeon_fence_unref(&fences[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_lock(&sa_manager->wq.lock);
 		/* if we have nothing to wait for block */
 		if (r == -ENOENT) {

@@ -15,11 +15,15 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <trace/events/irq.h>
 
 #include "internals.h"
+<<<<<<< HEAD
 #ifdef CONFIG_MT_RT_THROTTLE_MON
 #include "mt_sched_mon.h"
 #endif
@@ -33,6 +37,8 @@
 #define MAX_THREAD_COUNT (3000)
 #endif
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * handle_bad_irq - handle spurious and unhandled irqs
@@ -144,6 +150,7 @@ void __irq_wake_thread(struct irq_desc *desc, struct irqaction *action)
 	wake_up_process(action->thread);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTPROF_CPUTIME) || defined(CONFIG_MT_RT_THROTTLE_MON)
 static void save_isr_info(unsigned int irq, struct irqaction *action,
 			  unsigned long long start, unsigned long long end)
@@ -205,11 +212,14 @@ static void save_isr_info(unsigned int irq, struct irqaction *action,
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 irqreturn_t
 handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 {
 	irqreturn_t retval = IRQ_NONE;
 	unsigned int flags = 0, irq = desc->irq_data.irq;
+<<<<<<< HEAD
 #if defined(CONFIG_MTPROF_CPUTIME) || defined(CONFIG_MT_RT_THROTTLE_MON)
 	unsigned long long t1, t2;
 #endif
@@ -229,6 +239,18 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 		trace_irq_handler_exit(irq, action, res);
 
 		if (WARN_ONCE(!irqs_disabled(), "irq %u handler %pF enabled interrupts\n",
+=======
+
+	/* action might have become NULL since we dropped the lock */
+	while (action) {
+		irqreturn_t res;
+
+		trace_irq_handler_entry(irq, action);
+		res = action->handler(irq, action->dev_id);
+		trace_irq_handler_exit(irq, action, res);
+
+		if (WARN_ONCE(!irqs_disabled(),"irq %u handler %pF enabled interrupts\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			      irq, action->handler))
 			local_irq_disable();
 
@@ -256,7 +278,11 @@ handle_irq_event_percpu(struct irq_desc *desc, struct irqaction *action)
 
 		retval |= res;
 		action = action->next;
+<<<<<<< HEAD
 	} while (action);
+=======
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	add_interrupt_randomness(irq, flags);
 

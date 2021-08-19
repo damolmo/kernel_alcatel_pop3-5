@@ -435,6 +435,10 @@ static int usbvision_v4l2_close(struct file *file)
 	usbvision_scratch_free(usbvision);
 
 	usbvision->user--;
+<<<<<<< HEAD
+=======
+	mutex_unlock(&usbvision->v4l2_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (power_on_at_open) {
 		/* power off in a little while
@@ -448,7 +452,10 @@ static int usbvision_v4l2_close(struct file *file)
 		usbvision_release(usbvision);
 		return 0;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&usbvision->v4l2_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	PDEBUG(DBG_IO, "success");
 	return 0;
@@ -1540,9 +1547,27 @@ static int usbvision_probe(struct usb_interface *intf,
 
 	if (usbvision_device_data[model].interface >= 0)
 		interface = &dev->actconfig->interface[usbvision_device_data[model].interface]->altsetting[0];
+<<<<<<< HEAD
 	else
 		interface = &dev->actconfig->interface[ifnum]->altsetting[0];
 	endpoint = &interface->endpoint[1].desc;
+=======
+	else if (ifnum < dev->actconfig->desc.bNumInterfaces)
+		interface = &dev->actconfig->interface[ifnum]->altsetting[0];
+	else {
+		dev_err(&intf->dev, "interface %d is invalid, max is %d\n",
+		    ifnum, dev->actconfig->desc.bNumInterfaces - 1);
+		return -ENODEV;
+	}
+
+	if (interface->desc.bNumEndpoints < 2) {
+		dev_err(&intf->dev, "interface %d has %d endpoints, but must"
+		    " have minimum 2\n", ifnum, interface->desc.bNumEndpoints);
+		return -ENODEV;
+	}
+	endpoint = &interface->endpoint[1].desc;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!usb_endpoint_xfer_isoc(endpoint)) {
 		dev_err(&intf->dev, "%s: interface %d. has non-ISO endpoint!\n",
 		    __func__, ifnum);
@@ -1583,7 +1608,18 @@ static int usbvision_probe(struct usb_interface *intf,
 	}
 
 	for (i = 0; i < usbvision->num_alt; i++) {
+<<<<<<< HEAD
 		u16 tmp = le16_to_cpu(uif->altsetting[i].endpoint[1].desc.
+=======
+		u16 tmp;
+
+		if (uif->altsetting[i].desc.bNumEndpoints < 2) {
+			usbvision_release(usbvision);
+			return -ENODEV;
+		}
+
+		tmp = le16_to_cpu(uif->altsetting[i].endpoint[1].desc.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				      wMaxPacketSize);
 		usbvision->alt_max_pkt_size[i] =
 			(tmp & 0x07ff) * (((tmp & 0x1800) >> 11) + 1);

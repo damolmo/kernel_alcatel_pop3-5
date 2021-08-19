@@ -29,7 +29,11 @@
 #define RC5_BIT_START		(1 * RC5_UNIT)
 #define RC5_BIT_END		(1 * RC5_UNIT)
 #define RC5X_SPACE		(4 * RC5_UNIT)
+<<<<<<< HEAD
 #define RC5_TRAILER		(10 * RC5_UNIT) /* In reality, approx 100 */
+=======
+#define RC5_TRAILER		(6 * RC5_UNIT) /* In reality, approx 100 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 enum rc5_state {
 	STATE_INACTIVE,

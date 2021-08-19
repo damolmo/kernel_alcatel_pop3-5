@@ -1975,11 +1975,14 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 
 	/* get sysinfo */
 	md->si = &cd->sysinfo;
+<<<<<<< HEAD
 	if (!md->si) {
 		dev_err(dev, "%s: Fail get sysinfo pointer from core p=%p\n",
 			__func__, md->si);
 		goto error_get_sysinfo;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rc = cyttsp4_setup_input_device(cd);
 	if (rc)
@@ -1989,8 +1992,11 @@ static int cyttsp4_mt_probe(struct cyttsp4 *cd)
 
 error_init_input:
 	input_free_device(md->input);
+<<<<<<< HEAD
 error_get_sysinfo:
 	input_set_drvdata(md->input, NULL);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 error_alloc_failed:
 	dev_err(dev, "%s failed.\n", __func__);
 	return rc;

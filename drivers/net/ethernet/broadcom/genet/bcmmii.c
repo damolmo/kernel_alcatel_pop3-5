@@ -167,6 +167,7 @@ void bcmgenet_mii_reset(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void bcmgenet_ephy_power_up(struct net_device *dev)
 {
 	struct bcmgenet_priv *priv = netdev_priv(dev);
@@ -201,6 +202,8 @@ static void bcmgenet_internal_phy_setup(struct net_device *dev)
 	bcmgenet_mii_reset(dev);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void bcmgenet_moca_phy_setup(struct bcmgenet_priv *priv)
 {
 	u32 reg;
@@ -244,7 +247,10 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
 
 		if (phy_is_internal(priv->phydev)) {
 			phy_name = "internal PHY";
+<<<<<<< HEAD
 			bcmgenet_internal_phy_setup(dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else if (priv->phy_interface == PHY_INTERFACE_MODE_MOCA) {
 			phy_name = "MoCA";
 			bcmgenet_moca_phy_setup(priv);

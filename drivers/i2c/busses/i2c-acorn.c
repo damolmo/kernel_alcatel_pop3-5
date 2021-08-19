@@ -83,6 +83,10 @@ static struct i2c_algo_bit_data ioc_data = {
 
 static struct i2c_adapter ioc_ops = {
 	.nr			= 0,
+<<<<<<< HEAD
+=======
+	.name			= "ioc",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.algo_data		= &ioc_data,
 };
 

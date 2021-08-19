@@ -492,8 +492,15 @@ static int i2c_s3c_irq_nextbyte(struct s3c24xx_i2c *i2c, unsigned long iicstat)
 					/* cannot do this, the controller
 					 * forces us to send a new START
 					 * when we change direction */
+<<<<<<< HEAD
 
 					s3c24xx_i2c_stop(i2c, -EINVAL);
+=======
+					dev_dbg(i2c->dev,
+						"missing START before write->read\n");
+					s3c24xx_i2c_stop(i2c, -EINVAL);
+					break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				}
 
 				goto retry_write;
@@ -1219,17 +1226,31 @@ static int s3c24xx_i2c_probe(struct platform_device *pdev)
 	i2c->adap.nr = i2c->pdata->bus_num;
 	i2c->adap.dev.of_node = pdev->dev.of_node;
 
+<<<<<<< HEAD
 	ret = i2c_add_numbered_adapter(&i2c->adap);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed to add bus to i2c core\n");
+=======
+	platform_set_drvdata(pdev, i2c);
+
+	pm_runtime_enable(&pdev->dev);
+
+	ret = i2c_add_numbered_adapter(&i2c->adap);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to add bus to i2c core\n");
+		pm_runtime_disable(&pdev->dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		s3c24xx_i2c_deregister_cpufreq(i2c);
 		clk_unprepare(i2c->clk);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, i2c);
 
 	pm_runtime_enable(&pdev->dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pm_runtime_enable(&i2c->adap.dev);
 
 	dev_info(&pdev->dev, "%s: S3C I2C adapter\n", dev_name(&i2c->adap.dev));

@@ -125,7 +125,10 @@ struct board_info {
 	struct resource *data_res;
 	struct resource	*addr_req;   /* resources requested */
 	struct resource *data_req;
+<<<<<<< HEAD
 	struct resource *irq_res;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	int		 irq_wake;
 
@@ -1297,11 +1300,16 @@ static int
 dm9000_open(struct net_device *dev)
 {
 	struct board_info *db = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned long irqflags = db->irq_res->flags & IRQF_TRIGGER_MASK;
+=======
+	unsigned int irq_flags = irq_get_trigger_type(dev->irq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (netif_msg_ifup(db))
 		dev_dbg(db->dev, "enabling %s\n", dev->name);
 
+<<<<<<< HEAD
 	/* If there is no IRQ type specified, default to something that
 	 * may work, and tell the user that this is a problem */
 
@@ -1312,6 +1320,15 @@ dm9000_open(struct net_device *dev)
 		dev_warn(db->dev, "WARNING: no IRQ resource flags set.\n");
 
 	irqflags |= IRQF_SHARED;
+=======
+	/* If there is no IRQ type specified, tell the user that this is a
+	 * problem
+	 */
+	if (irq_flags == IRQF_TRIGGER_NONE)
+		dev_warn(db->dev, "WARNING: no IRQ resource flags set.\n");
+
+	irq_flags |= IRQF_SHARED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* GPIO0 on pre-activate PHY, Reg 1F is not set by reset */
 	iow(db, DM9000_GPR, 0);	/* REG_1F bit0 activate phyxcer */
@@ -1320,7 +1337,11 @@ dm9000_open(struct net_device *dev)
 	/* Initialize DM9000 board */
 	dm9000_init_dm9000(dev);
 
+<<<<<<< HEAD
 	if (request_irq(dev->irq, dm9000_interrupt, irqflags, dev->name, dev))
+=======
+	if (request_irq(dev->irq, dm9000_interrupt, irq_flags, dev->name, dev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EAGAIN;
 	/* Now that we have an interrupt handler hooked up we can unmask
 	 * our interrupts
@@ -1460,15 +1481,33 @@ dm9000_probe(struct platform_device *pdev)
 
 	db->addr_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	db->data_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+<<<<<<< HEAD
 	db->irq_res  = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 
 	if (db->addr_res == NULL || db->data_res == NULL ||
 	    db->irq_res == NULL) {
 		dev_err(db->dev, "insufficient resources\n");
+=======
+
+	if (!db->addr_res || !db->data_res) {
+		dev_err(db->dev, "insufficient resources addr=%p data=%p\n",
+			db->addr_res, db->data_res);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENOENT;
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	ndev->irq = platform_get_irq(pdev, 0);
+	if (ndev->irq < 0) {
+		dev_err(db->dev, "interrupt resource unavailable: %d\n",
+			ndev->irq);
+		ret = ndev->irq;
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	db->irq_wake = platform_get_irq(pdev, 1);
 	if (db->irq_wake >= 0) {
 		dev_dbg(db->dev, "wakeup irq %d\n", db->irq_wake);
@@ -1530,7 +1569,10 @@ dm9000_probe(struct platform_device *pdev)
 
 	/* fill in parameters for net-dev structure */
 	ndev->base_addr = (unsigned long)db->io_addr;
+<<<<<<< HEAD
 	ndev->irq	= db->irq_res->start;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* ensure at least we have a default set of IO routines */
 	dm9000_set_io(db, iosize);

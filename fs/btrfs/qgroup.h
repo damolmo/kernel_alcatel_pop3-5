@@ -64,7 +64,12 @@ int btrfs_quota_disable(struct btrfs_trans_handle *trans,
 			struct btrfs_fs_info *fs_info);
 int btrfs_qgroup_rescan(struct btrfs_fs_info *fs_info);
 void btrfs_qgroup_rescan_resume(struct btrfs_fs_info *fs_info);
+<<<<<<< HEAD
 int btrfs_qgroup_wait_for_completion(struct btrfs_fs_info *fs_info);
+=======
+int btrfs_qgroup_wait_for_completion(struct btrfs_fs_info *fs_info,
+				     bool interruptible);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int btrfs_add_qgroup_relation(struct btrfs_trans_handle *trans,
 			      struct btrfs_fs_info *fs_info, u64 src, u64 dst);
 int btrfs_del_qgroup_relation(struct btrfs_trans_handle *trans,

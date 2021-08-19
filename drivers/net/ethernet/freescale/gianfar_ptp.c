@@ -314,11 +314,18 @@ static int ptp_gianfar_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	now = tmr_cnt_read(etsects);
 	now += delta;
 	tmr_cnt_write(etsects, now);
+<<<<<<< HEAD
 
 	spin_unlock_irqrestore(&etsects->lock, flags);
 
 	set_fipers(etsects);
 
+=======
+	set_fipers(etsects);
+
+	spin_unlock_irqrestore(&etsects->lock, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

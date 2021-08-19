@@ -50,13 +50,21 @@
 
 struct receiver {
 	struct hlist_node list;
+<<<<<<< HEAD
 	struct rcu_head rcu;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	canid_t can_id;
 	canid_t mask;
 	unsigned long matches;
 	void (*func)(struct sk_buff *, void *);
 	void *data;
 	char *ident;
+<<<<<<< HEAD
+=======
+	struct sock *sk;
+	struct rcu_head rcu;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 #define CAN_SFF_RCV_ARRAY_SZ (1 << CAN_SFF_ID_BITS)

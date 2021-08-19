@@ -272,7 +272,11 @@ long long ubifs_calc_available(const struct ubifs_info *c, int min_idx_lebs)
  */
 static int can_use_rp(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	if (uid_lte(current_fsuid(), c->rp_uid) || capable(CAP_SYS_RESOURCE) ||
+=======
+	if (uid_eq(current_fsuid(), c->rp_uid) || capable(CAP_SYS_RESOURCE) ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (!gid_eq(c->rp_gid, GLOBAL_ROOT_GID) && in_group_p(c->rp_gid)))
 		return 1;
 	return 0;
@@ -563,10 +567,13 @@ void ubifs_release_budget(struct ubifs_info *c, struct ubifs_budget_req *req)
 
 	ubifs_assert(c->bi.idx_growth >= 0);
 	ubifs_assert(c->bi.data_growth >= 0);
+<<<<<<< HEAD
 	if (c->bi.dd_growth < 0) {
 		ubifs_err("c->bi.dd_growth %lld\n", c->bi.dd_growth);
 		c->bi.dd_growth = 0;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ubifs_assert(c->bi.dd_growth >= 0);
 	ubifs_assert(c->bi.min_idx_lebs < c->main_lebs);
 	ubifs_assert(!(c->bi.idx_growth & 7));

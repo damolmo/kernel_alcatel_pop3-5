@@ -28,6 +28,7 @@
 #include <linux/iio/common/st_sensors.h>
 #include "st_pressure.h"
 
+<<<<<<< HEAD
 #define ST_PRESS_LSB_PER_MBAR			4096UL
 #define ST_PRESS_KPASCAL_NANO_SCALE		(100000000UL / \
 						 ST_PRESS_LSB_PER_MBAR)
@@ -37,6 +38,23 @@
 #define ST_PRESS_NUMBER_DATA_CHANNELS		1
 
 /* FULLSCALE */
+=======
+#define MCELSIUS_PER_CELSIUS			1000
+
+/* Default pressure sensitivity */
+#define ST_PRESS_LSB_PER_MBAR			4096UL
+#define ST_PRESS_KPASCAL_NANO_SCALE		(100000000UL / \
+						 ST_PRESS_LSB_PER_MBAR)
+
+/* Default temperature sensitivity */
+#define ST_PRESS_LSB_PER_CELSIUS		480UL
+#define ST_PRESS_MILLI_CELSIUS_OFFSET		42500UL
+
+#define ST_PRESS_NUMBER_DATA_CHANNELS		1
+
+/* FULLSCALE */
+#define ST_PRESS_FS_AVL_1100MB			1100
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_FS_AVL_1260MB			1260
 
 #define ST_PRESS_1_OUT_XL_ADDR			0x28
@@ -54,18 +72,32 @@
 #define ST_PRESS_LPS331AP_PW_MASK		0x80
 #define ST_PRESS_LPS331AP_FS_ADDR		0x23
 #define ST_PRESS_LPS331AP_FS_MASK		0x30
+<<<<<<< HEAD
 #define ST_PRESS_LPS331AP_FS_AVL_1260_VAL	0x00
 #define ST_PRESS_LPS331AP_FS_AVL_1260_GAIN	ST_PRESS_KPASCAL_NANO_SCALE
 #define ST_PRESS_LPS331AP_FS_AVL_TEMP_GAIN	ST_PRESS_CELSIUS_NANO_SCALE
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_LPS331AP_BDU_ADDR		0x20
 #define ST_PRESS_LPS331AP_BDU_MASK		0x04
 #define ST_PRESS_LPS331AP_DRDY_IRQ_ADDR		0x22
 #define ST_PRESS_LPS331AP_DRDY_IRQ_INT1_MASK	0x04
 #define ST_PRESS_LPS331AP_DRDY_IRQ_INT2_MASK	0x20
 #define ST_PRESS_LPS331AP_MULTIREAD_BIT		true
+<<<<<<< HEAD
 #define ST_PRESS_LPS331AP_TEMP_OFFSET		42500
 
 /* CUSTOM VALUES FOR LPS001WP SENSOR */
+=======
+
+/* CUSTOM VALUES FOR LPS001WP SENSOR */
+
+/* LPS001WP pressure resolution */
+#define ST_PRESS_LPS001WP_LSB_PER_MBAR		16UL
+/* LPS001WP temperature resolution */
+#define ST_PRESS_LPS001WP_LSB_PER_CELSIUS	64UL
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_LPS001WP_WAI_EXP		0xba
 #define ST_PRESS_LPS001WP_ODR_ADDR		0x20
 #define ST_PRESS_LPS001WP_ODR_MASK		0x30
@@ -74,6 +106,11 @@
 #define ST_PRESS_LPS001WP_ODR_AVL_13HZ_VAL	0x03
 #define ST_PRESS_LPS001WP_PW_ADDR		0x20
 #define ST_PRESS_LPS001WP_PW_MASK		0x40
+<<<<<<< HEAD
+=======
+#define ST_PRESS_LPS001WP_FS_AVL_PRESS_GAIN \
+	(100000000UL / ST_PRESS_LPS001WP_LSB_PER_MBAR)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_LPS001WP_BDU_ADDR		0x20
 #define ST_PRESS_LPS001WP_BDU_MASK		0x04
 #define ST_PRESS_LPS001WP_MULTIREAD_BIT		true
@@ -90,18 +127,24 @@
 #define ST_PRESS_LPS25H_ODR_AVL_25HZ_VAL	0x04
 #define ST_PRESS_LPS25H_PW_ADDR			0x20
 #define ST_PRESS_LPS25H_PW_MASK			0x80
+<<<<<<< HEAD
 #define ST_PRESS_LPS25H_FS_ADDR			0x00
 #define ST_PRESS_LPS25H_FS_MASK			0x00
 #define ST_PRESS_LPS25H_FS_AVL_1260_VAL		0x00
 #define ST_PRESS_LPS25H_FS_AVL_1260_GAIN	ST_PRESS_KPASCAL_NANO_SCALE
 #define ST_PRESS_LPS25H_FS_AVL_TEMP_GAIN	ST_PRESS_CELSIUS_NANO_SCALE
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_LPS25H_BDU_ADDR		0x20
 #define ST_PRESS_LPS25H_BDU_MASK		0x04
 #define ST_PRESS_LPS25H_DRDY_IRQ_ADDR		0x23
 #define ST_PRESS_LPS25H_DRDY_IRQ_INT1_MASK	0x01
 #define ST_PRESS_LPS25H_DRDY_IRQ_INT2_MASK	0x10
 #define ST_PRESS_LPS25H_MULTIREAD_BIT		true
+<<<<<<< HEAD
 #define ST_PRESS_LPS25H_TEMP_OFFSET		42500
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define ST_PRESS_LPS25H_OUT_XL_ADDR		0x28
 #define ST_TEMP_LPS25H_OUT_L_ADDR		0x2b
 
@@ -153,7 +196,13 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
 			.storagebits = 16,
 			.endianness = IIO_LE,
 		},
+<<<<<<< HEAD
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+=======
+		.info_mask_separate =
+			BIT(IIO_CHAN_INFO_RAW) |
+			BIT(IIO_CHAN_INFO_SCALE),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.modified = 0,
 	},
 	{
@@ -169,7 +218,11 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
 		},
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) |
+<<<<<<< HEAD
 			BIT(IIO_CHAN_INFO_OFFSET),
+=======
+			BIT(IIO_CHAN_INFO_SCALE),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.modified = 0,
 	},
 	IIO_CHAN_SOFT_TIMESTAMP(1)
@@ -203,11 +256,22 @@ static const struct st_sensors st_press_sensors[] = {
 			.addr = ST_PRESS_LPS331AP_FS_ADDR,
 			.mask = ST_PRESS_LPS331AP_FS_MASK,
 			.fs_avl = {
+<<<<<<< HEAD
 				[0] = {
 					.num = ST_PRESS_FS_AVL_1260MB,
 					.value = ST_PRESS_LPS331AP_FS_AVL_1260_VAL,
 					.gain = ST_PRESS_LPS331AP_FS_AVL_1260_GAIN,
 					.gain2 = ST_PRESS_LPS331AP_FS_AVL_TEMP_GAIN,
+=======
+				/*
+				 * Pressure and temperature sensitivity values
+				 * as defined in table 3 of LPS331AP datasheet.
+				 */
+				[0] = {
+					.num = ST_PRESS_FS_AVL_1260MB,
+					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
+					.gain2 = ST_PRESS_LSB_PER_CELSIUS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				},
 			},
 		},
@@ -246,7 +310,21 @@ static const struct st_sensors st_press_sensors[] = {
 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
 		},
 		.fs = {
+<<<<<<< HEAD
 			.addr = 0,
+=======
+			.fs_avl = {
+				/*
+				 * Pressure and temperature resolution values
+				 * as defined in table 3 of LPS001WP datasheet.
+				 */
+				[0] = {
+					.num = ST_PRESS_FS_AVL_1100MB,
+					.gain = ST_PRESS_LPS001WP_FS_AVL_PRESS_GAIN,
+					.gain2 = ST_PRESS_LPS001WP_LSB_PER_CELSIUS,
+				},
+			},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		},
 		.bdu = {
 			.addr = ST_PRESS_LPS001WP_BDU_ADDR,
@@ -282,6 +360,7 @@ static const struct st_sensors st_press_sensors[] = {
 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
 		},
 		.fs = {
+<<<<<<< HEAD
 			.addr = ST_PRESS_LPS25H_FS_ADDR,
 			.mask = ST_PRESS_LPS25H_FS_MASK,
 			.fs_avl = {
@@ -290,6 +369,17 @@ static const struct st_sensors st_press_sensors[] = {
 					.value = ST_PRESS_LPS25H_FS_AVL_1260_VAL,
 					.gain = ST_PRESS_LPS25H_FS_AVL_1260_GAIN,
 					.gain2 = ST_PRESS_LPS25H_FS_AVL_TEMP_GAIN,
+=======
+			.fs_avl = {
+				/*
+				 * Pressure and temperature sensitivity values
+				 * as defined in table 3 of LPS25H datasheet.
+				 */
+				[0] = {
+					.num = ST_PRESS_FS_AVL_1260MB,
+					.gain = ST_PRESS_KPASCAL_NANO_SCALE,
+					.gain2 = ST_PRESS_LSB_PER_CELSIUS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				},
 			},
 		},
@@ -343,6 +433,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
 
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
+<<<<<<< HEAD
 		*val = 0;
 
 		switch (ch->type) {
@@ -352,17 +443,37 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
 		case IIO_TEMP:
 			*val2 = pdata->current_fullscale->gain2;
 			break;
+=======
+		switch (ch->type) {
+		case IIO_PRESSURE:
+			*val = 0;
+			*val2 = pdata->current_fullscale->gain;
+			return IIO_VAL_INT_PLUS_NANO;
+		case IIO_TEMP:
+			*val = MCELSIUS_PER_CELSIUS;
+			*val2 = pdata->current_fullscale->gain2;
+			return IIO_VAL_FRACTIONAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		default:
 			err = -EINVAL;
 			goto read_error;
 		}
 
+<<<<<<< HEAD
 		return IIO_VAL_INT_PLUS_NANO;
 	case IIO_CHAN_INFO_OFFSET:
 		switch (ch->type) {
 		case IIO_TEMP:
 			*val = 425;
 			*val2 = 10;
+=======
+	case IIO_CHAN_INFO_OFFSET:
+		switch (ch->type) {
+		case IIO_TEMP:
+			*val = ST_PRESS_MILLI_CELSIUS_OFFSET *
+			       pdata->current_fullscale->gain2;
+			*val2 = MCELSIUS_PER_CELSIUS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		default:
 			err = -EINVAL;

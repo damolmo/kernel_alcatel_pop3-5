@@ -1690,6 +1690,11 @@ static int dcb_doit(struct sk_buff *skb, struct nlmsghdr *nlh)
 	fn = &reply_funcs[dcb->cmd];
 	if (!fn->cb)
 		return -EOPNOTSUPP;
+<<<<<<< HEAD
+=======
+	if (fn->type == RTM_SETDCB && !netlink_capable(skb, CAP_NET_ADMIN))
+		return -EPERM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!tb[DCB_ATTR_IFNAME])
 		return -EINVAL;
@@ -1728,7 +1733,11 @@ static struct dcb_app_type *dcb_app_lookup(const struct dcb_app *app,
 		if (itr->app.selector == app->selector &&
 		    itr->app.protocol == app->protocol &&
 		    itr->ifindex == ifindex &&
+<<<<<<< HEAD
 		    (!prio || itr->app.priority == prio))
+=======
+		    ((prio == -1) || itr->app.priority == prio))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return itr;
 	}
 
@@ -1763,7 +1772,12 @@ u8 dcb_getapp(struct net_device *dev, struct dcb_app *app)
 	u8 prio = 0;
 
 	spin_lock_bh(&dcb_lock);
+<<<<<<< HEAD
 	if ((itr = dcb_app_lookup(app, dev->ifindex, 0)))
+=======
+	itr = dcb_app_lookup(app, dev->ifindex, -1);
+	if (itr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		prio = itr->app.priority;
 	spin_unlock_bh(&dcb_lock);
 
@@ -1791,7 +1805,12 @@ int dcb_setapp(struct net_device *dev, struct dcb_app *new)
 
 	spin_lock_bh(&dcb_lock);
 	/* Search for existing match and replace */
+<<<<<<< HEAD
 	if ((itr = dcb_app_lookup(new, dev->ifindex, 0))) {
+=======
+	itr = dcb_app_lookup(new, dev->ifindex, -1);
+	if (itr) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (new->priority)
 			itr->app.priority = new->priority;
 		else {
@@ -1824,7 +1843,12 @@ u8 dcb_ieee_getapp_mask(struct net_device *dev, struct dcb_app *app)
 	u8 prio = 0;
 
 	spin_lock_bh(&dcb_lock);
+<<<<<<< HEAD
 	if ((itr = dcb_app_lookup(app, dev->ifindex, 0)))
+=======
+	itr = dcb_app_lookup(app, dev->ifindex, -1);
+	if (itr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		prio |= 1 << itr->app.priority;
 	spin_unlock_bh(&dcb_lock);
 

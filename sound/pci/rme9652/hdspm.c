@@ -137,6 +137,10 @@
 #include <linux/pci.h>
 #include <linux/math64.h>
 #include <asm/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <sound/core.h>
 #include <sound/control.h>
@@ -1602,6 +1606,12 @@ static void hdspm_set_dds_value(struct hdspm *hdspm, int rate)
 {
 	u64 n;
 
+<<<<<<< HEAD
+=======
+	if (snd_BUG_ON(rate <= 0))
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rate >= 112000)
 		rate /= 4;
 	else if (rate >= 56000)
@@ -2220,6 +2230,11 @@ static int hdspm_get_system_sample_rate(struct hdspm *hdspm)
 		} else {
 			/* slave mode, return external sample rate */
 			rate = hdspm_external_sample_rate(hdspm);
+<<<<<<< HEAD
+=======
+			if (!rate)
+				rate = hdspm->system_sample_rate;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -2265,8 +2280,16 @@ static int snd_hdspm_put_system_sample_rate(struct snd_kcontrol *kcontrol,
 					    ucontrol)
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 
 	hdspm_set_dds_value(hdspm, ucontrol->value.enumerated.item[0]);
+=======
+	int rate = ucontrol->value.integer.value[0];
+
+	if (rate < 27000 || rate > 207000)
+		return -EINVAL;
+	hdspm_set_dds_value(hdspm, ucontrol->value.integer.value[0]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -4465,7 +4488,11 @@ static int snd_hdspm_get_tco_word_term(struct snd_kcontrol *kcontrol,
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	ucontrol->value.enumerated.item[0] = hdspm->tco->term;
+=======
+	ucontrol->value.integer.value[0] = hdspm->tco->term;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -4476,8 +4503,13 @@ static int snd_hdspm_put_tco_word_term(struct snd_kcontrol *kcontrol,
 {
 	struct hdspm *hdspm = snd_kcontrol_chip(kcontrol);
 
+<<<<<<< HEAD
 	if (hdspm->tco->term != ucontrol->value.enumerated.item[0]) {
 		hdspm->tco->term = ucontrol->value.enumerated.item[0];
+=======
+	if (hdspm->tco->term != ucontrol->value.integer.value[0]) {
+		hdspm->tco->term = ucontrol->value.integer.value[0];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		hdspm_tco_write(hdspm);
 
@@ -5716,6 +5748,7 @@ static int snd_hdspm_channel_info(struct snd_pcm_substream *substream,
 		struct snd_pcm_channel_info *info)
 {
 	struct hdspm *hdspm = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		if (snd_BUG_ON(info->channel >= hdspm->max_channels_out)) {
@@ -5750,6 +5783,45 @@ static int snd_hdspm_channel_info(struct snd_pcm_substream *substream,
 		}
 
 		info->offset = hdspm->channel_map_in[info->channel] *
+=======
+	unsigned int channel = info->channel;
+
+	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+		if (snd_BUG_ON(channel >= hdspm->max_channels_out)) {
+			dev_info(hdspm->card->dev,
+				 "snd_hdspm_channel_info: output channel out of range (%d)\n",
+				 channel);
+			return -EINVAL;
+		}
+
+		channel = array_index_nospec(channel, hdspm->max_channels_out);
+		if (hdspm->channel_map_out[channel] < 0) {
+			dev_info(hdspm->card->dev,
+				 "snd_hdspm_channel_info: output channel %d mapped out\n",
+				 channel);
+			return -EINVAL;
+		}
+
+		info->offset = hdspm->channel_map_out[channel] *
+			HDSPM_CHANNEL_BUFFER_BYTES;
+	} else {
+		if (snd_BUG_ON(channel >= hdspm->max_channels_in)) {
+			dev_info(hdspm->card->dev,
+				 "snd_hdspm_channel_info: input channel out of range (%d)\n",
+				 channel);
+			return -EINVAL;
+		}
+
+		channel = array_index_nospec(channel, hdspm->max_channels_in);
+		if (hdspm->channel_map_in[channel] < 0) {
+			dev_info(hdspm->card->dev,
+				 "snd_hdspm_channel_info: input channel %d mapped out\n",
+				 channel);
+			return -EINVAL;
+		}
+
+		info->offset = hdspm->channel_map_in[channel] *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			HDSPM_CHANNEL_BUFFER_BYTES;
 	}
 
@@ -7006,7 +7078,12 @@ static int snd_hdspm_free(struct hdspm * hdspm)
 	if (hdspm->port)
 		pci_release_regions(hdspm->pci);
 
+<<<<<<< HEAD
 	pci_disable_device(hdspm->pci);
+=======
+	if (pci_is_enabled(hdspm->pci))
+		pci_disable_device(hdspm->pci);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

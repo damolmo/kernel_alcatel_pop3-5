@@ -1063,7 +1063,11 @@ static int cmd_load_pcap(char *file)
 
 static int cmd_load(char *arg)
 {
+<<<<<<< HEAD
 	char *subcmd, *cont, *tmp = strdup(arg);
+=======
+	char *subcmd, *cont = NULL, *tmp = strdup(arg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret = CMD_OK;
 
 	subcmd = strtok_r(tmp, " ", &cont);
@@ -1073,7 +1077,14 @@ static int cmd_load(char *arg)
 		bpf_reset();
 		bpf_reset_breakpoints();
 
+<<<<<<< HEAD
 		ret = cmd_load_bpf(cont);
+=======
+		if (!cont)
+			ret = CMD_ERR;
+		else
+			ret = cmd_load_bpf(cont);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (matches(subcmd, "pcap") == 0) {
 		ret = cmd_load_pcap(cont);
 	} else {

@@ -41,6 +41,20 @@ void nfs_mark_delegation_referenced(struct nfs_delegation *delegation)
 	set_bit(NFS_DELEGATION_REFERENCED, &delegation->flags);
 }
 
+<<<<<<< HEAD
+=======
+static bool
+nfs4_is_valid_delegation(const struct nfs_delegation *delegation,
+		fmode_t flags)
+{
+	if (delegation != NULL && (delegation->type & flags) == flags &&
+	    !test_bit(NFS_DELEGATION_REVOKED, &delegation->flags) &&
+	    !test_bit(NFS_DELEGATION_RETURNING, &delegation->flags))
+		return true;
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int
 nfs4_do_check_delegation(struct inode *inode, fmode_t flags, bool mark)
 {
@@ -50,8 +64,12 @@ nfs4_do_check_delegation(struct inode *inode, fmode_t flags, bool mark)
 	flags &= FMODE_READ|FMODE_WRITE;
 	rcu_read_lock();
 	delegation = rcu_dereference(NFS_I(inode)->delegation);
+<<<<<<< HEAD
 	if (delegation != NULL && (delegation->type & flags) == flags &&
 	    !test_bit(NFS_DELEGATION_RETURNING, &delegation->flags)) {
+=======
+	if (nfs4_is_valid_delegation(delegation, flags)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (mark)
 			nfs_mark_delegation_referenced(delegation);
 		ret = 1;
@@ -81,7 +99,11 @@ int nfs4_check_delegation(struct inode *inode, fmode_t flags)
 	return nfs4_do_check_delegation(inode, flags, false);
 }
 
+<<<<<<< HEAD
 static int nfs_delegation_claim_locks(struct nfs_open_context *ctx, struct nfs4_state *state, const nfs4_stateid *stateid)
+=======
+static int nfs_delegation_claim_locks(struct nfs4_state *state, const nfs4_stateid *stateid)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inode *inode = state->inode;
 	struct file_lock *fl;
@@ -95,7 +117,11 @@ static int nfs_delegation_claim_locks(struct nfs_open_context *ctx, struct nfs4_
 	for (fl = inode->i_flock; fl != NULL; fl = fl->fl_next) {
 		if (!(fl->fl_flags & (FL_POSIX|FL_FLOCK)))
 			continue;
+<<<<<<< HEAD
 		if (nfs_file_open_context(fl->fl_file) != ctx)
+=======
+		if (nfs_file_open_context(fl->fl_file)->state != state)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		spin_unlock(&inode->i_lock);
 		status = nfs4_lock_delegation_recall(fl, state, stateid);
@@ -137,7 +163,11 @@ again:
 		seq = raw_seqcount_begin(&sp->so_reclaim_seqcount);
 		err = nfs4_open_delegation_recall(ctx, state, stateid);
 		if (!err)
+<<<<<<< HEAD
 			err = nfs_delegation_claim_locks(ctx, state, stateid);
+=======
+			err = nfs_delegation_claim_locks(state, stateid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!err && read_seqcount_retry(&sp->so_reclaim_seqcount, seq))
 			err = -EAGAIN;
 		mutex_unlock(&sp->so_delegreturn_mutex);
@@ -854,7 +884,11 @@ bool nfs4_copy_delegation_stateid(nfs4_stateid *dst, struct inode *inode,
 	flags &= FMODE_READ|FMODE_WRITE;
 	rcu_read_lock();
 	delegation = rcu_dereference(nfsi->delegation);
+<<<<<<< HEAD
 	ret = (delegation != NULL && (delegation->type & flags) == flags);
+=======
+	ret = nfs4_is_valid_delegation(delegation, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		nfs4_stateid_copy(dst, &delegation->stateid);
 		nfs_mark_delegation_referenced(delegation);

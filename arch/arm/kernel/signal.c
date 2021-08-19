@@ -14,6 +14,10 @@
 #include <linux/uaccess.h>
 #include <linux/tracehook.h>
 #include <linux/uprobes.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscalls.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/elf.h>
 #include <asm/cacheflush.h>
@@ -141,6 +145,10 @@ struct rt_sigframe {
 
 static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 {
+<<<<<<< HEAD
+=======
+	struct sigcontext context;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct aux_sigframe __user *aux;
 	sigset_t set;
 	int err;
@@ -149,6 +157,7 @@ static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 	if (err == 0)
 		set_current_blocked(&set);
 
+<<<<<<< HEAD
 	__get_user_error(regs->ARM_r0, &sf->uc.uc_mcontext.arm_r0, err);
 	__get_user_error(regs->ARM_r1, &sf->uc.uc_mcontext.arm_r1, err);
 	__get_user_error(regs->ARM_r2, &sf->uc.uc_mcontext.arm_r2, err);
@@ -166,6 +175,28 @@ static int restore_sigframe(struct pt_regs *regs, struct sigframe __user *sf)
 	__get_user_error(regs->ARM_lr, &sf->uc.uc_mcontext.arm_lr, err);
 	__get_user_error(regs->ARM_pc, &sf->uc.uc_mcontext.arm_pc, err);
 	__get_user_error(regs->ARM_cpsr, &sf->uc.uc_mcontext.arm_cpsr, err);
+=======
+	err |= __copy_from_user(&context, &sf->uc.uc_mcontext, sizeof(context));
+	if (err == 0) {
+		regs->ARM_r0 = context.arm_r0;
+		regs->ARM_r1 = context.arm_r1;
+		regs->ARM_r2 = context.arm_r2;
+		regs->ARM_r3 = context.arm_r3;
+		regs->ARM_r4 = context.arm_r4;
+		regs->ARM_r5 = context.arm_r5;
+		regs->ARM_r6 = context.arm_r6;
+		regs->ARM_r7 = context.arm_r7;
+		regs->ARM_r8 = context.arm_r8;
+		regs->ARM_r9 = context.arm_r9;
+		regs->ARM_r10 = context.arm_r10;
+		regs->ARM_fp = context.arm_fp;
+		regs->ARM_ip = context.arm_ip;
+		regs->ARM_sp = context.arm_sp;
+		regs->ARM_lr = context.arm_lr;
+		regs->ARM_pc = context.arm_pc;
+		regs->ARM_cpsr = context.arm_cpsr;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err |= !valid_user_regs(regs);
 
@@ -191,7 +222,11 @@ asmlinkage int sys_sigreturn(struct pt_regs *regs)
 	struct sigframe __user *frame;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Since we stacked the signal on a 64-bit boundary,
@@ -221,7 +256,11 @@ asmlinkage int sys_rt_sigreturn(struct pt_regs *regs)
 	struct rt_sigframe __user *frame;
 
 	/* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Since we stacked the signal on a 64-bit boundary,
@@ -354,12 +393,26 @@ setup_return(struct pt_regs *regs, struct ksignal *ksig,
 		 */
 		thumb = handler & 1;
 
+<<<<<<< HEAD
 #if __LINUX_ARM_ARCH__ >= 7
 		/*
 		 * Clear the If-Then Thumb-2 execution state
 		 * ARM spec requires this to be all 000s in ARM mode
 		 * Snapdragon S4/Krait misbehaves on a Thumb=>ARM
 		 * signal transition without this.
+=======
+#if __LINUX_ARM_ARCH__ >= 6
+		/*
+		 * Clear the If-Then Thumb-2 execution state.  ARM spec
+		 * requires this to be all 000s in ARM mode.  Snapdragon
+		 * S4/Krait misbehaves on a Thumb=>ARM signal transition
+		 * without this.
+		 *
+		 * We must do this whenever we are running on a Thumb-2
+		 * capable CPU, which includes ARMv6T2.  However, we elect
+		 * to do this whenever we're on an ARMv6 or later CPU for
+		 * simplicity.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 */
 		cpsr &= ~PSR_IT_MASK;
 #endif
@@ -634,3 +687,12 @@ struct page *get_signal_page(void)
 
 	return page;
 }
+<<<<<<< HEAD
+=======
+
+/* Defer to generic check */
+asmlinkage void addr_limit_check_failed(void)
+{
+	addr_limit_user_check();
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

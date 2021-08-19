@@ -492,23 +492,37 @@ static void acpi_global_event_handler(u32 event_type, acpi_handle device,
 static int get_status(u32 index, acpi_event_status *status,
 		      acpi_handle *handle)
 {
+<<<<<<< HEAD
 	int result = 0;
 
 	if (index >= num_gpes + ACPI_NUM_FIXED_EVENTS)
 		goto end;
+=======
+	int result;
+
+	if (index >= num_gpes + ACPI_NUM_FIXED_EVENTS)
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (index < num_gpes) {
 		result = acpi_get_gpe_device(index, handle);
 		if (result) {
 			ACPI_EXCEPTION((AE_INFO, AE_NOT_FOUND,
 					"Invalid GPE 0x%x", index));
+<<<<<<< HEAD
 			goto end;
+=======
+			return result;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		result = acpi_get_gpe_status(*handle, index, status);
 	} else if (index < (num_gpes + ACPI_NUM_FIXED_EVENTS))
 		result = acpi_get_event_status(index - num_gpes, status);
 
+<<<<<<< HEAD
 end:
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return result;
 }
 
@@ -714,13 +728,21 @@ static void __exit interrupt_stats_exit(void)
 }
 
 static ssize_t
+<<<<<<< HEAD
 acpi_show_profile(struct device *dev, struct device_attribute *attr,
+=======
+acpi_show_profile(struct kobject *kobj, struct kobj_attribute *attr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		  char *buf)
 {
 	return sprintf(buf, "%d\n", acpi_gbl_FADT.preferred_profile);
 }
 
+<<<<<<< HEAD
 static const struct device_attribute pm_profile_attr =
+=======
+static const struct kobj_attribute pm_profile_attr =
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__ATTR(pm_profile, S_IRUGO, acpi_show_profile, NULL);
 
 static ssize_t hotplug_enabled_show(struct kobject *kobj,
@@ -769,8 +791,15 @@ void acpi_sysfs_add_hotplug_profile(struct acpi_hotplug_profile *hotplug,
 
 	error = kobject_init_and_add(&hotplug->kobj,
 		&acpi_hotplug_profile_ktype, hotplug_kobj, "%s", name);
+<<<<<<< HEAD
 	if (error)
 		goto err_out;
+=======
+	if (error) {
+		kobject_put(&hotplug->kobj);
+		goto err_out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	kobject_uevent(&hotplug->kobj, KOBJ_ADD);
 	return;

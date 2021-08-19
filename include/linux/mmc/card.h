@@ -60,7 +60,10 @@ struct mmc_ext_csd {
 	u8			packed_event_en;
 	unsigned int		part_time;		/* Units: ms */
 	unsigned int		sa_timeout;		/* Units: 100ns */
+<<<<<<< HEAD
 	unsigned int		sleep_notification_time;	/* Units: 10us */ //20160112 liujunting add for MTK patch P13
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int		generic_cmd6_time;	/* Units: 10ms */
 	unsigned int            power_off_longtime;     /* Units: ms */
 	u8			power_off_notification;	/* state */
@@ -115,6 +118,12 @@ struct mmc_ext_csd {
 	u8			raw_pwr_cl_ddr_200_360;	/* 253 */
 	u8			raw_bkops_status;	/* 246 */
 	u8			raw_sectors[4];		/* 212 - 4 bytes */
+<<<<<<< HEAD
+=======
+	u8			pre_eol_info;		/* 267 */
+	u8			device_life_time_est_typ_a;	/* 268 */
+	u8			device_life_time_est_typ_b;	/* 269 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned int            feature_support;
 #define MMC_DISCARD_FEATURE	BIT(0)                  /* CMD38 feature */
@@ -238,6 +247,7 @@ struct mmc_part {
 #define MMC_BLK_DATA_AREA_GP	(1<<2)
 #define MMC_BLK_DATA_AREA_RPMB	(1<<3)
 };
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #define BKOPS_NUM_OF_SEVERITY_LEVELS 4
 struct mmc_bkops_stats {
@@ -292,6 +302,9 @@ struct mmc_bkops_info {
 #define BKOPS_SIZE_PERCENTAGE_TO_QUEUE_DELAYED_WORK 0	/* 1% */
 };
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * MMC device
  */
@@ -312,6 +325,7 @@ struct mmc_card {
 #define MMC_CARD_SDXC		(1<<3)		/* card is SDXC */
 #define MMC_CARD_REMOVED	(1<<4)		/* card has been removed */
 #define MMC_STATE_DOING_BKOPS	(1<<5)		/* card is doing BKOPS */
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA	/* maya is 1<<11 */
 #define MMC_STATE_NEED_BKOPS	(1<<12)	/* card needs to do BKOPS */
 #endif
@@ -320,6 +334,9 @@ struct mmc_card {
 #endif
 #define MMC_STATE_SUSPENDED	(1<<6)		/* card is suspended */
 #define MMC_STATE_SLEEP     (1<<9)      /*card is sleep */
+=======
+#define MMC_STATE_SUSPENDED	(1<<6)		/* card is suspended */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int		quirks; 	/* card quirks */
 #define MMC_QUIRK_LENIENT_FN0	(1<<0)		/* allow SDIO FN0 writes outside of the VS CCCR range */
 #define MMC_QUIRK_BLKSZ_FOR_BYTE_MODE (1<<1)	/* use func->cur_blksize */
@@ -336,10 +353,13 @@ struct mmc_card {
 #define MMC_QUIRK_LONG_READ_TIME (1<<9)		/* Data read time > CSD says */
 #define MMC_QUIRK_SEC_ERASE_TRIM_BROKEN (1<<10)	/* Skip secure for erase/trim */
 #define MMC_QUIRK_BROKEN_IRQ_POLLING	(1<<11)	/* Polling SDIO_CCCR_INTx could create a fake interrupt */
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_EMMC_CACHE
 #define MMC_QUIRK_DISABLE_CACHE     (1<<12) /* eMMC cache feature */
 #endif
 #define MMC_QUIRK_DISABLE_SNO       (1<<13)     /* disable sleep notifation, this may cause card busy long time on some eMMC*/
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unsigned int		erase_size;	/* erase size in sectors */
  	unsigned int		erase_shift;	/* if erase unit is power 2 */
@@ -371,9 +391,12 @@ struct mmc_card {
 	struct dentry		*debugfs_root;
 	struct mmc_part	part[MMC_NUM_PHY_PARTITION]; /* physical partitions */
 	unsigned int    nr_parts;
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	struct mmc_bkops_info bkops_info;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -491,9 +514,12 @@ static inline void __maybe_unused remove_quirk(struct mmc_card *card, int data)
 #define mmc_card_ext_capacity(c) ((c)->state & MMC_CARD_SDXC)
 #define mmc_card_removed(c)	((c) && ((c)->state & MMC_CARD_REMOVED))
 #define mmc_card_doing_bkops(c)	((c)->state & MMC_STATE_DOING_BKOPS)
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #define mmc_card_need_bkops(c)	((c)->state & MMC_STATE_NEED_BKOPS)
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define mmc_card_suspended(c)	((c)->state & MMC_STATE_SUSPENDED)
 
 #define mmc_card_set_present(c)	((c)->state |= MMC_STATE_PRESENT)
@@ -503,6 +529,7 @@ static inline void __maybe_unused remove_quirk(struct mmc_card *card, int data)
 #define mmc_card_set_removed(c) ((c)->state |= MMC_CARD_REMOVED)
 #define mmc_card_set_doing_bkops(c)	((c)->state |= MMC_STATE_DOING_BKOPS)
 #define mmc_card_clr_doing_bkops(c)	((c)->state &= ~MMC_STATE_DOING_BKOPS)
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 #define mmc_card_set_need_bkops(c)	((c)->state |= MMC_STATE_NEED_BKOPS)
 #define mmc_card_clr_need_bkops(c)	((c)->state &= ~MMC_STATE_NEED_BKOPS)
@@ -513,6 +540,11 @@ static inline void __maybe_unused remove_quirk(struct mmc_card *card, int data)
 #define mmc_card_is_sleep(c)      ((c)->state & MMC_STATE_SLEEP)
 #define mmc_card_set_sleep(c)     ((c)->state |= MMC_STATE_SLEEP)
 #define mmc_card_clr_sleep(c)     ((c)->state &= ~MMC_STATE_SLEEP)
+=======
+#define mmc_card_set_suspended(c) ((c)->state |= MMC_STATE_SUSPENDED)
+#define mmc_card_clr_suspended(c) ((c)->state &= ~MMC_STATE_SUSPENDED)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Quirk add/remove for MMC products.
  */

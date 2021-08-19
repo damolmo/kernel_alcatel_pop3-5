@@ -123,4 +123,8 @@ CPU_LE( lsr	tmp2, tmp2, tmp1 )	/* Shift (tmp1 & 63).  */
 	csinv	data1, data1, xzr, le
 	csel	data2, data2, data2a, le
 	b	.Lrealigned
+<<<<<<< HEAD
 ENDPROC(strlen)
+=======
+ENDPIPROC(strlen)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -45,10 +45,17 @@ static ssize_t power_supply_show_property(struct device *dev,
 					  char *buf) {
 	static char *type_text[] = {
 		"Unknown", "Battery", "UPS", "Mains", "USB",
+<<<<<<< HEAD
 		"USB_DCP", "USB_CDP", "USB_ACA", "Wireless"
 	};
 	static char *status_text[] = {
 		"Unknown", "Charging", "Discharging", "Not charging", "Full", "Cmd discharging"
+=======
+		"USB_DCP", "USB_CDP", "USB_ACA"
+	};
+	static char *status_text[] = {
+		"Unknown", "Charging", "Discharging", "Not charging", "Full"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	};
 	static char *charge_type[] = {
 		"Unknown", "N/A", "Trickle", "Fast"
@@ -206,6 +213,7 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(charge_enabled),
 	/* Local extensions of type int64_t */
 	POWER_SUPPLY_ATTR(charge_counter_ext),
+<<<<<<< HEAD
 	/* 20100723 James Lo */
 	POWER_SUPPLY_ATTR(batt_vol),
 	POWER_SUPPLY_ATTR(batt_temp),
@@ -223,6 +231,8 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(present_smb),
 	/* ADB CMD Discharging */
 	POWER_SUPPLY_ATTR(adjust_power),
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Properties of type `const char *' */
 	POWER_SUPPLY_ATTR(model_name),
 	POWER_SUPPLY_ATTR(manufacturer),

@@ -612,7 +612,11 @@ static inline int mthca_poll_one(struct mthca_dev *dev,
 			entry->opcode    = IB_WC_BIND_MW;
 			break;
 		default:
+<<<<<<< HEAD
 			entry->opcode    = MTHCA_OPCODE_INVALID;
+=======
+			entry->opcode = 0xFF;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 	} else {
@@ -811,8 +815,15 @@ int mthca_init_cq(struct mthca_dev *dev, int nent,
 	}
 
 	mailbox = mthca_alloc_mailbox(dev, GFP_KERNEL);
+<<<<<<< HEAD
 	if (IS_ERR(mailbox))
 		goto err_out_arm;
+=======
+	if (IS_ERR(mailbox)) {
+		err = PTR_ERR(mailbox);
+		goto err_out_arm;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cq_context = mailbox->buf;
 
@@ -854,9 +865,15 @@ int mthca_init_cq(struct mthca_dev *dev, int nent,
 	}
 
 	spin_lock_irq(&dev->cq_table.lock);
+<<<<<<< HEAD
 	if (mthca_array_set(&dev->cq_table.cq,
 			    cq->cqn & (dev->limits.num_cqs - 1),
 			    cq)) {
+=======
+	err = mthca_array_set(&dev->cq_table.cq,
+			      cq->cqn & (dev->limits.num_cqs - 1), cq);
+	if (err) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock_irq(&dev->cq_table.lock);
 		goto err_out_free_mr;
 	}

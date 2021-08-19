@@ -328,7 +328,11 @@ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =  {
  */
 
 /**
+<<<<<<< HEAD
  * drm_gem_prime_export - helper library implementation of the export callback
+=======
+ * drm_gem_prime_export - helper library implemention of the export callback
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @dev: drm_device to export from
  * @obj: GEM object to export
  * @flags: flags like DRM_CLOEXEC
@@ -483,7 +487,11 @@ out_unlock:
 EXPORT_SYMBOL(drm_gem_prime_handle_to_fd);
 
 /**
+<<<<<<< HEAD
  * drm_gem_prime_import - helper library implementation of the import callback
+=======
+ * drm_gem_prime_import - helper library implemention of the import callback
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @dev: drm_device to import into
  * @dma_buf: dma-buf object to import
  *
@@ -669,7 +677,11 @@ int drm_prime_fd_to_handle_ioctl(struct drm_device *dev, void *data,
  * the driver is responsible for mapping the pages into the
  * importers address space for use with dma_buf itself.
  */
+<<<<<<< HEAD
 struct sg_table *drm_prime_pages_to_sg(struct page **pages, unsigned int nr_pages)
+=======
+struct sg_table *drm_prime_pages_to_sg(struct page **pages, int nr_pages)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct sg_table *sg = NULL;
 	int ret;

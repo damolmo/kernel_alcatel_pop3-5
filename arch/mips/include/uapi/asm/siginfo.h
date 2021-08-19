@@ -48,13 +48,21 @@ typedef struct siginfo {
 
 		/* kill() */
 		struct {
+<<<<<<< HEAD
 			pid_t _pid;		/* sender's pid */
+=======
+			__kernel_pid_t _pid;	/* sender's pid */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			__ARCH_SI_UID_T _uid;	/* sender's uid */
 		} _kill;
 
 		/* POSIX.1b timers */
 		struct {
+<<<<<<< HEAD
 			timer_t _tid;		/* timer id */
+=======
+			__kernel_timer_t _tid;	/* timer id */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			int _overrun;		/* overrun count */
 			char _pad[sizeof( __ARCH_SI_UID_T) - sizeof(int)];
 			sigval_t _sigval;	/* same as below */
@@ -63,26 +71,45 @@ typedef struct siginfo {
 
 		/* POSIX.1b signals */
 		struct {
+<<<<<<< HEAD
 			pid_t _pid;		/* sender's pid */
+=======
+			__kernel_pid_t _pid;	/* sender's pid */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			__ARCH_SI_UID_T _uid;	/* sender's uid */
 			sigval_t _sigval;
 		} _rt;
 
 		/* SIGCHLD */
 		struct {
+<<<<<<< HEAD
 			pid_t _pid;		/* which child */
 			__ARCH_SI_UID_T _uid;	/* sender's uid */
 			int _status;		/* exit code */
 			clock_t _utime;
 			clock_t _stime;
+=======
+			__kernel_pid_t _pid;	/* which child */
+			__ARCH_SI_UID_T _uid;	/* sender's uid */
+			int _status;		/* exit code */
+			__kernel_clock_t _utime;
+			__kernel_clock_t _stime;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} _sigchld;
 
 		/* IRIX SIGCHLD */
 		struct {
+<<<<<<< HEAD
 			pid_t _pid;		/* which child */
 			clock_t _utime;
 			int _status;		/* exit code */
 			clock_t _stime;
+=======
+			__kernel_pid_t _pid;	/* which child */
+			__kernel_clock_t _utime;
+			int _status;		/* exit code */
+			__kernel_clock_t _stime;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} _irix_sigchld;
 
 		/* SIGILL, SIGFPE, SIGSEGV, SIGBUS */

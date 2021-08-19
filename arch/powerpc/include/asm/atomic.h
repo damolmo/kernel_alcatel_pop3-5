@@ -453,7 +453,11 @@ static __inline__ int atomic64_add_unless(atomic64_t *v, long a, long u)
  * Atomically increments @v by 1, so long as @v is non-zero.
  * Returns non-zero if @v was non-zero, and zero otherwise.
  */
+<<<<<<< HEAD
 static __inline__ long atomic64_inc_not_zero(atomic64_t *v)
+=======
+static __inline__ int atomic64_inc_not_zero(atomic64_t *v)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	long t1, t2;
 
@@ -472,7 +476,11 @@ static __inline__ long atomic64_inc_not_zero(atomic64_t *v)
 	: "r" (&v->counter)
 	: "cc", "xer", "memory");
 
+<<<<<<< HEAD
 	return t1;
+=======
+	return t1 != 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #endif /* __powerpc64__ */

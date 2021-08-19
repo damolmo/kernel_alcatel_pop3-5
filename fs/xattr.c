@@ -70,7 +70,11 @@ xattr_permission(struct inode *inode, const char *name, int mask)
 			return -EPERM;
 	}
 
+<<<<<<< HEAD
 	return inode_permission(inode, mask);
+=======
+	return inode_permission2(ERR_PTR(-EOPNOTSUPP), inode, mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -163,7 +167,11 @@ xattr_getsecurity(struct inode *inode, const char *name, void *value,
 	}
 	memcpy(value, buffer, len);
 out:
+<<<<<<< HEAD
 	security_release_secctx(buffer, len);
+=======
+	kfree(buffer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_noalloc:
 	return len;
 }
@@ -444,7 +452,11 @@ getxattr(struct dentry *d, const char __user *name, void __user *value,
 			size = XATTR_SIZE_MAX;
 		kvalue = kzalloc(size, GFP_KERNEL | __GFP_NOWARN);
 		if (!kvalue) {
+<<<<<<< HEAD
 			vvalue = vmalloc(size);
+=======
+			vvalue = vzalloc(size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!vvalue)
 				return -ENOMEM;
 			kvalue = vvalue;
@@ -455,7 +467,11 @@ getxattr(struct dentry *d, const char __user *name, void __user *value,
 	if (error > 0) {
 		if ((strcmp(kname, XATTR_NAME_POSIX_ACL_ACCESS) == 0) ||
 		    (strcmp(kname, XATTR_NAME_POSIX_ACL_DEFAULT) == 0))
+<<<<<<< HEAD
 			posix_acl_fix_xattr_to_user(kvalue, size);
+=======
+			posix_acl_fix_xattr_to_user(kvalue, error);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (size && copy_to_user(value, kvalue, error))
 			error = -EFAULT;
 	} else if (error == -ERANGE && size >= XATTR_SIZE_MAX) {

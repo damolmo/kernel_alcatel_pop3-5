@@ -44,9 +44,18 @@ static struct ctl_table atalk_table[] = {
 
 static struct ctl_table_header *atalk_table_header;
 
+<<<<<<< HEAD
 void atalk_register_sysctl(void)
 {
 	atalk_table_header = register_net_sysctl(&init_net, "net/appletalk", atalk_table);
+=======
+int __init atalk_register_sysctl(void)
+{
+	atalk_table_header = register_net_sysctl(&init_net, "net/appletalk", atalk_table);
+	if (!atalk_table_header)
+		return -ENOMEM;
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void atalk_unregister_sysctl(void)

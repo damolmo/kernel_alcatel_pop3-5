@@ -801,6 +801,12 @@ typedef struct oppanel_line {
 	uint64_t 	line_len;
 } oppanel_line_t;
 
+<<<<<<< HEAD
+=======
+/* Default time to sleep or delay between OPAL_BUSY/OPAL_BUSY_EVENT loops */
+#define OPAL_BUSY_DELAY_MS	10
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* /sys/firmware/opal */
 extern struct kobject *opal_kobj;
 

@@ -501,8 +501,12 @@ static int tse_poll(struct napi_struct *napi, int budget)
 	if (rxcomplete >= budget || txcomplete > 0)
 		return rxcomplete;
 
+<<<<<<< HEAD
 	napi_gro_flush(napi, false);
 	__napi_complete(napi);
+=======
+	napi_complete(napi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	netdev_dbg(priv->dev,
 		   "NAPI Complete, did %d packets with budget %d\n",
@@ -707,8 +711,15 @@ static struct phy_device *connect_local_phy(struct net_device *dev)
 
 		phydev = phy_connect(dev, phy_id_fmt, &altera_tse_adjust_link,
 				     priv->phy_iface);
+<<<<<<< HEAD
 		if (IS_ERR(phydev))
 			netdev_err(dev, "Could not attach to PHY\n");
+=======
+		if (IS_ERR(phydev)) {
+			netdev_err(dev, "Could not attach to PHY\n");
+			phydev = NULL;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	} else {
 		int ret;

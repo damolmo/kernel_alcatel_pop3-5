@@ -632,6 +632,7 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 		if (rv == SS_TWO_PRIMARIES) {
 			/* Maybe the peer is detected as dead very soon...
 			   retry at most once more in this case. */
+<<<<<<< HEAD
 			int timeo;
 			rcu_read_lock();
 			nc = rcu_dereference(connection->net_conf);
@@ -640,6 +641,17 @@ drbd_set_role(struct drbd_device *const device, enum drbd_role new_role, int for
 			schedule_timeout_interruptible(timeo);
 			if (try < max_tries)
 				try = max_tries - 1;
+=======
+			if (try < max_tries) {
+				int timeo;
+				try = max_tries - 1;
+				rcu_read_lock();
+				nc = rcu_dereference(connection->net_conf);
+				timeo = nc ? (nc->ping_timeo + 1) * HZ / 10 : 1;
+				rcu_read_unlock();
+				schedule_timeout_interruptible(timeo);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		}
 		if (rv < SS_SUCCESS) {
@@ -1684,9 +1696,15 @@ int drbd_adm_attach(struct sk_buff *skb, struct genl_info *info)
 		}
 	}
 
+<<<<<<< HEAD
 	if (device->state.conn < C_CONNECTED &&
 	    device->state.role == R_PRIMARY && device->ed_uuid &&
 	    (device->ed_uuid & ~((u64)1)) != (nbc->md.uuid[UI_CURRENT] & ~((u64)1))) {
+=======
+	if (device->state.pdsk != D_UP_TO_DATE && device->ed_uuid &&
+	    (device->state.role == R_PRIMARY || device->state.peer == R_PRIMARY) &&
+            (device->ed_uuid & ~((u64)1)) != (nbc->md.uuid[UI_CURRENT] & ~((u64)1))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		drbd_err(device, "Can only attach to data with current UUID=%016llX\n",
 		    (unsigned long long)device->ed_uuid);
 		retcode = ERR_DATA_NOT_CURRENT;

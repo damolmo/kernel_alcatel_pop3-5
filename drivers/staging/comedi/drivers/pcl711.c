@@ -202,7 +202,11 @@ static irqreturn_t pcl711_interrupt(int irq, void *d)
 	struct pcl711_private *devpriv = dev->private;
 	struct comedi_subdevice *s = dev->read_subdev;
 	struct comedi_cmd *cmd = &s->async->cmd;
+<<<<<<< HEAD
 	unsigned int data;
+=======
+	unsigned short data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!dev->attached) {
 		dev_err(dev->class_dev, "spurious interrupt\n");

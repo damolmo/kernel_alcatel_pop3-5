@@ -32,7 +32,19 @@ struct extent_map {
 	u64 block_len;
 	u64 generation;
 	unsigned long flags;
+<<<<<<< HEAD
 	struct block_device *bdev;
+=======
+	union {
+		struct block_device *bdev;
+
+		/*
+		 * used for chunk mappings
+		 * flags & EXTENT_FLAG_FS_MAPPING must be set
+		 */
+		struct map_lookup *map_lookup;
+	};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	atomic_t refs;
 	unsigned int compress_type;
 	struct list_head list;

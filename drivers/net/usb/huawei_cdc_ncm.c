@@ -73,6 +73,7 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
 	struct usb_driver *subdriver = ERR_PTR(-ENODEV);
 	int ret = -ENODEV;
 	struct huawei_cdc_ncm_state *drvstate = (void *)&usbnet_dev->data;
+<<<<<<< HEAD
 	int drvflags = 0;
 
 	/* altsetting should always be 1 for NCM devices - so we hard-coded
@@ -81,6 +82,13 @@ static int huawei_cdc_ncm_bind(struct usbnet *usbnet_dev,
 	 */
 	drvflags |= CDC_NCM_FLAG_NDP_TO_END;
 	ret = cdc_ncm_bind_common(usbnet_dev, intf, 1, drvflags);
+=======
+
+	/* altsetting should always be 1 for NCM devices - so we hard-coded
+	 * it here
+	 */
+	ret = cdc_ncm_bind_common(usbnet_dev, intf, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		goto err;
 

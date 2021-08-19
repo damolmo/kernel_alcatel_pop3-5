@@ -135,14 +135,21 @@ static const struct e1000_reg_info e1000_reg_info_tbl[] = {
  * has bit 24 set while ME is accessing MAC CSR registers, wait if it is set
  * and try again a number of times.
  **/
+<<<<<<< HEAD
 s32 __ew32_prepare(struct e1000_hw *hw)
+=======
+static void __ew32_prepare(struct e1000_hw *hw)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	s32 i = E1000_ICH_FWSM_PCIM2PCI_COUNT;
 
 	while ((er32(FWSM) & E1000_ICH_FWSM_PCIM2PCI) && --i)
 		udelay(50);
+<<<<<<< HEAD
 
 	return i;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val)
@@ -623,11 +630,19 @@ static void e1000e_update_rdt_wa(struct e1000_ring *rx_ring, unsigned int i)
 {
 	struct e1000_adapter *adapter = rx_ring->adapter;
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	s32 ret_val = __ew32_prepare(hw);
 
 	writel(i, rx_ring->tail);
 
 	if (unlikely(!ret_val && (i != readl(rx_ring->tail)))) {
+=======
+
+	__ew32_prepare(hw);
+	writel(i, rx_ring->tail);
+
+	if (unlikely(i != readl(rx_ring->tail))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u32 rctl = er32(RCTL);
 
 		ew32(RCTL, rctl & ~E1000_RCTL_EN);
@@ -640,11 +655,19 @@ static void e1000e_update_tdt_wa(struct e1000_ring *tx_ring, unsigned int i)
 {
 	struct e1000_adapter *adapter = tx_ring->adapter;
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	s32 ret_val = __ew32_prepare(hw);
 
 	writel(i, tx_ring->tail);
 
 	if (unlikely(!ret_val && (i != readl(tx_ring->tail)))) {
+=======
+
+	__ew32_prepare(hw);
+	writel(i, tx_ring->tail);
+
+	if (unlikely(i != readl(tx_ring->tail))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		u32 tctl = er32(TCTL);
 
 		ew32(TCTL, tctl & ~E1000_TCTL_EN);
@@ -1181,6 +1204,10 @@ static void e1000e_tx_hwtstamp_work(struct work_struct *work)
 	struct e1000_hw *hw = &adapter->hw;
 
 	if (er32(TSYNCTXCTL) & E1000_TSYNCTXCTL_VALID) {
+<<<<<<< HEAD
+=======
+		struct sk_buff *skb = adapter->tx_hwtstamp_skb;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct skb_shared_hwtstamps shhwtstamps;
 		u64 txstmp;
 
@@ -1189,9 +1216,20 @@ static void e1000e_tx_hwtstamp_work(struct work_struct *work)
 
 		e1000e_systim_to_hwtstamp(adapter, &shhwtstamps, txstmp);
 
+<<<<<<< HEAD
 		skb_tstamp_tx(adapter->tx_hwtstamp_skb, &shhwtstamps);
 		dev_kfree_skb_any(adapter->tx_hwtstamp_skb);
 		adapter->tx_hwtstamp_skb = NULL;
+=======
+		/* Clear the global tx_hwtstamp_skb pointer and force writes
+		 * prior to notifying the stack of a Tx timestamp.
+		 */
+		adapter->tx_hwtstamp_skb = NULL;
+		wmb(); /* force write prior to skb_tstamp_tx */
+
+		skb_tstamp_tx(skb, &shhwtstamps);
+		dev_kfree_skb_any(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (time_after(jiffies, adapter->tx_hwtstamp_start
 			      + adapter->tx_timeout_factor * HZ)) {
 		dev_kfree_skb_any(adapter->tx_hwtstamp_skb);
@@ -1962,8 +2000,15 @@ static irqreturn_t e1000_intr_msix_rx(int __always_unused irq, void *data)
 	 * previous interrupt.
 	 */
 	if (rx_ring->set_itr) {
+<<<<<<< HEAD
 		writel(1000000000 / (rx_ring->itr_val * 256),
 		       rx_ring->itr_register);
+=======
+		u32 itr = rx_ring->itr_val ?
+			  1000000000 / (rx_ring->itr_val * 256) : 0;
+
+		writel(itr, rx_ring->itr_register);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		rx_ring->set_itr = 0;
 	}
 
@@ -2126,7 +2171,11 @@ static int e1000_request_msix(struct e1000_adapter *adapter)
 	if (strlen(netdev->name) < (IFNAMSIZ - 5))
 		snprintf(adapter->rx_ring->name,
 			 sizeof(adapter->rx_ring->name) - 1,
+<<<<<<< HEAD
 			 "%s-rx-0", netdev->name);
+=======
+			 "%.14s-rx-0", netdev->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		memcpy(adapter->rx_ring->name, netdev->name, IFNAMSIZ);
 	err = request_irq(adapter->msix_entries[vector].vector,
@@ -2142,7 +2191,11 @@ static int e1000_request_msix(struct e1000_adapter *adapter)
 	if (strlen(netdev->name) < (IFNAMSIZ - 5))
 		snprintf(adapter->tx_ring->name,
 			 sizeof(adapter->tx_ring->name) - 1,
+<<<<<<< HEAD
 			 "%s-tx-0", netdev->name);
+=======
+			 "%.14s-tx-0", netdev->name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	else
 		memcpy(adapter->tx_ring->name, netdev->name, IFNAMSIZ);
 	err = request_irq(adapter->msix_entries[vector].vector,
@@ -2324,8 +2377,13 @@ static int e1000_alloc_ring_dma(struct e1000_adapter *adapter,
 {
 	struct pci_dev *pdev = adapter->pdev;
 
+<<<<<<< HEAD
 	ring->desc = dma_alloc_coherent(&pdev->dev, ring->size, &ring->dma,
 					GFP_KERNEL);
+=======
+	ring->desc = dma_zalloc_coherent(&pdev->dev, ring->size, &ring->dma,
+					 GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ring->desc)
 		return -ENOMEM;
 
@@ -3507,6 +3565,15 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca)
 
 	switch (hw->mac.type) {
 	case e1000_pch2lan:
+<<<<<<< HEAD
+=======
+		/* Stable 96MHz frequency */
+		incperiod = INCPERIOD_96MHz;
+		incvalue = INCVALUE_96MHz;
+		shift = INCVALUE_SHIFT_96MHz;
+		adapter->cc.shift = shift + INCPERIOD_SHIFT_96MHz;
+		break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case e1000_pch_lpt:
 		/* On I217, the clock frequency is 25MHz or 96MHz as
 		 * indicated by the System Clock Frequency Indication
@@ -4010,7 +4077,11 @@ int e1000e_up(struct e1000_adapter *adapter)
 		e1000_configure_msix(adapter);
 	e1000_irq_enable(adapter);
 
+<<<<<<< HEAD
 	netif_start_queue(adapter->netdev);
+=======
+	/* Tx queue started by watchdog timer when link is up */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* fire a link change interrupt to start the watchdog */
 	if (adapter->msix_entries)
@@ -4192,7 +4263,11 @@ static int e1000_sw_init(struct e1000_adapter *adapter)
 	/* Setup hardware time stamping cyclecounter */
 	if (adapter->flags & FLAG_HAS_HW_TIMESTAMP) {
 		adapter->cc.read = e1000e_cyclecounter_read;
+<<<<<<< HEAD
 		adapter->cc.mask = CLOCKSOURCE_MASK(64);
+=======
+		adapter->cc.mask = CYCLECOUNTER_MASK(64);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		adapter->cc.mult = 1;
 		/* cc.shift set in e1000e_get_base_tininca() */
 
@@ -4356,6 +4431,10 @@ static int e1000_open(struct net_device *netdev)
 	pm_runtime_get_sync(&pdev->dev);
 
 	netif_carrier_off(netdev);
+<<<<<<< HEAD
+=======
+	netif_stop_queue(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* allocate transmit descriptors */
 	err = e1000e_setup_tx_resources(adapter->tx_ring);
@@ -4416,7 +4495,10 @@ static int e1000_open(struct net_device *netdev)
 	e1000_irq_enable(adapter);
 
 	adapter->tx_hang_recheck = false;
+<<<<<<< HEAD
 	netif_start_queue(netdev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	hw->mac.get_link_status = true;
 	pm_runtime_put(&pdev->dev);
@@ -4844,7 +4926,11 @@ static bool e1000e_has_link(struct e1000_adapter *adapter)
 	case e1000_media_type_copper:
 		if (hw->mac.get_link_status) {
 			ret_val = hw->mac.ops.check_for_link(hw);
+<<<<<<< HEAD
 			link_active = !hw->mac.get_link_status;
+=======
+			link_active = ret_val > 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			link_active = true;
 		}
@@ -4862,7 +4948,11 @@ static bool e1000e_has_link(struct e1000_adapter *adapter)
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((ret_val == E1000_ERR_PHY) && (hw->phy.type == e1000_phy_igp_3) &&
+=======
+	if ((ret_val == -E1000_ERR_PHY) && (hw->phy.type == e1000_phy_igp_3) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    (er32(CTRL) & E1000_PHY_CTRL_GBE_DISABLE)) {
 		/* See e1000_kmrn_lock_loss_workaround_ich8lan() */
 		e_info("Gigabit has been disabled, downgrading speed\n");
@@ -5041,6 +5131,10 @@ static void e1000_watchdog_task(struct work_struct *work)
 			if (phy->ops.cfg_on_link_up)
 				phy->ops.cfg_on_link_up(hw);
 
+<<<<<<< HEAD
+=======
+			netif_wake_queue(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			netif_carrier_on(netdev);
 
 			if (!test_bit(__E1000_DOWN, &adapter->state))
@@ -5054,6 +5148,10 @@ static void e1000_watchdog_task(struct work_struct *work)
 			/* Link status message must follow this format */
 			pr_info("%s NIC Link is Down\n", adapter->netdev->name);
 			netif_carrier_off(netdev);
+<<<<<<< HEAD
+=======
+			netif_stop_queue(netdev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (!test_bit(__E1000_DOWN, &adapter->state))
 				mod_timer(&adapter->phy_info_timer,
 					  round_jiffies(jiffies + 2 * HZ));
@@ -5687,15 +5785,28 @@ static void e1000_reset_task(struct work_struct *work)
 	struct e1000_adapter *adapter;
 	adapter = container_of(work, struct e1000_adapter, reset_task);
 
+<<<<<<< HEAD
 	/* don't run the task if already down */
 	if (test_bit(__E1000_DOWN, &adapter->state))
 		return;
+=======
+	rtnl_lock();
+	/* don't run the task if already down */
+	if (test_bit(__E1000_DOWN, &adapter->state)) {
+		rtnl_unlock();
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!(adapter->flags & FLAG_RESTART_NOW)) {
 		e1000e_dump(adapter);
 		e_err("Reset adapter unexpectedly\n");
 	}
 	e1000e_reinit_locked(adapter);
+<<<<<<< HEAD
+=======
+	rtnl_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -6084,11 +6195,25 @@ static int __e1000_shutdown(struct pci_dev *pdev, bool runtime)
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct e1000_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 ctrl, ctrl_ext, rctl, status;
 	/* Runtime suspend should only enable wakeup for link changes */
 	u32 wufc = runtime ? E1000_WUFC_LNKC : adapter->wol;
 	int retval = 0;
 
+=======
+	u32 ctrl, ctrl_ext, rctl, status, wufc;
+	int retval = 0;
+
+	/* Runtime suspend should only enable wakeup for link changes */
+	if (runtime)
+		wufc = E1000_WUFC_LNKC;
+	else if (device_may_wakeup(&pdev->dev))
+		wufc = adapter->wol;
+	else
+		wufc = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	status = er32(STATUS);
 	if (status & E1000_STATUS_LU)
 		wufc &= ~E1000_WUFC_LNKC;
@@ -6145,7 +6270,11 @@ static int __e1000_shutdown(struct pci_dev *pdev, bool runtime)
 	if (adapter->hw.phy.type == e1000_phy_igp_3) {
 		e1000e_igp3_phy_powerdown_workaround_ich8lan(&adapter->hw);
 	} else if (hw->mac.type == e1000_pch_lpt) {
+<<<<<<< HEAD
 		if (!(wufc & (E1000_WUFC_EX | E1000_WUFC_MC | E1000_WUFC_BC)))
+=======
+		if (wufc && !(wufc & (E1000_WUFC_EX | E1000_WUFC_MC | E1000_WUFC_BC)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* ULP does not support wake from unicast, multicast
 			 * or broadcast.
 			 */
@@ -6351,12 +6480,24 @@ static int e1000e_pm_thaw(struct device *dev)
 static int e1000e_pm_suspend(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
+<<<<<<< HEAD
+=======
+	int rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	e1000e_flush_lpic(pdev);
 
 	e1000e_pm_freeze(dev);
 
+<<<<<<< HEAD
 	return __e1000_shutdown(pdev, false);
+=======
+	rc = __e1000_shutdown(pdev, false);
+	if (rc)
+		e1000e_pm_thaw(dev);
+
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int e1000e_pm_resume(struct device *dev)

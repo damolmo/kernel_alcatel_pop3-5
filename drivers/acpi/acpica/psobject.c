@@ -118,6 +118,12 @@ static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state)
 			     (u32)(walk_state->aml_offset +
 				   sizeof(struct acpi_table_header)));
 
+<<<<<<< HEAD
+=======
+			ACPI_ERROR((AE_INFO,
+				    "Aborting disassembly, AML byte code is corrupt"));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* Dump the context surrounding the invalid opcode */
 
 			acpi_ut_dump_buffer(((u8 *)walk_state->parser_state.
@@ -126,6 +132,17 @@ static acpi_status acpi_ps_get_aml_opcode(struct acpi_walk_state *walk_state)
 					     sizeof(struct acpi_table_header) -
 					     16));
 			acpi_os_printf(" */\n");
+<<<<<<< HEAD
+=======
+
+			/*
+			 * Just abort the disassembly, cannot continue because the
+			 * parser is essentially lost. The disassembler can then
+			 * randomly fail because an ill-constructed parse tree
+			 * can result.
+			 */
+			return_ACPI_STATUS(AE_AML_BAD_OPCODE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 		}
 
@@ -290,6 +307,12 @@ acpi_ps_create_op(struct acpi_walk_state *walk_state,
 	if (status == AE_CTRL_PARSE_CONTINUE) {
 		return_ACPI_STATUS(AE_CTRL_PARSE_CONTINUE);
 	}
+<<<<<<< HEAD
+=======
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Create Op structure and append to parent's argument list */
 

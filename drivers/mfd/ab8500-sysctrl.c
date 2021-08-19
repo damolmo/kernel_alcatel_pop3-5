@@ -153,7 +153,11 @@ int ab8500_sysctrl_read(u16 reg, u8 *value)
 	u8 bank;
 
 	if (sysctrl_dev == NULL)
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return -EPROBE_DEFER;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	bank = (reg >> 8);
 	if (!valid_bank(bank))
@@ -169,11 +173,21 @@ int ab8500_sysctrl_write(u16 reg, u8 mask, u8 value)
 	u8 bank;
 
 	if (sysctrl_dev == NULL)
+<<<<<<< HEAD
 		return -EINVAL;
 
 	bank = (reg >> 8);
 	if (!valid_bank(bank))
 		return -EINVAL;
+=======
+		return -EPROBE_DEFER;
+
+	bank = (reg >> 8);
+	if (!valid_bank(bank)) {
+		pr_err("invalid bank\n");
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return abx500_mask_and_set_register_interruptible(sysctrl_dev, bank,
 		(u8)(reg & 0xFF), mask, value);
@@ -234,9 +248,21 @@ static int ab8500_sysctrl_remove(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver ab8500_sysctrl_driver = {
 	.driver = {
 		.name = "ab8500-sysctrl",
+=======
+static const struct of_device_id ab8500_sysctrl_match[] = {
+	{ .compatible = "stericsson,ab8500-sysctrl", },
+	{}
+};
+
+static struct platform_driver ab8500_sysctrl_driver = {
+	.driver = {
+		.name = "ab8500-sysctrl",
+		.of_match_table = ab8500_sysctrl_match,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.owner = THIS_MODULE,
 	},
 	.probe = ab8500_sysctrl_probe,

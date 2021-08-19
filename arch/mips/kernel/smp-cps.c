@@ -92,7 +92,11 @@ static void __init cps_smp_setup(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
+<<<<<<< HEAD
 		cpu_set(0, mt_fpu_cpumask);
+=======
+		cpumask_set_cpu(0, &mt_fpu_cpumask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_MIPS_MT_FPAFF */
 }
 

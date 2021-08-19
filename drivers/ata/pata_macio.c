@@ -507,7 +507,11 @@ static int pata_macio_cable_detect(struct ata_port *ap)
 	return ATA_CBL_PATA40;
 }
 
+<<<<<<< HEAD
 static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors pata_macio_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	unsigned int write = (qc->tf.flags & ATA_TFLAG_WRITE);
 	struct ata_port *ap = qc->ap;
@@ -520,7 +524,11 @@ static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
 		   __func__, qc, qc->flags, write, qc->dev->devno);
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
+=======
+		return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	table = (struct dbdma_cmd *) priv->dma_table_cpu;
 
@@ -565,6 +573,11 @@ static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
 	st_le16(&table->command, DBDMA_STOP);
 
 	dev_dbgdma(priv->dev, "%s: %d DMA list entries\n", __func__, pi);
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

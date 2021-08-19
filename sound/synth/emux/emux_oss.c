@@ -69,7 +69,12 @@ snd_emux_init_seq_oss(struct snd_emux *emu)
 	struct snd_seq_oss_reg *arg;
 	struct snd_seq_device *dev;
 
+<<<<<<< HEAD
 	if (snd_seq_device_new(emu->card, 0, SNDRV_SEQ_DEV_ID_OSS,
+=======
+	/* using device#1 here for avoiding conflicts with OPL3 */
+	if (snd_seq_device_new(emu->card, 1, SNDRV_SEQ_DEV_ID_OSS,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			       sizeof(struct snd_seq_oss_reg), &dev) < 0)
 		return;
 

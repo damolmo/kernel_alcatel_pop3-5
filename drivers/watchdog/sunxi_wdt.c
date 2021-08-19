@@ -184,7 +184,11 @@ static int sunxi_wdt_start(struct watchdog_device *wdt_dev)
 	/* Set system reset function */
 	reg = readl(wdt_base + regs->wdt_cfg);
 	reg &= ~(regs->wdt_reset_mask);
+<<<<<<< HEAD
 	reg |= ~(regs->wdt_reset_val);
+=======
+	reg |= regs->wdt_reset_val;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	writel(reg, wdt_base + regs->wdt_cfg);
 
 	/* Enable watchdog */

@@ -77,10 +77,17 @@ static int pci_mmap_resource(struct kobject *kobj,
 	if (i >= PCI_ROM_RESOURCE)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (!__pci_mmap_fits(pdev, i, vma, sparse))
 		return -EINVAL;
 
 	if (iomem_is_exclusive(res->start))
+=======
+	if (res->flags & IORESOURCE_MEM && iomem_is_exclusive(res->start))
+		return -EINVAL;
+
+	if (!__pci_mmap_fits(pdev, i, vma, sparse))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	pcibios_resource_to_bus(pdev->bus, &bar, res);

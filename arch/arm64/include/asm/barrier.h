@@ -20,6 +20,12 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+#define __nops(n)	".rept	" #n "\nnop\n.endr\n"
+#define nops(n)		asm volatile(__nops(n))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define sev()		asm volatile("sev" : : : "memory")
 #define wfe()		asm volatile("wfe" : : : "memory")
 #define wfi()		asm volatile("wfi" : : : "memory")
@@ -32,6 +38,7 @@
 #define rmb()		dsb(ld)
 #define wmb()		dsb(st)
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 #define smp_mb()	barrier()
 #define smp_rmb()	barrier()
@@ -53,6 +60,10 @@ do {									\
 })
 
 #else
+=======
+#define dma_rmb()	dmb(oshld)
+#define dma_wmb()	dmb(oshst)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define smp_mb()	dmb(ish)
 #define smp_rmb()	dmb(ishld)
@@ -60,6 +71,7 @@ do {									\
 
 #define smp_store_release(p, v)						\
 do {									\
+<<<<<<< HEAD
 	compiletime_assert_atomic_type(*p);				\
 	switch (sizeof(*p)) {						\
 	case 4:								\
@@ -69,12 +81,38 @@ do {									\
 	case 8:								\
 		asm volatile ("stlr %1, %0"				\
 				: "=Q" (*p) : "r" (v) : "memory");	\
+=======
+	union { typeof(*p) __val; char __c[1]; } __u =			\
+		{ .__val = (__force typeof(*p)) (v) }; 			\
+	compiletime_assert_atomic_type(*p);				\
+	switch (sizeof(*p)) {						\
+	case 1:								\
+		asm volatile ("stlrb %w1, %0"				\
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	case 2:								\
+		asm volatile ("stlrh %w1, %0"				\
+				: "=Q" (*p) : "r" (v) : "memory");	\
+		break;							\
+	case 4:								\
+		asm volatile ("stlr %w1, %0"				\
+				: "=Q" (*p)				\
+				: "r" (*(__u32 *)__u.__c)		\
+				: "memory");				\
+		break;							\
+	case 8:								\
+		asm volatile ("stlr %1, %0"				\
+				: "=Q" (*p)				\
+				: "r" (*(__u64 *)__u.__c)		\
+				: "memory");				\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;							\
 	}								\
 } while (0)
 
 #define smp_load_acquire(p)						\
 ({									\
+<<<<<<< HEAD
 	typeof(*p) ___p1;						\
 	compiletime_assert_atomic_type(*p);				\
 	switch (sizeof(*p)) {						\
@@ -92,6 +130,35 @@ do {									\
 
 #endif
 
+=======
+	union { typeof(*p) __val; char __c[1]; } __u;			\
+	compiletime_assert_atomic_type(*p);				\
+	switch (sizeof(*p)) {						\
+	case 1:								\
+		asm volatile ("ldarb %w0, %1"				\
+			: "=r" (*(__u8 *)__u.__c)			\
+			: "Q" (*p) : "memory");				\
+		break;							\
+	case 2:								\
+		asm volatile ("ldarh %w0, %1"				\
+			: "=r" (*(__u16 *)__u.__c)			\
+			: "Q" (*p) : "memory");				\
+		break;							\
+	case 4:								\
+		asm volatile ("ldar %w0, %1"				\
+			: "=r" (*(__u32 *)__u.__c)			\
+			: "Q" (*p) : "memory");				\
+		break;							\
+	case 8:								\
+		asm volatile ("ldar %0, %1"				\
+			: "=r" (*(__u64 *)__u.__c)			\
+			: "Q" (*p) : "memory");				\
+		break;							\
+	}								\
+	__u.__val;							\
+})
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define read_barrier_depends()		do { } while(0)
 #define smp_read_barrier_depends()	do { } while(0)
 

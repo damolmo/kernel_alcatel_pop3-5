@@ -12,14 +12,22 @@
 
 		.text
 
+<<<<<<< HEAD
 /* Prototype: int __clear_user(void *addr, size_t sz)
+=======
+/* Prototype: unsigned long arm_clear_user(void *addr, size_t sz)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Purpose  : clear some user memory
  * Params   : addr - user memory address to clear
  *          : sz   - number of bytes to clear
  * Returns  : number of bytes NOT cleared
  */
 ENTRY(__clear_user_std)
+<<<<<<< HEAD
 WEAK(__clear_user)
+=======
+WEAK(arm_clear_user)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		stmfd	sp!, {r1, lr}
 		mov	r2, #0
 		cmp	r1, #4
@@ -44,7 +52,11 @@ WEAK(__clear_user)
 USER(		strnebt	r2, [r0])
 		mov	r0, #0
 		ldmfd	sp!, {r1, pc}
+<<<<<<< HEAD
 ENDPROC(__clear_user)
+=======
+ENDPROC(arm_clear_user)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ENDPROC(__clear_user_std)
 
 		.pushsection .fixup,"ax"

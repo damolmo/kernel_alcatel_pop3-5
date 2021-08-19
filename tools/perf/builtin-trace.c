@@ -1020,6 +1020,13 @@ static struct syscall_fmt {
 	{ .name	    = "mlockall",   .errmsg = true,
 	  .arg_scnprintf = { [0] = SCA_HEX, /* addr */ }, },
 	{ .name	    = "mmap",	    .hexret = true,
+<<<<<<< HEAD
+=======
+/* The standard mmap maps to old_mmap on s390x */
+#if defined(__s390x__)
+	.alias = "old_mmap",
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	  .arg_scnprintf = { [0] = SCA_HEX,	  /* addr */
 			     [2] = SCA_MMAP_PROT, /* prot */
 			     [3] = SCA_MMAP_FLAGS, /* flags */

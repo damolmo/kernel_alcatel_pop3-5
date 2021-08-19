@@ -30,11 +30,20 @@
 
 static DEFINE_PER_CPU(struct clk, sh_cpuclk);
 
+<<<<<<< HEAD
+=======
+struct cpufreq_target {
+	struct cpufreq_policy	*policy;
+	unsigned int		freq;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static unsigned int sh_cpufreq_get(unsigned int cpu)
 {
 	return (clk_get_rate(&per_cpu(sh_cpuclk, cpu)) + 500) / 1000;
 }
 
+<<<<<<< HEAD
 /*
  * Here we notify other drivers of the proposed change and the final change.
  */
@@ -45,29 +54,51 @@ static int sh_cpufreq_target(struct cpufreq_policy *policy,
 	unsigned int cpu = policy->cpu;
 	struct clk *cpuclk = &per_cpu(sh_cpuclk, cpu);
 	cpumask_t cpus_allowed;
+=======
+static long __sh_cpufreq_target(void *arg)
+{
+	struct cpufreq_target *target = arg;
+	struct cpufreq_policy *policy = target->policy;
+	int cpu = policy->cpu;
+	struct clk *cpuclk = &per_cpu(sh_cpuclk, cpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct cpufreq_freqs freqs;
 	struct device *dev;
 	long freq;
 
+<<<<<<< HEAD
 	cpus_allowed = current->cpus_allowed;
 	set_cpus_allowed_ptr(current, cpumask_of(cpu));
 
 	BUG_ON(smp_processor_id() != cpu);
+=======
+	if (smp_processor_id() != cpu)
+		return -ENODEV;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dev = get_cpu_device(cpu);
 
 	/* Convert target_freq from kHz to Hz */
+<<<<<<< HEAD
 	freq = clk_round_rate(cpuclk, target_freq * 1000);
+=======
+	freq = clk_round_rate(cpuclk, target->freq * 1000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (freq < (policy->min * 1000) || freq > (policy->max * 1000))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	dev_dbg(dev, "requested frequency %u Hz\n", target_freq * 1000);
+=======
+	dev_dbg(dev, "requested frequency %u Hz\n", target->freq * 1000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	freqs.old	= sh_cpufreq_get(cpu);
 	freqs.new	= (freq + 500) / 1000;
 	freqs.flags	= 0;
 
+<<<<<<< HEAD
 	cpufreq_freq_transition_begin(policy, &freqs);
 	set_cpus_allowed_ptr(current, &cpus_allowed);
 	clk_set_rate(cpuclk, freq);
@@ -78,6 +109,28 @@ static int sh_cpufreq_target(struct cpufreq_policy *policy,
 	return 0;
 }
 
+=======
+	cpufreq_freq_transition_begin(target->policy, &freqs);
+	clk_set_rate(cpuclk, freq);
+	cpufreq_freq_transition_end(target->policy, &freqs, 0);
+
+	dev_dbg(dev, "set frequency %lu Hz\n", freq);
+	return 0;
+}
+
+/*
+ * Here we notify other drivers of the proposed change and the final change.
+ */
+static int sh_cpufreq_target(struct cpufreq_policy *policy,
+			     unsigned int target_freq,
+			     unsigned int relation)
+{
+	struct cpufreq_target data = { .policy = policy, .freq = target_freq };
+
+	return work_on_cpu(policy->cpu, __sh_cpufreq_target, &data);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int sh_cpufreq_verify(struct cpufreq_policy *policy)
 {
 	struct clk *cpuclk = &per_cpu(sh_cpuclk, policy->cpu);

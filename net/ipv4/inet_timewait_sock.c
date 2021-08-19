@@ -191,6 +191,10 @@ struct inet_timewait_sock *inet_twsk_alloc(const struct sock *sk, const int stat
 		tw->tw_dport	    = inet->inet_dport;
 		tw->tw_family	    = sk->sk_family;
 		tw->tw_reuse	    = sk->sk_reuse;
+<<<<<<< HEAD
+=======
+		tw->tw_reuseport    = sk->sk_reuseport;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tw->tw_hash	    = sk->sk_hash;
 		tw->tw_ipv6only	    = 0;
 		tw->tw_transparent  = inet->transparent;

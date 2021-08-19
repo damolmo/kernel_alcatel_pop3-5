@@ -400,8 +400,12 @@ static int filelayout_commit_done_cb(struct rpc_task *task,
 		return -EAGAIN;
 	}
 
+<<<<<<< HEAD
 	if (data->verf.committed == NFS_UNSTABLE)
 		pnfs_commit_set_layoutcommit(data);
+=======
+	pnfs_commit_set_layoutcommit(data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -682,6 +686,7 @@ out_put:
 	goto out;
 }
 
+<<<<<<< HEAD
 static void filelayout_free_fh_array(struct nfs4_filelayout_segment *fl)
 {
 	int i;
@@ -699,6 +704,20 @@ static void
 _filelayout_free_lseg(struct nfs4_filelayout_segment *fl)
 {
 	filelayout_free_fh_array(fl);
+=======
+static void _filelayout_free_lseg(struct nfs4_filelayout_segment *fl)
+{
+	int i;
+
+	if (fl->fh_array) {
+		for (i = 0; i < fl->num_fh; i++) {
+			if (!fl->fh_array[i])
+				break;
+			kfree(fl->fh_array[i]);
+		}
+		kfree(fl->fh_array);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(fl);
 }
 
@@ -769,6 +788,7 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 		/* Do we want to use a mempool here? */
 		fl->fh_array[i] = kmalloc(sizeof(struct nfs_fh), gfp_flags);
 		if (!fl->fh_array[i])
+<<<<<<< HEAD
 			goto out_err_free;
 
 		p = xdr_inline_decode(&stream, 4);
@@ -779,11 +799,27 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 			printk(KERN_ERR "NFS: Too big fh %d received %d\n",
 			       i, fl->fh_array[i]->size);
 			goto out_err_free;
+=======
+			goto out_err;
+
+		p = xdr_inline_decode(&stream, 4);
+		if (unlikely(!p))
+			goto out_err;
+		fl->fh_array[i]->size = be32_to_cpup(p++);
+		if (fl->fh_array[i]->size > NFS_MAXFHSIZE) {
+			printk(KERN_ERR "NFS: Too big fh %d received %d\n",
+			       i, fl->fh_array[i]->size);
+			goto out_err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		p = xdr_inline_decode(&stream, fl->fh_array[i]->size);
 		if (unlikely(!p))
+<<<<<<< HEAD
 			goto out_err_free;
+=======
+			goto out_err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memcpy(fl->fh_array[i]->data, p, fl->fh_array[i]->size);
 		dprintk("DEBUG: %s: fh len %d\n", __func__,
 			fl->fh_array[i]->size);
@@ -792,8 +828,11 @@ filelayout_decode_layout(struct pnfs_layout_hdr *flo,
 	__free_page(scratch);
 	return 0;
 
+<<<<<<< HEAD
 out_err_free:
 	filelayout_free_fh_array(fl);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_err:
 	__free_page(scratch);
 	return -EIO;

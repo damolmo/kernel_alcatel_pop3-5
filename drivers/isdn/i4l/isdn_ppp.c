@@ -301,6 +301,11 @@ isdn_ppp_open(int min, struct file *file)
 	is->compflags = 0;
 
 	is->reset = isdn_ppp_ccp_reset_alloc(is);
+<<<<<<< HEAD
+=======
+	if (!is->reset)
+		return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	is->lp = NULL;
 	is->mp_seqno = 0;       /* MP sequence number */
@@ -320,6 +325,13 @@ isdn_ppp_open(int min, struct file *file)
 	 * VJ header compression init
 	 */
 	is->slcomp = slhc_init(16, 16);	/* not necessary for 2. link in bundle */
+<<<<<<< HEAD
+=======
+	if (IS_ERR(is->slcomp)) {
+		isdn_ppp_ccp_reset_free(is);
+		return PTR_ERR(is->slcomp);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 #ifdef CONFIG_IPPP_FILTER
 	is->pass_filter = NULL;
@@ -567,10 +579,15 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 			is->maxcid = val;
 #ifdef CONFIG_ISDN_PPP_VJ
 			sltmp = slhc_init(16, val);
+<<<<<<< HEAD
 			if (!sltmp) {
 				printk(KERN_ERR "ippp, can't realloc slhc struct\n");
 				return -ENOMEM;
 			}
+=======
+			if (IS_ERR(sltmp))
+				return PTR_ERR(sltmp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (is->slcomp)
 				slhc_free(is->slcomp);
 			is->slcomp = sltmp;
@@ -824,7 +841,10 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 	isdn_net_local *lp;
 	struct ippp_struct *is;
 	int proto;
+<<<<<<< HEAD
 	unsigned char protobuf[4];
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	is = file->private_data;
 
@@ -838,6 +858,7 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 	if (!lp)
 		printk(KERN_DEBUG "isdn_ppp_write: lp == NULL\n");
 	else {
+<<<<<<< HEAD
 		/*
 		 * Don't reset huptimer for
 		 * LCP packets. (Echo requests).
@@ -850,12 +871,33 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 
 		if (lp->isdn_device < 0 || lp->isdn_channel < 0)
 			return 0;
+=======
+		if (lp->isdn_device < 0 || lp->isdn_channel < 0) {
+			unsigned char protobuf[4];
+			/*
+			 * Don't reset huptimer for
+			 * LCP packets. (Echo requests).
+			 */
+			if (copy_from_user(protobuf, buf, 4))
+				return -EFAULT;
+
+			proto = PPP_PROTOCOL(protobuf);
+			if (proto != PPP_LCP)
+				lp->huptimer = 0;
+
+			return 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if ((dev->drv[lp->isdn_device]->flags & DRV_FLAG_RUNNING) &&
 		    lp->dialstate == 0 &&
 		    (lp->flags & ISDN_NET_CONNECTED)) {
 			unsigned short hl;
 			struct sk_buff *skb;
+<<<<<<< HEAD
+=======
+			unsigned char *cpy_buf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/*
 			 * we need to reserve enough space in front of
 			 * sk_buff. old call to dev_alloc_skb only reserved
@@ -868,11 +910,28 @@ isdn_ppp_write(int min, struct file *file, const char __user *buf, int count)
 				return count;
 			}
 			skb_reserve(skb, hl);
+<<<<<<< HEAD
 			if (copy_from_user(skb_put(skb, count), buf, count))
+=======
+			cpy_buf = skb_put(skb, count);
+			if (copy_from_user(cpy_buf, buf, count))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			{
 				kfree_skb(skb);
 				return -EFAULT;
 			}
+<<<<<<< HEAD
+=======
+
+			/*
+			 * Don't reset huptimer for
+			 * LCP packets. (Echo requests).
+			 */
+			proto = PPP_PROTOCOL(cpy_buf);
+			if (proto != PPP_LCP)
+				lp->huptimer = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (is->debug & 0x40) {
 				printk(KERN_DEBUG "ppp xmit: len %d\n", (int) skb->len);
 				isdn_ppp_frame_log("xmit", skb->data, skb->len, 32, is->unit, lp->ppp_slot);
@@ -2360,7 +2419,11 @@ static struct ippp_ccp_reset_state *isdn_ppp_ccp_reset_alloc_state(struct ippp_s
 		       id);
 		return NULL;
 	} else {
+<<<<<<< HEAD
 		rs = kzalloc(sizeof(struct ippp_ccp_reset_state), GFP_KERNEL);
+=======
+		rs = kzalloc(sizeof(struct ippp_ccp_reset_state), GFP_ATOMIC);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!rs)
 			return NULL;
 		rs->state = CCPResetIdle;

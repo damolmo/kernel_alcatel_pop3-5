@@ -11,6 +11,10 @@
 #include <linux/vmalloc.h>
 #include <linux/blkdev.h>
 #include <linux/namei.h>
+<<<<<<< HEAD
+=======
+#include <linux/mount.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/ctype.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -506,14 +510,23 @@ static int adjoin(struct dm_table *table, struct dm_target *ti)
  * On the other hand, dm-switch needs to process bulk data using messages and
  * excessive use of GFP_NOIO could cause trouble.
  */
+<<<<<<< HEAD
 static char **realloc_argv(unsigned *array_size, char **old_argv)
+=======
+static char **realloc_argv(unsigned *size, char **old_argv)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	char **argv;
 	unsigned new_size;
 	gfp_t gfp;
 
+<<<<<<< HEAD
 	if (*array_size) {
 		new_size = *array_size * 2;
+=======
+	if (*size) {
+		new_size = *size * 2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		gfp = GFP_KERNEL;
 	} else {
 		new_size = 8;
@@ -521,8 +534,13 @@ static char **realloc_argv(unsigned *array_size, char **old_argv)
 	}
 	argv = kmalloc(new_size * sizeof(*argv), gfp);
 	if (argv) {
+<<<<<<< HEAD
 		memcpy(argv, old_argv, *array_size * sizeof(*argv));
 		*array_size = new_size;
+=======
+		memcpy(argv, old_argv, *size * sizeof(*argv));
+		*size = new_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	kfree(old_argv);
@@ -691,28 +709,43 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 
 	tgt->type = dm_get_target_type(type);
 	if (!tgt->type) {
+<<<<<<< HEAD
 		DMERR("%s: %s: unknown target type", dm_device_name(t->md),
 		      type);
+=======
+		DMERR("%s: %s: unknown target type", dm_device_name(t->md), type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 	}
 
 	if (dm_target_needs_singleton(tgt->type)) {
 		if (t->num_targets) {
+<<<<<<< HEAD
 			DMERR("%s: target type %s must appear alone in table",
 			      dm_device_name(t->md), type);
 			return -EINVAL;
+=======
+			tgt->error = "singleton target type must appear alone in table";
+			goto bad;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		t->singleton = 1;
 	}
 
 	if (dm_target_always_writeable(tgt->type) && !(t->mode & FMODE_WRITE)) {
+<<<<<<< HEAD
 		DMERR("%s: target type %s may not be included in read-only tables",
 		      dm_device_name(t->md), type);
 		return -EINVAL;
+=======
+		tgt->error = "target type may not be included in a read-only table";
+		goto bad;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (t->immutable_target_type) {
 		if (t->immutable_target_type != tgt->type) {
+<<<<<<< HEAD
 			DMERR("%s: immutable target type %s cannot be mixed with other target types",
 			      dm_device_name(t->md), t->immutable_target_type->name);
 			return -EINVAL;
@@ -722,6 +755,15 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 			DMERR("%s: immutable target type %s cannot be mixed with other target types",
 			      dm_device_name(t->md), tgt->type->name);
 			return -EINVAL;
+=======
+			tgt->error = "immutable target type cannot be mixed with other target types";
+			goto bad;
+		}
+	} else if (dm_target_is_immutable(tgt->type)) {
+		if (t->num_targets) {
+			tgt->error = "immutable target type cannot be mixed with other target types";
+			goto bad;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		t->immutable_target_type = tgt->type;
 	}
@@ -736,7 +778,10 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 	 */
 	if (!adjoin(t, tgt)) {
 		tgt->error = "Gap in table";
+<<<<<<< HEAD
 		r = -EINVAL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto bad;
 	}
 
@@ -1117,12 +1162,15 @@ void dm_table_event_callback(struct dm_table *t,
 
 void dm_table_event(struct dm_table *t)
 {
+<<<<<<< HEAD
 	/*
 	 * You can no longer call dm_table_event() from interrupt
 	 * context, use a bottom half instead.
 	 */
 	BUG_ON(in_interrupt());
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&_event_lock);
 	if (t->event_fn)
 		t->event_fn(t->event_context);
@@ -1130,7 +1178,11 @@ void dm_table_event(struct dm_table *t)
 }
 EXPORT_SYMBOL(dm_table_event);
 
+<<<<<<< HEAD
 sector_t dm_table_get_size(struct dm_table *t)
+=======
+inline sector_t dm_table_get_size(struct dm_table *t)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return t->num_targets ? (t->highs[t->num_targets - 1] + 1) : 0;
 }
@@ -1155,6 +1207,12 @@ struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector)
 	unsigned int l, n = 0, k = 0;
 	sector_t *node;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(sector >= dm_table_get_size(t)))
+		return &t->targets[t->num_targets];
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (l = 0; l < t->depth; l++) {
 		n = get_child(n, k);
 		node = get_node(t, l, n);
@@ -1167,6 +1225,49 @@ struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector)
 	return &t->targets[(KEYS_PER_NODE * n) + k];
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * type->iterate_devices() should be called when the sanity check needs to
+ * iterate and check all underlying data devices. iterate_devices() will
+ * iterate all underlying data devices until it encounters a non-zero return
+ * code, returned by whether the input iterate_devices_callout_fn, or
+ * iterate_devices() itself internally.
+ *
+ * For some target type (e.g. dm-stripe), one call of iterate_devices() may
+ * iterate multiple underlying devices internally, in which case a non-zero
+ * return code returned by iterate_devices_callout_fn will stop the iteration
+ * in advance.
+ *
+ * Cases requiring _any_ underlying device supporting some kind of attribute,
+ * should use the iteration structure like dm_table_any_dev_attr(), or call
+ * it directly. @func should handle semantics of positive examples, e.g.
+ * capable of something.
+ *
+ * Cases requiring _all_ underlying devices supporting some kind of attribute,
+ * should use the iteration structure like dm_table_supports_nowait() or
+ * dm_table_supports_discards(). Or introduce dm_table_all_devs_attr() that
+ * uses an @anti_func that handle semantics of counter examples, e.g. not
+ * capable of something. So: return !dm_table_any_dev_attr(t, anti_func);
+ */
+static bool dm_table_any_dev_attr(struct dm_table *t,
+				  iterate_devices_callout_fn func)
+{
+	struct dm_target *ti;
+	unsigned int i;
+
+	for (i = 0; i < dm_table_get_num_targets(t); i++) {
+		ti = dm_table_get_target(t, i);
+
+		if (ti->type->iterate_devices &&
+		    ti->type->iterate_devices(ti, func, NULL))
+			return true;
+        }
+
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int count_device(struct dm_target *ti, struct dm_dev *dev,
 			sector_t start, sector_t len, void *data)
 {
@@ -1336,12 +1437,21 @@ static bool dm_table_discard_zeroes_data(struct dm_table *t)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int device_is_nonrot(struct dm_target *ti, struct dm_dev *dev,
 			    sector_t start, sector_t len, void *data)
 {
 	struct request_queue *q = bdev_get_queue(dev->bdev);
 
 	return q && blk_queue_nonrot(q);
+=======
+static int device_is_rotational(struct dm_target *ti, struct dm_dev *dev,
+				sector_t start, sector_t len, void *data)
+{
+	struct request_queue *q = bdev_get_queue(dev->bdev);
+
+	return q && !blk_queue_nonrot(q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int device_is_not_random(struct dm_target *ti, struct dm_dev *dev,
@@ -1352,6 +1462,7 @@ static int device_is_not_random(struct dm_target *ti, struct dm_dev *dev,
 	return q && !blk_queue_add_random(q);
 }
 
+<<<<<<< HEAD
 static int queue_supports_sg_merge(struct dm_target *ti, struct dm_dev *dev,
 				   sector_t start, sector_t len, void *data)
 {
@@ -1375,6 +1486,14 @@ static bool dm_table_all_devices_attribute(struct dm_table *t,
 	}
 
 	return 1;
+=======
+static int queue_no_sg_merge(struct dm_target *ti, struct dm_dev *dev,
+			     sector_t start, sector_t len, void *data)
+{
+	struct request_queue *q = bdev_get_queue(dev->bdev);
+
+	return q && test_bit(QUEUE_FLAG_NO_SG_MERGE, &q->queue_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int device_not_write_same_capable(struct dm_target *ti, struct dm_dev *dev,
@@ -1467,18 +1586,32 @@ void dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 		q->limits.discard_zeroes_data = 0;
 
 	/* Ensure that all underlying devices are non-rotational. */
+<<<<<<< HEAD
 	if (dm_table_all_devices_attribute(t, device_is_nonrot))
 		queue_flag_set_unlocked(QUEUE_FLAG_NONROT, q);
 	else
 		queue_flag_clear_unlocked(QUEUE_FLAG_NONROT, q);
+=======
+	if (dm_table_any_dev_attr(t, device_is_rotational))
+		queue_flag_clear_unlocked(QUEUE_FLAG_NONROT, q);
+	else
+		queue_flag_set_unlocked(QUEUE_FLAG_NONROT, q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!dm_table_supports_write_same(t))
 		q->limits.max_write_same_sectors = 0;
 
+<<<<<<< HEAD
 	if (dm_table_all_devices_attribute(t, queue_supports_sg_merge))
 		queue_flag_clear_unlocked(QUEUE_FLAG_NO_SG_MERGE, q);
 	else
 		queue_flag_set_unlocked(QUEUE_FLAG_NO_SG_MERGE, q);
+=======
+	if (dm_table_any_dev_attr(t, queue_no_sg_merge))
+		queue_flag_set_unlocked(QUEUE_FLAG_NO_SG_MERGE, q);
+	else
+		queue_flag_clear_unlocked(QUEUE_FLAG_NO_SG_MERGE, q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dm_table_set_integrity(t);
 
@@ -1488,7 +1621,11 @@ void dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 	 * Clear QUEUE_FLAG_ADD_RANDOM if any underlying device does not
 	 * have it set.
 	 */
+<<<<<<< HEAD
 	if (blk_queue_add_random(q) && dm_table_all_devices_attribute(t, device_is_not_random))
+=======
+	if (blk_queue_add_random(q) && dm_table_any_dev_attr(t, device_is_not_random))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, q);
 
 	/*
@@ -1503,6 +1640,12 @@ void dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 	smp_mb();
 	if (dm_table_request_based(t))
 		queue_flag_set_unlocked(QUEUE_FLAG_STACKABLE, q);
+<<<<<<< HEAD
+=======
+
+	/* io_pages is used for readahead */
+	q->backing_dev_info.io_pages = limits->max_sectors >> (PAGE_SHIFT - 9);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 unsigned int dm_table_get_num_targets(struct dm_table *t)

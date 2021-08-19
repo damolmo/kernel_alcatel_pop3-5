@@ -2,7 +2,11 @@
  *	TURBOchannel bus services.
  *
  *	Copyright (c) Harald Koerfgen, 1998
+<<<<<<< HEAD
  *	Copyright (c) 2001, 2003, 2005, 2006  Maciej W. Rozycki
+=======
+ *	Copyright (c) 2001, 2003, 2005, 2006, 2018  Maciej W. Rozycki
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *	Copyright (c) 2005  James Simmons
  *
  *	This file is subject to the terms and conditions of the GNU
@@ -10,6 +14,10 @@
  *	directory of this archive for more details.
  */
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma-mapping.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -93,6 +101,14 @@ static void __init tc_bus_add_devices(struct tc_bus *tbus)
 		tdev->dev.bus = &tc_bus_type;
 		tdev->slot = slot;
 
+<<<<<<< HEAD
+=======
+		/* TURBOchannel has 34-bit DMA addressing (16GiB space). */
+		tdev->dma_mask = DMA_BIT_MASK(34);
+		tdev->dev.dma_mask = &tdev->dma_mask;
+		tdev->dev.coherent_dma_mask = DMA_BIT_MASK(34);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < 8; i++) {
 			tdev->firmware[i] =
 				readb(module + offset + TC_FIRM_VER + 4 * i);

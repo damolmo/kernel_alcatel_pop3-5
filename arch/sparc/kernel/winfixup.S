@@ -32,8 +32,12 @@ fill_fixup:
 	 rd	%pc, %g7
 	call	do_sparc64_fault
 	 add	%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt	%xcc, rtrap
 	 nop
+=======
+	ba,a,pt	%xcc, rtrap
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Be very careful about usage of the trap globals here.
 	 * You cannot touch %g5 as that has the fault information.

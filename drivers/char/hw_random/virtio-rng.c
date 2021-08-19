@@ -74,7 +74,11 @@ static int virtio_read(struct hwrng *rng, void *buf, size_t size, bool wait)
 
 	if (!vi->busy) {
 		vi->busy = true;
+<<<<<<< HEAD
 		init_completion(&vi->have_data);
+=======
+		reinit_completion(&vi->have_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		register_buffer(vi, buf, size);
 	}
 

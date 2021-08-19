@@ -709,7 +709,11 @@ isac_release(struct isac_hw *isac)
 {
 	if (isac->type & IPAC_TYPE_ISACX)
 		WriteISAC(isac, ISACX_MASK, 0xff);
+<<<<<<< HEAD
 	else
+=======
+	else if (isac->type != 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		WriteISAC(isac, ISAC_MASK, 0xff);
 	if (isac->dch.timer.function != NULL) {
 		del_timer(&isac->dch.timer);
@@ -754,10 +758,17 @@ dbusy_timer_handler(struct isac_hw *isac)
 }
 
 static int
+<<<<<<< HEAD
 open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 {
 	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
 		 isac->dch.dev.id, __builtin_return_address(1));
+=======
+open_dchannel_caller(struct isac_hw *isac, struct channel_req *rq, void *caller)
+{
+	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
+		 isac->dch.dev.id, caller);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
@@ -771,6 +782,15 @@ open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int
+open_dchannel(struct isac_hw *isac, struct channel_req *rq)
+{
+	return open_dchannel_caller(isac, rq, __builtin_return_address(0));
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static const char *ISACVer[] =
 {"2086/2186 V1.1", "2085 B1", "2085 B2",
  "2085 V2.3"};
@@ -1548,7 +1568,11 @@ ipac_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	case OPEN_CHANNEL:
 		rq = arg;
 		if (rq->protocol == ISDN_P_TE_S0)
+<<<<<<< HEAD
 			err = open_dchannel(isac, rq);
+=======
+			err = open_dchannel_caller(isac, rq, __builtin_return_address(0));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else
 			err = open_bchannel(ipac, rq);
 		if (err)

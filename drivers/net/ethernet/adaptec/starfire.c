@@ -1153,6 +1153,15 @@ static void init_ring(struct net_device *dev)
 		if (skb == NULL)
 			break;
 		np->rx_info[i].mapping = pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+		if (pci_dma_mapping_error(np->pci_dev,
+					  np->rx_info[i].mapping)) {
+			dev_kfree_skb(skb);
+			np->rx_info[i].skb = NULL;
+			break;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Grrr, we cannot offset to correctly align the IP header. */
 		np->rx_ring[i].rxaddr = cpu_to_dma(np->rx_info[i].mapping | RxDescValid);
 	}
@@ -1183,8 +1192,14 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	unsigned int entry;
+<<<<<<< HEAD
 	u32 status;
 	int i;
+=======
+	unsigned int prev_tx;
+	u32 status;
+	int i, j;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * be cautious here, wrapping the queue has weird semantics
@@ -1202,6 +1217,10 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif /* ZEROCOPY && HAS_BROKEN_FIRMWARE */
 
+<<<<<<< HEAD
+=======
+	prev_tx = np->cur_tx;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	entry = np->cur_tx % TX_RING_SIZE;
 	for (i = 0; i < skb_num_frags(skb); i++) {
 		int wrap_ring = 0;
@@ -1235,6 +1254,14 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 					       skb_frag_size(this_frag),
 					       PCI_DMA_TODEVICE);
 		}
+<<<<<<< HEAD
+=======
+		if (pci_dma_mapping_error(np->pci_dev,
+					  np->tx_info[entry].mapping)) {
+			dev->stats.tx_dropped++;
+			goto err_out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		np->tx_ring[entry].addr = cpu_to_dma(np->tx_info[entry].mapping);
 		np->tx_ring[entry].status = cpu_to_le32(status);
@@ -1269,8 +1296,35 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		netif_stop_queue(dev);
 
 	return NETDEV_TX_OK;
+<<<<<<< HEAD
 }
 
+=======
+
+err_out:
+	entry = prev_tx % TX_RING_SIZE;
+	np->tx_info[entry].skb = NULL;
+	if (i > 0) {
+		pci_unmap_single(np->pci_dev,
+				 np->tx_info[entry].mapping,
+				 skb_first_frag_len(skb),
+				 PCI_DMA_TODEVICE);
+		np->tx_info[entry].mapping = 0;
+		entry = (entry + np->tx_info[entry].used_slots) % TX_RING_SIZE;
+		for (j = 1; j < i; j++) {
+			pci_unmap_single(np->pci_dev,
+					 np->tx_info[entry].mapping,
+					 skb_frag_size(
+						&skb_shinfo(skb)->frags[j-1]),
+					 PCI_DMA_TODEVICE);
+			entry++;
+		}
+	}
+	dev_kfree_skb_any(skb);
+	np->cur_tx = prev_tx;
+	return NETDEV_TX_OK;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* The interrupt handler does all of the Rx thread work and cleans up
    after the Tx thread. */
@@ -1570,6 +1624,15 @@ static void refill_rx_ring(struct net_device *dev)
 				break;	/* Better luck next round. */
 			np->rx_info[entry].mapping =
 				pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+<<<<<<< HEAD
+=======
+			if (pci_dma_mapping_error(np->pci_dev,
+						np->rx_info[entry].mapping)) {
+				dev_kfree_skb(skb);
+				np->rx_info[entry].skb = NULL;
+				break;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			np->rx_ring[entry].rxaddr =
 				cpu_to_dma(np->rx_info[entry].mapping | RxDescValid);
 		}

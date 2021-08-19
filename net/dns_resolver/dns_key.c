@@ -25,6 +25,10 @@
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/ratelimit.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/kernel.h>
 #include <linux/keyctl.h>
 #include <linux/err.h>
@@ -86,6 +90,7 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 		opt++;
 		kdebug("options: '%s'", opt);
 		do {
+<<<<<<< HEAD
 			const char *eq;
 			int opt_len, opt_nlen, opt_vlen, tmp;
 
@@ -105,16 +110,48 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 			tmp = opt_vlen >= 0 ? opt_vlen : 0;
 			kdebug("option '%*.*s' val '%*.*s'",
 			       opt_nlen, opt_nlen, opt, tmp, tmp, eq);
+=======
+			int opt_len, opt_nlen;
+			const char *eq;
+			char optval[128];
+
+			next_opt = memchr(opt, '#', end - opt) ?: end;
+			opt_len = next_opt - opt;
+			if (opt_len <= 0 || opt_len > sizeof(optval)) {
+				pr_warn_ratelimited("Invalid option length (%d) for dns_resolver key\n",
+						    opt_len);
+				return -EINVAL;
+			}
+
+			eq = memchr(opt, '=', opt_len);
+			if (eq) {
+				opt_nlen = eq - opt;
+				eq++;
+				memcpy(optval, eq, next_opt - eq);
+				optval[next_opt - eq] = '\0';
+			} else {
+				opt_nlen = opt_len;
+				optval[0] = '\0';
+			}
+
+			kdebug("option '%*.*s' val '%s'",
+			       opt_nlen, opt_nlen, opt, optval);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/* see if it's an error number representing a DNS error
 			 * that's to be recorded as the result in this key */
 			if (opt_nlen == sizeof(DNS_ERRORNO_OPTION) - 1 &&
 			    memcmp(opt, DNS_ERRORNO_OPTION, opt_nlen) == 0) {
 				kdebug("dns error number option");
+<<<<<<< HEAD
 				if (opt_vlen <= 0)
 					goto bad_option_value;
 
 				ret = kstrtoul(eq, 10, &derrno);
+=======
+
+				ret = kstrtoul(optval, 10, &derrno);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (ret < 0)
 					goto bad_option_value;
 
@@ -127,10 +164,15 @@ dns_resolver_preparse(struct key_preparsed_payload *prep)
 			}
 
 		bad_option_value:
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "Option '%*.*s' to dns_resolver key:"
 			       " bad/missing value\n",
 			       opt_nlen, opt_nlen, opt);
+=======
+			pr_warn_ratelimited("Option '%*.*s' to dns_resolver key: bad/missing value\n",
+					    opt_nlen, opt_nlen, opt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EINVAL;
 		} while (opt = next_opt + 1, opt < end);
 	}
@@ -226,7 +268,11 @@ static void dns_resolver_describe(const struct key *key, struct seq_file *m)
 	int err = key->type_data.x[0];
 
 	seq_puts(m, key->description);
+<<<<<<< HEAD
 	if (key_is_instantiated(key)) {
+=======
+	if (key_is_positive(key)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err)
 			seq_printf(m, ": %d", err);
 		else

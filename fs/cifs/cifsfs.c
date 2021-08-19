@@ -204,7 +204,11 @@ cifs_statfs(struct dentry *dentry, struct kstatfs *buf)
 		rc = server->ops->queryfs(xid, tcon, buf);
 
 	free_xid(xid);
+<<<<<<< HEAD
 	return 0;
+=======
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static long cifs_fallocate(struct file *file, int mode, loff_t off, loff_t len)
@@ -678,6 +682,17 @@ cifs_do_mount(struct file_system_type *fs_type,
 		goto out_cifs_sb;
 	}
 
+<<<<<<< HEAD
+=======
+	if (volume_info->prepath) {
+		cifs_sb->prepath = kstrdup(volume_info->prepath, GFP_KERNEL);
+		if (cifs_sb->prepath == NULL) {
+			root = ERR_PTR(-ENOMEM);
+			goto out_cifs_sb;
+		}
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cifs_setup_cifs_sb(volume_info, cifs_sb);
 
 	rc = cifs_mount(cifs_sb, volume_info);
@@ -716,7 +731,15 @@ cifs_do_mount(struct file_system_type *fs_type,
 		sb->s_flags |= MS_ACTIVE;
 	}
 
+<<<<<<< HEAD
 	root = cifs_get_root(volume_info, sb);
+=======
+	if (cifs_sb->mnt_cifs_flags & CIFS_MOUNT_USE_PREFIX_PATH)
+		root = dget(sb->s_root);
+	else
+		root = cifs_get_root(volume_info, sb);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(root))
 		goto out_super;
 
@@ -1214,7 +1237,10 @@ init_cifs(void)
 	GlobalTotalActiveXid = 0;
 	GlobalMaxActiveXid = 0;
 	spin_lock_init(&cifs_tcp_ses_lock);
+<<<<<<< HEAD
 	spin_lock_init(&cifs_file_list_lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_init(&GlobalMid_Lock);
 
 	if (cifs_max_pending < 2) {
@@ -1249,7 +1275,11 @@ init_cifs(void)
 		goto out_destroy_mids;
 
 #ifdef CONFIG_CIFS_UPCALL
+<<<<<<< HEAD
 	rc = register_key_type(&cifs_spnego_key_type);
+=======
+	rc = init_cifs_spnego();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (rc)
 		goto out_destroy_request_bufs;
 #endif /* CONFIG_CIFS_UPCALL */
@@ -1272,7 +1302,11 @@ out_init_cifs_idmap:
 out_register_key_type:
 #endif
 #ifdef CONFIG_CIFS_UPCALL
+<<<<<<< HEAD
 	unregister_key_type(&cifs_spnego_key_type);
+=======
+	exit_cifs_spnego();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_destroy_request_bufs:
 #endif
 	cifs_destroy_request_bufs();
@@ -1299,7 +1333,11 @@ exit_cifs(void)
 	exit_cifs_idmap();
 #endif
 #ifdef CONFIG_CIFS_UPCALL
+<<<<<<< HEAD
 	unregister_key_type(&cifs_spnego_key_type);
+=======
+	exit_cifs_spnego();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	cifs_destroy_request_bufs();
 	cifs_destroy_mids();

@@ -164,7 +164,11 @@ static int mmc_ios_show(struct seq_file *s, void *data)
 		str = "invalid";
 		break;
 	}
+<<<<<<< HEAD
 	seq_printf(s, "signal voltage:\t%u (%s)\n", ios->chip_select, str);
+=======
+	seq_printf(s, "signal voltage:\t%u (%s)\n", ios->signal_voltage, str);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -195,7 +199,11 @@ static int mmc_clock_opt_set(void *data, u64 val)
 	struct mmc_host *host = data;
 
 	/* We need this check due to input value is u64 */
+<<<<<<< HEAD
 	if (val > host->f_max)
+=======
+	if (val != 0 && (val > host->f_max || val < host->f_min))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	mmc_claim_host(host);
@@ -340,6 +348,7 @@ static const struct file_operations mmc_dbg_ext_csd_fops = {
 	.llseek		= default_llseek,
 };
 
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 static int mmc_bkops_stats_open(struct inode *inode, struct file *filp)
 {
@@ -430,6 +439,8 @@ static const struct file_operations mmc_dbg_bkops_stats_fops = {
 };
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void mmc_add_card_debugfs(struct mmc_card *card)
 {
 	struct mmc_host	*host = card->host;
@@ -461,6 +472,7 @@ void mmc_add_card_debugfs(struct mmc_card *card)
 		if (!debugfs_create_file("ext_csd", S_IRUSR, root, card,
 					&mmc_dbg_ext_csd_fops))
 			goto err;
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	if (mmc_card_mmc(card) && (card->ext_csd.rev >= 5) &&
 		card->ext_csd.bkops_en)
@@ -468,6 +480,8 @@ void mmc_add_card_debugfs(struct mmc_card *card)
 			&mmc_dbg_bkops_stats_fops))
 			goto err;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return;
 

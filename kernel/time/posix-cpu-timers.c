@@ -103,7 +103,11 @@ static void bump_cpu_timer(struct k_itimer *timer,
 			continue;
 
 		timer->it.cpu.expires += incr;
+<<<<<<< HEAD
 		timer->it_overrun += 1 << i;
+=======
+		timer->it_overrun += 1LL << i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		delta -= incr;
 	}
 }
@@ -784,6 +788,10 @@ static void posix_cpu_timer_get(struct k_itimer *timer, struct itimerspec *itp)
 			timer->it.cpu.expires = 0;
 			sample_to_timespec(timer->it_clock, timer->it.cpu.expires,
 					   &itp->it_value);
+<<<<<<< HEAD
+=======
+			return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {
 			cpu_timer_sample_group(timer->it_clock, p, &now);
 			unlock_task_sighand(p, &flags);
@@ -852,10 +860,17 @@ static void check_thread_timers(struct task_struct *tsk,
 	/*
 	 * Check for the special case thread timers.
 	 */
+<<<<<<< HEAD
 	soft = ACCESS_ONCE(sig->rlim[RLIMIT_RTTIME].rlim_cur);
 	if (soft != RLIM_INFINITY) {
 		unsigned long hard =
 			ACCESS_ONCE(sig->rlim[RLIMIT_RTTIME].rlim_max);
+=======
+	soft = READ_ONCE(sig->rlim[RLIMIT_RTTIME].rlim_cur);
+	if (soft != RLIM_INFINITY) {
+		unsigned long hard =
+			READ_ONCE(sig->rlim[RLIMIT_RTTIME].rlim_max);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (hard != RLIM_INFINITY &&
 		    tsk->rt.timeout > DIV_ROUND_UP(hard, USEC_PER_SEC/HZ)) {
@@ -958,11 +973,19 @@ static void check_process_timers(struct task_struct *tsk,
 			 SIGPROF);
 	check_cpu_itimer(tsk, &sig->it[CPUCLOCK_VIRT], &virt_expires, utime,
 			 SIGVTALRM);
+<<<<<<< HEAD
 	soft = ACCESS_ONCE(sig->rlim[RLIMIT_CPU].rlim_cur);
 	if (soft != RLIM_INFINITY) {
 		unsigned long psecs = cputime_to_secs(ptime);
 		unsigned long hard =
 			ACCESS_ONCE(sig->rlim[RLIMIT_CPU].rlim_max);
+=======
+	soft = READ_ONCE(sig->rlim[RLIMIT_CPU].rlim_cur);
+	if (soft != RLIM_INFINITY) {
+		unsigned long psecs = cputime_to_secs(ptime);
+		unsigned long hard =
+			READ_ONCE(sig->rlim[RLIMIT_CPU].rlim_max);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cputime_t x;
 		if (psecs >= hard) {
 			/*
@@ -1334,8 +1357,12 @@ static long posix_cpu_nsleep_restart(struct restart_block *restart_block);
 static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
 			    struct timespec *rqtp, struct timespec __user *rmtp)
 {
+<<<<<<< HEAD
 	struct restart_block *restart_block =
 		&current_thread_info()->restart_block;
+=======
+	struct restart_block *restart_block = &current->restart_block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct itimerspec it;
 	int error;
 

@@ -173,7 +173,11 @@ static int iio_sysfs_trigger_probe(int id)
 	return 0;
 
 out2:
+<<<<<<< HEAD
 	iio_trigger_put(t->trig);
+=======
+	iio_trigger_free(t->trig);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 free_t:
 	kfree(t);
 out1:

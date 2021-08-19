@@ -194,7 +194,11 @@ static int dwapb_irq_reqres(struct irq_data *d)
 	struct dwapb_gpio *gpio = igc->private;
 	struct bgpio_chip *bgc = &gpio->ports[0].bgc;
 
+<<<<<<< HEAD
 	if (gpio_lock_as_irq(&bgc->gc, irqd_to_hwirq(d))) {
+=======
+	if (gpiochip_lock_as_irq(&bgc->gc, irqd_to_hwirq(d))) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(gpio->dev, "unable to lock HW IRQ %lu for IRQ\n",
 			irqd_to_hwirq(d));
 		return -EINVAL;
@@ -208,7 +212,11 @@ static void dwapb_irq_relres(struct irq_data *d)
 	struct dwapb_gpio *gpio = igc->private;
 	struct bgpio_chip *bgc = &gpio->ports[0].bgc;
 
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&bgc->gc, irqd_to_hwirq(d));
+=======
+	gpiochip_unlock_as_irq(&bgc->gc, irqd_to_hwirq(d));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int dwapb_irq_set_type(struct irq_data *d, u32 type)

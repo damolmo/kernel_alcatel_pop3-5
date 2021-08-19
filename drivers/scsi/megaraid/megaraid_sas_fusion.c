@@ -2364,7 +2364,11 @@ megasas_release_fusion(struct megasas_instance *instance)
 
 	iounmap(instance->reg_set);
 
+<<<<<<< HEAD
 	pci_release_selected_regions(instance->pdev, instance->bar);
+=======
+	pci_release_selected_regions(instance->pdev, 1<<instance->bar);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -2508,6 +2512,10 @@ int megasas_wait_for_outstanding_fusion(struct megasas_instance *instance,
 		printk("megaraid_sas: pending commands remain after waiting, "
 		       "will reset adapter scsi%d.\n",
 		       instance->host->host_no);
+<<<<<<< HEAD
+=======
+		*convert = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		retval = 1;
 	}
 out:

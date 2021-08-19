@@ -90,7 +90,11 @@ PTR_FIELD(PTR_GEN,			0,  8)
 
 #define PTR_CHECK_DEV			((1 << PTR_DEV_BITS) - 1)
 
+<<<<<<< HEAD
 #define PTR(gen, offset, dev)						\
+=======
+#define MAKE_PTR(gen, offset, dev)					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	((((__u64) dev) << 51) | ((__u64) offset) << 8 | gen)
 
 /* Bkey utility code */

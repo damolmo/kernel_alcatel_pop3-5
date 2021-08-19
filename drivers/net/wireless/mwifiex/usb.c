@@ -556,6 +556,12 @@ static void mwifiex_usb_disconnect(struct usb_interface *intf)
 					 MWIFIEX_FUNC_SHUTDOWN);
 	}
 
+<<<<<<< HEAD
+=======
+	if (adapter->workqueue)
+		flush_workqueue(adapter->workqueue);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mwifiex_usb_free(card);
 
 	dev_dbg(adapter->dev, "%s: removing card\n", __func__);

@@ -97,6 +97,11 @@ static int fair_share_throttle(struct thermal_zone_device *tz, int trip)
 	if (!tz->tzp || !tz->tzp->tbp)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&tz->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tzp = tz->tzp;
 
 	for (i = 0; i < tzp->num_tbps; i++) {
@@ -114,6 +119,11 @@ static int fair_share_throttle(struct thermal_zone_device *tz, int trip)
 		instance->cdev->updated = false;
 		thermal_cdev_update(cdev);
 	}
+<<<<<<< HEAD
+=======
+
+	mutex_unlock(&tz->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

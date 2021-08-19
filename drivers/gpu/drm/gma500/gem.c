@@ -130,7 +130,11 @@ int psb_gem_create(struct drm_file *file, struct drm_device *dev, u64 size,
 		return ret;
 	}
 	/* We have the initial and handle reference but need only one now */
+<<<<<<< HEAD
 	drm_gem_object_unreference(&r->gem);
+=======
+	drm_gem_object_unreference_unlocked(&r->gem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*handlep = handle;
 	return 0;
 }

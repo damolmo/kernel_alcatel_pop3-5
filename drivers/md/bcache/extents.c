@@ -584,7 +584,11 @@ static bool bch_extent_merge(struct btree_keys *bk, struct bkey *l, struct bkey 
 		return false;
 
 	for (i = 0; i < KEY_PTRS(l); i++)
+<<<<<<< HEAD
 		if (l->ptr[i] + PTR(0, KEY_SIZE(l), 0) != r->ptr[i] ||
+=======
+		if (l->ptr[i] + MAKE_PTR(0, KEY_SIZE(l), 0) != r->ptr[i] ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		    PTR_BUCKET_NR(b->c, l, i) != PTR_BUCKET_NR(b->c, r, i))
 			return false;
 

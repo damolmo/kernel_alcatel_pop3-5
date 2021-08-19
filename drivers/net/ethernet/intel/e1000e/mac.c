@@ -410,6 +410,12 @@ void e1000e_clear_hw_cntrs_base(struct e1000_hw *hw)
  *  Checks to see of the link status of the hardware has changed.  If a
  *  change in link status has been detected, then we read the PHY registers
  *  to get the current speed/duplex if link exists.
+<<<<<<< HEAD
+=======
+ *
+ *  Returns a negative error code (-E1000_ERR_*) or 0 (link down) or 1 (link
+ *  up).
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  **/
 s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 {
@@ -423,7 +429,11 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * Change or Rx Sequence Error interrupt.
 	 */
 	if (!mac->get_link_status)
+<<<<<<< HEAD
 		return 0;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* First we want to see if the MII Status Register reports
 	 * link.  If so, then we want to get the current speed/duplex
@@ -447,7 +457,11 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * we have already determined whether we have link or not.
 	 */
 	if (!mac->autoneg)
+<<<<<<< HEAD
 		return -E1000_ERR_CONFIG;
+=======
+		return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Auto-Neg is enabled.  Auto Speed Detection takes care
 	 * of MAC speed/duplex configuration.  So we only need to
@@ -461,10 +475,19 @@ s32 e1000e_check_for_copper_link(struct e1000_hw *hw)
 	 * different link partner.
 	 */
 	ret_val = e1000e_config_fc_after_link_up(hw);
+<<<<<<< HEAD
 	if (ret_val)
 		e_dbg("Error configuring flow control\n");
 
 	return ret_val;
+=======
+	if (ret_val) {
+		e_dbg("Error configuring flow control\n");
+		return ret_val;
+	}
+
+	return 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

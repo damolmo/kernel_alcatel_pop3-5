@@ -23,6 +23,10 @@
 #include <asm/cpudata.h>
 #include <asm/uaccess.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched_clock.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/nmi.h>
 #include <asm/pcr.h>
 #include <asm/cacheflush.h>
@@ -919,6 +923,11 @@ static void read_in_all_counters(struct cpu_hw_events *cpuc)
 			sparc_perf_event_update(cp, &cp->hw,
 						cpuc->current_idx[i]);
 			cpuc->current_idx[i] = PIC_NO_INDEX;
+<<<<<<< HEAD
+=======
+			if (cp->hw.state & PERF_HES_STOPPED)
+				cp->hw.state |= PERF_HES_ARCH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 }
@@ -951,10 +960,19 @@ static void calculate_single_pcr(struct cpu_hw_events *cpuc)
 
 		enc = perf_event_get_enc(cpuc->events[i]);
 		cpuc->pcr[0] &= ~mask_for_index(idx);
+<<<<<<< HEAD
 		if (hwc->state & PERF_HES_STOPPED)
 			cpuc->pcr[0] |= nop_for_index(idx);
 		else
 			cpuc->pcr[0] |= event_encoding(enc, idx);
+=======
+		if (hwc->state & PERF_HES_ARCH) {
+			cpuc->pcr[0] |= nop_for_index(idx);
+		} else {
+			cpuc->pcr[0] |= event_encoding(enc, idx);
+			hwc->state = 0;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 out:
 	cpuc->pcr[0] |= cpuc->event[0]->hw.config_base;
@@ -980,6 +998,12 @@ static void calculate_multiple_pcrs(struct cpu_hw_events *cpuc)
 
 		cpuc->current_idx[i] = idx;
 
+<<<<<<< HEAD
+=======
+		if (cp->hw.state & PERF_HES_ARCH)
+			continue;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sparc_pmu_start(cp, PERF_EF_RELOAD);
 	}
 out:
@@ -1071,6 +1095,11 @@ static void sparc_pmu_start(struct perf_event *event, int flags)
 	event->hw.state = 0;
 
 	sparc_pmu_enable_event(cpuc, &event->hw, idx);
+<<<<<<< HEAD
+=======
+
+	perf_event_update_userpage(event);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void sparc_pmu_stop(struct perf_event *event, int flags)
@@ -1363,9 +1392,15 @@ static int sparc_pmu_add(struct perf_event *event, int ef_flags)
 	cpuc->events[n0] = event->hw.event_base;
 	cpuc->current_idx[n0] = PIC_NO_INDEX;
 
+<<<<<<< HEAD
 	event->hw.state = PERF_HES_UPTODATE;
 	if (!(ef_flags & PERF_EF_START))
 		event->hw.state |= PERF_HES_STOPPED;
+=======
+	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+	if (!(ef_flags & PERF_EF_START))
+		event->hw.state |= PERF_HES_ARCH;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * If group events scheduling transaction was started,
@@ -1577,6 +1612,11 @@ static int __kprobes perf_event_nmi_handler(struct notifier_block *self,
 	struct perf_sample_data data;
 	struct cpu_hw_events *cpuc;
 	struct pt_regs *regs;
+<<<<<<< HEAD
+=======
+	u64 finish_clock;
+	u64 start_clock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	if (!atomic_read(&active_events))
@@ -1590,6 +1630,11 @@ static int __kprobes perf_event_nmi_handler(struct notifier_block *self,
 		return NOTIFY_DONE;
 	}
 
+<<<<<<< HEAD
+=======
+	start_clock = sched_clock();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	regs = args->regs;
 
 	cpuc = this_cpu_ptr(&cpu_hw_events);
@@ -1628,6 +1673,13 @@ static int __kprobes perf_event_nmi_handler(struct notifier_block *self,
 			sparc_pmu_stop(event, 0);
 	}
 
+<<<<<<< HEAD
+=======
+	finish_clock = sched_clock();
+
+	perf_sample_event_took(finish_clock - start_clock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return NOTIFY_STOP;
 }
 

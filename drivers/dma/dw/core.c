@@ -122,13 +122,17 @@ static void dwc_desc_put(struct dw_dma_chan *dwc, struct dw_desc *desc)
 static void dwc_initialize(struct dw_dma_chan *dwc)
 {
 	struct dw_dma *dw = to_dw_dma(dwc->chan.device);
+<<<<<<< HEAD
 	struct dw_dma_slave *dws = dwc->chan.private;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 cfghi = DWC_CFGH_FIFO_MODE;
 	u32 cfglo = DWC_CFGL_CH_PRIOR(dwc->priority);
 
 	if (dwc->initialized == true)
 		return;
 
+<<<<<<< HEAD
 	if (dws) {
 		/*
 		 * We need controller-specific data to set up slave
@@ -142,6 +146,10 @@ static void dwc_initialize(struct dw_dma_chan *dwc)
 		cfghi |= DWC_CFGH_DST_PER(dwc->dst_id);
 		cfghi |= DWC_CFGH_SRC_PER(dwc->src_id);
 	}
+=======
+	cfghi |= DWC_CFGH_DST_PER(dwc->dst_id);
+	cfghi |= DWC_CFGH_SRC_PER(dwc->src_id);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	channel_writel(dwc, CFG_LO, cfglo);
 	channel_writel(dwc, CFG_HI, cfghi);
@@ -222,7 +230,12 @@ static void dwc_dostart(struct dw_dma_chan *dwc, struct dw_desc *first)
 	/* ASSERT:  channel is idle */
 	if (dma_readl(dw, CH_EN) & dwc->mask) {
 		dev_err(chan2dev(&dwc->chan),
+<<<<<<< HEAD
 			"BUG: Attempted to start non-idle channel\n");
+=======
+			"%s: BUG: Attempted to start non-idle channel\n",
+			__func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dwc_dump_chan_regs(dwc);
 
 		/* The tasklet will hopefully advance the queue... */
@@ -527,16 +540,28 @@ EXPORT_SYMBOL(dw_dma_get_dst_addr);
 
 /* Called with dwc->lock held and all DMAC interrupts disabled */
 static void dwc_handle_cyclic(struct dw_dma *dw, struct dw_dma_chan *dwc,
+<<<<<<< HEAD
 		u32 status_err, u32 status_xfer)
 {
 	unsigned long flags;
 
 	if (dwc->mask) {
+=======
+		u32 status_block, u32 status_err, u32 status_xfer)
+{
+	unsigned long flags;
+
+	if (status_block & dwc->mask) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		void (*callback)(void *param);
 		void *callback_param;
 
 		dev_vdbg(chan2dev(&dwc->chan), "new cyclic period llp 0x%08x\n",
 				channel_readl(dwc, LLP));
+<<<<<<< HEAD
+=======
+		dma_writel(dw, CLEAR.BLOCK, dwc->mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		callback = dwc->cdesc->period_callback;
 		callback_param = dwc->cdesc->period_callback_param;
@@ -568,6 +593,10 @@ static void dwc_handle_cyclic(struct dw_dma *dw, struct dw_dma_chan *dwc,
 		channel_writel(dwc, CTL_LO, 0);
 		channel_writel(dwc, CTL_HI, 0);
 
+<<<<<<< HEAD
+=======
+		dma_writel(dw, CLEAR.BLOCK, dwc->mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dma_writel(dw, CLEAR.ERROR, dwc->mask);
 		dma_writel(dw, CLEAR.XFER, dwc->mask);
 
@@ -576,6 +605,12 @@ static void dwc_handle_cyclic(struct dw_dma *dw, struct dw_dma_chan *dwc,
 
 		spin_unlock_irqrestore(&dwc->lock, flags);
 	}
+<<<<<<< HEAD
+=======
+
+	/* Re-enable interrupts */
+	channel_set_bit(dw, MASK.BLOCK, dwc->mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* ------------------------------------------------------------------------- */
@@ -584,10 +619,18 @@ static void dw_dma_tasklet(unsigned long data)
 {
 	struct dw_dma *dw = (struct dw_dma *)data;
 	struct dw_dma_chan *dwc;
+<<<<<<< HEAD
+=======
+	u32 status_block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32 status_xfer;
 	u32 status_err;
 	int i;
 
+<<<<<<< HEAD
+=======
+	status_block = dma_readl(dw, RAW.BLOCK);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	status_xfer = dma_readl(dw, RAW.XFER);
 	status_err = dma_readl(dw, RAW.ERROR);
 
@@ -596,16 +639,25 @@ static void dw_dma_tasklet(unsigned long data)
 	for (i = 0; i < dw->dma.chancnt; i++) {
 		dwc = &dw->chan[i];
 		if (test_bit(DW_DMA_IS_CYCLIC, &dwc->flags))
+<<<<<<< HEAD
 			dwc_handle_cyclic(dw, dwc, status_err, status_xfer);
+=======
+			dwc_handle_cyclic(dw, dwc, status_block, status_err,
+					status_xfer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else if (status_err & (1 << i))
 			dwc_handle_error(dw, dwc);
 		else if (status_xfer & (1 << i))
 			dwc_scan_descriptors(dw, dwc);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Re-enable interrupts.
 	 */
+=======
+	/* Re-enable interrupts */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	channel_set_bit(dw, MASK.XFER, dw->all_chan_mask);
 	channel_set_bit(dw, MASK.ERROR, dw->all_chan_mask);
 }
@@ -626,6 +678,10 @@ static irqreturn_t dw_dma_interrupt(int irq, void *dev_id)
 	 * softirq handler.
 	 */
 	channel_clear_bit(dw, MASK.XFER, dw->all_chan_mask);
+<<<<<<< HEAD
+=======
+	channel_clear_bit(dw, MASK.BLOCK, dw->all_chan_mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	channel_clear_bit(dw, MASK.ERROR, dw->all_chan_mask);
 
 	status = dma_readl(dw, STATUS_INT);
@@ -636,6 +692,10 @@ static irqreturn_t dw_dma_interrupt(int irq, void *dev_id)
 
 		/* Try to recover */
 		channel_clear_bit(dw, MASK.XFER, (1 << 8) - 1);
+<<<<<<< HEAD
+=======
+		channel_clear_bit(dw, MASK.BLOCK, (1 << 8) - 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		channel_clear_bit(dw, MASK.SRC_TRAN, (1 << 8) - 1);
 		channel_clear_bit(dw, MASK.DST_TRAN, (1 << 8) - 1);
 		channel_clear_bit(dw, MASK.ERROR, (1 << 8) - 1);
@@ -923,7 +983,11 @@ bool dw_dma_filter(struct dma_chan *chan, void *param)
 	struct dw_dma_chan *dwc = to_dw_dma_chan(chan);
 	struct dw_dma_slave *dws = param;
 
+<<<<<<< HEAD
 	if (!dws || dws->dma_dev != chan->device->dev)
+=======
+	if (dws->dma_dev != chan->device->dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return false;
 
 	/* We have to copy data since dws can be temporary storage */
@@ -1103,6 +1167,10 @@ static void dw_dma_off(struct dw_dma *dw)
 	dma_writel(dw, CFG, 0);
 
 	channel_clear_bit(dw, MASK.XFER, dw->all_chan_mask);
+<<<<<<< HEAD
+=======
+	channel_clear_bit(dw, MASK.BLOCK, dw->all_chan_mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	channel_clear_bit(dw, MASK.SRC_TRAN, dw->all_chan_mask);
 	channel_clear_bit(dw, MASK.DST_TRAN, dw->all_chan_mask);
 	channel_clear_bit(dw, MASK.ERROR, dw->all_chan_mask);
@@ -1143,6 +1211,17 @@ static int dwc_alloc_chan_resources(struct dma_chan *chan)
 	 * doesn't mean what you think it means), and status writeback.
 	 */
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We need controller-specific data to set up slave transfers.
+	 */
+	if (chan->private && !dw_dma_filter(chan, chan->private)) {
+		dev_warn(chan2dev(chan), "Wrong controller-specific data\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Enable controller here if needed */
 	if (!dw->in_use)
 		dw_dma_on(dw);
@@ -1204,10 +1283,25 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
 	spin_lock_irqsave(&dwc->lock, flags);
 	list_splice_init(&dwc->free_list, &list);
 	dwc->descs_allocated = 0;
+<<<<<<< HEAD
+=======
+
+	/* Clear custom channel configuration */
+	dwc->src_id = 0;
+	dwc->dst_id = 0;
+
+	dwc->src_master = 0;
+	dwc->dst_master = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dwc->initialized = false;
 
 	/* Disable interrupts */
 	channel_clear_bit(dw, MASK.XFER, dwc->mask);
+<<<<<<< HEAD
+=======
+	channel_clear_bit(dw, MASK.BLOCK, dwc->mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	channel_clear_bit(dw, MASK.ERROR, dwc->mask);
 
 	spin_unlock_irqrestore(&dwc->lock, flags);
@@ -1237,7 +1331,11 @@ static void dwc_free_chan_resources(struct dma_chan *chan)
 int dw_dma_cyclic_start(struct dma_chan *chan)
 {
 	struct dw_dma_chan	*dwc = to_dw_dma_chan(chan);
+<<<<<<< HEAD
 	struct dw_dma		*dw = to_dw_dma(dwc->chan.device);
+=======
+	struct dw_dma		*dw = to_dw_dma(chan->device);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long		flags;
 
 	if (!test_bit(DW_DMA_IS_CYCLIC, &dwc->flags)) {
@@ -1247,6 +1345,7 @@ int dw_dma_cyclic_start(struct dma_chan *chan)
 
 	spin_lock_irqsave(&dwc->lock, flags);
 
+<<<<<<< HEAD
 	/* Assert channel is idle */
 	if (dma_readl(dw, CH_EN) & dwc->mask) {
 		dev_err(chan2dev(&dwc->chan),
@@ -1265,6 +1364,12 @@ int dw_dma_cyclic_start(struct dma_chan *chan)
 	channel_writel(dwc, CTL_HI, 0);
 
 	channel_set_bit(dw, CH_EN, dwc->mask);
+=======
+	/* Enable interrupts to perform cyclic transfer */
+	channel_set_bit(dw, MASK.BLOCK, dwc->mask);
+
+	dwc_dostart(dwc, dwc->cdesc->desc[0]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_unlock_irqrestore(&dwc->lock, flags);
 
@@ -1470,6 +1575,10 @@ void dw_dma_cyclic_free(struct dma_chan *chan)
 
 	dwc_chan_disable(dw, dwc);
 
+<<<<<<< HEAD
+=======
+	dma_writel(dw, CLEAR.BLOCK, dwc->mask);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dma_writel(dw, CLEAR.ERROR, dwc->mask);
 	dma_writel(dw, CLEAR.XFER, dwc->mask);
 
@@ -1557,9 +1666,12 @@ int dw_dma_probe(struct dw_dma_chip *chip, struct dw_dma_platform_data *pdata)
 	/* Force dma off, just in case */
 	dw_dma_off(dw);
 
+<<<<<<< HEAD
 	/* Disable BLOCK interrupts as well */
 	channel_clear_bit(dw, MASK.BLOCK, dw->all_chan_mask);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Create a pool of consistent memory blocks for hardware descriptors */
 	dw->desc_pool = dmam_pool_create("dw_dmac_desc_pool", chip->dev,
 					 sizeof(struct dw_desc), 4, 0);
@@ -1579,7 +1691,10 @@ int dw_dma_probe(struct dw_dma_chip *chip, struct dw_dma_platform_data *pdata)
 	INIT_LIST_HEAD(&dw->dma.channels);
 	for (i = 0; i < nr_channels; i++) {
 		struct dw_dma_chan	*dwc = &dw->chan[i];
+<<<<<<< HEAD
 		int			r = nr_channels - i - 1;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		dwc->chan.device = &dw->dma;
 		dma_cookie_init(&dwc->chan);
@@ -1591,7 +1706,11 @@ int dw_dma_probe(struct dw_dma_chip *chip, struct dw_dma_platform_data *pdata)
 
 		/* 7 is highest priority & 0 is lowest. */
 		if (pdata->chan_priority == CHAN_PRIORITY_ASCENDING)
+<<<<<<< HEAD
 			dwc->priority = r;
+=======
+			dwc->priority = nr_channels - i - 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		else
 			dwc->priority = i;
 
@@ -1610,6 +1729,10 @@ int dw_dma_probe(struct dw_dma_chip *chip, struct dw_dma_platform_data *pdata)
 		/* Hardware configuration */
 		if (autocfg) {
 			unsigned int dwc_params;
+<<<<<<< HEAD
+=======
+			unsigned int r = DW_DMA_MAX_NR_CHANNELS - i - 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			void __iomem *addr = chip->regs + r * sizeof(u32);
 
 			dwc_params = dma_read_byaddr(addr, DWC_PARAMS);

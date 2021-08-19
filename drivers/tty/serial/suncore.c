@@ -112,6 +112,10 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
 		mode = of_get_property(dp, mode_prop, NULL);
 		if (!mode)
 			mode = "9600,8,n,1,-";
+<<<<<<< HEAD
+=======
+		of_node_put(dp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	cflag = CREAD | HUPCL | CLOCAL;

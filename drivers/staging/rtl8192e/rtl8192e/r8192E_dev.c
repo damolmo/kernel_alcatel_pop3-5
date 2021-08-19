@@ -1180,8 +1180,12 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 			   struct cb_desc *cb_desc, struct sk_buff *skb)
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
+<<<<<<< HEAD
 	dma_addr_t mapping = pci_map_single(priv->pdev, skb->data, skb->len,
 			 PCI_DMA_TODEVICE);
+=======
+	dma_addr_t mapping;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct tx_fwinfo_8190pci *pTxFwInfo = NULL;
 
 	pTxFwInfo = (struct tx_fwinfo_8190pci *)skb->data;
@@ -1193,8 +1197,11 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 						pTxFwInfo->TxRate,
 						cb_desc);
 
+<<<<<<< HEAD
 	if (pci_dma_mapping_error(priv->pdev, mapping))
 		RT_TRACE(COMP_ERR, "DMA Mapping error\n");
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (cb_desc->bAMPDUEnable) {
 		pTxFwInfo->AllowAggregation = 1;
 		pTxFwInfo->RxMF = cb_desc->ampdu_factor;
@@ -1229,6 +1236,17 @@ void  rtl8192_tx_fill_desc(struct net_device *dev, struct tx_desc *pdesc,
 	}
 
 	memset((u8 *)pdesc, 0, 12);
+<<<<<<< HEAD
+=======
+
+	mapping = pci_map_single(priv->pdev, skb->data, skb->len,
+				 PCI_DMA_TODEVICE);
+	if (pci_dma_mapping_error(priv->pdev, mapping)) {
+		RT_TRACE(COMP_ERR, "DMA Mapping error\n");
+		return;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pdesc->LINIP = 0;
 	pdesc->CmdInit = 1;
 	pdesc->Offset = sizeof(struct tx_fwinfo_8190pci) + 8;

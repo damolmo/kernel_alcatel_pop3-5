@@ -130,9 +130,15 @@ static void __iop_adma_slot_cleanup(struct iop_adma_chan *iop_chan)
 	list_for_each_entry_safe(iter, _iter, &iop_chan->chain,
 					chain_node) {
 		pr_debug("\tcookie: %d slot: %d busy: %d "
+<<<<<<< HEAD
 			"this_desc: %#x next_desc: %#x ack: %d\n",
 			iter->async_tx.cookie, iter->idx, busy,
 			iter->async_tx.phys, iop_desc_get_next_desc(iter),
+=======
+			"this_desc: %#x next_desc: %#llx ack: %d\n",
+			iter->async_tx.cookie, iter->idx, busy,
+			iter->async_tx.phys, (u64)iop_desc_get_next_desc(iter),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			async_tx_test_ack(&iter->async_tx));
 		prefetch(_iter);
 		prefetch(&_iter->async_tx);
@@ -320,9 +326,15 @@ retry:
 				int i;
 				dev_dbg(iop_chan->device->common.dev,
 					"allocated slot: %d "
+<<<<<<< HEAD
 					"(desc %p phys: %#x) slots_per_op %d\n",
 					iter->idx, iter->hw_desc,
 					iter->async_tx.phys, slots_per_op);
+=======
+					"(desc %p phys: %#llx) slots_per_op %d\n",
+					iter->idx, iter->hw_desc,
+					(u64)iter->async_tx.phys, slots_per_op);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 				/* pre-ack all but the last descriptor */
 				if (num_slots != slots_per_op)
@@ -530,7 +542,11 @@ iop_adma_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dma_dest,
 		return NULL;
 	BUG_ON(len > IOP_ADMA_MAX_BYTE_COUNT);
 
+<<<<<<< HEAD
 	dev_dbg(iop_chan->device->common.dev, "%s len: %u\n",
+=======
+	dev_dbg(iop_chan->device->common.dev, "%s len: %zu\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__func__, len);
 
 	spin_lock_bh(&iop_chan->lock);
@@ -563,7 +579,11 @@ iop_adma_prep_dma_xor(struct dma_chan *chan, dma_addr_t dma_dest,
 	BUG_ON(len > IOP_ADMA_XOR_MAX_BYTE_COUNT);
 
 	dev_dbg(iop_chan->device->common.dev,
+<<<<<<< HEAD
 		"%s src_cnt: %d len: %u flags: %lx\n",
+=======
+		"%s src_cnt: %d len: %zu flags: %lx\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__func__, src_cnt, len, flags);
 
 	spin_lock_bh(&iop_chan->lock);
@@ -596,7 +616,11 @@ iop_adma_prep_dma_xor_val(struct dma_chan *chan, dma_addr_t *dma_src,
 	if (unlikely(!len))
 		return NULL;
 
+<<<<<<< HEAD
 	dev_dbg(iop_chan->device->common.dev, "%s src_cnt: %d len: %u\n",
+=======
+	dev_dbg(iop_chan->device->common.dev, "%s src_cnt: %d len: %zu\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__func__, src_cnt, len);
 
 	spin_lock_bh(&iop_chan->lock);
@@ -634,7 +658,11 @@ iop_adma_prep_dma_pq(struct dma_chan *chan, dma_addr_t *dst, dma_addr_t *src,
 	BUG_ON(len > IOP_ADMA_XOR_MAX_BYTE_COUNT);
 
 	dev_dbg(iop_chan->device->common.dev,
+<<<<<<< HEAD
 		"%s src_cnt: %d len: %u flags: %lx\n",
+=======
+		"%s src_cnt: %d len: %zu flags: %lx\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__func__, src_cnt, len, flags);
 
 	if (dmaf_p_disabled_continue(flags))
@@ -697,7 +725,11 @@ iop_adma_prep_dma_pq_val(struct dma_chan *chan, dma_addr_t *pq, dma_addr_t *src,
 		return NULL;
 	BUG_ON(len > IOP_ADMA_XOR_MAX_BYTE_COUNT);
 
+<<<<<<< HEAD
 	dev_dbg(iop_chan->device->common.dev, "%s src_cnt: %d len: %u\n",
+=======
+	dev_dbg(iop_chan->device->common.dev, "%s src_cnt: %d len: %zu\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		__func__, src_cnt, len);
 
 	spin_lock_bh(&iop_chan->lock);

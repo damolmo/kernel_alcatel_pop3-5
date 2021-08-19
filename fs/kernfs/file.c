@@ -267,7 +267,11 @@ static ssize_t kernfs_fop_write(struct file *file, const char __user *user_buf,
 {
 	struct kernfs_open_file *of = kernfs_of(file);
 	const struct kernfs_ops *ops;
+<<<<<<< HEAD
 	size_t len;
+=======
+	ssize_t len;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char *buf;
 
 	if (of->atomic_write_len) {
@@ -828,13 +832,26 @@ repeat:
 	mutex_lock(&kernfs_mutex);
 
 	list_for_each_entry(info, &kernfs_root(kn)->supers, node) {
+<<<<<<< HEAD
 		struct inode *inode;
 		struct dentry *dentry;
 
+=======
+		struct kernfs_node *parent;
+		struct inode *inode;
+
+		/*
+		 * We want fsnotify_modify() on @kn but as the
+		 * modifications aren't originating from userland don't
+		 * have the matching @file available.  Look up the inodes
+		 * and generate the events manually.
+		 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		inode = ilookup(info->sb, kn->ino);
 		if (!inode)
 			continue;
 
+<<<<<<< HEAD
 		dentry = d_find_any_alias(inode);
 		if (dentry) {
 			fsnotify_parent(NULL, dentry, FS_MODIFY);
@@ -843,6 +860,24 @@ repeat:
 			dput(dentry);
 		}
 
+=======
+		parent = kernfs_get_parent(kn);
+		if (parent) {
+			struct inode *p_inode;
+
+			p_inode = ilookup(info->sb, parent->ino);
+			if (p_inode) {
+				fsnotify(p_inode, FS_MODIFY | FS_EVENT_ON_CHILD,
+					 inode, FSNOTIFY_EVENT_INODE, kn->name, 0);
+				iput(p_inode);
+			}
+
+			kernfs_put(parent);
+		}
+
+		fsnotify(inode, FS_MODIFY, inode, FSNOTIFY_EVENT_INODE,
+			 kn->name, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		iput(inode);
 	}
 

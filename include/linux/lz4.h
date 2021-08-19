@@ -39,6 +39,7 @@ static inline size_t lz4_compressbound(size_t isize)
 int lz4_compress(const unsigned char *src, size_t src_len,
 		unsigned char *dst, size_t *dst_len, void *wrkmem);
 
+<<<<<<< HEAD
 /*
  * lz4_compress_zram()
  *	src     : source address of the original data
@@ -56,6 +57,8 @@ int lz4_compress(const unsigned char *src, size_t src_len,
  */
 int lz4_compress_zram(const unsigned char *src, size_t src_len,
 		unsigned char *dst, size_t *dst_len, void *wrkmem, int *checksum);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  /*
   * lz4hc_compress()
   *	 src	 : source address of the original data
@@ -101,5 +104,8 @@ int lz4_decompress(const unsigned char *src, size_t *src_len,
  */
 int lz4_decompress_unknownoutputsize(const unsigned char *src, size_t src_len,
 		unsigned char *dest, size_t *dest_len);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

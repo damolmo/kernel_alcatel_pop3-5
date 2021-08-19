@@ -238,7 +238,11 @@ static int out(struct sm_metadata *smm)
 	}
 
 	if (smm->recursion_count == 1)
+<<<<<<< HEAD
 		apply_bops(smm);
+=======
+		r = apply_bops(smm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	smm->recursion_count--;
 
@@ -437,7 +441,14 @@ static int sm_metadata_new_block_(struct dm_space_map *sm, dm_block_t *b)
 	enum allocation_event ev;
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
+<<<<<<< HEAD
 	r = sm_ll_find_free_block(&smm->old_ll, smm->begin, smm->old_ll.nr_blocks, b);
+=======
+	/*
+	 * Any block we allocate has to be free in both the old and current ll.
+	 */
+	r = sm_ll_find_common_free_block(&smm->old_ll, &smm->ll, smm->begin, smm->ll.nr_blocks, b);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (r)
 		return r;
 
@@ -764,6 +775,7 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 	memcpy(&smm->sm, &bootstrap_ops, sizeof(smm->sm));
 
 	r = sm_ll_new_metadata(&smm->ll, tm);
+<<<<<<< HEAD
 	if (r)
 		return r;
 
@@ -775,6 +787,17 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 
 	memcpy(&smm->sm, &ops, sizeof(smm->sm));
 
+=======
+	if (!r) {
+		if (nr_blocks > DM_SM_METADATA_MAX_BLOCKS)
+			nr_blocks = DM_SM_METADATA_MAX_BLOCKS;
+		r = sm_ll_extend(&smm->ll, nr_blocks);
+	}
+	memcpy(&smm->sm, &ops, sizeof(smm->sm));
+	if (r)
+		return r;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Now we need to update the newly created data structures with the
 	 * allocated blocks that they were built from.

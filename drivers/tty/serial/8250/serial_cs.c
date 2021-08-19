@@ -629,8 +629,15 @@ static int serial_config(struct pcmcia_device * link)
 	    (link->has_func_id) &&
 	    (link->socket->pcmcia_pfc == 0) &&
 	    ((link->func_id == CISTPL_FUNCID_MULTI) ||
+<<<<<<< HEAD
 	     (link->func_id == CISTPL_FUNCID_SERIAL)))
 		pcmcia_loop_config(link, serial_check_for_multi, info);
+=======
+	     (link->func_id == CISTPL_FUNCID_SERIAL))) {
+		if (pcmcia_loop_config(link, serial_check_for_multi, info))
+			goto failed;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Apply any multi-port quirk.

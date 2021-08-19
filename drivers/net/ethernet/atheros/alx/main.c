@@ -86,9 +86,20 @@ static int alx_refill_rx_ring(struct alx_priv *alx, gfp_t gfp)
 	while (!cur_buf->skb && next != rxq->read_idx) {
 		struct alx_rfd *rfd = &rxq->rfd[cur];
 
+<<<<<<< HEAD
 		skb = __netdev_alloc_skb(alx->dev, alx->rxbuf_size, gfp);
 		if (!skb)
 			break;
+=======
+		skb = __netdev_alloc_skb(alx->dev, alx->rxbuf_size + 64, gfp);
+		if (!skb)
+			break;
+
+		/* Workround for the HW RX DMA overflow issue */
+		if (((unsigned long)skb->data & 0xfff) == 0xfc0)
+			skb_reserve(skb, 64);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dma = dma_map_single(&alx->hw.pdev->dev,
 				     skb->data, alx->rxbuf_size,
 				     DMA_FROM_DEVICE);
@@ -867,8 +878,17 @@ out_free_rings:
 
 static void __alx_stop(struct alx_priv *alx)
 {
+<<<<<<< HEAD
 	alx_halt(alx);
 	alx_free_irq(alx);
+=======
+	alx_free_irq(alx);
+
+	cancel_work_sync(&alx->link_check_wk);
+	cancel_work_sync(&alx->reset_wk);
+
+	alx_halt(alx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alx_free_rings(alx);
 }
 
@@ -1401,9 +1421,12 @@ static void alx_remove(struct pci_dev *pdev)
 	struct alx_priv *alx = pci_get_drvdata(pdev);
 	struct alx_hw *hw = &alx->hw;
 
+<<<<<<< HEAD
 	cancel_work_sync(&alx->link_check_wk);
 	cancel_work_sync(&alx->reset_wk);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* restore permanent mac address */
 	alx_set_macaddr(hw, hw->perm_addr);
 

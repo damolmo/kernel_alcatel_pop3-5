@@ -572,6 +572,7 @@ static int mmc_sdio_init_uhs_card(struct mmc_card *card)
 	 * SPI mode doesn't define CMD19 and tuning is only valid for SDR50 and
 	 * SDR104 mode SD-cards. Note that tuning is mandatory for SDR104.
 	 */
+<<<<<<< HEAD
 	if (!mmc_host_is_spi(card->host) && card->host->ops->execute_tuning &&
 			((card->sw_caps.sd3_bus_mode & SD_MODE_UHS_SDR50) ||
 			 (card->sw_caps.sd3_bus_mode & SD_MODE_UHS_SDR104))) {
@@ -583,6 +584,13 @@ static int mmc_sdio_init_uhs_card(struct mmc_card *card)
 
 out:
 
+=======
+	if (!mmc_host_is_spi(card->host) &&
+	    ((card->host->ios.timing == MMC_TIMING_UHS_SDR50) ||
+	      (card->host->ios.timing == MMC_TIMING_UHS_SDR104)))
+		err = mmc_execute_tuning(card);
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -674,7 +682,11 @@ try_again:
 	 */
 	if (!powered_resume && (rocr & ocr & R4_18V_PRESENT)) {
 		err = mmc_set_signal_voltage(host, MMC_SIGNAL_VOLTAGE_180,
+<<<<<<< HEAD
 					ocr);
+=======
+					ocr_card);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err == -EAGAIN) {
 			sdio_reset(host);
 			mmc_go_idle(host);

@@ -499,7 +499,11 @@ void __init orion_ge00_switch_init(struct dsa_platform_data *d, int irq)
 
 	d->netdev = &orion_ge00.dev;
 	for (i = 0; i < d->nr_chips; i++)
+<<<<<<< HEAD
 		d->chip[i].host_dev = &orion_ge00_shared.dev;
+=======
+		d->chip[i].host_dev = &orion_ge_mvmdio.dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	orion_switch_device.dev.platform_data = d;
 
 	platform_device_register(&orion_switch_device);
@@ -649,7 +653,11 @@ static struct platform_device orion_xor0_shared = {
 	.resource	= orion_xor0_shared_resources,
 	.dev            = {
 		.dma_mask               = &orion_xor_dmamask,
+<<<<<<< HEAD
 		.coherent_dma_mask      = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask      = DMA_BIT_MASK(32),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.platform_data          = &orion_xor0_pdata,
 	},
 };
@@ -710,7 +718,11 @@ static struct platform_device orion_xor1_shared = {
 	.resource	= orion_xor1_shared_resources,
 	.dev            = {
 		.dma_mask               = &orion_xor_dmamask,
+<<<<<<< HEAD
 		.coherent_dma_mask      = DMA_BIT_MASK(64),
+=======
+		.coherent_dma_mask      = DMA_BIT_MASK(32),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.platform_data          = &orion_xor1_pdata,
 	},
 };

@@ -912,7 +912,11 @@ static ssize_t show_trans_timeout(struct netdev_queue *queue,
 	trans_timeout = queue->trans_timeout;
 	spin_unlock_irq(&queue->_xmit_lock);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%lu", trans_timeout);
+=======
+	return sprintf(buf, fmt_ulong, trans_timeout);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct netdev_queue_attribute queue_trans_timeout =
@@ -1241,6 +1245,12 @@ static int register_queue_kobjects(struct net_device *dev)
 error:
 	netdev_queue_update_kobjects(dev, txq, 0);
 	net_rx_queue_update_kobjects(dev, rxq, 0);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SYSFS
+	kset_unregister(dev->queues_kset);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return error;
 }
 

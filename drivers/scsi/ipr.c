@@ -592,9 +592,16 @@ static void ipr_trc_hook(struct ipr_cmnd *ipr_cmd,
 {
 	struct ipr_trace_entry *trace_entry;
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
+<<<<<<< HEAD
 
 	trace_entry = &ioa_cfg->trace[atomic_add_return
 			(1, &ioa_cfg->trace_index)%IPR_NUM_TRACE_ENTRIES];
+=======
+	unsigned int trace_index;
+
+	trace_index = atomic_add_return(1, &ioa_cfg->trace_index) & IPR_TRACE_INDEX_MASK;
+	trace_entry = &ioa_cfg->trace[trace_index];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	trace_entry->time = jiffies;
 	trace_entry->op_code = ipr_cmd->ioarcb.cmd_pkt.cdb[0];
 	trace_entry->type = type;
@@ -827,8 +834,15 @@ static void ipr_sata_eh_done(struct ipr_cmnd *ipr_cmd)
 
 	qc->err_mask |= AC_ERR_OTHER;
 	sata_port->ioasa.status |= ATA_BUSY;
+<<<<<<< HEAD
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 	ata_qc_complete(qc);
+=======
+	ata_qc_complete(qc);
+	if (ipr_cmd->eh_comp)
+		complete(ipr_cmd->eh_comp);
+	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -1044,10 +1058,22 @@ static void ipr_send_blocking_cmd(struct ipr_cmnd *ipr_cmd,
 
 static int ipr_get_hrrq_index(struct ipr_ioa_cfg *ioa_cfg)
 {
+<<<<<<< HEAD
 	if (ioa_cfg->hrrq_num == 1)
 		return 0;
 	else
 		return (atomic_add_return(1, &ioa_cfg->hrrq_index) % (ioa_cfg->hrrq_num - 1)) + 1;
+=======
+	unsigned int hrrq;
+
+	if (ioa_cfg->hrrq_num == 1)
+		hrrq = 0;
+	else {
+		hrrq = atomic_add_return(1, &ioa_cfg->hrrq_index);
+		hrrq = (hrrq % (ioa_cfg->hrrq_num - 1)) + 1;
+	}
+	return hrrq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -3988,13 +4014,26 @@ static ssize_t ipr_store_update_fw(struct device *dev,
 	struct ipr_sglist *sglist;
 	char fname[100];
 	char *src;
+<<<<<<< HEAD
 	int len, result, dnld_size;
+=======
+	char *endline;
+	int result, dnld_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
+<<<<<<< HEAD
 	len = snprintf(fname, 99, "%s", buf);
 	fname[len-1] = '\0';
+=======
+	snprintf(fname, sizeof(fname), "%s", buf);
+
+	endline = strchr(fname, '\n');
+	if (endline)
+		*endline = '\0';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (request_firmware(&fw_entry, fname, &ioa_cfg->pdev->dev)) {
 		dev_err(&ioa_cfg->pdev->dev, "Firmware file %s not found\n", fname);
@@ -5824,8 +5863,15 @@ static void ipr_erp_done(struct ipr_cmnd *ipr_cmd)
 		res->in_erp = 0;
 	}
 	scsi_dma_unmap(ipr_cmd->scsi_cmd);
+<<<<<<< HEAD
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 	scsi_cmd->scsi_done(scsi_cmd);
+=======
+	scsi_cmd->scsi_done(scsi_cmd);
+	if (ipr_cmd->eh_comp)
+		complete(ipr_cmd->eh_comp);
+	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -6208,8 +6254,15 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 	}
 
 	scsi_dma_unmap(ipr_cmd->scsi_cmd);
+<<<<<<< HEAD
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 	scsi_cmd->scsi_done(scsi_cmd);
+=======
+	scsi_cmd->scsi_done(scsi_cmd);
+	if (ipr_cmd->eh_comp)
+		complete(ipr_cmd->eh_comp);
+	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**
@@ -6227,13 +6280,18 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
+<<<<<<< HEAD
 	unsigned long hrrq_flags;
+=======
+	unsigned long lock_flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	scsi_set_resid(scsi_cmd, be32_to_cpu(ipr_cmd->s.ioasa.hdr.residual_data_len));
 
 	if (likely(IPR_IOASC_SENSE_KEY(ioasc) == 0)) {
 		scsi_dma_unmap(scsi_cmd);
 
+<<<<<<< HEAD
 		spin_lock_irqsave(ipr_cmd->hrrq->lock, hrrq_flags);
 		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 		scsi_cmd->scsi_done(scsi_cmd);
@@ -6242,6 +6300,20 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
 		spin_lock_irqsave(ipr_cmd->hrrq->lock, hrrq_flags);
 		ipr_erp_start(ioa_cfg, ipr_cmd);
 		spin_unlock_irqrestore(ipr_cmd->hrrq->lock, hrrq_flags);
+=======
+		spin_lock_irqsave(ipr_cmd->hrrq->lock, lock_flags);
+		scsi_cmd->scsi_done(scsi_cmd);
+		if (ipr_cmd->eh_comp)
+			complete(ipr_cmd->eh_comp);
+		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
+		spin_unlock_irqrestore(ipr_cmd->hrrq->lock, lock_flags);
+	} else {
+		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
+		spin_lock(&ipr_cmd->hrrq->_lock);
+		ipr_erp_start(ioa_cfg, ipr_cmd);
+		spin_unlock(&ipr_cmd->hrrq->_lock);
+		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -9379,6 +9451,10 @@ static void ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
 	ioa_cfg->max_devs_supported = ipr_max_devs;
 
 	if (ioa_cfg->sis64) {
+<<<<<<< HEAD
+=======
+		host->max_channel = IPR_MAX_SIS64_BUSES;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		host->max_id = IPR_MAX_SIS64_TARGETS_PER_BUS;
 		host->max_lun = IPR_MAX_SIS64_LUNS_PER_TARGET;
 		if (ipr_max_devs > IPR_MAX_SIS64_DEVS)
@@ -9387,6 +9463,10 @@ static void ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
 					   + ((sizeof(struct ipr_config_table_entry64)
 					       * ioa_cfg->max_devs_supported)));
 	} else {
+<<<<<<< HEAD
+=======
+		host->max_channel = IPR_MAX_BUS_TO_SCAN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		host->max_id = IPR_MAX_NUM_TARGETS_PER_BUS;
 		host->max_lun = IPR_MAX_NUM_LUNS_PER_TARGET;
 		if (ipr_max_devs > IPR_MAX_PHYSICAL_DEVS)
@@ -9396,7 +9476,10 @@ static void ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
 					       * ioa_cfg->max_devs_supported)));
 	}
 
+<<<<<<< HEAD
 	host->max_channel = IPR_MAX_BUS_TO_SCAN;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	host->unique_id = host->host_no;
 	host->max_cmd_len = IPR_MAX_CDB_LEN;
 	host->can_queue = ioa_cfg->max_cmds;
@@ -9751,6 +9834,10 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 		ioa_cfg->intr_flag = IPR_USE_MSI;
 	else {
 		ioa_cfg->intr_flag = IPR_USE_LSI;
+<<<<<<< HEAD
+=======
+		ioa_cfg->clear_isr = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ioa_cfg->nvectors = 1;
 		dev_info(&pdev->dev, "Cannot enable MSI.\n");
 	}

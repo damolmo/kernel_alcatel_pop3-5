@@ -1,6 +1,11 @@
 #ifndef _ASM_X86_ALTERNATIVE_H
 #define _ASM_X86_ALTERNATIVE_H
 
+<<<<<<< HEAD
+=======
+#ifndef __ASSEMBLY__
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/types.h>
 #include <linux/stddef.h>
 #include <linux/stringify.h>
@@ -48,8 +53,14 @@ struct alt_instr {
 	s32 repl_offset;	/* offset to replacement instruction */
 	u16 cpuid;		/* cpuid bit set for replacement */
 	u8  instrlen;		/* length of original instruction */
+<<<<<<< HEAD
 	u8  replacementlen;	/* length of new instruction, <= instrlen */
 };
+=======
+	u8  replacementlen;	/* length of new instruction */
+	u8  padlen;		/* length of build-time padding */
+} __packed;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern void alternative_instructions(void);
 extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
@@ -76,6 +87,7 @@ static inline int alternatives_text_reserved(void *start, void *end)
 }
 #endif	/* CONFIG_SMP */
 
+<<<<<<< HEAD
 #define OLDINSTR(oldinstr)	"661:\n\t" oldinstr "\n662:\n"
 
 #define b_replacement(number)	"663"#number
@@ -112,10 +124,64 @@ static inline int alternatives_text_reserved(void *start, void *end)
 
 #define ALTERNATIVE_2(oldinstr, newinstr1, feature1, newinstr2, feature2)\
 	OLDINSTR(oldinstr)						\
+=======
+#define b_replacement(num)	"664"#num
+#define e_replacement(num)	"665"#num
+
+#define alt_end_marker		"663"
+#define alt_slen		"662b-661b"
+#define alt_pad_len		alt_end_marker"b-662b"
+#define alt_total_slen		alt_end_marker"b-661b"
+#define alt_rlen(num)		e_replacement(num)"f-"b_replacement(num)"f"
+
+#define __OLDINSTR(oldinstr, num)					\
+	"661:\n\t" oldinstr "\n662:\n"					\
+	".skip -(((" alt_rlen(num) ")-(" alt_slen ")) > 0) * "		\
+		"((" alt_rlen(num) ")-(" alt_slen ")),0x90\n"
+
+#define OLDINSTR(oldinstr, num)						\
+	__OLDINSTR(oldinstr, num)					\
+	alt_end_marker ":\n"
+
+/*
+ * Pad the second replacement alternative with additional NOPs if it is
+ * additionally longer than the first replacement alternative.
+ */
+#define OLDINSTR_2(oldinstr, num1, num2)					\
+	__OLDINSTR(oldinstr, num1)						\
+	".skip -(((" alt_rlen(num2) ")-(" alt_rlen(num1) ")-(662b-661b)) > 0) * " \
+		"((" alt_rlen(num2) ")-(" alt_rlen(num1) ")-(662b-661b)),0x90\n"  \
+	alt_end_marker ":\n"
+
+#define ALTINSTR_ENTRY(feature, num)					      \
+	" .long 661b - .\n"				/* label           */ \
+	" .long " b_replacement(num)"f - .\n"		/* new instruction */ \
+	" .word " __stringify(feature) "\n"		/* feature bit     */ \
+	" .byte " alt_total_slen "\n"			/* source len      */ \
+	" .byte " alt_rlen(num) "\n"			/* replacement len */ \
+	" .byte " alt_pad_len "\n"			/* pad len */
+
+#define ALTINSTR_REPLACEMENT(newinstr, feature, num)	/* replacement */     \
+	b_replacement(num)":\n\t" newinstr "\n" e_replacement(num) ":\n\t"
+
+/* alternative assembly primitive: */
+#define ALTERNATIVE(oldinstr, newinstr, feature)			\
+	OLDINSTR(oldinstr, 1)						\
+	".pushsection .altinstructions,\"a\"\n"				\
+	ALTINSTR_ENTRY(feature, 1)					\
+	".popsection\n"							\
+	".pushsection .altinstr_replacement, \"ax\"\n"			\
+	ALTINSTR_REPLACEMENT(newinstr, feature, 1)			\
+	".popsection\n"
+
+#define ALTERNATIVE_2(oldinstr, newinstr1, feature1, newinstr2, feature2)\
+	OLDINSTR_2(oldinstr, 1, 2)					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	".pushsection .altinstructions,\"a\"\n"				\
 	ALTINSTR_ENTRY(feature1, 1)					\
 	ALTINSTR_ENTRY(feature2, 2)					\
 	".popsection\n"							\
+<<<<<<< HEAD
 	".pushsection .discard,\"aw\",@progbits\n"			\
 	DISCARD_ENTRY(1)						\
 	DISCARD_ENTRY(2)						\
@@ -124,6 +190,12 @@ static inline int alternatives_text_reserved(void *start, void *end)
 	ALTINSTR_REPLACEMENT(newinstr1, feature1, 1)			\
 	ALTINSTR_REPLACEMENT(newinstr2, feature2, 2)			\
 	".popsection"
+=======
+	".pushsection .altinstr_replacement, \"ax\"\n"			\
+	ALTINSTR_REPLACEMENT(newinstr1, feature1, 1)			\
+	ALTINSTR_REPLACEMENT(newinstr2, feature2, 2)			\
+	".popsection\n"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * This must be included *after* the definition of ALTERNATIVE due to
@@ -146,6 +218,12 @@ static inline int alternatives_text_reserved(void *start, void *end)
 #define alternative(oldinstr, newinstr, feature)			\
 	asm volatile (ALTERNATIVE(oldinstr, newinstr, feature) : : : "memory")
 
+<<<<<<< HEAD
+=======
+#define alternative_2(oldinstr, newinstr1, feature1, newinstr2, feature2) \
+	asm volatile(ALTERNATIVE_2(oldinstr, newinstr1, feature1, newinstr2, feature2) ::: "memory")
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Alternative inline assembly with input.
  *
@@ -242,4 +320,9 @@ extern void *text_poke(void *addr, const void *opcode, size_t len);
 extern int poke_int3_handler(struct pt_regs *regs);
 extern void *text_poke_bp(void *addr, const void *opcode, size_t len, void *handler);
 
+<<<<<<< HEAD
+=======
+#endif /* __ASSEMBLY__ */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _ASM_X86_ALTERNATIVE_H */

@@ -143,7 +143,12 @@ static int igb_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
 	u32 status;
 	u32 speed;
 
+<<<<<<< HEAD
 	status = rd32(E1000_STATUS);
+=======
+	status = pm_runtime_suspended(&adapter->pdev->dev) ?
+		 0 : rd32(E1000_STATUS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (hw->phy.media_type == e1000_media_type_copper) {
 
 		ecmd->supported = (SUPPORTED_10baseT_Half |
@@ -2979,6 +2984,10 @@ static int igb_set_channels(struct net_device *netdev,
 {
 	struct igb_adapter *adapter = netdev_priv(netdev);
 	unsigned int count = ch->combined_count;
+<<<<<<< HEAD
+=======
+	unsigned int max_combined = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Verify they are not requesting separate vectors */
 	if (!count || ch->rx_count || ch->tx_count)
@@ -2989,11 +2998,20 @@ static int igb_set_channels(struct net_device *netdev,
 		return -EINVAL;
 
 	/* Verify the number of channels doesn't exceed hw limits */
+<<<<<<< HEAD
 	if (count > igb_max_channels(adapter))
+=======
+	max_combined = igb_max_channels(adapter);
+	if (count > max_combined)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	if (count != adapter->rss_queues) {
 		adapter->rss_queues = count;
+<<<<<<< HEAD
+=======
+		igb_set_flag_queue_pairs(adapter, max_combined);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Hardware has to reinitialize queues and interrupts to
 		 * match the new configuration.

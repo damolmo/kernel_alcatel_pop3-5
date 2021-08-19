@@ -207,7 +207,11 @@ done:
  *	bangs.
  */
 
+<<<<<<< HEAD
 dev_t name_to_dev_t(char *name)
+=======
+dev_t name_to_dev_t(const char *name)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	char s[32];
 	char *p;
@@ -557,6 +561,10 @@ void __init prepare_namespace(void)
 	wait_for_device_probe();
 
 	md_run_setup();
+<<<<<<< HEAD
+=======
+	dm_run_setup();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (saved_root_name[0]) {
 		root_device_name = saved_root_name;
@@ -588,8 +596,11 @@ void __init prepare_namespace(void)
 	if (is_floppy && rd_doload && rd_load_disk(0))
 		ROOT_DEV = Root_RAM0;
 
+<<<<<<< HEAD
 	check_resume_attempted();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mount_root();
 out:
 	devtmpfs_mount("dev");

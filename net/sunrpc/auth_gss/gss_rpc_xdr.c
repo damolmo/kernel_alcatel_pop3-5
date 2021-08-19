@@ -260,7 +260,11 @@ static int gssx_dec_option_array(struct xdr_stream *xdr,
 	if (!oa->data)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	creds = kmalloc(sizeof(struct svc_cred), GFP_KERNEL);
+=======
+	creds = kzalloc(sizeof(struct svc_cred), GFP_KERNEL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!creds) {
 		kfree(oa->data);
 		return -ENOMEM;

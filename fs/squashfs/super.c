@@ -176,6 +176,11 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	msblk->inode_table = le64_to_cpu(sblk->inode_table_start);
 	msblk->directory_table = le64_to_cpu(sblk->directory_table_start);
 	msblk->inodes = le32_to_cpu(sblk->inodes);
+<<<<<<< HEAD
+=======
+	msblk->fragments = le32_to_cpu(sblk->fragments);
+	msblk->ids = le16_to_cpu(sblk->no_ids);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	flags = le16_to_cpu(sblk->flags);
 
 	TRACE("Found valid superblock on %s\n", bdevname(sb->s_bdev, b));
@@ -186,8 +191,13 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 	TRACE("Filesystem size %lld bytes\n", msblk->bytes_used);
 	TRACE("Block size %d\n", msblk->block_size);
 	TRACE("Number of inodes %d\n", msblk->inodes);
+<<<<<<< HEAD
 	TRACE("Number of fragments %d\n", le32_to_cpu(sblk->fragments));
 	TRACE("Number of ids %d\n", le16_to_cpu(sblk->no_ids));
+=======
+	TRACE("Number of fragments %d\n", msblk->fragments);
+	TRACE("Number of ids %d\n", msblk->ids);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	TRACE("sblk->inode_table_start %llx\n", msblk->inode_table);
 	TRACE("sblk->directory_table_start %llx\n", msblk->directory_table);
 	TRACE("sblk->fragment_table_start %llx\n",
@@ -244,8 +254,12 @@ static int squashfs_fill_super(struct super_block *sb, void *data, int silent)
 allocate_id_index_table:
 	/* Allocate and read id index table */
 	msblk->id_table = squashfs_read_id_index_table(sb,
+<<<<<<< HEAD
 		le64_to_cpu(sblk->id_table_start), next_table,
 		le16_to_cpu(sblk->no_ids));
+=======
+		le64_to_cpu(sblk->id_table_start), next_table, msblk->ids);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(msblk->id_table)) {
 		ERROR("unable to read id index table\n");
 		err = PTR_ERR(msblk->id_table);
@@ -273,7 +287,11 @@ allocate_id_index_table:
 	sb->s_export_op = &squashfs_export_ops;
 
 handle_fragments:
+<<<<<<< HEAD
 	fragments = le32_to_cpu(sblk->fragments);
+=======
+	fragments = msblk->fragments;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (fragments == 0)
 		goto check_directory_table;
 
@@ -444,9 +462,21 @@ static int __init init_squashfs_fs(void)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	err = register_filesystem(&squashfs_fs_type);
 	if (err) {
 		destroy_inodecache();
+=======
+	if (!squashfs_init_read_wq()) {
+		destroy_inodecache();
+		return -ENOMEM;
+        }
+
+	err = register_filesystem(&squashfs_fs_type);
+	if (err) {
+		destroy_inodecache();
+		squashfs_destroy_read_wq();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err;
 	}
 
@@ -460,6 +490,10 @@ static void __exit exit_squashfs_fs(void)
 {
 	unregister_filesystem(&squashfs_fs_type);
 	destroy_inodecache();
+<<<<<<< HEAD
+=======
+	squashfs_destroy_read_wq();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

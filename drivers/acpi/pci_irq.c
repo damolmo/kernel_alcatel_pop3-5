@@ -136,9 +136,12 @@ static void do_prt_fixups(struct acpi_prt_entry *entry,
 		quirk = &prt_quirks[i];
 
 		/* All current quirks involve link devices, not GSIs */
+<<<<<<< HEAD
 		if (!prt->source)
 			continue;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (dmi_check_system(quirk->system) &&
 		    entry->id.segment == quirk->segment &&
 		    entry->id.bus == quirk->bus &&
@@ -413,6 +416,12 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	if (dev->irq_managed && dev->irq > 0)
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	entry = acpi_pci_irq_lookup(dev, pin);
 	if (!entry) {
 		/*
@@ -456,6 +465,10 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 		return rc;
 	}
 	dev->irq = rc;
+<<<<<<< HEAD
+=======
+	dev->irq_managed = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (link)
 		snprintf(link_desc, sizeof(link_desc), " -> Link[%s]", link);
@@ -478,7 +491,11 @@ void acpi_pci_irq_disable(struct pci_dev *dev)
 	u8 pin;
 
 	pin = dev->pin;
+<<<<<<< HEAD
 	if (!pin)
+=======
+	if (!pin || !dev->irq_managed || dev->irq <= 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	/* Keep IOAPIC pin configuration when suspending */
@@ -506,6 +523,14 @@ void acpi_pci_irq_disable(struct pci_dev *dev)
 	 */
 
 	dev_dbg(&dev->dev, "PCI INT %c disabled\n", pin_name(pin));
+<<<<<<< HEAD
 	if (gsi >= 0 && dev->irq > 0)
 		acpi_unregister_gsi(gsi);
+=======
+	if (gsi >= 0) {
+		acpi_unregister_gsi(gsi);
+		dev->irq = 0;
+		dev->irq_managed = 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }

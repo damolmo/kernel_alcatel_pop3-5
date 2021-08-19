@@ -17,6 +17,11 @@
  * 08/12/11 beckyb	Add highmem support
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "software IO TLB: " fmt
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/cache.h>
 #include <linux/dma-mapping.h>
 #include <linux/mm.h>
@@ -143,6 +148,7 @@ static bool no_iotlb_memory;
 void swiotlb_print_info(void)
 {
 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+<<<<<<< HEAD
 	unsigned char *vstart, *vend;
 
 	if (no_iotlb_memory) {
@@ -157,6 +163,18 @@ void swiotlb_print_info(void)
 	       (unsigned long long)io_tlb_start,
 	       (unsigned long long)io_tlb_end,
 	       bytes >> 20, vstart, vend - 1);
+=======
+
+	if (no_iotlb_memory) {
+		pr_warn("No low mem\n");
+		return;
+	}
+
+	pr_info("mapped [mem %#010llx-%#010llx] (%luMB)\n",
+	       (unsigned long long)io_tlb_start,
+	       (unsigned long long)io_tlb_end,
+	       bytes >> 20);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
@@ -197,6 +215,10 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
 		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
 	}
 	io_tlb_index = 0;
+<<<<<<< HEAD
+=======
+	no_iotlb_memory = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (verbose)
 		swiotlb_print_info();
@@ -227,10 +249,19 @@ swiotlb_init(int verbose)
 	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose))
 		return;
 
+<<<<<<< HEAD
 	if (io_tlb_start)
 		memblock_free_early(io_tlb_start,
 				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
 	pr_warn("Cannot allocate SWIOTLB buffer");
+=======
+	if (io_tlb_start) {
+		memblock_free_early(io_tlb_start,
+				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
+		io_tlb_start = 0;
+	}
+	pr_warn("Cannot allocate buffer");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	no_iotlb_memory = true;
 }
 
@@ -272,8 +303,13 @@ swiotlb_late_init_with_default_size(size_t default_size)
 		return -ENOMEM;
 	}
 	if (order != get_order(bytes)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "Warning: only able to allocate %ld MB "
 		       "for software IO TLB\n", (PAGE_SIZE << order) >> 20);
+=======
+		pr_warn("only able to allocate %ld MB\n",
+			(PAGE_SIZE << order) >> 20);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		io_tlb_nslabs = SLABS_PER_PAGE << order;
 	}
 	rc = swiotlb_late_init_with_tbl(vstart, io_tlb_nslabs);
@@ -328,6 +364,10 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
 		io_tlb_orig_addr[i] = INVALID_PHYS_ADDR;
 	}
 	io_tlb_index = 0;
+<<<<<<< HEAD
+=======
+	no_iotlb_memory = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	swiotlb_print_info();
 
@@ -452,11 +492,19 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
 		    : 1UL << (BITS_PER_LONG - IO_TLB_SHIFT);
 
 	/*
+<<<<<<< HEAD
 	 * For mappings greater than a page, we limit the stride (and
 	 * hence alignment) to a page size.
 	 */
 	nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
 	if (size > PAGE_SIZE)
+=======
+	 * For mappings greater than or equal to a page, we limit the stride
+	 * (and hence alignment) to a page size.
+	 */
+	nslots = ALIGN(size, 1 << IO_TLB_SHIFT) >> IO_TLB_SHIFT;
+	if (size >= PAGE_SIZE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		stride = (1 << (PAGE_SHIFT - IO_TLB_SHIFT));
 	else
 		stride = 1;

@@ -4200,6 +4200,12 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	int irq, i, j;
 	int error = -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (hba_count >= MAX_CONTROLLERS)
+		goto out;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pci_enable_device(pdev))
 		goto out;
 	pci_set_master(pdev);
@@ -4219,11 +4225,19 @@ megaraid_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		 */
 		if (pdev->subsystem_vendor == PCI_VENDOR_ID_COMPAQ &&
 		    pdev->subsystem_device == 0xC000)
+<<<<<<< HEAD
 		   	return -ENODEV;
 		/* Now check the magic signature byte */
 		pci_read_config_word(pdev, PCI_CONF_AMISIG, &magic);
 		if (magic != HBA_SIGNATURE_471 && magic != HBA_SIGNATURE)
 			return -ENODEV;
+=======
+			goto out_disable_device;
+		/* Now check the magic signature byte */
+		pci_read_config_word(pdev, PCI_CONF_AMISIG, &magic);
+		if (magic != HBA_SIGNATURE_471 && magic != HBA_SIGNATURE)
+			goto out_disable_device;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Ok it is probably a megaraid */
 	}
 

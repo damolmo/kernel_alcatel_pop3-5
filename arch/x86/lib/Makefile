@@ -22,6 +22,10 @@ lib-y += usercopy_$(BITS).o usercopy.o getuser.o putuser.o
 lib-y += memcpy_$(BITS).o
 lib-$(CONFIG_RWSEM_XCHGADD_ALGORITHM) += rwsem.o
 lib-$(CONFIG_INSTRUCTION_DECODER) += insn.o inat.o
+<<<<<<< HEAD
+=======
+lib-$(CONFIG_RETPOLINE) += retpoline.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 obj-y += msr.o msr-reg.o msr-reg-export.o hash.o
 

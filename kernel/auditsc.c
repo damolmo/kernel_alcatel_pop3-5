@@ -72,7 +72,14 @@
 #include <linux/fs_struct.h>
 #include <linux/compat.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
 #include <linux/uaccess.h>
+=======
+#include <linux/string.h>
+#include <linux/uaccess.h>
+#include <uapi/linux/limits.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "audit.h"
 
 /* flags stating the success for a syscall */
@@ -455,7 +462,11 @@ static int audit_filter_rules(struct task_struct *tsk,
 
 		switch (f->type) {
 		case AUDIT_PID:
+<<<<<<< HEAD
 			pid = task_pid_nr(tsk);
+=======
+			pid = task_tgid_nr(tsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			result = audit_comparator(pid, f->op, f->val);
 			break;
 		case AUDIT_PPID:
@@ -1104,12 +1115,20 @@ static void audit_log_execve_info(struct audit_context *context,
 			}
 			len_buf += len_tmp;
 			buf_head[len_buf] = '\0';
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* length of the buffer in the audit record? */
 			len_abuf = (encode ? len_buf * 2 : len_buf + 2);
 		}
 
 		/* write as much as we can to the audit log */
+<<<<<<< HEAD
 		if (len_buf > 0) {
+=======
+		if (len_buf >= 0) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* NOTE: some magic numbers here - basically if we
 			 *       can't fit a reasonable amount of data into the
 			 *       existing audit buffer, flush it and start with
@@ -1176,7 +1195,10 @@ static void audit_log_execve_info(struct audit_context *context,
 		}
 	} while (arg < context->execve.argc);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* NOTE: the caller handles the final audit_log_end() call */
 
 out:
@@ -1855,8 +1877,12 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 	}
 
 	list_for_each_entry_reverse(n, &context->names_list, list) {
+<<<<<<< HEAD
 		/* does the name pointer match? */
 		if (!n->name || n->name->name != name->name)
+=======
+		if (!n->name || strcmp(n->name->name, name->name))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 
 		/* match the correct record type */
@@ -1871,12 +1897,57 @@ void __audit_inode(struct filename *name, const struct dentry *dentry,
 	}
 
 out_alloc:
+<<<<<<< HEAD
 	/* unable to find the name from a previous getname(). Allocate a new
 	 * anonymous entry.
 	 */
 	n = audit_alloc_name(context, AUDIT_TYPE_NORMAL);
 	if (!n)
 		return;
+=======
+	/* unable to find an entry with both a matching name and type */
+	n = audit_alloc_name(context, AUDIT_TYPE_UNKNOWN);
+	if (!n)
+		return;
+	/* unfortunately, while we may have a path name to record with the
+	 * inode, we can't always rely on the string lasting until the end of
+	 * the syscall so we need to create our own copy, it may fail due to
+	 * memory allocation issues, but we do our best */
+	if (name) {
+		/* we can't use getname_kernel() due to size limits */
+		size_t len = strlen(name->name) + 1;
+		struct filename *new = __getname();
+
+		if (unlikely(!new))
+			goto out;
+
+		if (len <= (PATH_MAX - sizeof(*new))) {
+			new->name = (char *)(new) + sizeof(*new);
+			new->separate = false;
+		} else if (len <= PATH_MAX) {
+			/* this looks odd, but is due to final_putname() */
+			struct filename *new2;
+
+			new2 = kmalloc(sizeof(*new2), GFP_KERNEL);
+			if (unlikely(!new2)) {
+				__putname(new);
+				goto out;
+			}
+			new2->name = (char *)new;
+			new2->separate = true;
+			new = new2;
+		} else {
+			/* we should never get here, but let's be safe */
+			__putname(new);
+			goto out;
+		}
+		strlcpy((char *)new->name, name->name, len);
+		new->uptr = NULL;
+		new->aname = n;
+		n->name = new;
+		n->name_put = true;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out:
 	if (parent) {
 		n->name_len = n->name ? parent_len(n->name->name) : AUDIT_NAME_FULL;
@@ -2037,14 +2108,25 @@ static void audit_log_set_loginuid(kuid_t koldloginuid, kuid_t kloginuid,
 	if (!audit_enabled)
 		return;
 
+<<<<<<< HEAD
+=======
+	ab = audit_log_start(NULL, GFP_KERNEL, AUDIT_LOGIN);
+	if (!ab)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	uid = from_kuid(&init_user_ns, task_uid(current));
 	oldloginuid = from_kuid(&init_user_ns, koldloginuid);
 	loginuid = from_kuid(&init_user_ns, kloginuid),
 
+<<<<<<< HEAD
 	ab = audit_log_start(NULL, GFP_KERNEL, AUDIT_LOGIN);
 	if (!ab)
 		return;
 	audit_log_format(ab, "pid=%d uid=%u", task_pid_nr(current), uid);
+=======
+	audit_log_format(ab, "pid=%d uid=%u", task_tgid_nr(current), uid);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	audit_log_task_context(ab);
 	audit_log_format(ab, " old-auid=%u auid=%u old-ses=%u ses=%u res=%d",
 			 oldloginuid, loginuid, oldsessionid, sessionid, !rc);
@@ -2269,7 +2351,11 @@ void __audit_ptrace(struct task_struct *t)
 {
 	struct audit_context *context = current->audit_context;
 
+<<<<<<< HEAD
 	context->target_pid = task_pid_nr(t);
+=======
+	context->target_pid = task_tgid_nr(t);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	context->target_auid = audit_get_loginuid(t);
 	context->target_uid = task_uid(t);
 	context->target_sessionid = audit_get_sessionid(t);
@@ -2294,7 +2380,11 @@ int __audit_signal_info(int sig, struct task_struct *t)
 
 	if (audit_pid && t->tgid == audit_pid) {
 		if (sig == SIGTERM || sig == SIGHUP || sig == SIGUSR1 || sig == SIGUSR2) {
+<<<<<<< HEAD
 			audit_sig_pid = task_pid_nr(tsk);
+=======
+			audit_sig_pid = task_tgid_nr(tsk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (uid_valid(tsk->loginuid))
 				audit_sig_uid = tsk->loginuid;
 			else
@@ -2397,7 +2487,11 @@ int __audit_log_bprm_fcaps(struct linux_binprm *bprm,
 void __audit_log_capset(const struct cred *new, const struct cred *old)
 {
 	struct audit_context *context = current->audit_context;
+<<<<<<< HEAD
 	context->capset.pid = task_pid_nr(current);
+=======
+	context->capset.pid = task_tgid_nr(current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	context->capset.cap.effective   = new->cap_effective;
 	context->capset.cap.inheritable = new->cap_effective;
 	context->capset.cap.permitted   = new->cap_permitted;
@@ -2430,7 +2524,11 @@ static void audit_log_task(struct audit_buffer *ab)
 			 from_kgid(&init_user_ns, gid),
 			 sessionid);
 	audit_log_task_context(ab);
+<<<<<<< HEAD
 	audit_log_format(ab, " pid=%d comm=", task_pid_nr(current));
+=======
+	audit_log_format(ab, " pid=%d comm=", task_tgid_nr(current));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	audit_log_untrustedstring(ab, get_task_comm(comm, current));
 	if (mm) {
 		down_read(&mm->mmap_sem);

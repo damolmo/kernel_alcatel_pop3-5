@@ -2,8 +2,13 @@
 
 #define FONTDATAMAX 11264
 
+<<<<<<< HEAD
 static const unsigned char fontdata_sun12x22[FONTDATAMAX] = {
 
+=======
+static const struct font_data fontdata_sun12x22 = {
+	{ 0, 0, FONTDATAMAX, 0 }, {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* 0 0x00 '^@' */
 	0x00, 0x00, /* 000000000000 */
 	0x00, 0x00, /* 000000000000 */
@@ -6147,8 +6152,12 @@ static const unsigned char fontdata_sun12x22[FONTDATAMAX] = {
 	0x00, 0x00, /* 000000000000 */
 	0x00, 0x00, /* 000000000000 */
 	0x00, 0x00, /* 000000000000 */
+<<<<<<< HEAD
 
 };
+=======
+} };
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 const struct font_desc font_sun_12x22 = {
@@ -6156,7 +6165,11 @@ const struct font_desc font_sun_12x22 = {
 	.name	= "SUN12x22",
 	.width	= 12,
 	.height	= 22,
+<<<<<<< HEAD
 	.data	= fontdata_sun12x22,
+=======
+	.data	= fontdata_sun12x22.data,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef __sparc__
 	.pref	= 5,
 #else

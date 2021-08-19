@@ -50,6 +50,10 @@ static const char *const speed_names[] = {
 	[USB_SPEED_HIGH] = "high-speed",
 	[USB_SPEED_WIRELESS] = "wireless",
 	[USB_SPEED_SUPER] = "super-speed",
+<<<<<<< HEAD
+=======
+	[USB_SPEED_SUPER_PLUS] = "super-speed-plus",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 const char *usb_speed_string(enum usb_device_speed speed)

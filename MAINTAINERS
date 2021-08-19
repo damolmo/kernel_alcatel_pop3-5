@@ -1828,7 +1828,12 @@ F:	include/net/ax25.h
 F:	net/ax25/
 
 AZ6007 DVB DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -2198,7 +2203,12 @@ F:	Documentation/filesystems/btrfs.txt
 F:	fs/btrfs/
 
 BTTV VIDEO4LINUX DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -2719,7 +2729,12 @@ F:	drivers/media/common/cx2341x*
 F:	include/media/cx2341x*
 
 CX88 VIDEO4LINUX DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -3402,7 +3417,12 @@ F:	fs/ecryptfs/
 EDAC-CORE
 M:	Doug Thompson <dougthompson@xmission.com>
 M:	Borislav Petkov <bp@alien8.de>
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Supported
@@ -3451,7 +3471,12 @@ S:	Maintained
 F:	drivers/edac/e7xxx_edac.c
 
 EDAC-GHES
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Maintained
@@ -3479,21 +3504,36 @@ S:	Maintained
 F:	drivers/edac/i5000_edac.c
 
 EDAC-I5400
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Maintained
 F:	drivers/edac/i5400_edac.c
 
 EDAC-I7300
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Maintained
 F:	drivers/edac/i7300_edac.c
 
 EDAC-I7CORE
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Maintained
@@ -3536,7 +3576,12 @@ S:	Maintained
 F:	drivers/edac/r82600_edac.c
 
 EDAC-SBRIDGE
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-edac@vger.kernel.org
 W:	bluesmoke.sourceforge.net
 S:	Maintained
@@ -3558,8 +3603,13 @@ F:	Documentation/efi-stub.txt
 F:	arch/ia64/kernel/efi.c
 F:	arch/x86/boot/compressed/eboot.[ch]
 F:	arch/x86/include/asm/efi.h
+<<<<<<< HEAD
 F:	arch/x86/platform/efi/*
 F:	drivers/firmware/efi/*
+=======
+F:	arch/x86/platform/efi/
+F:	drivers/firmware/efi/
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 F:	include/linux/efi*.h
 
 EFI VARIABLE FILESYSTEM
@@ -3596,7 +3646,12 @@ S:	Maintained
 F:	drivers/net/ethernet/ibm/ehea/
 
 EM28XX VIDEO4LINUX DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -5160,6 +5215,7 @@ F:	include/linux/isdn/
 F:	include/uapi/linux/isdn.h
 F:	include/uapi/linux/isdn/
 
+<<<<<<< HEAD
 ISDN SUBSYSTEM (Eicon active card driver)
 M:	Armin Schindler <mac@melware.de>
 L:	isdn4linux@listserv.isdn4linux.de (subscribers-only)
@@ -5167,6 +5223,8 @@ W:	http://www.melware.de
 S:	Maintained
 F:	drivers/isdn/hardware/eicon/
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 IT87 HARDWARE MONITORING DRIVER
 M:	Jean Delvare <jdelvare@suse.de>
 L:	lm-sensors@lm-sensors.org
@@ -5962,7 +6020,12 @@ S:	Maintained
 F:	drivers/media/radio/radio-maxiradio*
 
 MEDIA INPUT INFRASTRUCTURE (V4L/DVB)
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 P:	LinuxTV.org Project
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
@@ -8013,7 +8076,12 @@ S:	Odd Fixes
 F:	drivers/media/i2c/saa6588*
 
 SAA7134 VIDEO4LINUX DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -8471,7 +8539,12 @@ S:	Maintained
 F:	drivers/media/radio/si4713/radio-usb-si4713.c
 
 SIANO DVB DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -8519,6 +8592,16 @@ F:	arch/arm/mach-s3c24xx/mach-bast.c
 F:	arch/arm/mach-s3c24xx/bast-ide.c
 F:	arch/arm/mach-s3c24xx/bast-irq.c
 
+<<<<<<< HEAD
+=======
+SIPHASH PRF ROUTINES
+M:	Jason A. Donenfeld <Jason@zx2c4.com>
+S:	Maintained
+F:	lib/siphash.c
+F:	lib/test_siphash.c
+F:	include/linux/siphash.h
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 TI DAVINCI MACHINE SUPPORT
 M:	Sekhar Nori <nsekhar@ti.com>
 M:	Kevin Hilman <khilman@deeprootsystems.com>
@@ -8876,6 +8959,10 @@ F:	arch/alpha/kernel/srm_env.c
 
 STABLE BRANCH
 M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+<<<<<<< HEAD
+=======
+M:	Sasha Levin <sashal@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	stable@vger.kernel.org
 S:	Supported
 F:	Documentation/stable_kernel_rules.txt
@@ -9004,10 +9091,19 @@ S:	Maintained
 F:	drivers/net/ethernet/dlink/sundance.c
 
 SUPERH
+<<<<<<< HEAD
 L:	linux-sh@vger.kernel.org
 W:	http://www.linux-sh.org
 Q:	http://patchwork.kernel.org/project/linux-sh/list/
 S:	Orphan
+=======
+M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+M:	Rich Felker <dalias@libc.org>
+L:	linux-sh@vger.kernel.org
+W:	http://www.linux-sh.org
+Q:	http://patchwork.kernel.org/project/linux-sh/list/
+S:	Maintained
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 F:	Documentation/sh/
 F:	arch/sh/
 F:	drivers/sh/
@@ -9158,7 +9254,12 @@ S:	Maintained
 F:	drivers/media/i2c/tda9840*
 
 TEA5761 TUNER DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -9166,7 +9267,12 @@ S:	Odd fixes
 F:	drivers/media/tuners/tea5761.*
 
 TEA5767 TUNER DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -9478,7 +9584,12 @@ F:	include/linux/shmem_fs.h
 F:	mm/shmem.c
 
 TM6000 VIDEO4LINUX DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -9568,6 +9679,7 @@ S:	Maintained
 F:	drivers/tc/
 F:	include/linux/tc.h
 
+<<<<<<< HEAD
 TUXONICE (ENHANCED HIBERNATION)
 P:	Nigel Cunningham
 M:	nigel@tuxonice.net
@@ -9575,6 +9687,8 @@ L:	tuxonice-devel@tuxonice.net
 W:	http://tuxonice.net
 S:	Maintained
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 U14-34F SCSI DRIVER
 M:	Dario Ballabio <ballabio_dario@emc.com>
 L:	linux-scsi@vger.kernel.org
@@ -9718,6 +9832,7 @@ W:	http://www.linux-usb.org/usbnet
 S:	Maintained
 F:	drivers/net/usb/dm9601.c
 
+<<<<<<< HEAD
 USB DIAMOND RIO500 DRIVER
 M:	Cesar Miquel <miquel@df.uba.ar>
 L:	rio500-users@lists.sourceforge.net
@@ -9725,6 +9840,8 @@ W:	http://rio500.sourceforge.net
 S:	Maintained
 F:	drivers/usb/misc/rio500*
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 USB EHCI DRIVER
 M:	Alan Stern <stern@rowland.harvard.edu>
 L:	linux-usb@vger.kernel.org
@@ -10306,7 +10423,12 @@ S:	Maintained
 F:	arch/x86/kernel/cpu/mcheck/*
 
 XC2028/3028 TUNER DRIVER
+<<<<<<< HEAD
 M:	Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+=======
+M:	Mauro Carvalho Chehab <mchehab@s-opensource.com>
+M:	Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 L:	linux-media@vger.kernel.org
 W:	http://linuxtv.org
 T:	git git://linuxtv.org/media_tree.git
@@ -10482,6 +10604,10 @@ L:	linux-mm@kvack.org
 S:	Maintained
 F:	mm/zsmalloc.c
 F:	include/linux/zsmalloc.h
+<<<<<<< HEAD
+=======
+F:	Documentation/vm/zsmalloc.txt
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 ZSWAP COMPRESSED SWAP CACHING
 M:	Seth Jennings <sjennings@variantweb.net>

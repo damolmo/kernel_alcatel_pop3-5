@@ -1,4 +1,8 @@
 #include "sched.h"
+<<<<<<< HEAD
+=======
+#include "walt.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * stop-task scheduling class.
@@ -42,12 +46,20 @@ static void
 enqueue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
 	add_nr_running(rq, 1);
+<<<<<<< HEAD
+=======
+	walt_inc_cumulative_runnable_avg(rq, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void
 dequeue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
 	sub_nr_running(rq, 1);
+<<<<<<< HEAD
+=======
+	walt_dec_cumulative_runnable_avg(rq, p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void yield_task_stop(struct rq *rq)

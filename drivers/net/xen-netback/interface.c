@@ -99,7 +99,15 @@ int xenvif_poll(struct napi_struct *napi, int budget)
 
 	if (work_done < budget) {
 		napi_complete(napi);
+<<<<<<< HEAD
 		xenvif_napi_schedule_or_enable_events(queue);
+=======
+		/* If the queue is rate-limited, it shall be
+		 * rescheduled in the timer callback.
+		 */
+		if (likely(!queue->rate_limited))
+			xenvif_napi_schedule_or_enable_events(queue);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return work_done;
@@ -601,8 +609,13 @@ err_tx_unbind:
 	queue->tx_irq = 0;
 err_unmap:
 	xenvif_unmap_frontend_rings(queue);
+<<<<<<< HEAD
 err:
 	module_put(THIS_MODULE);
+=======
+	netif_napi_del(&queue->napi);
+err:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

@@ -89,6 +89,10 @@
 #include <linux/magic.h>
 #include <linux/slab.h>
 #include <linux/xattr.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
@@ -98,7 +102,10 @@
 #include <net/cls_cgroup.h>
 
 #include <net/sock.h>
+<<<<<<< HEAD
 #include <net/inet_sock.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/netfilter.h>
 
 #include <linux/if_tun.h>
@@ -460,7 +467,11 @@ static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
 	if (f.file) {
 		sock = sock_from_file(f.file, err);
 		if (likely(sock)) {
+<<<<<<< HEAD
 			*fput_needed = f.flags;
+=======
+			*fput_needed = f.flags & FDPUT_FPUT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return sock;
 		}
 		fdput(f);
@@ -474,6 +485,7 @@ static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
 static ssize_t sockfs_getxattr(struct dentry *dentry,
 			       const char *name, void *value, size_t size)
 {
+<<<<<<< HEAD
 	const char *proto_name;
 	size_t proto_size;
 	int error;
@@ -495,6 +507,17 @@ static ssize_t sockfs_getxattr(struct dentry *dentry,
 
 out:
 	return error;
+=======
+	if (!strcmp(name, XATTR_NAME_SOCKPROTONAME)) {
+		if (value) {
+			if (dentry->d_name.len + 1 > size)
+				return -ERANGE;
+			memcpy(value, dentry->d_name.name, dentry->d_name.len + 1);
+		}
+		return dentry->d_name.len + 1;
+	}
+	return -EOPNOTSUPP;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static ssize_t sockfs_listxattr(struct dentry *dentry, char *buffer,
@@ -525,9 +548,32 @@ static ssize_t sockfs_listxattr(struct dentry *dentry, char *buffer,
 	return used;
 }
 
+<<<<<<< HEAD
 static const struct inode_operations sockfs_inode_ops = {
 	.getxattr = sockfs_getxattr,
 	.listxattr = sockfs_listxattr,
+=======
+static int sockfs_setattr(struct dentry *dentry, struct iattr *iattr)
+{
+	int err = simple_setattr(dentry, iattr);
+
+	if (!err && (iattr->ia_valid & ATTR_UID)) {
+		struct socket *sock = SOCKET_I(dentry->d_inode);
+
+		if (sock->sk)
+			sock->sk->sk_uid = iattr->ia_uid;
+		else
+			err = -ENOENT;
+	}
+
+	return err;
+}
+
+static const struct inode_operations sockfs_inode_ops = {
+	.getxattr = sockfs_getxattr,
+	.listxattr = sockfs_listxattr,
+	.setattr = sockfs_setattr,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -586,18 +632,35 @@ const struct file_operations bad_sock_fops = {
  *	an inode not a file.
  */
 
+<<<<<<< HEAD
 void sock_release(struct socket *sock)
+=======
+static void __sock_release(struct socket *sock, struct inode *inode)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (sock->ops) {
 		struct module *owner = sock->ops->owner;
 
+<<<<<<< HEAD
 		sock->ops->release(sock);
+=======
+		if (inode)
+			mutex_lock(&inode->i_mutex);
+		sock->ops->release(sock);
+		sock->sk = NULL;
+		if (inode)
+			mutex_unlock(&inode->i_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		sock->ops = NULL;
 		module_put(owner);
 	}
 
 	if (rcu_dereference_protected(sock->wq, 1)->fasync_list)
+<<<<<<< HEAD
 		pr_debug("[mtk_net][socket]sock_release: fasync list not empty!\n");
+=======
+		pr_err("%s: fasync list not empty!\n", __func__);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (test_bit(SOCK_EXTERNALLY_ALLOCATED, &sock->flags))
 		return;
@@ -609,6 +672,14 @@ void sock_release(struct socket *sock)
 	}
 	sock->file = NULL;
 }
+<<<<<<< HEAD
+=======
+
+void sock_release(struct socket *sock)
+{
+	__sock_release(sock, NULL);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL(sock_release);
 
 void __sock_tx_timestamp(const struct sock *sk, __u8 *tx_flags)
@@ -1175,6 +1246,7 @@ static int sock_mmap(struct file *file, struct vm_area_struct *vma)
 
 static int sock_close(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_NET_LOGGING
 	struct socket *sock = SOCKET_I(inode);
 
@@ -1186,6 +1258,9 @@ static int sock_close(struct inode *inode, struct file *filp)
 	}
 #endif
 	sock_release(SOCKET_I(inode));
+=======
+	__sock_release(SOCKET_I(inode), inode);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -1281,10 +1356,15 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 		static int warned;
 		if (!warned) {
 			warned = 1;
+<<<<<<< HEAD
 			#ifdef CONFIG_MTK_NET_LOGGING
 			pr_debug("[mtk_net][socket]%s uses obsolete (PF_INET,SOCK_PACKET)\n",
 				 current->comm);
 			#endif
+=======
+			pr_info("%s uses obsolete (PF_INET,SOCK_PACKET)\n",
+				current->comm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		family = PF_PACKET;
 	}
@@ -1414,6 +1494,7 @@ SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 
 out:
 	/* It may be already another descriptor 8) Not kernel problem. */
+<<<<<<< HEAD
 
  #ifdef CONFIG_MTK_NET_LOGGING
 	if ((retval >= 0) && sock && SOCK_INODE(sock))
@@ -1421,6 +1502,8 @@ out:
 	 else
 		pr_debug("[mtk_net][socket]socket_create:fd=%d\n", retval);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return retval;
 
 out_release:
@@ -1530,9 +1613,12 @@ out_release_both:
 out_release_1:
 	sock_release(sock1);
 out:
+<<<<<<< HEAD
 	#ifdef CONFIG_MTK_NET_LOGGING
 	pr_debug("[mtk_net][socket]socketpair fail2: %d\n", err);
     #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -1558,12 +1644,18 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
 						   (struct sockaddr *)&address,
 						   addrlen);
 			if (!err)
+<<<<<<< HEAD
 				err = sock->ops->bind(sock, (struct sockaddr *)&address, addrlen);
 #ifdef CONFIG_MTK_NET_LOGGING
 			if ((((struct sockaddr_in *)&address)->sin_family) != AF_UNIX)
 					pr_debug("[mtk_net][socket] bind addr->sin_port:%d,err:%d\n",
 						 htons(((struct sockaddr_in *)&address)->sin_port), err);
 #endif
+=======
+				err = sock->ops->bind(sock,
+						      (struct sockaddr *)
+						      &address, addrlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		fput_light(sock->file, fput_needed);
 	}
@@ -1612,8 +1704,12 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
 SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
 		int __user *, upeer_addrlen, int, flags)
 {
+<<<<<<< HEAD
 	struct socket *sock;
 	struct socket *newsock = NULL;
+=======
+	struct socket *sock, *newsock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct file *newfile;
 	int err, len, newfd, fput_needed;
 	struct sockaddr_storage address;
@@ -1684,6 +1780,7 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
 out_put:
 	fput_light(sock->file, fput_needed);
 out:
+<<<<<<< HEAD
 	if ((err >= 0) && newsock && SOCK_INODE(newsock)) {
 		#ifdef CONFIG_MTK_NET_LOGGING
 		pr_debug("[mtk_net][socket]socket_accept:fd=%d,server_sock[%lu], newsock[%lu]\n",
@@ -1691,6 +1788,8 @@ out:
 		#endif
 	    }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 out_fd:
 	fput(newfile);
@@ -1901,6 +2000,10 @@ SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, ubuf, size_t, size,
 	msg.msg_name = addr ? (struct sockaddr *)&address : NULL;
 	/* We assume all kernel code knows the size of sockaddr_storage */
 	msg.msg_namelen = 0;
+<<<<<<< HEAD
+=======
+	msg.msg_flags = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (sock->file->f_flags & O_NONBLOCK)
 		flags |= MSG_DONTWAIT;
 	err = sock_recvmsg(sock, &msg, size, flags);
@@ -2393,8 +2496,15 @@ int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
 		return err;
 
 	err = sock_error(sock->sk);
+<<<<<<< HEAD
 	if (err)
 		goto out_put;
+=======
+	if (err) {
+		datagrams = err;
+		goto out_put;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	entry = mmsg;
 	compat_entry = (struct compat_mmsghdr __user *)mmsg;
@@ -2529,6 +2639,10 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 
 	if (call < 1 || call > SYS_SENDMMSG)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	call = array_index_nospec(call, SYS_SENDMMSG + 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	len = nargs[call];
 	if (len > sizeof(a))
@@ -2641,7 +2755,11 @@ int sock_register(const struct net_proto_family *ops)
 	int err;
 
 	if (ops->family >= NPROTO) {
+<<<<<<< HEAD
 		pr_debug("protocol %d >= NPROTO(%d)\n", ops->family, NPROTO);
+=======
+		pr_crit("protocol %d >= NPROTO(%d)\n", ops->family, NPROTO);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOBUFS;
 	}
 
@@ -2654,9 +2772,14 @@ int sock_register(const struct net_proto_family *ops)
 		err = 0;
 	}
 	spin_unlock(&net_family_lock);
+<<<<<<< HEAD
     #ifdef CONFIG_MTK_NET_LOGGING
 	pr_debug("[mtk_net][socekt]NET: Registered protocol family %d\n", ops->family);
 	#endif
+=======
+
+	pr_info("NET: Registered protocol family %d\n", ops->family);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 EXPORT_SYMBOL(sock_register);
@@ -2683,9 +2806,14 @@ void sock_unregister(int family)
 	spin_unlock(&net_family_lock);
 
 	synchronize_rcu();
+<<<<<<< HEAD
     #ifdef CONFIG_MTK_NET_LOGGING
 	pr_debug("[mtk_net][socket]NET: Unregistered protocol family %d\n", family);
 	#endif
+=======
+
+	pr_info("NET: Unregistered protocol family %d\n", family);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(sock_unregister);
 
@@ -2956,9 +3084,20 @@ static int ethtool_ioctl(struct net *net, struct compat_ifreq __user *ifr32)
 		    copy_in_user(&rxnfc->fs.ring_cookie,
 				 &compat_rxnfc->fs.ring_cookie,
 				 (void __user *)(&rxnfc->fs.location + 1) -
+<<<<<<< HEAD
 				 (void __user *)&rxnfc->fs.ring_cookie) ||
 		    copy_in_user(&rxnfc->rule_cnt, &compat_rxnfc->rule_cnt,
 				 sizeof(rxnfc->rule_cnt)))
+=======
+				 (void __user *)&rxnfc->fs.ring_cookie))
+			return -EFAULT;
+		if (ethcmd == ETHTOOL_GRXCLSRLALL) {
+			if (put_user(rule_cnt, &rxnfc->rule_cnt))
+				return -EFAULT;
+		} else if (copy_in_user(&rxnfc->rule_cnt,
+					&compat_rxnfc->rule_cnt,
+					sizeof(rxnfc->rule_cnt)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return -EFAULT;
 	}
 
@@ -3346,6 +3485,10 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
 	case SIOCSARP:
 	case SIOCGARP:
 	case SIOCDARP:
+<<<<<<< HEAD
+=======
+	case SIOCOUTQNSD:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case SIOCATMARK:
 		return sock_do_ioctl(net, sock, cmd, arg);
 	}
@@ -3506,3 +3649,52 @@ int kernel_sock_shutdown(struct socket *sock, enum sock_shutdown_cmd how)
 	return sock->ops->shutdown(sock, how);
 }
 EXPORT_SYMBOL(kernel_sock_shutdown);
+<<<<<<< HEAD
+=======
+
+/* This routine returns the IP overhead imposed by a socket i.e.
+ * the length of the underlying IP header, depending on whether
+ * this is an IPv4 or IPv6 socket and the length from IP options turned
+ * on at the socket. Assumes that the caller has a lock on the socket.
+ */
+u32 kernel_sock_ip_overhead(struct sock *sk)
+{
+	struct inet_sock *inet;
+	struct ip_options_rcu *opt;
+	u32 overhead = 0;
+	bool owned_by_user;
+#if IS_ENABLED(CONFIG_IPV6)
+	struct ipv6_pinfo *np;
+	struct ipv6_txoptions *optv6 = NULL;
+#endif /* IS_ENABLED(CONFIG_IPV6) */
+
+	if (!sk)
+		return overhead;
+
+	owned_by_user = sock_owned_by_user(sk);
+	switch (sk->sk_family) {
+	case AF_INET:
+		inet = inet_sk(sk);
+		overhead += sizeof(struct iphdr);
+		opt = rcu_dereference_protected(inet->inet_opt,
+						owned_by_user);
+		if (opt)
+			overhead += opt->opt.optlen;
+		return overhead;
+#if IS_ENABLED(CONFIG_IPV6)
+	case AF_INET6:
+		np = inet6_sk(sk);
+		overhead += sizeof(struct ipv6hdr);
+		if (np)
+			optv6 = rcu_dereference_protected(np->opt,
+							  owned_by_user);
+		if (optv6)
+			overhead += (optv6->opt_flen + optv6->opt_nflen);
+		return overhead;
+#endif /* IS_ENABLED(CONFIG_IPV6) */
+	default: /* Returns 0 overhead if the socket is not ipv4 or ipv6 */
+		return overhead;
+	}
+}
+EXPORT_SYMBOL(kernel_sock_ip_overhead);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

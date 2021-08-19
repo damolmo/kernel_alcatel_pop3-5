@@ -46,9 +46,16 @@
 #include <linux/if_vlan.h>
 
 /**
+<<<<<<< HEAD
  *	sk_filter - run a packet through a socket filter
  *	@sk: sock associated with &sk_buff
  *	@skb: buffer to filter
+=======
+ *	sk_filter_trim_cap - run a packet through a socket filter
+ *	@sk: sock associated with &sk_buff
+ *	@skb: buffer to filter
+ *	@cap: limit on how short the eBPF program may trim the packet
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Run the filter code and then cut skb->data to correct size returned by
  * SK_RUN_FILTER. If pkt_len is 0 we toss packet. If skb->len is smaller
@@ -57,7 +64,11 @@
  * be accepted or -EPERM if the packet should be tossed.
  *
  */
+<<<<<<< HEAD
 int sk_filter(struct sock *sk, struct sk_buff *skb)
+=======
+int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int err;
 	struct sk_filter *filter;
@@ -79,13 +90,21 @@ int sk_filter(struct sock *sk, struct sk_buff *skb)
 	if (filter) {
 		unsigned int pkt_len = SK_RUN_FILTER(filter, skb);
 
+<<<<<<< HEAD
 		err = pkt_len ? pskb_trim(skb, pkt_len) : -EPERM;
+=======
+		err = pkt_len ? pskb_trim(skb, max(cap, pkt_len)) : -EPERM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	rcu_read_unlock();
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(sk_filter);
+=======
+EXPORT_SYMBOL(sk_filter_trim_cap);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static u64 __skb_get_pay_offset(u64 ctx, u64 a, u64 x, u64 r4, u64 r5)
 {
@@ -690,6 +709,20 @@ static bool chk_code_allowed(u16 code_to_probe)
 	return codes[code_to_probe];
 }
 
+<<<<<<< HEAD
+=======
+static bool bpf_check_basics_ok(const struct sock_filter *filter,
+				unsigned int flen)
+{
+	if (filter == NULL)
+		return false;
+	if (flen == 0 || flen > BPF_MAXINSNS)
+		return false;
+
+	return true;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	bpf_check_classic - verify socket filter code
  *	@filter: filter to verify
@@ -709,9 +742,12 @@ int bpf_check_classic(const struct sock_filter *filter, unsigned int flen)
 	bool anc_found;
 	int pc;
 
+<<<<<<< HEAD
 	if (flen == 0 || flen > BPF_MAXINSNS)
 		return -EINVAL;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Check the filter code now */
 	for (pc = 0; pc < flen; pc++) {
 		const struct sock_filter *ftest = &filter[pc];
@@ -728,6 +764,14 @@ int bpf_check_classic(const struct sock_filter *filter, unsigned int flen)
 			if (ftest->k == 0)
 				return -EINVAL;
 			break;
+<<<<<<< HEAD
+=======
+		case BPF_ALU | BPF_LSH | BPF_K:
+		case BPF_ALU | BPF_RSH | BPF_K:
+			if (ftest->k >= 32)
+				return -EINVAL;
+			break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case BPF_LD | BPF_MEM:
 		case BPF_LDX | BPF_MEM:
 		case BPF_ST:
@@ -980,7 +1024,11 @@ int bpf_prog_create(struct bpf_prog **pfp, struct sock_fprog_kern *fprog)
 	struct bpf_prog *fp;
 
 	/* Make sure new filter is there and in the right amounts. */
+<<<<<<< HEAD
 	if (fprog->filter == NULL)
+=======
+	if (!bpf_check_basics_ok(fprog->filter, fprog->len))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	fp = bpf_prog_alloc(bpf_prog_size(fprog->len), 0);
@@ -1028,7 +1076,10 @@ int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk)
 {
 	struct sk_filter *fp, *old_fp;
 	unsigned int fsize = bpf_classic_proglen(fprog);
+<<<<<<< HEAD
 	unsigned int bpf_fsize = bpf_prog_size(fprog->len);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct bpf_prog *prog;
 	int err;
 
@@ -1036,10 +1087,17 @@ int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk)
 		return -EPERM;
 
 	/* Make sure new filter is there and in the right amounts. */
+<<<<<<< HEAD
 	if (fprog->filter == NULL)
 		return -EINVAL;
 
 	prog = bpf_prog_alloc(bpf_fsize, 0);
+=======
+	if (!bpf_check_basics_ok(fprog->filter, fprog->len))
+		return -EINVAL;
+
+	prog = bpf_prog_alloc(bpf_prog_size(fprog->len), 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!prog)
 		return -ENOMEM;
 

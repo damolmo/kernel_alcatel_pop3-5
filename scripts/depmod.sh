@@ -10,7 +10,19 @@ DEPMOD=$1
 KERNELRELEASE=$2
 SYMBOL_PREFIX=$3
 
+<<<<<<< HEAD
 if ! test -r System.map -a -x "$DEPMOD"; then
+=======
+if ! test -r System.map ; then
+	exit 0
+fi
+
+# legacy behavior: "depmod" in /sbin, no /sbin in PATH
+PATH="$PATH:/sbin"
+if [ -z $(command -v $DEPMOD) ]; then
+	echo "Warning: 'make modules_install' requires $DEPMOD. Please install it." >&2
+	echo "This is probably in the kmod package." >&2
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	exit 0
 fi
 

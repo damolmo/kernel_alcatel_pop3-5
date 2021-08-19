@@ -1224,6 +1224,19 @@ void start_thread(struct pt_regs *regs, unsigned long start, unsigned long sp)
 		current->thread.regs = regs - 1;
 	}
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_TRANSACTIONAL_MEM
+	/*
+	 * Clear any transactional state, we're exec()ing. The cause is
+	 * not important as there will never be a recheckpoint so it's not
+	 * user visible.
+	 */
+	if (MSR_TM_SUSPENDED(mfmsr()))
+		tm_reclaim_current(0);
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memset(regs->gpr, 0, sizeof(regs->gpr));
 	regs->ctr = 0;
 	regs->link = 0;
@@ -1633,9 +1646,15 @@ static inline unsigned long brk_rnd(void)
 
 	/* 8MB for 32bit, 1GB for 64bit */
 	if (is_32bit_task())
+<<<<<<< HEAD
 		rnd = (long)(get_random_int() % (1<<(23-PAGE_SHIFT)));
 	else
 		rnd = (long)(get_random_int() % (1<<(30-PAGE_SHIFT)));
+=======
+		rnd = (get_random_long() % (1UL<<(23-PAGE_SHIFT)));
+	else
+		rnd = (get_random_long() % (1UL<<(30-PAGE_SHIFT)));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return rnd << PAGE_SHIFT;
 }

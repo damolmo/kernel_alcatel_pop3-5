@@ -922,7 +922,11 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
 			break;
 		}
 
+<<<<<<< HEAD
 		if (get_user(opt, (u32 __user *) optval)) {
+=======
+		if (get_user(opt, (u16 __user *) optval)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			err = -EFAULT;
 			break;
 		}
@@ -1033,7 +1037,11 @@ done:
 }
 
 /* Kill socket (only if zapped and orphan)
+<<<<<<< HEAD
  * Must be called on unlocked socket.
+=======
+ * Must be called on unlocked socket, with l2cap channel lock.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static void l2cap_sock_kill(struct sock *sk)
 {
@@ -1134,6 +1142,10 @@ static int l2cap_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 	int err;
+<<<<<<< HEAD
+=======
+	struct l2cap_chan *chan;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	BT_DBG("sock %p, sk %p", sock, sk);
 
@@ -1143,9 +1155,23 @@ static int l2cap_sock_release(struct socket *sock)
 	bt_sock_unlink(&l2cap_sk_list, sk);
 
 	err = l2cap_sock_shutdown(sock, 2);
+<<<<<<< HEAD
 
 	sock_orphan(sk);
 	l2cap_sock_kill(sk);
+=======
+	chan = l2cap_pi(sk)->chan;
+
+	l2cap_chan_hold(chan);
+	l2cap_chan_lock(chan);
+
+	sock_orphan(sk);
+	l2cap_sock_kill(sk);
+
+	l2cap_chan_unlock(chan);
+	l2cap_chan_put(chan);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 
@@ -1159,12 +1185,24 @@ static void l2cap_sock_cleanup_listen(struct sock *parent)
 	while ((sk = bt_accept_dequeue(parent, NULL))) {
 		struct l2cap_chan *chan = l2cap_pi(sk)->chan;
 
+<<<<<<< HEAD
 		l2cap_chan_lock(chan);
 		__clear_chan_timer(chan);
 		l2cap_chan_close(chan, ECONNRESET);
 		l2cap_chan_unlock(chan);
 
 		l2cap_sock_kill(sk);
+=======
+		l2cap_chan_hold(chan);
+		l2cap_chan_lock(chan);
+
+		__clear_chan_timer(chan);
+		l2cap_chan_close(chan, ECONNRESET);
+		l2cap_sock_kill(sk);
+
+		l2cap_chan_unlock(chan);
+		l2cap_chan_put(chan);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 
@@ -1250,8 +1288,11 @@ static void l2cap_sock_teardown_cb(struct l2cap_chan *chan, int err)
 
 	parent = bt_sk(sk)->parent;
 
+<<<<<<< HEAD
 	sock_set_flag(sk, SOCK_ZAPPED);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (chan->state) {
 	case BT_OPEN:
 	case BT_BOUND:
@@ -1278,8 +1319,16 @@ static void l2cap_sock_teardown_cb(struct l2cap_chan *chan, int err)
 
 		break;
 	}
+<<<<<<< HEAD
 
 	release_sock(sk);
+=======
+	release_sock(sk);
+
+	/* Only zap after cleanup to avoid use after free race */
+	sock_set_flag(sk, SOCK_ZAPPED);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void l2cap_sock_state_change_cb(struct l2cap_chan *chan, int state,

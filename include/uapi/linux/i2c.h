@@ -78,10 +78,13 @@ struct i2c_msg {
 #define I2C_M_RECV_LEN		0x0400	/* length will be first received byte */
 	__u16 len;		/* msg length				*/
 	__u8 *buf;		/* pointer to msg data			*/
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_I2C_EXTENSION
 	__u32 timing;	/* parameters of timings		*/
 	__u32 ext_flag;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /* To determine what functionality is present */

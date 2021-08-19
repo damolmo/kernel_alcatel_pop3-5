@@ -61,6 +61,11 @@
 #define UIP_PROTO_UDP			17 /* ipv6 next header value for UDP */
 #define UIP_FRAGH_LEN			8  /* ipv6 fragment header size */
 
+<<<<<<< HEAD
+=======
+#define EUI64_ADDR_LEN		8
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * ipv6 address based on mac
  * second bit-flip (Universe/Local) is done according RFC2464

@@ -138,6 +138,14 @@ my %text_sections = (
      ".text.unlikely" => 1,
 );
 
+<<<<<<< HEAD
+=======
+# Acceptable section-prefixes to record.
+my %text_section_prefixes = (
+     ".text." => 1,
+);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # Note: we are nice to C-programmers here, thus we skip the '||='-idiom.
 $objdump = 'objdump' if (!$objdump);
 $objcopy = 'objcopy' if (!$objcopy);
@@ -254,11 +262,24 @@ if ($arch eq "x86_64") {
 
     # force flags for this arch
     $ld .= " -m shlelf_linux";
+<<<<<<< HEAD
     $objcopy .= " -O elf32-sh-linux";
 
 } elsif ($arch eq "powerpc") {
     $local_regex = "^[0-9a-fA-F]+\\s+t\\s+(\\.?\\S+)";
     $function_regex = "^([0-9a-fA-F]+)\\s+<(\\.?.*?)>:";
+=======
+    if ($endian eq "big") {
+        $objcopy .= " -O elf32-shbig-linux";
+    } else {
+        $objcopy .= " -O elf32-sh-linux";
+    }
+
+} elsif ($arch eq "powerpc") {
+    $local_regex = "^[0-9a-fA-F]+\\s+t\\s+(\\.?\\S+)";
+    # See comment in the sparc64 section for why we use '\w'.
+    $function_regex = "^([0-9a-fA-F]+)\\s+<(\\.?\\w*?)>:";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
     $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s\\.?_mcount\$";
 
     if ($bits == 64) {
@@ -493,6 +514,17 @@ while (<IN>) {
 
 	# Only record text sections that we know are safe
 	$read_function = defined($text_sections{$1});
+<<<<<<< HEAD
+=======
+	if (!$read_function) {
+	    foreach my $prefix (keys %text_section_prefixes) {
+	        if (substr($1, 0, length $prefix) eq $prefix) {
+	            $read_function = 1;
+	            last;
+	        }
+	    }
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	# print out any recorded offsets
 	update_funcs();
 

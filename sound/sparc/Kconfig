@@ -22,6 +22,10 @@ config SND_SUN_AMD7930
 config SND_SUN_CS4231
 	tristate "Sun CS4231"
 	select SND_PCM
+<<<<<<< HEAD
+=======
+	select SND_TIMER
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	help
 	  Say Y here to include support for CS4231 sound device on Sun.
 

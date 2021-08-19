@@ -11,6 +11,10 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#include <asm/ioctls.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/icmp.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -23,7 +27,10 @@
 #include <net/icmp.h>
 #include <net/udp.h>
 #include <net/inet_common.h>
+<<<<<<< HEAD
 #include <net/inet_hashtables.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <net/tcp_states.h>
 #include <net/protocol.h>
 #include <net/xfrm.h>
@@ -121,6 +128,7 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	unsigned char *ptr, *optr;
 	struct l2tp_session *session;
 	struct l2tp_tunnel *tunnel = NULL;
+<<<<<<< HEAD
 	int length;
 
 	/* Point to L2TP header */
@@ -129,6 +137,16 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	if (!pskb_may_pull(skb, 4))
 		goto discard;
 
+=======
+	struct iphdr *iph;
+	int length;
+
+	if (!pskb_may_pull(skb, 4))
+		goto discard;
+
+	/* Point to L2TP header */
+	optr = ptr = skb->data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	session_id = ntohl(*((__be32 *) ptr));
 	ptr += 4;
 
@@ -142,6 +160,7 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	}
 
 	/* Ok, this is a data packet. Lookup the session. */
+<<<<<<< HEAD
 	session = l2tp_session_find(net, NULL, session_id);
 	if (session == NULL)
 		goto discard;
@@ -149,18 +168,43 @@ static int l2tp_ip_recv(struct sk_buff *skb)
 	tunnel = session->tunnel;
 	if (tunnel == NULL)
 		goto discard;
+=======
+	session = l2tp_session_get(net, NULL, session_id, true);
+	if (!session)
+		goto discard;
+
+	tunnel = session->tunnel;
+	if (!tunnel)
+		goto discard_sess;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Trace packet contents, if enabled */
 	if (tunnel->debug & L2TP_MSG_DATA) {
 		length = min(32u, skb->len);
 		if (!pskb_may_pull(skb, length))
+<<<<<<< HEAD
 			goto discard;
 
+=======
+			goto discard_sess;
+
+		/* Point to L2TP header */
+		optr = ptr = skb->data;
+		ptr += 4;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pr_debug("%s: ip recv\n", tunnel->name);
 		print_hex_dump_bytes("", DUMP_PREFIX_OFFSET, ptr, length);
 	}
 
+<<<<<<< HEAD
 	l2tp_recv_common(session, skb, ptr, optr, 0, skb->len, tunnel->recv_payload_hook);
+=======
+	if (l2tp_v3_ensure_opt_in_linear(session, skb, &ptr, &optr))
+		goto discard;
+
+	l2tp_recv_common(session, skb, ptr, optr, 0, skb->len, tunnel->recv_payload_hook);
+	l2tp_session_dec_refcount(session);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 
@@ -173,6 +217,7 @@ pass_up:
 		goto discard;
 
 	tunnel_id = ntohl(*(__be32 *) &skb->data[4]);
+<<<<<<< HEAD
 	tunnel = l2tp_tunnel_find(net, tunnel_id);
 	if (tunnel != NULL)
 		sk = tunnel->sock;
@@ -188,6 +233,18 @@ pass_up:
 		goto discard;
 
 	sock_hold(sk);
+=======
+	iph = (struct iphdr *)skb_network_header(skb);
+
+	read_lock_bh(&l2tp_ip_lock);
+	sk = __l2tp_ip_bind_lookup(net, iph->daddr, 0, tunnel_id);
+	if (!sk) {
+		read_unlock_bh(&l2tp_ip_lock);
+		goto discard;
+	}
+	sock_hold(sk);
+	read_unlock_bh(&l2tp_ip_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
 		goto discard_put;
@@ -196,6 +253,15 @@ pass_up:
 
 	return sk_receive_skb(sk, skb, 1);
 
+<<<<<<< HEAD
+=======
+discard_sess:
+	if (session->deref)
+		session->deref(session);
+	l2tp_session_dec_refcount(session);
+	goto discard;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 discard_put:
 	sock_put(sk);
 
@@ -204,6 +270,7 @@ discard:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int l2tp_ip_open(struct sock *sk)
 {
 	/* Prevent autobind. We don't have ports. */
@@ -213,6 +280,32 @@ static int l2tp_ip_open(struct sock *sk)
 	sk_add_node(sk, &l2tp_ip_table);
 	write_unlock_bh(&l2tp_ip_lock);
 
+=======
+static void l2tp_ip_hash(struct sock *sk)
+{
+	if (sk_unhashed(sk)) {
+		write_lock_bh(&l2tp_ip_lock);
+		sk_add_node(sk, &l2tp_ip_table);
+		write_unlock_bh(&l2tp_ip_lock);
+	}
+}
+
+static void l2tp_ip_unhash(struct sock *sk)
+{
+	if (sk_unhashed(sk))
+		return;
+	write_lock_bh(&l2tp_ip_lock);
+	sk_del_node_init(sk);
+	write_unlock_bh(&l2tp_ip_lock);
+}
+
+static int l2tp_ip_open(struct sock *sk)
+{
+	/* Prevent autobind. We don't have ports. */
+	inet_sk(sk)->inet_num = IPPROTO_L2TP;
+
+	l2tp_ip_hash(sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -254,6 +347,7 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	if (addr->l2tp_family != AF_INET)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	ret = -EADDRINUSE;
 	read_lock_bh(&l2tp_ip_lock);
 	if (__l2tp_ip_bind_lookup(net, addr->l2tp_addr.s_addr,
@@ -263,6 +357,11 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	read_unlock_bh(&l2tp_ip_lock);
 
 	lock_sock(sk);
+=======
+	lock_sock(sk);
+
+	ret = -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!sock_flag(sk, SOCK_ZAPPED))
 		goto out;
 
@@ -279,6 +378,7 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		inet->inet_rcv_saddr = inet->inet_saddr = addr->l2tp_addr.s_addr;
 	if (chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST)
 		inet->inet_saddr = 0;  /* Use device */
+<<<<<<< HEAD
 	sk_dst_reset(sk);
 
 	l2tp_ip_sk(sk)->conn_id = addr->l2tp_conn_id;
@@ -287,6 +387,24 @@ static int l2tp_ip_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	sk_add_bind_node(sk, &l2tp_ip_bind_table);
 	sk_del_node_init(sk);
 	write_unlock_bh(&l2tp_ip_lock);
+=======
+
+	write_lock_bh(&l2tp_ip_lock);
+	if (__l2tp_ip_bind_lookup(net, addr->l2tp_addr.s_addr,
+				  sk->sk_bound_dev_if, addr->l2tp_conn_id)) {
+		write_unlock_bh(&l2tp_ip_lock);
+		ret = -EADDRINUSE;
+		goto out;
+	}
+
+	sk_dst_reset(sk);
+	l2tp_ip_sk(sk)->conn_id = addr->l2tp_conn_id;
+
+	sk_add_bind_node(sk, &l2tp_ip_bind_table);
+	sk_del_node_init(sk);
+	write_unlock_bh(&l2tp_ip_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = 0;
 	sock_reset_flag(sk, SOCK_ZAPPED);
 
@@ -294,11 +412,14 @@ out:
 	release_sock(sk);
 
 	return ret;
+<<<<<<< HEAD
 
 out_in_use:
 	read_unlock_bh(&l2tp_ip_lock);
 
 	return ret;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
@@ -306,21 +427,39 @@ static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 	struct sockaddr_l2tpip *lsa = (struct sockaddr_l2tpip *) uaddr;
 	int rc;
 
+<<<<<<< HEAD
 	if (sock_flag(sk, SOCK_ZAPPED)) /* Must bind first - autobinding does not work */
 		return -EINVAL;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (addr_len < sizeof(*lsa))
 		return -EINVAL;
 
 	if (ipv4_is_multicast(lsa->l2tp_addr.s_addr))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	rc = ip4_datagram_connect(sk, uaddr, addr_len);
 	if (rc < 0)
 		return rc;
 
 	lock_sock(sk);
 
+=======
+	lock_sock(sk);
+
+	/* Must bind first - autobinding does not work */
+	if (sock_flag(sk, SOCK_ZAPPED)) {
+		rc = -EINVAL;
+		goto out_sk;
+	}
+
+	rc = __ip4_datagram_connect(sk, uaddr, addr_len);
+	if (rc < 0)
+		goto out_sk;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	l2tp_ip_sk(sk)->peer_conn_id = lsa->l2tp_conn_id;
 
 	write_lock_bh(&l2tp_ip_lock);
@@ -328,7 +467,13 @@ static int l2tp_ip_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
 	sk_add_bind_node(sk, &l2tp_ip_bind_table);
 	write_unlock_bh(&l2tp_ip_lock);
 
+<<<<<<< HEAD
 	release_sock(sk);
+=======
+out_sk:
+	release_sock(sk);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -380,7 +525,11 @@ static int l2tp_ip_backlog_recv(struct sock *sk, struct sk_buff *skb)
 drop:
 	IP_INC_STATS(sock_net(sk), IPSTATS_MIB_INDISCARDS);
 	kfree_skb(skb);
+<<<<<<< HEAD
 	return -1;
+=======
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Userspace will call sendmsg() on the tunnel socket to send L2TP
@@ -553,6 +702,33 @@ out:
 	return err ? err : copied;
 }
 
+<<<<<<< HEAD
+=======
+int l2tp_ioctl(struct sock *sk, int cmd, unsigned long arg)
+{
+	struct sk_buff *skb;
+	int amount;
+
+	switch (cmd) {
+	case SIOCOUTQ:
+		amount = sk_wmem_alloc_get(sk);
+		break;
+	case SIOCINQ:
+		spin_lock_bh(&sk->sk_receive_queue.lock);
+		skb = skb_peek(&sk->sk_receive_queue);
+		amount = skb ? skb->len : 0;
+		spin_unlock_bh(&sk->sk_receive_queue.lock);
+		break;
+
+	default:
+		return -ENOIOCTLCMD;
+	}
+
+	return put_user(amount, (int __user *)arg);
+}
+EXPORT_SYMBOL(l2tp_ioctl);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct proto l2tp_ip_prot = {
 	.name		   = "L2TP/IP",
 	.owner		   = THIS_MODULE,
@@ -561,15 +737,24 @@ static struct proto l2tp_ip_prot = {
 	.bind		   = l2tp_ip_bind,
 	.connect	   = l2tp_ip_connect,
 	.disconnect	   = l2tp_ip_disconnect,
+<<<<<<< HEAD
 	.ioctl		   = udp_ioctl,
+=======
+	.ioctl		   = l2tp_ioctl,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.destroy	   = l2tp_ip_destroy_sock,
 	.setsockopt	   = ip_setsockopt,
 	.getsockopt	   = ip_getsockopt,
 	.sendmsg	   = l2tp_ip_sendmsg,
 	.recvmsg	   = l2tp_ip_recvmsg,
 	.backlog_rcv	   = l2tp_ip_backlog_recv,
+<<<<<<< HEAD
 	.hash		   = inet_hash,
 	.unhash		   = inet_unhash,
+=======
+	.hash		   = l2tp_ip_hash,
+	.unhash		   = l2tp_ip_unhash,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.obj_size	   = sizeof(struct l2tp_ip_sock),
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_ip_setsockopt,

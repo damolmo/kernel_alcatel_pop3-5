@@ -180,7 +180,11 @@ static inline void percpu_ref_get(struct percpu_ref *ref)
 static inline bool percpu_ref_tryget(struct percpu_ref *ref)
 {
 	unsigned long __percpu *percpu_count;
+<<<<<<< HEAD
 	int ret;
+=======
+	bool ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_read_lock_sched();
 
@@ -214,7 +218,11 @@ static inline bool percpu_ref_tryget(struct percpu_ref *ref)
 static inline bool percpu_ref_tryget_live(struct percpu_ref *ref)
 {
 	unsigned long __percpu *percpu_count;
+<<<<<<< HEAD
 	int ret = false;
+=======
+	bool ret = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rcu_read_lock_sched();
 

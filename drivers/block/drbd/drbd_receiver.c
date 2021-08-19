@@ -3125,7 +3125,11 @@ static enum drbd_conns drbd_sync_handshake(struct drbd_peer_device *peer_device,
 	enum drbd_conns rv = C_MASK;
 	enum drbd_disk_state mydisk;
 	struct net_conf *nc;
+<<<<<<< HEAD
 	int hg, rule_nr, rr_conflict, tentative;
+=======
+	int hg, rule_nr, rr_conflict, tentative, always_asbp;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mydisk = device->state.disk;
 	if (mydisk == D_NEGOTIATING)
@@ -3167,8 +3171,17 @@ static enum drbd_conns drbd_sync_handshake(struct drbd_peer_device *peer_device,
 
 	rcu_read_lock();
 	nc = rcu_dereference(peer_device->connection->net_conf);
+<<<<<<< HEAD
 
 	if (hg == 100 || (hg == -100 && nc->always_asbp)) {
+=======
+	always_asbp = nc->always_asbp;
+	rr_conflict = nc->rr_conflict;
+	tentative = nc->tentative;
+	rcu_read_unlock();
+
+	if (hg == 100 || (hg == -100 && always_asbp)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int pcount = (device->state.role == R_PRIMARY)
 			   + (peer_role == R_PRIMARY);
 		int forced = (hg == -100);
@@ -3207,9 +3220,12 @@ static enum drbd_conns drbd_sync_handshake(struct drbd_peer_device *peer_device,
 			     "Sync from %s node\n",
 			     (hg < 0) ? "peer" : "this");
 	}
+<<<<<<< HEAD
 	rr_conflict = nc->rr_conflict;
 	tentative = nc->tentative;
 	rcu_read_unlock();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (hg == -100) {
 		/* FIXME this log message is not correct if we end up here
@@ -3888,7 +3904,11 @@ static int receive_uuids(struct drbd_connection *connection, struct packet_info 
 	kfree(device->p_uuid);
 	device->p_uuid = p_uuid;
 
+<<<<<<< HEAD
 	if (device->state.conn < C_CONNECTED &&
+=======
+	if ((device->state.conn < C_CONNECTED || device->state.pdsk == D_DISKLESS) &&
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	    device->state.disk < D_INCONSISTENT &&
 	    device->state.role == R_PRIMARY &&
 	    (device->ed_uuid & ~((u64)1)) != (p_uuid[UI_CURRENT] & ~((u64)1))) {
@@ -4114,6 +4134,28 @@ static int receive_state(struct drbd_connection *connection, struct packet_info 
 	if (peer_state.conn == C_AHEAD)
 		ns.conn = C_BEHIND;
 
+<<<<<<< HEAD
+=======
+	/* TODO:
+	 * if (primary and diskless and peer uuid != effective uuid)
+	 *     abort attach on peer;
+	 *
+	 * If this node does not have good data, was already connected, but
+	 * the peer did a late attach only now, trying to "negotiate" with me,
+	 * AND I am currently Primary, possibly frozen, with some specific
+	 * "effective" uuid, this should never be reached, really, because
+	 * we first send the uuids, then the current state.
+	 *
+	 * In this scenario, we already dropped the connection hard
+	 * when we received the unsuitable uuids (receive_uuids().
+	 *
+	 * Should we want to change this, that is: not drop the connection in
+	 * receive_uuids() already, then we would need to add a branch here
+	 * that aborts the attach of "unsuitable uuids" on the peer in case
+	 * this node is currently Diskless Primary.
+	 */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (device->p_uuid && peer_state.disk >= D_NEGOTIATING &&
 	    get_ldev_if_state(device, D_NEGOTIATING)) {
 		int cr; /* consider resync */

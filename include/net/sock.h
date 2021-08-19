@@ -279,6 +279,10 @@ struct cg_proto;
   *	@sk_protinfo: private area, net family specific, when not using slab
   *	@sk_timer: sock cleanup timer
   *	@sk_stamp: time stamp of last packet received
+<<<<<<< HEAD
+=======
+  *	@sk_stamp_seq: lock for accessing sk_stamp on 32 bit architectures only
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
   *	@sk_tsflags: SO_TIMESTAMPING socket options
   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
   *	@sk_socket: Identd and reporting IO signals
@@ -380,6 +384,10 @@ struct sock {
 				sk_userlocks : 4,
 				sk_protocol  : 8,
 				sk_type      : 16;
+<<<<<<< HEAD
+=======
+#define SK_PROTOCOL_MAX U8_MAX
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kmemcheck_bitfield_end(flags);
 	int			sk_wmem_queued;
 	gfp_t			sk_allocation;
@@ -410,6 +418,12 @@ struct sock {
 	void			*sk_protinfo;
 	struct timer_list	sk_timer;
 	ktime_t			sk_stamp;
+<<<<<<< HEAD
+=======
+#if BITS_PER_LONG==32
+	seqlock_t		sk_stamp_seq;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u16			sk_tsflags;
 	u32			sk_tskey;
 	struct socket		*sk_socket;
@@ -422,6 +436,10 @@ struct sock {
 	void			*sk_security;
 #endif
 	__u32			sk_mark;
+<<<<<<< HEAD
+=======
+	kuid_t			sk_uid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u32			sk_classid;
 	struct cg_proto		*sk_cgrp;
 	void			(*sk_state_change)(struct sock *sk);
@@ -621,6 +639,15 @@ static inline void sk_add_node_rcu(struct sock *sk, struct hlist_head *list)
 	hlist_add_head_rcu(&sk->sk_node, list);
 }
 
+<<<<<<< HEAD
+=======
+static inline void sk_add_node_tail_rcu(struct sock *sk, struct hlist_head *list)
+{
+	sock_hold(sk);
+	hlist_add_tail_rcu(&sk->sk_node, list);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void __sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_head *list)
 {
 	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, list);
@@ -715,6 +742,11 @@ enum sock_flags {
 	SOCK_SELECT_ERR_QUEUE, /* Wake select on error queue */
 };
 
+<<<<<<< HEAD
+=======
+#define SK_FLAGS_TIMESTAMP ((1UL << SOCK_TIMESTAMP) | (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void sock_copy_flags(struct sock *nsk, struct sock *osk)
 {
 	nsk->sk_flags = osk->sk_flags;
@@ -741,6 +773,11 @@ static inline int sk_memalloc_socks(void)
 {
 	return static_key_false(&memalloc_socks);
 }
+<<<<<<< HEAD
+=======
+
+void __receive_sock(struct file *file);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else
 
 static inline int sk_memalloc_socks(void)
@@ -748,6 +785,11 @@ static inline int sk_memalloc_socks(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline void __receive_sock(struct file *file)
+{ }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 static inline gfp_t sk_gfp_atomic(struct sock *sk, gfp_t gfp_mask)
@@ -789,7 +831,11 @@ void sk_stream_write_space(struct sock *sk);
 static inline void __sk_add_backlog(struct sock *sk, struct sk_buff *skb)
 {
 	/* dont let skb dst not refcounted, we are going to leave rcu lock */
+<<<<<<< HEAD
 	skb_dst_force(skb);
+=======
+	skb_dst_force_safe(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!sk->sk_backlog.tail)
 		sk->sk_backlog.head = skb;
@@ -819,6 +865,17 @@ static inline __must_check int sk_add_backlog(struct sock *sk, struct sk_buff *s
 	if (sk_rcvqueues_full(sk, limit))
 		return -ENOBUFS;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If the skb was allocated from pfmemalloc reserves, only
+	 * allow SOCK_MEMALLOC sockets to use it as this socket is
+	 * helping free memory
+	 */
+	if (skb_pfmemalloc(skb) && !sock_flag(sk, SOCK_MEMALLOC))
+		return -ENOMEM;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__sk_add_backlog(sk, skb);
 	sk->sk_backlog.len += skb->truesize;
 	return 0;
@@ -1049,6 +1106,10 @@ struct proto {
 	void			(*destroy_cgroup)(struct mem_cgroup *memcg);
 	struct cg_proto		*(*proto_cgroup)(struct mem_cgroup *memcg);
 #endif
+<<<<<<< HEAD
+=======
+	int			(*diag_destroy)(struct sock *sk, int err);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -1300,7 +1361,11 @@ static inline void sk_sockets_allocated_inc(struct sock *sk)
 	percpu_counter_inc(prot->sockets_allocated);
 }
 
+<<<<<<< HEAD
 static inline int
+=======
+static inline u64
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 sk_sockets_allocated_read_positive(struct sock *sk)
 {
 	struct proto *prot = sk->sk_prot;
@@ -1671,7 +1736,11 @@ static inline void sock_put(struct sock *sk)
 		sk_free(sk);
 }
 /* Generic version of sock_put(), dealing with all sockets
+<<<<<<< HEAD
  * (TCP_TIMEWAIT, ESTABLISHED...)
+=======
+ * (TCP_TIMEWAIT, TCP_NEW_SYN_RECV, ESTABLISHED...)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void sock_gen_put(struct sock *sk);
 
@@ -1694,7 +1763,10 @@ static inline int sk_tx_queue_get(const struct sock *sk)
 
 static inline void sk_set_socket(struct sock *sk, struct socket *sock)
 {
+<<<<<<< HEAD
 	sk_tx_queue_clear(sk);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sk->sk_socket = sock;
 }
 
@@ -1725,6 +1797,10 @@ static inline void sock_graft(struct sock *sk, struct socket *parent)
 	sk->sk_wq = parent->wq;
 	parent->sk = sk;
 	sk_set_socket(sk, parent);
+<<<<<<< HEAD
+=======
+	sk->sk_uid = SOCK_INODE(parent)->i_uid;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	security_sock_graft(sk, parent);
 	write_unlock_bh(&sk->sk_callback_lock);
 }
@@ -1732,6 +1808,14 @@ static inline void sock_graft(struct sock *sk, struct socket *parent)
 kuid_t sock_i_uid(struct sock *sk);
 unsigned long sock_i_ino(struct sock *sk);
 
+<<<<<<< HEAD
+=======
+static inline kuid_t sock_net_uid(const struct net *net, const struct sock *sk)
+{
+	return sk ? sk->sk_uid : make_kuid(net->user_ns, 0);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline struct dst_entry *
 __sk_dst_get(struct sock *sk)
 {
@@ -2150,6 +2234,44 @@ static inline int sock_intr_errno(long timeo)
 	return timeo == MAX_SCHEDULE_TIMEOUT ? -ERESTARTSYS : -EINTR;
 }
 
+<<<<<<< HEAD
+=======
+static inline ktime_t sock_read_timestamp(struct sock *sk)
+{
+#if BITS_PER_LONG==32
+	unsigned int seq;
+	ktime_t kt;
+
+	do {
+		seq = read_seqbegin(&sk->sk_stamp_seq);
+		kt = sk->sk_stamp;
+	} while (read_seqretry(&sk->sk_stamp_seq, seq));
+
+	return kt;
+#else
+	return READ_ONCE(sk->sk_stamp);
+#endif
+}
+
+static inline void sock_write_timestamp(struct sock *sk, ktime_t kt)
+{
+#if BITS_PER_LONG==32
+	write_seqlock(&sk->sk_stamp_seq);
+	sk->sk_stamp = kt;
+	write_sequnlock(&sk->sk_stamp_seq);
+#else
+	WRITE_ONCE(sk->sk_stamp, kt);
+#endif
+}
+
+static inline void sk_drops_add(struct sock *sk, const struct sk_buff *skb)
+{
+	int segs = max_t(u16, 1, skb_shinfo(skb)->gso_segs);
+
+	atomic_add(segs, &sk->sk_drops);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
 			   struct sk_buff *skb);
 void __sock_recv_wifi_status(struct msghdr *msg, struct sock *sk,
@@ -2174,7 +2296,11 @@ sock_recv_timestamp(struct msghdr *msg, struct sock *sk, struct sk_buff *skb)
 	     (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE)))
 		__sock_recv_timestamp(msg, sk, skb);
 	else
+<<<<<<< HEAD
 		sk->sk_stamp = kt;
+=======
+		sock_write_timestamp(sk, kt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (sock_flag(sk, SOCK_WIFI_STATUS) && skb->wifi_acked_valid)
 		__sock_recv_wifi_status(msg, sk, skb);
@@ -2194,7 +2320,11 @@ static inline void sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
 	if (sk->sk_flags & FLAGS_TS_OR_DROPS || sk->sk_tsflags & TSFLAGS_ANY)
 		__sock_recv_ts_and_drops(msg, sk, skb);
 	else
+<<<<<<< HEAD
 		sk->sk_stamp = skb->tstamp;
+=======
+		sock_write_timestamp(sk, skb->tstamp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __sock_tx_timestamp(const struct sock *sk, __u8 *tx_flags);
@@ -2270,10 +2400,18 @@ static inline struct sock *skb_steal_sock(struct sk_buff *skb)
 
 /* This helper checks if a socket is a full socket,
  * ie _not_ a timewait or request socket.
+<<<<<<< HEAD
  */
 static inline bool sk_fullsock(const struct sock *sk)
 {
 	return (1 << sk->sk_state) & ~(TCPF_TIME_WAIT | TCPF_NEW_SYN_RECV);
+=======
+ * TODO: Check for TCPF_NEW_SYN_RECV when that starts to exist.
+ */
+static inline bool sk_fullsock(const struct sock *sk)
+{
+	return (1 << sk->sk_state) & ~(TCPF_TIME_WAIT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void sock_enable_timestamp(struct sock *sk, int flag);

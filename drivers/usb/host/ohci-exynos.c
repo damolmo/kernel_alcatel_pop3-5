@@ -67,10 +67,18 @@ static int exynos_ohci_get_phy(struct device *dev,
 		if (IS_ERR(phy)) {
 			ret = PTR_ERR(phy);
 			if (ret == -EPROBE_DEFER) {
+<<<<<<< HEAD
+=======
+				of_node_put(child);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return ret;
 			} else if (ret != -ENOSYS && ret != -ENODEV) {
 				dev_err(dev,
 					"Error retrieving usb2 phy: %d\n", ret);
+<<<<<<< HEAD
+=======
+				of_node_put(child);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				return ret;
 			}
 		}
@@ -171,9 +179,14 @@ skip_phy:
 	}
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (!irq) {
 		dev_err(&pdev->dev, "Failed to get IRQ\n");
 		err = -ENODEV;
+=======
+	if (irq < 0) {
+		err = irq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto fail_io;
 	}
 

@@ -305,7 +305,10 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
 	struct iio_dev *indio_dev;
 	struct accel_3d_state *accel_state;
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+<<<<<<< HEAD
 	struct iio_chan_spec *channels;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	indio_dev = devm_iio_device_alloc(&pdev->dev,
 					  sizeof(struct accel_3d_state));
@@ -326,21 +329,36 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	channels = kmemdup(accel_3d_channels, sizeof(accel_3d_channels),
 			   GFP_KERNEL);
 	if (!channels) {
+=======
+	indio_dev->channels = kmemdup(accel_3d_channels,
+				      sizeof(accel_3d_channels), GFP_KERNEL);
+	if (!indio_dev->channels) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(&pdev->dev, "failed to duplicate channels\n");
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	ret = accel_3d_parse_report(pdev, hsdev, channels,
 					HID_USAGE_SENSOR_ACCEL_3D, accel_state);
+=======
+	ret = accel_3d_parse_report(pdev, hsdev,
+				    (struct iio_chan_spec *)indio_dev->channels,
+				    HID_USAGE_SENSOR_ACCEL_3D, accel_state);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		dev_err(&pdev->dev, "failed to setup attributes\n");
 		goto error_free_dev_mem;
 	}
 
+<<<<<<< HEAD
 	indio_dev->channels = channels;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
 	indio_dev->dev.parent = &pdev->dev;
 	indio_dev->info = &accel_3d_info;

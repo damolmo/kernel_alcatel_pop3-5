@@ -289,6 +289,10 @@ static int cs5536_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 
 static const struct pci_device_id cs5536[] = {
 	{ PCI_VDEVICE(AMD,	PCI_DEVICE_ID_AMD_CS5536_IDE), },
+<<<<<<< HEAD
+=======
+	{ PCI_VDEVICE(AMD,	PCI_DEVICE_ID_AMD_CS5536_DEV_IDE), },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ },
 };
 

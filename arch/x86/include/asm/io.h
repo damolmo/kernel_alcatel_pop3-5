@@ -297,13 +297,21 @@ static inline unsigned type in##bwl##_p(int port)			\
 static inline void outs##bwl(int port, const void *addr, unsigned long count) \
 {									\
 	asm volatile("rep; outs" #bwl					\
+<<<<<<< HEAD
 		     : "+S"(addr), "+c"(count) : "d"(port));		\
+=======
+		     : "+S"(addr), "+c"(count) : "d"(port) : "memory");	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }									\
 									\
 static inline void ins##bwl(int port, void *addr, unsigned long count)	\
 {									\
 	asm volatile("rep; ins" #bwl					\
+<<<<<<< HEAD
 		     : "+D"(addr), "+c"(count) : "d"(port));		\
+=======
+		     : "+D"(addr), "+c"(count) : "d"(port) : "memory");	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 BUILDIO(b, b, char)
@@ -340,4 +348,13 @@ extern void arch_phys_wc_del(int handle);
 #define arch_phys_wc_add arch_phys_wc_add
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_PAT
+extern int arch_io_reserve_memtype_wc(resource_size_t start, resource_size_t size);
+extern void arch_io_free_memtype_wc(resource_size_t start, resource_size_t size);
+#define arch_io_reserve_memtype_wc arch_io_reserve_memtype_wc
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _ASM_X86_IO_H */

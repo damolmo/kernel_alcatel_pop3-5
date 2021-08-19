@@ -82,8 +82,13 @@
 
 #define NUMBER_OF_SMB2_COMMANDS	0x0013
 
+<<<<<<< HEAD
 /* BB FIXME - analyze following length BB */
 #define MAX_SMB2_HDR_SIZE 0x78 /* 4 len + 64 hdr + (2*24 wct) + 2 bct + 2 pad */
+=======
+/* 52 transform hdr + 64 hdr + 88 create rsp */
+#define MAX_SMB2_HDR_SIZE 204
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define SMB2_PROTO_NUMBER __constant_cpu_to_le32(0x424d53fe)
 
@@ -245,7 +250,11 @@ struct smb2_sess_setup_req {
 	__le32 Channel;
 	__le16 SecurityBufferOffset;
 	__le16 SecurityBufferLength;
+<<<<<<< HEAD
 	__le64 PreviousSessionId;
+=======
+	__u64 PreviousSessionId;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__u8   Buffer[1];	/* variable length GSS security buffer */
 } __packed;
 

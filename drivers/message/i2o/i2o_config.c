@@ -772,7 +772,11 @@ static long i2o_cfg_compat_ioctl(struct file *file, unsigned cmd,
 
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_I2O_EXT_ADAPTEC
+=======
+#if defined(CONFIG_I2O_EXT_ADAPTEC) && !defined(CONFIG_64BIT)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int i2o_cfg_passthru(unsigned long arg)
 {
 	struct i2o_cmd_passthru __user *cmd =
@@ -1045,7 +1049,11 @@ static long i2o_cfg_ioctl(struct file *fp, unsigned int cmd, unsigned long arg)
 		ret = i2o_cfg_evt_get(arg, fp);
 		break;
 
+<<<<<<< HEAD
 #ifdef CONFIG_I2O_EXT_ADAPTEC
+=======
+#if defined(CONFIG_I2O_EXT_ADAPTEC) && !defined(CONFIG_64BIT)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case I2OPASSTHRU:
 		ret = i2o_cfg_passthru(arg);
 		break;

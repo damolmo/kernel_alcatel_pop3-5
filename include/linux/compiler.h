@@ -50,6 +50,25 @@ extern void __chk_io_ptr(const volatile void __iomem *);
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
+=======
+/*
+ * Minimal backport of compiler_attributes.h to add support for __copy
+ * to v4.9.y so that we can use it in init/exit_module to avoid
+ * -Werror=missing-attributes errors on GCC 9.
+ */
+#ifndef __has_attribute
+# define __has_attribute(x) __GCC4_has_attribute_##x
+# define __GCC4_has_attribute___copy__                0
+#endif
+
+#if __has_attribute(__copy__)
+# define __copy(symbol)                 __attribute__((__copy__(symbol)))
+#else
+# define __copy(symbol)
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef __GNUC__
 #include <linux/compiler-gcc.h>
 #endif
@@ -105,7 +124,11 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
 #define unlikely_notrace(x)	__builtin_expect(!!(x), 0)
 
 #define __branch_check__(x, expect) ({					\
+<<<<<<< HEAD
 			int ______r;					\
+=======
+			long ______r;					\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			static struct ftrace_branch_data		\
 				__attribute__((__aligned__(4)))		\
 				__attribute__((section("_ftrace_annotated_branch"))) \
@@ -138,7 +161,11 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
  */
 #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
 #define __trace_if(cond) \
+<<<<<<< HEAD
 	if (__builtin_constant_p((cond)) ? !!(cond) :			\
+=======
+	if (__builtin_constant_p(!!(cond)) ? !!(cond) :			\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	({								\
 		int ______r;						\
 		static struct ftrace_branch_data			\
@@ -165,6 +192,18 @@ void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect);
 # define barrier() __memory_barrier()
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef barrier_data
+# define barrier_data(ptr) barrier()
+#endif
+
+/* workaround for GCC PR82365 if needed */
+#ifndef barrier_before_unreachable
+# define barrier_before_unreachable() do { } while (0)
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Unreachable code */
 #ifndef unreachable
 # define unreachable() do { } while (1)
@@ -385,7 +424,11 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 
 /* Is this type a native word size -- useful for atomic operations */
 #ifndef __native_word
+<<<<<<< HEAD
 # define __native_word(t) (sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+=======
+# define __native_word(t) (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /* Compile time object size, -1 for unknown */
@@ -434,7 +477,11 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * compiler has support to do so.
  */
 #define compiletime_assert(condition, msg) \
+<<<<<<< HEAD
 	_compiletime_assert(condition, msg, __compiletime_assert_, __LINE__)
+=======
+	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define compiletime_assert_atomic_type(t)				\
 	compiletime_assert(__native_word(t),				\
@@ -454,6 +501,24 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  */
 #define ACCESS_ONCE(x) (*(volatile typeof(x) *)&(x))
 
+<<<<<<< HEAD
+=======
+/**
+ * lockless_dereference() - safely load a pointer for later dereference
+ * @p: The pointer to load
+ *
+ * Similar to rcu_dereference(), but for situations where the pointed-to
+ * object's lifetime is managed by something other than RCU.  That
+ * "something other" might be reference counting or simple immortality.
+ */
+#define lockless_dereference(p) \
+({ \
+	typeof(p) _________p1 = ACCESS_ONCE(p); \
+	smp_read_barrier_depends(); /* Dependency order vs. p above. */ \
+	(_________p1); \
+})
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Ignore/forbid kprobes attach on very low level functions marked by this attribute: */
 #ifdef CONFIG_KPROBES
 # define __kprobes	__attribute__((__section__(".kprobes.text")))
@@ -462,4 +527,14 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 # define __kprobes
 # define nokprobe_inline	inline
 #endif
+<<<<<<< HEAD
+=======
+
+/*
+ * This is needed in functions which generate the stack canary, see
+ * arch/x86/kernel/smpboot.c::start_secondary() for an example.
+ */
+#define prevent_tail_call_optimization()	mb()
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* __LINUX_COMPILER_H */

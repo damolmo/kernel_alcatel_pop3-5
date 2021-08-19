@@ -12,6 +12,10 @@
 
 #ifndef __ASSEMBLY__
 #include <asm/barrier.h>
+<<<<<<< HEAD
+=======
+#include <asm/thread_info.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 /*
@@ -34,15 +38,25 @@
  */
 #ifndef CONFIG_IO_36
 #define DOMAIN_KERNEL	0
+<<<<<<< HEAD
 #define DOMAIN_TABLE	0
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DOMAIN_USER	1
 #define DOMAIN_IO	2
 #else
 #define DOMAIN_KERNEL	2
+<<<<<<< HEAD
 #define DOMAIN_TABLE	2
 #define DOMAIN_USER	1
 #define DOMAIN_IO	0
 #endif
+=======
+#define DOMAIN_USER	1
+#define DOMAIN_IO	0
+#endif
+#define DOMAIN_VECTORS	3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Domain types
@@ -55,15 +69,60 @@
 #define DOMAIN_MANAGER	1
 #endif
 
+<<<<<<< HEAD
 #define domain_val(dom,type)	((type) << (2*(dom)))
 
 #ifndef __ASSEMBLY__
 
 #ifdef CONFIG_CPU_USE_DOMAINS
+=======
+#define domain_mask(dom)	((3) << (2 * (dom)))
+#define domain_val(dom,type)	((type) << (2 * (dom)))
+
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+#define DACR_INIT \
+	(domain_val(DOMAIN_USER, DOMAIN_NOACCESS) | \
+	 domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+	 domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#else
+#define DACR_INIT \
+	(domain_val(DOMAIN_USER, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+	 domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#endif
+
+#define __DACR_DEFAULT \
+	domain_val(DOMAIN_KERNEL, DOMAIN_CLIENT) | \
+	domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT)
+
+#define DACR_UACCESS_DISABLE	\
+	(__DACR_DEFAULT | domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
+#define DACR_UACCESS_ENABLE	\
+	(__DACR_DEFAULT | domain_val(DOMAIN_USER, DOMAIN_CLIENT))
+
+#ifndef __ASSEMBLY__
+
+static inline unsigned int get_domain(void)
+{
+	unsigned int domain;
+
+	asm(
+	"mrc	p15, 0, %0, c3, c0	@ get domain"
+	 : "=r" (domain)
+	 : "m" (current_thread_info()->cpu_domain));
+
+	return domain;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void set_domain(unsigned val)
 {
 	asm volatile(
 	"mcr	p15, 0, %0, c3, c0	@ set domain"
+<<<<<<< HEAD
 	  : : "r" (val));
 	isb();
 }
@@ -79,6 +138,22 @@ static inline void set_domain(unsigned val)
 
 #else
 static inline void set_domain(unsigned val) { }
+=======
+	  : : "r" (val) : "memory");
+	isb();
+}
+
+#ifdef CONFIG_CPU_USE_DOMAINS
+#define modify_domain(dom,type)					\
+	do {							\
+		unsigned int domain = get_domain();		\
+		domain &= ~domain_mask(dom);			\
+		domain = domain | domain_val(dom, type);	\
+		set_domain(domain);				\
+	} while (0)
+
+#else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void modify_domain(unsigned dom, unsigned type)	{ }
 #endif
 

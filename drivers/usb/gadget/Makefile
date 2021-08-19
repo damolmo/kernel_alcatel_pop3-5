@@ -1,6 +1,7 @@
 #
 # USB peripheral controller drivers
 #
+<<<<<<< HEAD
 
 MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
 subdir-ccflags-y += -Werror -I$(srctree)/drivers/misc/mediatek/include
@@ -97,3 +98,18 @@ obj-$(CONFIG_USB_G_NCM)		+= g_ncm.o
 obj-$(CONFIG_USB_G_ACM_MS)	+= g_acm_ms.o
 obj-$(CONFIG_USB_G_ANDROID)	+= g_android.o
 obj-$(CONFIG_USB_GADGET_TARGET)	+= tcm_usb_gadget.o
+=======
+subdir-ccflags-$(CONFIG_USB_GADGET_DEBUG)	:= -DDEBUG
+subdir-ccflags-$(CONFIG_USB_GADGET_VERBOSE)	+= -DVERBOSE_DEBUG
+ccflags-y				+= -I$(srctree)/drivers/usb/gadget/udc
+
+obj-$(CONFIG_USB_LIBCOMPOSITE)	+= libcomposite.o
+libcomposite-y			:= usbstring.o config.o epautoconf.o
+libcomposite-y			+= composite.o functions.o configfs.o u_f.o
+
+g_android-y			:= android.o
+
+obj-$(CONFIG_USB_GADGET)	+= udc/ function/ legacy/
+
+obj-$(CONFIG_USB_G_ANDROID)	+= g_android.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

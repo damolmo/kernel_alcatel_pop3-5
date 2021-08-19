@@ -385,9 +385,12 @@ EXPORT_SYMBOL(hashbin_new);
  *    for deallocating this structure if it's complex. If not the user can
  *    just supply kfree, which should take care of the job.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_LOCKDEP
 static int hashbin_lock_depth = 0;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int hashbin_delete( hashbin_t* hashbin, FREE_FUNC free_func)
 {
 	irda_queue_t* queue;
@@ -398,22 +401,43 @@ int hashbin_delete( hashbin_t* hashbin, FREE_FUNC free_func)
 	IRDA_ASSERT(hashbin->magic == HB_MAGIC, return -1;);
 
 	/* Synchronize */
+<<<<<<< HEAD
 	if ( hashbin->hb_type & HB_LOCK ) {
 		spin_lock_irqsave_nested(&hashbin->hb_spinlock, flags,
 					 hashbin_lock_depth++);
 	}
+=======
+	if (hashbin->hb_type & HB_LOCK)
+		spin_lock_irqsave(&hashbin->hb_spinlock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 *  Free the entries in the hashbin, TODO: use hashbin_clear when
 	 *  it has been shown to work
 	 */
 	for (i = 0; i < HASHBIN_SIZE; i ++ ) {
+<<<<<<< HEAD
 		queue = dequeue_first((irda_queue_t**) &hashbin->hb_queue[i]);
 		while (queue ) {
 			if (free_func)
 				(*free_func)(queue);
 			queue = dequeue_first(
 				(irda_queue_t**) &hashbin->hb_queue[i]);
+=======
+		while (1) {
+			queue = dequeue_first((irda_queue_t**) &hashbin->hb_queue[i]);
+
+			if (!queue)
+				break;
+
+			if (free_func) {
+				if (hashbin->hb_type & HB_LOCK)
+					spin_unlock_irqrestore(&hashbin->hb_spinlock, flags);
+				free_func(queue);
+				if (hashbin->hb_type & HB_LOCK)
+					spin_lock_irqsave(&hashbin->hb_spinlock, flags);
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -422,12 +446,17 @@ int hashbin_delete( hashbin_t* hashbin, FREE_FUNC free_func)
 	hashbin->magic = ~HB_MAGIC;
 
 	/* Release lock */
+<<<<<<< HEAD
 	if ( hashbin->hb_type & HB_LOCK) {
 		spin_unlock_irqrestore(&hashbin->hb_spinlock, flags);
 #ifdef CONFIG_LOCKDEP
 		hashbin_lock_depth--;
 #endif
 	}
+=======
+	if (hashbin->hb_type & HB_LOCK)
+		spin_unlock_irqrestore(&hashbin->hb_spinlock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 *  Free the hashbin structure

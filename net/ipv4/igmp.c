@@ -89,6 +89,10 @@
 #include <linux/rtnetlink.h>
 #include <linux/times.h>
 #include <linux/pkt_sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/byteorder/generic.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <net/net_namespace.h>
 #include <net/arp.h>
@@ -221,9 +225,20 @@ static void igmp_start_timer(struct ip_mc_list *im, int max_delay)
 static void igmp_gq_start_timer(struct in_device *in_dev)
 {
 	int tv = prandom_u32() % in_dev->mr_maxdelay;
+<<<<<<< HEAD
 
 	in_dev->mr_gq_running = 1;
 	if (!mod_timer(&in_dev->mr_gq_timer, jiffies+tv+2))
+=======
+	unsigned long exp = jiffies + tv + 2;
+
+	if (in_dev->mr_gq_running &&
+	    time_after_eq(exp, (in_dev->mr_gq_timer).expires))
+		return;
+
+	in_dev->mr_gq_running = 1;
+	if (!mod_timer(&in_dev->mr_gq_timer, exp))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		in_dev_hold(in_dev);
 }
 
@@ -318,6 +333,26 @@ igmp_scount(struct ip_mc_list *pmc, int type, int gdeleted, int sdeleted)
 	return scount;
 }
 
+<<<<<<< HEAD
+=======
+/* source address selection per RFC 3376 section 4.2.13 */
+static __be32 igmpv3_get_srcaddr(struct net_device *dev,
+				 const struct flowi4 *fl4)
+{
+	struct in_device *in_dev = __in_dev_get_rcu(dev);
+
+	if (!in_dev)
+		return htonl(INADDR_ANY);
+
+	for_ifa(in_dev) {
+		if (fl4->saddr == ifa->ifa_local)
+			return fl4->saddr;
+	} endfor_ifa(in_dev);
+
+	return htonl(INADDR_ANY);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct sk_buff *igmpv3_newpack(struct net_device *dev, unsigned int mtu)
 {
 	struct sk_buff *skb;
@@ -352,9 +387,14 @@ static struct sk_buff *igmpv3_newpack(struct net_device *dev, unsigned int mtu)
 	skb_dst_set(skb, &rt->dst);
 	skb->dev = dev;
 
+<<<<<<< HEAD
 	skb->reserved_tailroom = skb_end_offset(skb) -
 				 min(mtu, skb_end_offset(skb));
 	skb_reserve(skb, hlen);
+=======
+	skb_reserve(skb, hlen);
+	skb_tailroom_reserve(skb, mtu, tlen);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	skb_reset_network_header(skb);
 	pip = ip_hdr(skb);
@@ -366,10 +406,21 @@ static struct sk_buff *igmpv3_newpack(struct net_device *dev, unsigned int mtu)
 	pip->frag_off = htons(IP_DF);
 	pip->ttl      = 1;
 	pip->daddr    = fl4.daddr;
+<<<<<<< HEAD
 	pip->saddr    = fl4.saddr;
 	pip->protocol = IPPROTO_IGMP;
 	pip->tot_len  = 0;	/* filled in later */
 	ip_select_ident(skb, NULL);
+=======
+
+	rcu_read_lock();
+	pip->saddr    = igmpv3_get_srcaddr(dev, &fl4);
+	rcu_read_unlock();
+
+	pip->protocol = IPPROTO_IGMP;
+	pip->tot_len  = 0;	/* filled in later */
+	ip_select_ident(net, skb, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	((u8 *)&pip[1])[0] = IPOPT_RA;
 	((u8 *)&pip[1])[1] = 4;
 	((u8 *)&pip[1])[2] = 0;
@@ -402,16 +453,28 @@ static int grec_size(struct ip_mc_list *pmc, int type, int gdel, int sdel)
 }
 
 static struct sk_buff *add_grhead(struct sk_buff *skb, struct ip_mc_list *pmc,
+<<<<<<< HEAD
 	int type, struct igmpv3_grec **ppgr)
+=======
+	int type, struct igmpv3_grec **ppgr, unsigned int mtu)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct net_device *dev = pmc->interface->dev;
 	struct igmpv3_report *pih;
 	struct igmpv3_grec *pgr;
 
+<<<<<<< HEAD
 	if (!skb)
 		skb = igmpv3_newpack(dev, dev->mtu);
 	if (!skb)
 		return NULL;
+=======
+	if (!skb) {
+		skb = igmpv3_newpack(dev, mtu);
+		if (!skb)
+			return NULL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pgr = (struct igmpv3_grec *)skb_put(skb, sizeof(struct igmpv3_grec));
 	pgr->grec_type = type;
 	pgr->grec_auxwords = 0;
@@ -433,10 +496,21 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
 	struct igmpv3_grec *pgr = NULL;
 	struct ip_sf_list *psf, *psf_next, *psf_prev, **psf_list;
 	int scount, stotal, first, isquery, truncate;
+<<<<<<< HEAD
+=======
+	unsigned int mtu;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
 		return skb;
 
+<<<<<<< HEAD
+=======
+	mtu = READ_ONCE(dev->mtu);
+	if (mtu < IPV4_MIN_MTU)
+		return skb;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	isquery = type == IGMPV3_MODE_IS_INCLUDE ||
 		  type == IGMPV3_MODE_IS_EXCLUDE;
 	truncate = type == IGMPV3_MODE_IS_EXCLUDE ||
@@ -457,7 +531,11 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
 		    AVAILABLE(skb) < grec_size(pmc, type, gdeleted, sdeleted)) {
 			if (skb)
 				igmpv3_sendpack(skb);
+<<<<<<< HEAD
 			skb = igmpv3_newpack(dev, dev->mtu);
+=======
+			skb = igmpv3_newpack(dev, mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	first = 1;
@@ -484,12 +562,20 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
 				pgr->grec_nsrcs = htons(scount);
 			if (skb)
 				igmpv3_sendpack(skb);
+<<<<<<< HEAD
 			skb = igmpv3_newpack(dev, dev->mtu);
+=======
+			skb = igmpv3_newpack(dev, mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			first = 1;
 			scount = 0;
 		}
 		if (first) {
+<<<<<<< HEAD
 			skb = add_grhead(skb, pmc, type, &pgr);
+=======
+			skb = add_grhead(skb, pmc, type, &pgr, mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			first = 0;
 		}
 		if (!skb)
@@ -523,7 +609,11 @@ empty_source:
 				igmpv3_sendpack(skb);
 				skb = NULL; /* add_grhead will get a new one */
 			}
+<<<<<<< HEAD
 			skb = add_grhead(skb, pmc, type, &pgr);
+=======
+			skb = add_grhead(skb, pmc, type, &pgr, mtu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	if (pgr)
@@ -713,7 +803,11 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
 	iph->daddr    = dst;
 	iph->saddr    = fl4.saddr;
 	iph->protocol = IPPROTO_IGMP;
+<<<<<<< HEAD
 	ip_select_ident(skb, NULL);
+=======
+	ip_select_ident(net, skb, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	((u8 *)&iph[1])[0] = IPOPT_RA;
 	((u8 *)&iph[1])[1] = 4;
 	((u8 *)&iph[1])[2] = 0;
@@ -1080,6 +1174,10 @@ static void igmpv3_add_delrec(struct in_device *in_dev, struct ip_mc_list *im)
 	pmc = kzalloc(sizeof(*pmc), GFP_KERNEL);
 	if (!pmc)
 		return;
+<<<<<<< HEAD
+=======
+	spin_lock_init(&pmc->lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_bh(&im->lock);
 	pmc->interface = im->interface;
 	in_dev_hold(in_dev);
@@ -1832,6 +1930,7 @@ static int ip_mc_add_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
 
 static void ip_mc_clear_src(struct ip_mc_list *pmc)
 {
+<<<<<<< HEAD
 	struct ip_sf_list *psf, *nextpsf;
 
 	for (psf = pmc->tomb; psf; psf = nextpsf) {
@@ -1847,6 +1946,28 @@ static void ip_mc_clear_src(struct ip_mc_list *pmc)
 	pmc->sfmode = MCAST_EXCLUDE;
 	pmc->sfcount[MCAST_INCLUDE] = 0;
 	pmc->sfcount[MCAST_EXCLUDE] = 1;
+=======
+	struct ip_sf_list *psf, *nextpsf, *tomb, *sources;
+
+	spin_lock_bh(&pmc->lock);
+	tomb = pmc->tomb;
+	pmc->tomb = NULL;
+	sources = pmc->sources;
+	pmc->sources = NULL;
+	pmc->sfmode = MCAST_EXCLUDE;
+	pmc->sfcount[MCAST_INCLUDE] = 0;
+	pmc->sfcount[MCAST_EXCLUDE] = 1;
+	spin_unlock_bh(&pmc->lock);
+
+	for (psf = tomb; psf; psf = nextpsf) {
+		nextpsf = psf->sf_next;
+		kfree(psf);
+	}
+	for (psf = sources; psf; psf = nextpsf) {
+		nextpsf = psf->sf_next;
+		kfree(psf);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 

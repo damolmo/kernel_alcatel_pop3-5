@@ -18,6 +18,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -59,6 +63,10 @@ struct tegra_rtc_info {
 	struct platform_device	*pdev;
 	struct rtc_device	*rtc_dev;
 	void __iomem		*rtc_base; /* NULL if not initialized. */
+<<<<<<< HEAD
+=======
+	struct clk		*clk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int			tegra_rtc_irq; /* alarm and periodic irq */
 	spinlock_t		tegra_rtc_lock;
 };
@@ -330,6 +338,17 @@ static int __init tegra_rtc_probe(struct platform_device *pdev)
 	if (info->tegra_rtc_irq <= 0)
 		return -EBUSY;
 
+<<<<<<< HEAD
+=======
+	info->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(info->clk))
+		return PTR_ERR(info->clk);
+
+	ret = clk_prepare_enable(info->clk);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* set context info. */
 	info->pdev = pdev;
 	spin_lock_init(&info->tegra_rtc_lock);
@@ -350,7 +369,11 @@ static int __init tegra_rtc_probe(struct platform_device *pdev)
 		ret = PTR_ERR(info->rtc_dev);
 		dev_err(&pdev->dev, "Unable to register device (err=%d).\n",
 			ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto disable_clk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	ret = devm_request_irq(&pdev->dev, info->tegra_rtc_irq,
@@ -360,12 +383,32 @@ static int __init tegra_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev,
 			"Unable to request interrupt for device (err=%d).\n",
 			ret);
+<<<<<<< HEAD
 		return ret;
+=======
+		goto disable_clk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	dev_notice(&pdev->dev, "Tegra internal Real Time Clock\n");
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+disable_clk:
+	clk_disable_unprepare(info->clk);
+	return ret;
+}
+
+static int tegra_rtc_remove(struct platform_device *pdev)
+{
+	struct tegra_rtc_info *info = platform_get_drvdata(pdev);
+
+	clk_disable_unprepare(info->clk);
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -417,6 +460,10 @@ static void tegra_rtc_shutdown(struct platform_device *pdev)
 
 MODULE_ALIAS("platform:tegra_rtc");
 static struct platform_driver tegra_rtc_driver = {
+<<<<<<< HEAD
+=======
+	.remove		= tegra_rtc_remove,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.shutdown	= tegra_rtc_shutdown,
 	.driver		= {
 		.name	= "tegra_rtc",

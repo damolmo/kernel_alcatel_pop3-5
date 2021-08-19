@@ -12,6 +12,10 @@
  * added by Ivan Kokshaysky <ink@jurassic.park.msu.ru>
  */
 
+<<<<<<< HEAD
+=======
+#include <asm/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.globl csum_ipv6_magic
 	.align 4
 	.ent csum_ipv6_magic
@@ -113,3 +117,7 @@ csum_ipv6_magic:
 	ret			# .. e1 :
 
 	.end csum_ipv6_magic
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(csum_ipv6_magic)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

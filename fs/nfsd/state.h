@@ -506,6 +506,7 @@ struct nfs4_file {
  * Better suggestions welcome.
  */
 struct nfs4_ol_stateid {
+<<<<<<< HEAD
 	struct nfs4_stid    st_stid; /* must be first field */
 	struct list_head              st_perfile;
 	struct list_head              st_perstateowner;
@@ -514,6 +515,17 @@ struct nfs4_ol_stateid {
 	unsigned char                 st_access_bmap;
 	unsigned char                 st_deny_bmap;
 	struct nfs4_ol_stateid         * st_openstp;
+=======
+	struct nfs4_stid		st_stid;
+	struct list_head		st_perfile;
+	struct list_head		st_perstateowner;
+	struct list_head		st_locks;
+	struct nfs4_stateowner		*st_stateowner;
+	unsigned char			st_access_bmap;
+	unsigned char			st_deny_bmap;
+	struct nfs4_ol_stateid		*st_openstp;
+	struct mutex			st_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static inline struct nfs4_ol_stateid *openlockstateid(struct nfs4_stid *s)
@@ -546,6 +558,10 @@ extern struct nfs4_client_reclaim *nfsd4_find_reclaim_client(const char *recdir,
 extern __be32 nfs4_check_open_reclaim(clientid_t *clid,
 		struct nfsd4_compound_state *cstate, struct nfsd_net *nn);
 extern int set_callback_cred(void);
+<<<<<<< HEAD
+=======
+extern void cleanup_callback_cred(void);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void nfsd4_probe_callback(struct nfs4_client *clp);
 extern void nfsd4_probe_callback_sync(struct nfs4_client *clp);
 extern void nfsd4_change_callback(struct nfs4_client *clp, struct nfs4_cb_conn *);

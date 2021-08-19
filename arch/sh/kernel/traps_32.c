@@ -607,7 +607,12 @@ asmlinkage void do_divide_error(unsigned long r4)
 		break;
 	}
 
+<<<<<<< HEAD
 	force_sig_info(SIGFPE, &info, current);
+=======
+	info.si_signo = SIGFPE;
+	force_sig_info(info.si_signo, &info, current);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif
 

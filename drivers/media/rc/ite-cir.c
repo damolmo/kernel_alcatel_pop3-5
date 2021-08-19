@@ -263,6 +263,11 @@ static void ite_set_carrier_params(struct ite_dev *dev)
 
 			if (allowance > ITE_RXDCR_MAX)
 				allowance = ITE_RXDCR_MAX;
+<<<<<<< HEAD
+=======
+
+			use_demodulator = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 
@@ -290,8 +295,19 @@ static irqreturn_t ite_cir_isr(int irq, void *data)
 	/* read the interrupt flags */
 	iflags = dev->params.get_irq_causes(dev);
 
+<<<<<<< HEAD
 	/* check for the receive interrupt */
 	if (iflags & (ITE_IRQ_RX_FIFO | ITE_IRQ_RX_FIFO_OVERRUN)) {
+=======
+	/* Check for RX overflow */
+	if (iflags & ITE_IRQ_RX_FIFO_OVERRUN) {
+		dev_warn(&dev->rdev->dev, "receive overflow\n");
+		ir_raw_event_reset(dev->rdev);
+	}
+
+	/* check for the receive interrupt */
+	if (iflags & ITE_IRQ_RX_FIFO) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* read the FIFO bytes */
 		rx_bytes =
 			dev->params.get_rx_bytes(dev, rx_buf,

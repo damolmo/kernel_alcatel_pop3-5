@@ -280,16 +280,27 @@ static int cmtp_session(void *arg)
 	struct cmtp_session *session = arg;
 	struct sock *sk = session->sock->sk;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	wait_queue_t wait;
+=======
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	BT_DBG("session %p", session);
 
 	set_user_nice(current, -15);
 
+<<<<<<< HEAD
 	init_waitqueue_entry(&wait, current);
 	add_wait_queue(sk_sleep(sk), &wait);
 	while (1) {
 		set_current_state(TASK_INTERRUPTIBLE);
+=======
+	add_wait_queue(sk_sleep(sk), &wait);
+	while (1) {
+		/* Ensure session->terminate is updated */
+		smp_mb__before_atomic();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (atomic_read(&session->terminate))
 			break;
@@ -306,9 +317,14 @@ static int cmtp_session(void *arg)
 
 		cmtp_process_transmit(session);
 
+<<<<<<< HEAD
 		schedule();
 	}
 	__set_current_state(TASK_RUNNING);
+=======
+		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	remove_wait_queue(sk_sleep(sk), &wait);
 
 	down_write(&cmtp_session_sem);
@@ -334,6 +350,12 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 
 	BT_DBG("");
 
+<<<<<<< HEAD
+=======
+	if (!l2cap_is_socket(sock))
+		return -EBADFD;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	session = kzalloc(sizeof(struct cmtp_session), GFP_KERNEL);
 	if (!session)
 		return -ENOMEM;
@@ -385,8 +407,18 @@ int cmtp_add_connection(struct cmtp_connadd_req *req, struct socket *sock)
 	if (!(session->flags & (1 << CMTP_LOOPBACK))) {
 		err = cmtp_attach_device(session);
 		if (err < 0) {
+<<<<<<< HEAD
 			atomic_inc(&session->terminate);
 			wake_up_process(session->task);
+=======
+			/* Caller will call fput in case of failure, and so
+			 * will cmtp_session kthread.
+			 */
+			get_file(session->sock->file);
+
+			atomic_inc(&session->terminate);
+			wake_up_interruptible(sk_sleep(session->sock->sk));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			up_write(&cmtp_session_sem);
 			return err;
 		}
@@ -420,7 +452,15 @@ int cmtp_del_connection(struct cmtp_conndel_req *req)
 
 		/* Stop session thread */
 		atomic_inc(&session->terminate);
+<<<<<<< HEAD
 		wake_up_process(session->task);
+=======
+
+		/* Ensure session->terminate is updated */
+		smp_mb__after_atomic();
+
+		wake_up_interruptible(sk_sleep(session->sock->sk));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		err = -ENOENT;
 

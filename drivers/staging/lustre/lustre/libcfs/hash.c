@@ -1049,8 +1049,12 @@ cfs_hash_create(char *name, unsigned cur_bits, unsigned max_bits,
 	if (hs == NULL)
 		return NULL;
 
+<<<<<<< HEAD
 	strncpy(hs->hs_name, name, len);
 	hs->hs_name[len - 1] = '\0';
+=======
+	strlcpy(hs->hs_name, name, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hs->hs_flags = flags;
 
 	atomic_set(&hs->hs_refcount, 1);

@@ -49,7 +49,11 @@
  */
 void drm_mode_debug_printmodeline(const struct drm_display_mode *mode)
 {
+<<<<<<< HEAD
 	DRM_INFO("Modeline %d:\"%s\" %d %d %d %d %d %d %d %d %d %d "
+=======
+	DRM_DEBUG_KMS("Modeline %d:\"%s\" %d %d %d %d %d %d %d %d %d %d "
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			"0x%x 0x%x\n",
 		mode->base.id, mode->name, mode->vrefresh, mode->clock,
 		mode->hdisplay, mode->hsync_start,
@@ -682,7 +686,11 @@ int drm_mode_hsync(const struct drm_display_mode *mode)
 	if (mode->hsync)
 		return mode->hsync;
 
+<<<<<<< HEAD
 	if (mode->htotal < 0)
+=======
+	if (mode->htotal <= 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	calc_val = (mode->clock * 1000) / mode->htotal; /* hsync in Hz */
@@ -739,8 +747,11 @@ EXPORT_SYMBOL(drm_mode_vrefresh);
  * - The CRTC_STEREO_DOUBLE flag can be used to compute the timings for
  *   buffers containing two eyes (only adjust the timings when needed, eg. for
  *   "frame packing" or "side by side full").
+<<<<<<< HEAD
  * - The CRTC_NO_DBLSCAN and CRTC_NO_VSCAN flags request that adjustment *not*
  *   be performed for doublescan and vscan > 1 modes respectively.
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 void drm_mode_set_crtcinfo(struct drm_display_mode *p, int adjust_flags)
 {
@@ -767,6 +778,7 @@ void drm_mode_set_crtcinfo(struct drm_display_mode *p, int adjust_flags)
 		}
 	}
 
+<<<<<<< HEAD
 	if (!(adjust_flags & CRTC_NO_DBLSCAN)) {
 		if (p->flags & DRM_MODE_FLAG_DBLSCAN) {
 			p->crtc_vdisplay *= 2;
@@ -783,6 +795,20 @@ void drm_mode_set_crtcinfo(struct drm_display_mode *p, int adjust_flags)
 			p->crtc_vsync_end *= p->vscan;
 			p->crtc_vtotal *= p->vscan;
 		}
+=======
+	if (p->flags & DRM_MODE_FLAG_DBLSCAN) {
+		p->crtc_vdisplay *= 2;
+		p->crtc_vsync_start *= 2;
+		p->crtc_vsync_end *= 2;
+		p->crtc_vtotal *= 2;
+	}
+
+	if (p->vscan > 1) {
+		p->crtc_vdisplay *= p->vscan;
+		p->crtc_vsync_start *= p->vscan;
+		p->crtc_vsync_end *= p->vscan;
+		p->crtc_vtotal *= p->vscan;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (adjust_flags & CRTC_STEREO_DOUBLE) {
@@ -912,6 +938,7 @@ bool drm_mode_equal_no_clocks_no_stereo(const struct drm_display_mode *mode1,
 EXPORT_SYMBOL(drm_mode_equal_no_clocks_no_stereo);
 
 /**
+<<<<<<< HEAD
  * drm_mode_validate_basic - make sure the mode is somewhat sane
  * @mode: mode to check
  *
@@ -946,11 +973,17 @@ EXPORT_SYMBOL(drm_mode_validate_basic);
 /**
  * drm_mode_validate_size - make sure modes adhere to size constraints
  * @mode: mode to check
+=======
+ * drm_mode_validate_size - make sure modes adhere to size constraints
+ * @dev: DRM device
+ * @mode_list: list of modes to check
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @maxX: maximum width
  * @maxY: maximum height
  *
  * This function is a helper which can be used to validate modes against size
  * limitations of the DRM device/connector. If a mode is too big its status
+<<<<<<< HEAD
  * member is updated with the appropriate validation failure code. The list
  * itself is not changed.
  *
@@ -968,6 +1001,24 @@ drm_mode_validate_size(const struct drm_display_mode *mode,
 		return MODE_VIRTUAL_Y;
 
 	return MODE_OK;
+=======
+ * memeber is updated with the appropriate validation failure code. The list
+ * itself is not changed.
+ */
+void drm_mode_validate_size(struct drm_device *dev,
+			    struct list_head *mode_list,
+			    int maxX, int maxY)
+{
+	struct drm_display_mode *mode;
+
+	list_for_each_entry(mode, mode_list, head) {
+		if (maxX > 0 && mode->hdisplay > maxX)
+			mode->status = MODE_VIRTUAL_X;
+
+		if (maxY > 0 && mode->vdisplay > maxY)
+			mode->status = MODE_VIRTUAL_Y;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(drm_mode_validate_size);
 
@@ -1298,10 +1349,21 @@ drm_mode_create_from_cmdline_mode(struct drm_device *dev,
 		return NULL;
 
 	mode->type |= DRM_MODE_TYPE_USERDEF;
+<<<<<<< HEAD
+=======
+	/* fix up 1368x768: GFT/CVT can't express 1366 width due to alignment */
+	if (cmd->xres == 1366 && mode->hdisplay == 1368) {
+		mode->hdisplay = 1366;
+		mode->hsync_start--;
+		mode->hsync_end--;
+		drm_mode_set_name(mode);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V);
 	return mode;
 }
 EXPORT_SYMBOL(drm_mode_create_from_cmdline_mode);
+<<<<<<< HEAD
 
 /**
  * drm_crtc_convert_to_umode - convert a drm_display_mode into a modeinfo
@@ -1389,3 +1451,5 @@ int drm_mode_convert_umode(struct drm_display_mode *out,
 out:
 	return ret;
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

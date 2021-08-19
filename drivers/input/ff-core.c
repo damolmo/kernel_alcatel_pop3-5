@@ -239,9 +239,21 @@ int input_ff_erase(struct input_dev *dev, int effect_id, struct file *file)
 EXPORT_SYMBOL_GPL(input_ff_erase);
 
 /*
+<<<<<<< HEAD
  * flush_effects - erase all effects owned by a file handle
  */
 static int flush_effects(struct input_dev *dev, struct file *file)
+=======
+ * input_ff_flush - erase all effects owned by a file handle
+ * @dev: input device to erase effect from
+ * @file: purported owner of the effects
+ *
+ * This function erases all force-feedback effects associated with
+ * the given owner from specified device. Note that @file may be %NULL,
+ * in which case all effects will be erased.
+ */
+int input_ff_flush(struct input_dev *dev, struct file *file)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ff_device *ff = dev->ff;
 	int i;
@@ -257,6 +269,10 @@ static int flush_effects(struct input_dev *dev, struct file *file)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(input_ff_flush);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * input_ff_event() - generic handler for force-feedback events
@@ -340,7 +356,11 @@ int input_ff_create(struct input_dev *dev, unsigned int max_effects)
 	mutex_init(&ff->mutex);
 
 	dev->ff = ff;
+<<<<<<< HEAD
 	dev->flush = flush_effects;
+=======
+	dev->flush = input_ff_flush;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->event = input_ff_event;
 	__set_bit(EV_FF, dev->evbit);
 

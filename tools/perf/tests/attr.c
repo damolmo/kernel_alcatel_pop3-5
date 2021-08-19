@@ -150,7 +150,11 @@ static int run_dir(const char *d, const char *perf)
 	snprintf(cmd, 3*PATH_MAX, PYTHON " %s/attr.py -d %s/attr/ -p %s %.*s",
 		 d, d, perf, vcnt, v);
 
+<<<<<<< HEAD
 	return system(cmd);
+=======
+	return system(cmd) ? TEST_FAIL : TEST_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int test__attr(void)

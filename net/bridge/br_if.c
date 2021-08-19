@@ -445,8 +445,13 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (dev->netdev_ops->ndo_start_xmit == br_dev_xmit)
 		return -ELOOP;
 
+<<<<<<< HEAD
 	/* Device is already being bridged */
 	if (br_port_exists(dev))
+=======
+	/* Device has master upper dev */
+	if (netdev_master_upper_dev_get(dev))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EBUSY;
 
 	/* No bridging devices that dislike that (e.g. wireless) */
@@ -460,13 +465,24 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	call_netdevice_notifiers(NETDEV_JOIN, dev);
 
 	err = dev_set_allmulti(dev, 1);
+<<<<<<< HEAD
 	if (err)
 		goto put_back;
+=======
+	if (err) {
+		kfree(p);	/* kobject not yet init'd, manually free */
+		goto err1;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = kobject_init_and_add(&p->kobj, &brport_ktype, &(dev->dev.kobj),
 				   SYSFS_BRIDGE_PORT_ATTR);
 	if (err)
+<<<<<<< HEAD
 		goto err1;
+=======
+		goto err2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = br_sysfs_addif(p);
 	if (err)
@@ -500,8 +516,16 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (br_fdb_insert(br, p, dev->dev_addr, 0))
 		netdev_err(dev, "failed insert local address bridge forwarding table\n");
 
+<<<<<<< HEAD
 	if (nbp_vlan_init(p))
 		netdev_err(dev, "failed to initialize vlan filtering on this port\n");
+=======
+	err = nbp_vlan_init(p);
+	if (err) {
+		netdev_err(dev, "failed to initialize vlan filtering on this port\n");
+		goto err6;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spin_lock_bh(&br->lock);
 	changed_addr = br_stp_recalculate_bridge_id(br);
@@ -522,6 +546,15 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err6:
+	list_del_rcu(&p->list);
+	br_fdb_delete_by_port(br, p, 1);
+	nbp_update_port_count(br);
+	netdev_upper_dev_unlink(dev, br->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err5:
 	dev->priv_flags &= ~IFF_BRIDGE_PORT;
 	netdev_rx_handler_unregister(dev);
@@ -531,12 +564,18 @@ err3:
 	sysfs_remove_link(br->ifobj, p->dev->name);
 err2:
 	kobject_put(&p->kobj);
+<<<<<<< HEAD
 	p = NULL; /* kobject_put frees */
 err1:
 	dev_set_allmulti(dev, -1);
 put_back:
 	dev_put(dev);
 	kfree(p);
+=======
+	dev_set_allmulti(dev, -1);
+err1:
+	dev_put(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return err;
 }
 

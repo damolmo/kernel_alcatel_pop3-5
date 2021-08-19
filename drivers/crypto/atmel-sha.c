@@ -781,7 +781,11 @@ static void atmel_sha_finish_req(struct ahash_request *req, int err)
 	dd->flags &= ~(SHA_FLAGS_BUSY | SHA_FLAGS_FINAL | SHA_FLAGS_CPU |
 			SHA_FLAGS_DMA_READY | SHA_FLAGS_OUTPUT_READY);
 
+<<<<<<< HEAD
 	clk_disable_unprepare(dd->iclk);
+=======
+	clk_disable(dd->iclk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (req->base.complete)
 		req->base.complete(&req->base, err);
@@ -792,7 +796,11 @@ static void atmel_sha_finish_req(struct ahash_request *req, int err)
 
 static int atmel_sha_hw_init(struct atmel_sha_dev *dd)
 {
+<<<<<<< HEAD
 	clk_prepare_enable(dd->iclk);
+=======
+	clk_enable(dd->iclk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!(SHA_FLAGS_INIT & dd->flags)) {
 		atmel_sha_write(dd, SHA_CR, SHA_CR_SWRST);
@@ -817,7 +825,11 @@ static void atmel_sha_hw_version_init(struct atmel_sha_dev *dd)
 	dev_info(dd->dev,
 			"version: 0x%x\n", dd->hw_version);
 
+<<<<<<< HEAD
 	clk_disable_unprepare(dd->iclk);
+=======
+	clk_disable(dd->iclk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int atmel_sha_handle_queue(struct atmel_sha_dev *dd,
@@ -957,7 +969,13 @@ static int atmel_sha_finup(struct ahash_request *req)
 	ctx->flags |= SHA_FLAGS_FINUP;
 
 	err1 = atmel_sha_update(req);
+<<<<<<< HEAD
 	if (err1 == -EINPROGRESS || err1 == -EBUSY)
+=======
+	if (err1 == -EINPROGRESS ||
+	    (err1 == -EBUSY && (ahash_request_flags(req) &
+				CRYPTO_TFM_REQ_MAY_BACKLOG)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return err1;
 
 	/*
@@ -1429,12 +1447,25 @@ static int atmel_sha_probe(struct platform_device *pdev)
 	}
 
 	sha_dd->io_base = ioremap(sha_dd->phys_base, sha_phys_size);
+<<<<<<< HEAD
 	if (!sha_dd->io_base) {
 		dev_err(dev, "can't ioremap\n");
 		err = -ENOMEM;
 		goto sha_io_err;
 	}
 
+=======
+	if (IS_ERR(sha_dd->io_base)) {
+		dev_err(dev, "can't ioremap\n");
+		err = PTR_ERR(sha_dd->io_base);
+		goto sha_io_err;
+	}
+
+	err = clk_prepare(sha_dd->iclk);
+	if (err)
+		goto res_err;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	atmel_sha_hw_version_init(sha_dd);
 
 	atmel_sha_get_cap(sha_dd);
@@ -1446,12 +1477,20 @@ static int atmel_sha_probe(struct platform_device *pdev)
 			if (IS_ERR(pdata)) {
 				dev_err(&pdev->dev, "platform data not available\n");
 				err = PTR_ERR(pdata);
+<<<<<<< HEAD
 				goto err_pdata;
+=======
+				goto iclk_unprepare;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 		}
 		if (!pdata->dma_slave) {
 			err = -ENXIO;
+<<<<<<< HEAD
 			goto err_pdata;
+=======
+			goto iclk_unprepare;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		err = atmel_sha_dma_init(sha_dd, pdata);
 		if (err)
@@ -1482,7 +1521,12 @@ err_algs:
 	if (sha_dd->caps.has_dma)
 		atmel_sha_dma_cleanup(sha_dd);
 err_sha_dma:
+<<<<<<< HEAD
 err_pdata:
+=======
+iclk_unprepare:
+	clk_unprepare(sha_dd->iclk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	iounmap(sha_dd->io_base);
 sha_io_err:
 	clk_put(sha_dd->iclk);
@@ -1514,12 +1558,16 @@ static int atmel_sha_remove(struct platform_device *pdev)
 	if (sha_dd->caps.has_dma)
 		atmel_sha_dma_cleanup(sha_dd);
 
+<<<<<<< HEAD
 	iounmap(sha_dd->io_base);
 
 	clk_put(sha_dd->iclk);
 
 	if (sha_dd->irq >= 0)
 		free_irq(sha_dd->irq, sha_dd);
+=======
+	clk_unprepare(sha_dd->iclk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }

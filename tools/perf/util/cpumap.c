@@ -121,7 +121,16 @@ struct cpu_map *cpu_map__new(const char *cpu_list)
 	if (!cpu_list)
 		return cpu_map__read_all_cpu_map();
 
+<<<<<<< HEAD
 	if (!isdigit(*cpu_list))
+=======
+	/*
+	 * must handle the case of empty cpumap to cover
+	 * TOPOLOGY header for NUMA nodes with no CPU
+	 * ( e.g., because of CPU hotplug)
+	 */
+	if (!isdigit(*cpu_list) && *cpu_list != '\0')
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 
 	while (isdigit(*cpu_list)) {
@@ -168,8 +177,15 @@ struct cpu_map *cpu_map__new(const char *cpu_list)
 
 	if (nr_cpus > 0)
 		cpus = cpu_map__trim_new(nr_cpus, tmp_cpus);
+<<<<<<< HEAD
 	else
 		cpus = cpu_map__default_new();
+=======
+	else if (*cpu_list != '\0')
+		cpus = cpu_map__default_new();
+	else
+		cpus = cpu_map__dummy_new();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 invalid:
 	free(tmp_cpus);
 out:

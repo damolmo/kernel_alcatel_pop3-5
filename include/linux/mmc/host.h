@@ -15,6 +15,10 @@
 #include <linux/sched.h>
 #include <linux/device.h>
 #include <linux/fault-inject.h>
+<<<<<<< HEAD
+=======
+#include <linux/blkdev.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <linux/mmc/core.h>
 #include <linux/mmc/card.h>
@@ -384,6 +388,15 @@ struct mmc_host {
 	} embedded_sdio_data;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLOCK
+	int			latency_hist_enabled;
+	struct io_latency_state io_lat_read;
+	struct io_latency_state io_lat_write;
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned long		private[0] ____cacheline_aligned;
 };
 

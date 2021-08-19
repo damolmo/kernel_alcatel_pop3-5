@@ -149,7 +149,11 @@ static struct policydb_compat_info policydb_compat[] = {
 		.ocon_num	= OCON_NUM,
 	},
 	{
+<<<<<<< HEAD
 		.version	= POLICYDB_VERSION_IOCTL_OPERATIONS,
+=======
+		.version	= POLICYDB_VERSION_XPERMS_IOCTL,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.sym_num	= SYM_NUM,
 		.ocon_num	= OCON_NUM,
 	},
@@ -266,6 +270,11 @@ static int rangetr_cmp(struct hashtab *h, const void *k1, const void *k2)
 	return v;
 }
 
+<<<<<<< HEAD
+=======
+static int (*destroy_f[SYM_NUM]) (void *key, void *datum, void *datap);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Initialize a policy database structure.
  */
@@ -309,8 +318,15 @@ static int policydb_init(struct policydb *p)
 out:
 	hashtab_destroy(p->filename_trans);
 	hashtab_destroy(p->range_tr);
+<<<<<<< HEAD
 	for (i = 0; i < SYM_NUM; i++)
 		hashtab_destroy(p->symtab[i].table);
+=======
+	for (i = 0; i < SYM_NUM; i++) {
+		hashtab_map(p->symtab[i].table, destroy_f[i], NULL);
+		hashtab_destroy(p->symtab[i].table);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -722,7 +738,12 @@ static int sens_destroy(void *key, void *datum, void *p)
 	kfree(key);
 	if (datum) {
 		levdatum = datum;
+<<<<<<< HEAD
 		ebitmap_destroy(&levdatum->level->cat);
+=======
+		if (levdatum->level)
+			ebitmap_destroy(&levdatum->level->cat);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kfree(levdatum->level);
 	}
 	kfree(datum);

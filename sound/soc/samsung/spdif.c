@@ -359,7 +359,11 @@ static const struct snd_soc_component_driver samsung_spdif_component = {
 static int spdif_probe(struct platform_device *pdev)
 {
 	struct s3c_audio_pdata *spdif_pdata;
+<<<<<<< HEAD
 	struct resource *mem_res, *dma_res;
+=======
+	struct resource *mem_res;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct samsung_spdif_info *spdif;
 	int ret;
 
@@ -367,12 +371,15 @@ static int spdif_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "Entered %s\n", __func__);
 
+<<<<<<< HEAD
 	dma_res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dma_res) {
 		dev_err(&pdev->dev, "Unable to get dma resource.\n");
 		return -ENXIO;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem_res) {
 		dev_err(&pdev->dev, "Unable to get register resource.\n");
@@ -432,7 +439,11 @@ static int spdif_probe(struct platform_device *pdev)
 
 	spdif_stereo_out.dma_size = 2;
 	spdif_stereo_out.dma_addr = mem_res->start + DATA_OUTBUF;
+<<<<<<< HEAD
 	spdif_stereo_out.channel = dma_res->start;
+=======
+	spdif_stereo_out.slave = spdif_pdata ? spdif_pdata->dma_playback : NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	spdif->dma_playback = &spdif_stereo_out;
 

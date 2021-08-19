@@ -247,7 +247,14 @@ static const UCHAR b4_default_startup_parms[] = {
 	0x04, 0x08,		/* Noise gain, limit offset */
 	0x28, 0x28,		/* det rssi, med busy offsets */
 	7,			/* det sync thresh */
+<<<<<<< HEAD
 	0, 2, 2			/* test mode, min, max */
+=======
+	0, 2, 2,		/* test mode, min, max */
+	0,			/* rx/tx delay */
+	0, 0, 0, 0, 0, 0,	/* current BSS id */
+	0			/* hop set */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*===========================================================================*/
@@ -598,7 +605,11 @@ static void init_startup_params(ray_dev_t *local)
 	 *    a_beacon_period = hops    a_beacon_period = KuS
 	 *//* 64ms = 010000 */
 	if (local->fw_ver == 0x55) {
+<<<<<<< HEAD
 		memcpy((UCHAR *) &local->sparm.b4, b4_default_startup_parms,
+=======
+		memcpy(&local->sparm.b4, b4_default_startup_parms,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		       sizeof(struct b4_startup_params));
 		/* Translate sane kus input values to old build 4/5 format */
 		/* i = hop time in uS truncated to 3 bytes */

@@ -475,7 +475,11 @@ static void leaf_item_bottle(struct buffer_info *dest_bi,
 			 * 'cpy_bytes'; create new item header;
 			 * n_ih = new item_header;
 			 */
+<<<<<<< HEAD
 			memcpy(&n_ih, ih, SHORT_KEY_SIZE);
+=======
+			memcpy(&n_ih.ih_key, &ih->ih_key, KEY_SIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/* Endian safe, both le */
 			n_ih.ih_version = ih->ih_version;

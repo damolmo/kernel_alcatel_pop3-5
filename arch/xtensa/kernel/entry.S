@@ -568,12 +568,20 @@ user_exception_exit:
 	 *	 (if we have restored WSBITS-1 frames).
 	 */
 
+<<<<<<< HEAD
+=======
+2:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if XCHAL_HAVE_THREADPTR
 	l32i	a3, a1, PT_THREADPTR
 	wur	a3, threadptr
 #endif
 
+<<<<<<< HEAD
 2:	j	common_exception_exit
+=======
+	j	common_exception_exit
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* This is the kernel exception exit.
 	 * We avoided to do a MOVSP when we entered the exception, but we
@@ -1820,7 +1828,11 @@ ENDPROC(system_call)
 	mov	a12, a0
 	.endr
 #endif
+<<<<<<< HEAD
 	_entry	a1, 48
+=======
+	_entry	a1, 16
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if XCHAL_NUM_AREGS % 12 == 0
 	mov	a8, a8
 #elif XCHAL_NUM_AREGS % 12 == 4
@@ -1844,7 +1856,11 @@ ENDPROC(system_call)
 
 ENTRY(_switch_to)
 
+<<<<<<< HEAD
 	entry	a1, 16
+=======
+	entry	a1, 48
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mov	a11, a3			# and 'next' (a3)
 

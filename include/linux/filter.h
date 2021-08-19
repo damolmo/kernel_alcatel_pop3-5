@@ -358,7 +358,15 @@ static inline void bpf_prog_unlock_ro(struct bpf_prog *fp)
 }
 #endif /* CONFIG_DEBUG_SET_MODULE_RONX */
 
+<<<<<<< HEAD
 int sk_filter(struct sock *sk, struct sk_buff *skb);
+=======
+int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap);
+static inline int sk_filter(struct sock *sk, struct sk_buff *skb)
+{
+	return sk_filter_trim_cap(sk, skb, 1);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void bpf_prog_select_runtime(struct bpf_prog *fp);
 void bpf_prog_free(struct bpf_prog *fp);
@@ -427,6 +435,28 @@ static inline void bpf_jit_free(struct bpf_prog *fp)
 
 #define BPF_ANC		BIT(15)
 
+<<<<<<< HEAD
+=======
+static inline bool bpf_needs_clear_a(const struct sock_filter *first)
+{
+	switch (first->code) {
+	case BPF_RET | BPF_K:
+	case BPF_LD | BPF_W | BPF_LEN:
+		return false;
+
+	case BPF_LD | BPF_W | BPF_ABS:
+	case BPF_LD | BPF_H | BPF_ABS:
+	case BPF_LD | BPF_B | BPF_ABS:
+		if (first->k == SKF_AD_OFF + SKF_AD_ALU_XOR_X)
+			return true;
+		return false;
+
+	default:
+		return true;
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline u16 bpf_anc_helper(const struct sock_filter *ftest)
 {
 	BUG_ON(ftest->code & BPF_ANC);

@@ -98,7 +98,11 @@ temp_crit_show(struct device *dev, struct device_attribute *attr, char *buf)
 	long temperature;
 	int ret;
 
+<<<<<<< HEAD
 	ret = tz->ops->get_trip_temp(tz, 0, &temperature);
+=======
+	ret = tz->ops->get_crit_temp(tz, &temperature);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret)
 		return ret;
 

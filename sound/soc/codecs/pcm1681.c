@@ -102,7 +102,11 @@ static int pcm1681_set_deemph(struct snd_soc_codec *codec)
 
 	if (val != -1) {
 		regmap_update_bits(priv->regmap, PCM1681_DEEMPH_CONTROL,
+<<<<<<< HEAD
 					PCM1681_DEEMPH_RATE_MASK, val);
+=======
+				   PCM1681_DEEMPH_RATE_MASK, val << 3);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		enable = 1;
 	} else
 		enable = 0;

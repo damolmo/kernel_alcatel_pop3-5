@@ -175,7 +175,11 @@ void uncore_perf_event_update(struct intel_uncore_box *box, struct perf_event *e
 	u64 prev_count, new_count, delta;
 	int shift;
 
+<<<<<<< HEAD
 	if (event->hw.idx >= UNCORE_PMC_IDX_FIXED)
+=======
+	if (event->hw.idx == UNCORE_PMC_IDX_FIXED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		shift = 64 - uncore_fixed_ctr_bits(box);
 	else
 		shift = 64 - uncore_perf_ctr_bits(box);

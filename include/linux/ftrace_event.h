@@ -584,7 +584,11 @@ extern int  ftrace_profile_set_filter(struct perf_event *event, int event_id,
 				     char *filter_str);
 extern void ftrace_profile_free_filter(struct perf_event *event);
 extern void *perf_trace_buf_prepare(int size, unsigned short type,
+<<<<<<< HEAD
 				    struct pt_regs *regs, int *rctxp);
+=======
+				    struct pt_regs **regs, int *rctxp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline void
 perf_trace_buf_submit(void *raw_data, int size, int rctx, u64 addr,

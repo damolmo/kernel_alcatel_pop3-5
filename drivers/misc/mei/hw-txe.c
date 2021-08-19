@@ -973,11 +973,21 @@ static bool mei_txe_check_and_ack_intrs(struct mei_device *dev, bool do_ack)
 	hisr = mei_txe_br_reg_read(hw, HISR_REG);
 
 	aliveness = mei_txe_aliveness_get(dev);
+<<<<<<< HEAD
 	if (hhisr & IPC_HHIER_SEC && aliveness)
 		ipc_isr = mei_txe_sec_reg_read_silent(hw,
 				SEC_IPC_HOST_INT_STATUS_REG);
 	else
 		ipc_isr = 0;
+=======
+	if (hhisr & IPC_HHIER_SEC && aliveness) {
+		ipc_isr = mei_txe_sec_reg_read_silent(hw,
+				SEC_IPC_HOST_INT_STATUS_REG);
+	} else {
+		ipc_isr = 0;
+		hhisr &= ~IPC_HHIER_SEC;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	generated = generated ||
 		(hisr & HISR_INT_STS_MSK) ||

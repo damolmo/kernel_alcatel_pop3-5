@@ -126,6 +126,7 @@ static int iblock_configure_device(struct se_device *dev)
 	dev->dev_attrib.hw_max_sectors = queue_max_hw_sectors(q);
 	dev->dev_attrib.hw_queue_depth = q->nr_requests;
 
+<<<<<<< HEAD
 	/*
 	 * Check if the underlying struct block_device request_queue supports
 	 * the QUEUE_FLAG_DISCARD bit for UNMAP/WRITE_SAME in SCSI + TRIM
@@ -147,6 +148,12 @@ static int iblock_configure_device(struct se_device *dev)
 		pr_debug("IBLOCK: BLOCK Discard support available,"
 				" disabled by default\n");
 	}
+=======
+	if (target_configure_unmap_from_queue(&dev->dev_attrib, q))
+		pr_debug("IBLOCK: BLOCK Discard support available,"
+			 " disabled by default\n");
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Enable write same emulation for IBLOCK and use 0xFFFF as
 	 * the smaller WRITE_SAME(10) only has a two-byte block count.
@@ -418,9 +425,19 @@ iblock_do_unmap(struct se_cmd *cmd, void *priv,
 		sector_t lba, sector_t nolb)
 {
 	struct block_device *bdev = priv;
+<<<<<<< HEAD
 	int ret;
 
 	ret = blkdev_issue_discard(bdev, lba, nolb, GFP_KERNEL, 0);
+=======
+	struct se_device *dev = cmd->se_dev;
+	int ret;
+
+	ret = blkdev_issue_discard(bdev,
+				   target_to_linux_sector(dev, lba),
+				   target_to_linux_sector(dev,  nolb),
+				   GFP_KERNEL, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret < 0) {
 		pr_err("blkdev_issue_discard() failed: %d\n", ret);
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
@@ -460,8 +477,15 @@ iblock_execute_write_same(struct se_cmd *cmd)
 	struct scatterlist *sg;
 	struct bio *bio;
 	struct bio_list list;
+<<<<<<< HEAD
 	sector_t block_lba = cmd->t_task_lba;
 	sector_t sectors = sbc_get_write_same_sectors(cmd);
+=======
+	struct se_device *dev = cmd->se_dev;
+	sector_t block_lba = target_to_linux_sector(dev, cmd->t_task_lba);
+	sector_t sectors = target_to_linux_sector(dev,
+					sbc_get_write_same_sectors(cmd));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sg = &cmd->t_data_sg[0];
 
@@ -670,12 +694,19 @@ iblock_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 		  enum dma_data_direction data_direction)
 {
 	struct se_device *dev = cmd->se_dev;
+<<<<<<< HEAD
+=======
+	sector_t block_lba = target_to_linux_sector(dev, cmd->t_task_lba);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct iblock_req *ibr;
 	struct bio *bio, *bio_start;
 	struct bio_list list;
 	struct scatterlist *sg;
 	u32 sg_num = sgl_nents;
+<<<<<<< HEAD
 	sector_t block_lba;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned bio_cnt;
 	int rw = 0;
 	int i;
@@ -701,6 +732,7 @@ iblock_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 		rw = READ;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Convert the blocksize advertised to the initiator to the 512 byte
 	 * units unconditionally used by the Linux block layer.
@@ -719,6 +751,8 @@ iblock_execute_rw(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ibr = kzalloc(sizeof(struct iblock_req), GFP_KERNEL);
 	if (!ibr)
 		goto fail;

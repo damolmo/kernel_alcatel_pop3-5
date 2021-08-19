@@ -28,7 +28,11 @@
 struct drm_dp_mst_branch;
 
 /**
+<<<<<<< HEAD
  * struct drm_dp_vcpi - Virtual Channel Payload Identifier
+=======
+ * struct drm_dp_vcpi - Virtual Channel Payload Identifer
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @vcpi: Virtual channel ID.
  * @pbn: Payload Bandwidth Number for this channel
  * @aligned_pbn: PBN aligned with slot size
@@ -44,8 +48,11 @@ struct drm_dp_vcpi {
 /**
  * struct drm_dp_mst_port - MST port
  * @kref: reference count for this port.
+<<<<<<< HEAD
  * @guid_valid: for DP 1.2 devices if we have validated the GUID.
  * @guid: guid for DP 1.2 device on this port.
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @port_num: port number
  * @input: if this port is an input port.
  * @mcs: message capability status - DP 1.2 spec.
@@ -70,10 +77,13 @@ struct drm_dp_vcpi {
 struct drm_dp_mst_port {
 	struct kref kref;
 
+<<<<<<< HEAD
 	/* if dpcd 1.2 device is on this port - its GUID info */
 	bool guid_valid;
 	u8 guid[16];
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 port_num;
 	bool input;
 	bool mcs;
@@ -107,10 +117,19 @@ struct drm_dp_mst_port {
  * @tx_slots: transmission slots for this device.
  * @last_seqno: last sequence number used to talk to this.
  * @link_address_sent: if a link address message has been sent to this device yet.
+<<<<<<< HEAD
  *
  * This structure represents an MST branch device, there is one
  * primary branch device at the root, along with any others connected
  * to downstream ports
+=======
+ * @guid: guid for DP 1.2 branch device. port under this branch can be
+ * identified by port #.
+ *
+ * This structure represents an MST branch device, there is one
+ * primary branch device at the root, along with any other branches connected
+ * to downstream port of parent branches.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct drm_dp_mst_branch {
 	struct kref kref;
@@ -129,6 +148,12 @@ struct drm_dp_mst_branch {
 	struct drm_dp_sideband_msg_tx *tx_slots[2];
 	int last_seqno;
 	bool link_address_sent;
+<<<<<<< HEAD
+=======
+
+	/* global unique identifier to identify branch devices */
+	u8 guid[16];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 
@@ -301,7 +326,11 @@ struct drm_dp_resource_status_notify {
 
 struct drm_dp_query_payload_ack_reply {
 	u8 port_number;
+<<<<<<< HEAD
 	u8 allocated_pbn;
+=======
+	u16 allocated_pbn;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct drm_dp_sideband_msg_req_body {
@@ -371,7 +400,11 @@ struct drm_dp_sideband_msg_tx {
 struct drm_dp_mst_topology_mgr;
 struct drm_dp_mst_topology_cbs {
 	/* create a connector for a port */
+<<<<<<< HEAD
 	struct drm_connector *(*add_connector)(struct drm_dp_mst_topology_mgr *mgr, struct drm_dp_mst_port *port, const char *path);
+=======
+	struct drm_connector *(*add_connector)(struct drm_dp_mst_topology_mgr *mgr, struct drm_dp_mst_port *port, char *path);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void (*destroy_connector)(struct drm_dp_mst_topology_mgr *mgr,
 				  struct drm_connector *connector);
 	void (*hotplug)(struct drm_dp_mst_topology_mgr *mgr);
@@ -401,11 +434,17 @@ struct drm_dp_payload {
  * @conn_base_id: DRM connector ID this mgr is connected to.
  * @down_rep_recv: msg receiver state for down replies.
  * @up_req_recv: msg receiver state for up requests.
+<<<<<<< HEAD
  * @lock: protects mst state, primary, guid, dpcd.
  * @mst_state: if this manager is enabled for an MST capable port.
  * @mst_primary: pointer to the primary branch device.
  * @guid_valid: GUID valid for the primary branch device.
  * @guid: GUID for primary port.
+=======
+ * @lock: protects mst state, primary, dpcd.
+ * @mst_state: if this manager is enabled for an MST capable port.
+ * @mst_primary: pointer to the primary branch device.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @dpcd: cache of DPCD for primary port.
  * @pbn_div: PBN to slots divisor.
  *
@@ -427,6 +466,7 @@ struct drm_dp_mst_topology_mgr {
 	struct drm_dp_sideband_msg_rx up_req_recv;
 
 	/* pointer to info about the initial MST device */
+<<<<<<< HEAD
 	struct mutex lock; /* protects mst_state + primary + guid + dpcd */
 
 	bool mst_state;
@@ -434,6 +474,13 @@ struct drm_dp_mst_topology_mgr {
 	/* primary MST device GUID */
 	bool guid_valid;
 	u8 guid[16];
+=======
+	struct mutex lock; /* protects mst_state + primary + dpcd */
+
+	bool mst_state;
+	struct drm_dp_mst_branch *mst_primary;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 dpcd[DP_RECEIVER_CAP_SIZE];
 	u8 sink_count;
 	int pbn_div;
@@ -446,9 +493,13 @@ struct drm_dp_mst_topology_mgr {
 	   the mstb tx_slots and txmsg->state once they are queued */
 	struct mutex qlock;
 	struct list_head tx_msg_downq;
+<<<<<<< HEAD
 	struct list_head tx_msg_upq;
 	bool tx_down_in_progress;
 	bool tx_up_in_progress;
+=======
+	bool tx_down_in_progress;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* payload info + lock for it */
 	struct mutex payload_lock;

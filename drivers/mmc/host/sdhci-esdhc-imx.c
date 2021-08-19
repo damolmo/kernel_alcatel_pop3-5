@@ -824,6 +824,10 @@ static int esdhc_change_pinstate(struct sdhci_host *host,
 
 	switch (uhs) {
 	case MMC_TIMING_UHS_SDR50:
+<<<<<<< HEAD
+=======
+	case MMC_TIMING_UHS_DDR50:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		pinctrl = imx_data->pins_100mhz;
 		break;
 	case MMC_TIMING_UHS_SDR104:

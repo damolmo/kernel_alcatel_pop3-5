@@ -25,6 +25,10 @@
 #include "ocfs2_ioctl.h"
 
 #include "alloc.h"
+<<<<<<< HEAD
+=======
+#include "localalloc.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "aops.h"
 #include "dlmglue.h"
 #include "extent_map.h"
@@ -158,6 +162,7 @@ out:
 }
 
 /*
+<<<<<<< HEAD
  * lock allocators, and reserving appropriate number of bits for
  * meta blocks and data clusters.
  *
@@ -165,11 +170,20 @@ out:
  * be NULL.
  */
 static int ocfs2_lock_allocators_move_extents(struct inode *inode,
+=======
+ * lock allocator, and reserve appropriate number of bits for
+ * meta blocks.
+ */
+static int ocfs2_lock_meta_allocator_move_extents(struct inode *inode,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					struct ocfs2_extent_tree *et,
 					u32 clusters_to_move,
 					u32 extents_to_split,
 					struct ocfs2_alloc_context **meta_ac,
+<<<<<<< HEAD
 					struct ocfs2_alloc_context **data_ac,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					int extra_blocks,
 					int *credits)
 {
@@ -194,6 +208,7 @@ static int ocfs2_lock_allocators_move_extents(struct inode *inode,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (data_ac) {
 		ret = ocfs2_reserve_clusters(osb, clusters_to_move, data_ac);
 		if (ret) {
@@ -201,6 +216,8 @@ static int ocfs2_lock_allocators_move_extents(struct inode *inode,
 			goto out;
 		}
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	*credits += ocfs2_calc_extend_credits(osb->sb, et->et_root_el);
 
@@ -235,6 +252,10 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 	struct ocfs2_refcount_tree *ref_tree = NULL;
 	u32 new_phys_cpos, new_len;
 	u64 phys_blkno = ocfs2_clusters_to_blocks(inode->i_sb, phys_cpos);
+<<<<<<< HEAD
+=======
+	int need_free = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((ext_flags & OCFS2_EXT_REFCOUNTED) && *len) {
 
@@ -262,10 +283,17 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
+<<<<<<< HEAD
 	ret = ocfs2_lock_allocators_move_extents(inode, &context->et, *len, 1,
 						 &context->meta_ac,
 						 &context->data_ac,
 						 extra_blocks, &credits);
+=======
+	ret = ocfs2_lock_meta_allocator_move_extents(inode, &context->et,
+						*len, 1,
+						&context->meta_ac,
+						extra_blocks, &credits);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		mlog_errno(ret);
 		goto out;
@@ -288,6 +316,24 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Make sure ocfs2_reserve_cluster is called after
+	 * __ocfs2_flush_truncate_log, otherwise, dead lock may happen.
+	 *
+	 * If ocfs2_reserve_cluster is called
+	 * before __ocfs2_flush_truncate_log, dead lock on global bitmap
+	 * may happen.
+	 *
+	 */
+	ret = ocfs2_reserve_clusters(osb, *len, &context->data_ac);
+	if (ret) {
+		mlog_errno(ret);
+		goto out_unlock_mutex;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	handle = ocfs2_start_trans(osb, credits);
 	if (IS_ERR(handle)) {
 		ret = PTR_ERR(handle);
@@ -313,6 +359,10 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		if (!partial) {
 			context->range->me_flags &= ~OCFS2_MOVE_EXT_FL_COMPLETE;
 			ret = -ENOSPC;
+<<<<<<< HEAD
+=======
+			need_free = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			goto out_commit;
 		}
 	}
@@ -337,6 +387,23 @@ static int ocfs2_defrag_extent(struct ocfs2_move_extents_context *context,
 		mlog_errno(ret);
 
 out_commit:
+<<<<<<< HEAD
+=======
+	if (need_free && context->data_ac) {
+		struct ocfs2_alloc_context *data_ac = context->data_ac;
+
+		if (context->data_ac->ac_which == OCFS2_AC_USE_LOCAL)
+			ocfs2_free_local_alloc_bits(osb, handle, data_ac,
+					new_phys_cpos, new_len);
+		else
+			ocfs2_free_clusters(handle,
+					data_ac->ac_inode,
+					data_ac->ac_bh,
+					ocfs2_clusters_to_blocks(osb->sb, new_phys_cpos),
+					new_len);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ocfs2_commit_trans(osb, handle);
 
 out_unlock_mutex:
@@ -608,9 +675,16 @@ static int ocfs2_move_extent(struct ocfs2_move_extents_context *context,
 		}
 	}
 
+<<<<<<< HEAD
 	ret = ocfs2_lock_allocators_move_extents(inode, &context->et, len, 1,
 						 &context->meta_ac,
 						 NULL, extra_blocks, &credits);
+=======
+	ret = ocfs2_lock_meta_allocator_move_extents(inode, &context->et,
+						len, 1,
+						&context->meta_ac,
+						extra_blocks, &credits);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ret) {
 		mlog_errno(ret);
 		goto out;

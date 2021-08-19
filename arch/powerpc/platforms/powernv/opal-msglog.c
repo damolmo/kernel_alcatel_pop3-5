@@ -92,7 +92,11 @@ out:
 }
 
 static struct bin_attribute opal_msglog_attr = {
+<<<<<<< HEAD
 	.attr = {.name = "msglog", .mode = 0444},
+=======
+	.attr = {.name = "msglog", .mode = 0400},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.read = opal_msglog_read
 };
 

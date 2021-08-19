@@ -1933,6 +1933,14 @@ static int __init atari_floppy_init (void)
 		unit[i].disk = alloc_disk(1);
 		if (!unit[i].disk)
 			goto Enomem;
+<<<<<<< HEAD
+=======
+
+		unit[i].disk->queue = blk_init_queue(do_fd_request,
+						     &ataflop_lock);
+		if (!unit[i].disk->queue)
+			goto Enomem;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (UseTrackbuffer < 0)
@@ -1964,10 +1972,13 @@ static int __init atari_floppy_init (void)
 		sprintf(unit[i].disk->disk_name, "fd%d", i);
 		unit[i].disk->fops = &floppy_fops;
 		unit[i].disk->private_data = &unit[i];
+<<<<<<< HEAD
 		unit[i].disk->queue = blk_init_queue(do_fd_request,
 					&ataflop_lock);
 		if (!unit[i].disk->queue)
 			goto Enomem;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_capacity(unit[i].disk, MAX_DISK_SIZE * 2);
 		add_disk(unit[i].disk);
 	}
@@ -1982,6 +1993,7 @@ static int __init atari_floppy_init (void)
 
 	return 0;
 Enomem:
+<<<<<<< HEAD
 	while (i--) {
 		struct request_queue *q = unit[i].disk->queue;
 
@@ -1989,6 +2001,19 @@ Enomem:
 		if (q)
 			blk_cleanup_queue(q);
 	}
+=======
+	do {
+		struct gendisk *disk = unit[i].disk;
+
+		if (disk) {
+			if (disk->queue) {
+				blk_cleanup_queue(disk->queue);
+				disk->queue = NULL;
+			}
+			put_disk(unit[i].disk);
+		}
+	} while (i--);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
 	return -ENOMEM;

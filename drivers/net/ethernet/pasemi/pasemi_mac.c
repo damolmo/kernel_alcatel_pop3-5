@@ -1091,7 +1091,10 @@ static int pasemi_mac_phy_init(struct net_device *dev)
 
 	dn = pci_device_to_OF_node(mac->pdev);
 	phy_dn = of_parse_phandle(dn, "phy-handle", 0);
+<<<<<<< HEAD
 	of_node_put(phy_dn);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mac->link = 0;
 	mac->speed = 0;
@@ -1100,6 +1103,10 @@ static int pasemi_mac_phy_init(struct net_device *dev)
 	phydev = of_phy_connect(dev, phy_dn, &pasemi_adjust_link, 0,
 				PHY_INTERFACE_MODE_SGMII);
 
+<<<<<<< HEAD
+=======
+	of_node_put(phy_dn);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!phydev) {
 		printk(KERN_ERR "%s: Could not attach to phy\n", dev->name);
 		return -ENODEV;
@@ -1129,16 +1136,30 @@ static int pasemi_mac_open(struct net_device *dev)
 
 	mac->tx = pasemi_mac_setup_tx_resources(dev);
 
+<<<<<<< HEAD
 	if (!mac->tx)
 		goto out_tx_ring;
+=======
+	if (!mac->tx) {
+		ret = -ENOMEM;
+		goto out_tx_ring;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We might already have allocated rings in case mtu was changed
 	 * before interface was brought up.
 	 */
 	if (dev->mtu > 1500 && !mac->num_cs) {
 		pasemi_mac_setup_csrings(mac);
+<<<<<<< HEAD
 		if (!mac->num_cs)
 			goto out_tx_ring;
+=======
+		if (!mac->num_cs) {
+			ret = -ENOMEM;
+			goto out_tx_ring;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Zero out rmon counters */

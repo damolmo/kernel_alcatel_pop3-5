@@ -145,7 +145,11 @@ V_FUNCTION_BEGIN(__kernel_clock_getres)
 	bne	cr0,99f
 
 	li	r3,0
+<<<<<<< HEAD
 	cmpli	cr0,r4,0
+=======
+	cmpldi	cr0,r4,0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	crclr	cr0*4+so
 	beqlr
 	lis	r5,CLOCK_REALTIME_RES@h

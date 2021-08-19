@@ -215,7 +215,11 @@ static struct smack_known *smk_fetch(const char *name, struct inode *ip,
 	if (ip->i_op->getxattr == NULL)
 		return NULL;
 
+<<<<<<< HEAD
 	buffer = kzalloc(SMK_LONGLABEL, GFP_KERNEL);
+=======
+	buffer = kzalloc(SMK_LONGLABEL, GFP_NOFS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (buffer == NULL)
 		return NULL;
 
@@ -308,12 +312,19 @@ static int smk_copy_rules(struct list_head *nhead, struct list_head *ohead,
  */
 static inline unsigned int smk_ptrace_mode(unsigned int mode)
 {
+<<<<<<< HEAD
 	switch (mode) {
 	case PTRACE_MODE_READ:
 		return MAY_READ;
 	case PTRACE_MODE_ATTACH:
 		return MAY_READWRITE;
 	}
+=======
+	if (mode & PTRACE_MODE_ATTACH)
+		return MAY_READWRITE;
+	if (mode & PTRACE_MODE_READ)
+		return MAY_READ;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -701,7 +712,12 @@ static int smack_bprm_set_creds(struct linux_binprm *bprm)
 
 		if (rc != 0)
 			return rc;
+<<<<<<< HEAD
 	} else if (bprm->unsafe)
+=======
+	}
+	if (bprm->unsafe & ~LSM_UNSAFE_PTRACE)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EPERM;
 
 	bsp->smk_task = isp->smk_task;
@@ -1231,7 +1247,11 @@ static int smack_inode_removexattr(struct dentry *dentry, const char *name)
  * @inode: the object
  * @name: attribute name
  * @buffer: where to put the result
+<<<<<<< HEAD
  * @alloc: unused
+=======
+ * @alloc: duplicate memory
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Returns the size of the attribute or an error code
  */
@@ -1244,6 +1264,7 @@ static int smack_inode_getsecurity(const struct inode *inode,
 	struct super_block *sbp;
 	struct inode *ip = (struct inode *)inode;
 	struct smack_known *isp;
+<<<<<<< HEAD
 	int ilen;
 	int rc = 0;
 
@@ -1281,6 +1302,40 @@ static int smack_inode_getsecurity(const struct inode *inode,
 	}
 
 	return rc;
+=======
+
+	if (strcmp(name, XATTR_SMACK_SUFFIX) == 0)
+		isp = smk_of_inode(inode);
+	else {
+		/*
+		 * The rest of the Smack xattrs are only on sockets.
+		 */
+		sbp = ip->i_sb;
+		if (sbp->s_magic != SOCKFS_MAGIC)
+			return -EOPNOTSUPP;
+
+		sock = SOCKET_I(ip);
+		if (sock == NULL || sock->sk == NULL)
+			return -EOPNOTSUPP;
+
+		ssp = sock->sk->sk_security;
+
+		if (strcmp(name, XATTR_SMACK_IPIN) == 0)
+			isp = ssp->smk_in;
+		else if (strcmp(name, XATTR_SMACK_IPOUT) == 0)
+			isp = ssp->smk_out;
+		else
+			return -EOPNOTSUPP;
+	}
+
+	if (alloc) {
+		*buffer = kstrdup(isp->smk_known, GFP_KERNEL);
+		if (*buffer == NULL)
+			return -ENOMEM;
+	}
+
+	return strlen(isp->smk_known);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -2044,6 +2099,10 @@ static void smack_task_to_inode(struct task_struct *p, struct inode *inode)
 	struct smack_known *skp = smk_of_task_struct(p);
 
 	isp->smk_inode = skp;
+<<<<<<< HEAD
+=======
+	isp->smk_flags |= SMK_INODE_INSTANT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -3853,6 +3912,15 @@ static int smack_key_permission(key_ref_t key_ref,
 	int request = 0;
 	int rc;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Validate requested permissions
+	 */
+	if (perm & ~KEY_NEED_ALL)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	keyp = key_ref_to_ptr(key_ref);
 	if (keyp == NULL)
 		return -EINVAL;
@@ -3872,10 +3940,17 @@ static int smack_key_permission(key_ref_t key_ref,
 	ad.a.u.key_struct.key = keyp->serial;
 	ad.a.u.key_struct.key_desc = keyp->description;
 #endif
+<<<<<<< HEAD
 	if (perm & KEY_NEED_READ)
 		request = MAY_READ;
 	if (perm & (KEY_NEED_WRITE | KEY_NEED_LINK | KEY_NEED_SETATTR))
 		request = MAY_WRITE;
+=======
+	if (perm & (KEY_NEED_READ | KEY_NEED_SEARCH | KEY_NEED_VIEW))
+		request |= MAY_READ;
+	if (perm & (KEY_NEED_WRITE | KEY_NEED_LINK | KEY_NEED_SETATTR))
+		request |= MAY_WRITE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rc = smk_access(tkp, keyp->security, request, &ad);
 	rc = smk_bu_note("key access", tkp, keyp->security, request, rc);
 	return rc;

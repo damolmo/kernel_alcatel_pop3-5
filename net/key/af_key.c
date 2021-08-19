@@ -63,8 +63,18 @@ struct pfkey_sock {
 		} u;
 		struct sk_buff	*skb;
 	} dump;
+<<<<<<< HEAD
 };
 
+=======
+	struct mutex dump_lock;
+};
+
+static int parse_sockaddr_pair(struct sockaddr *sa, int ext_len,
+			       xfrm_address_t *saddr, xfrm_address_t *daddr,
+			       u16 *family);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline struct pfkey_sock *pfkey_sk(struct sock *sk)
 {
 	return (struct pfkey_sock *)sk;
@@ -139,6 +149,10 @@ static int pfkey_create(struct net *net, struct socket *sock, int protocol,
 {
 	struct netns_pfkey *net_pfkey = net_generic(net, pfkey_net_id);
 	struct sock *sk;
+<<<<<<< HEAD
+=======
+	struct pfkey_sock *pfk;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int err;
 
 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
@@ -153,6 +167,12 @@ static int pfkey_create(struct net *net, struct socket *sock, int protocol,
 	if (sk == NULL)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	pfk = pfkey_sk(sk);
+	mutex_init(&pfk->dump_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sock->ops = &pfkey_ops;
 	sock_init_data(sock, sk);
 
@@ -281,6 +301,7 @@ static int pfkey_do_dump(struct pfkey_sock *pfk)
 	struct sadb_msg *hdr;
 	int rc;
 
+<<<<<<< HEAD
 	rc = pfk->dump.dump(pfk);
 	if (rc == -ENOBUFS)
 		return 0;
@@ -288,6 +309,25 @@ static int pfkey_do_dump(struct pfkey_sock *pfk)
 	if (pfk->dump.skb) {
 		if (!pfkey_can_dump(&pfk->sk))
 			return 0;
+=======
+	mutex_lock(&pfk->dump_lock);
+	if (!pfk->dump.dump) {
+		rc = 0;
+		goto out;
+	}
+
+	rc = pfk->dump.dump(pfk);
+	if (rc == -ENOBUFS) {
+		rc = 0;
+		goto out;
+	}
+
+	if (pfk->dump.skb) {
+		if (!pfkey_can_dump(&pfk->sk)) {
+			rc = 0;
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		hdr = (struct sadb_msg *) pfk->dump.skb->data;
 		hdr->sadb_msg_seq = 0;
@@ -298,6 +338,12 @@ static int pfkey_do_dump(struct pfkey_sock *pfk)
 	}
 
 	pfkey_terminate_dump(pfk);
+<<<<<<< HEAD
+=======
+
+out:
+	mutex_unlock(&pfk->dump_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return rc;
 }
 
@@ -379,6 +425,14 @@ static int verify_address_len(const void *p)
 #endif
 	int len;
 
+<<<<<<< HEAD
+=======
+	if (sp->sadb_address_len <
+	    DIV_ROUND_UP(sizeof(*sp) + offsetofend(typeof(*addr), sa_family),
+			 sizeof(uint64_t)))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	switch (addr->sa_family) {
 	case AF_INET:
 		len = DIV_ROUND_UP(sizeof(*sp) + sizeof(*sin), sizeof(uint64_t));
@@ -410,6 +464,27 @@ static int verify_address_len(const void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline int sadb_key_len(const struct sadb_key *key)
+{
+	int key_bytes = DIV_ROUND_UP(key->sadb_key_bits, 8);
+
+	return DIV_ROUND_UP(sizeof(struct sadb_key) + key_bytes,
+			    sizeof(uint64_t));
+}
+
+static int verify_key_len(const void *p)
+{
+	const struct sadb_key *key = p;
+
+	if (sadb_key_len(key) > key->sadb_key_len)
+		return -EINVAL;
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline int pfkey_sec_ctx_len(const struct sadb_x_sec_ctx *sec_ctx)
 {
 	return DIV_ROUND_UP(sizeof(struct sadb_x_sec_ctx) +
@@ -489,6 +564,12 @@ static int parse_exthdrs(struct sk_buff *skb, const struct sadb_msg *hdr, void *
 		uint16_t ext_type;
 		int ext_len;
 
+<<<<<<< HEAD
+=======
+		if (len < sizeof(*ehdr))
+			return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ext_len  = ehdr->sadb_ext_len;
 		ext_len *= sizeof(uint64_t);
 		ext_type = ehdr->sadb_ext_type;
@@ -503,6 +584,7 @@ static int parse_exthdrs(struct sk_buff *skb, const struct sadb_msg *hdr, void *
 				return -EINVAL;
 			if (ext_hdrs[ext_type-1] != NULL)
 				return -EINVAL;
+<<<<<<< HEAD
 			if (ext_type == SADB_EXT_ADDRESS_SRC ||
 			    ext_type == SADB_EXT_ADDRESS_DST ||
 			    ext_type == SADB_EXT_ADDRESS_PROXY ||
@@ -513,6 +595,27 @@ static int parse_exthdrs(struct sk_buff *skb, const struct sadb_msg *hdr, void *
 			if (ext_type == SADB_X_EXT_SEC_CTX) {
 				if (verify_sec_ctx_len(p))
 					return -EINVAL;
+=======
+			switch (ext_type) {
+			case SADB_EXT_ADDRESS_SRC:
+			case SADB_EXT_ADDRESS_DST:
+			case SADB_EXT_ADDRESS_PROXY:
+			case SADB_X_EXT_NAT_T_OA:
+				if (verify_address_len(p))
+					return -EINVAL;
+				break;
+			case SADB_X_EXT_SEC_CTX:
+				if (verify_sec_ctx_len(p))
+					return -EINVAL;
+				break;
+			case SADB_EXT_KEY_AUTH:
+			case SADB_EXT_KEY_ENCRYPT:
+				if (verify_key_len(p))
+					return -EINVAL;
+				break;
+			default:
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			ext_hdrs[ext_type-1] = (void *) p;
 		}
@@ -1081,14 +1184,22 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 	key = ext_hdrs[SADB_EXT_KEY_AUTH - 1];
 	if (key != NULL &&
 	    sa->sadb_sa_auth != SADB_X_AALG_NULL &&
+<<<<<<< HEAD
 	    ((key->sadb_key_bits+7) / 8 == 0 ||
 	     (key->sadb_key_bits+7) / 8 > key->sadb_key_len * sizeof(uint64_t)))
+=======
+	    key->sadb_key_bits == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-EINVAL);
 	key = ext_hdrs[SADB_EXT_KEY_ENCRYPT-1];
 	if (key != NULL &&
 	    sa->sadb_sa_encrypt != SADB_EALG_NULL &&
+<<<<<<< HEAD
 	    ((key->sadb_key_bits+7) / 8 == 0 ||
 	     (key->sadb_key_bits+7) / 8 > key->sadb_key_len * sizeof(uint64_t)))
+=======
+	    key->sadb_key_bits == 0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-EINVAL);
 
 	x = xfrm_state_alloc(net);
@@ -1135,6 +1246,10 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 			goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	err = -ENOBUFS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	key = ext_hdrs[SADB_EXT_KEY_AUTH - 1];
 	if (sa->sadb_sa_auth) {
 		int keysize = 0;
@@ -1146,8 +1261,15 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 		if (key)
 			keysize = (key->sadb_key_bits + 7) / 8;
 		x->aalg = kmalloc(sizeof(*x->aalg) + keysize, GFP_KERNEL);
+<<<<<<< HEAD
 		if (!x->aalg)
 			goto out;
+=======
+		if (!x->aalg) {
+			err = -ENOMEM;
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		strcpy(x->aalg->alg_name, a->name);
 		x->aalg->alg_key_len = 0;
 		if (key) {
@@ -1166,8 +1288,15 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 				goto out;
 			}
 			x->calg = kmalloc(sizeof(*x->calg), GFP_KERNEL);
+<<<<<<< HEAD
 			if (!x->calg)
 				goto out;
+=======
+			if (!x->calg) {
+				err = -ENOMEM;
+				goto out;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			strcpy(x->calg->alg_name, a->name);
 			x->props.calgo = sa->sadb_sa_encrypt;
 		} else {
@@ -1181,8 +1310,15 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 			if (key)
 				keysize = (key->sadb_key_bits + 7) / 8;
 			x->ealg = kmalloc(sizeof(*x->ealg) + keysize, GFP_KERNEL);
+<<<<<<< HEAD
 			if (!x->ealg)
 				goto out;
+=======
+			if (!x->ealg) {
+				err = -ENOMEM;
+				goto out;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			strcpy(x->ealg->alg_name, a->name);
 			x->ealg->alg_key_len = 0;
 			if (key) {
@@ -1226,8 +1362,15 @@ static struct xfrm_state * pfkey_msg2xfrm_state(struct net *net,
 		struct xfrm_encap_tmpl *natt;
 
 		x->encap = kmalloc(sizeof(*x->encap), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!x->encap)
 			goto out;
+=======
+		if (!x->encap) {
+			err = -ENOMEM;
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		natt = x->encap;
 		n_type = ext_hdrs[SADB_X_EXT_NAT_T_TYPE-1];
@@ -1792,19 +1935,48 @@ static int pfkey_dump(struct sock *sk, struct sk_buff *skb, const struct sadb_ms
 	struct xfrm_address_filter *filter = NULL;
 	struct pfkey_sock *pfk = pfkey_sk(sk);
 
+<<<<<<< HEAD
 	if (pfk->dump.dump != NULL)
 		return -EBUSY;
 
 	proto = pfkey_satype2proto(hdr->sadb_msg_satype);
 	if (proto == 0)
 		return -EINVAL;
+=======
+	mutex_lock(&pfk->dump_lock);
+	if (pfk->dump.dump != NULL) {
+		mutex_unlock(&pfk->dump_lock);
+		return -EBUSY;
+	}
+
+	proto = pfkey_satype2proto(hdr->sadb_msg_satype);
+	if (proto == 0) {
+		mutex_unlock(&pfk->dump_lock);
+		return -EINVAL;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ext_hdrs[SADB_X_EXT_FILTER - 1]) {
 		struct sadb_x_filter *xfilter = ext_hdrs[SADB_X_EXT_FILTER - 1];
 
+<<<<<<< HEAD
 		filter = kmalloc(sizeof(*filter), GFP_KERNEL);
 		if (filter == NULL)
 			return -ENOMEM;
+=======
+		if ((xfilter->sadb_x_filter_splen >=
+			(sizeof(xfrm_address_t) << 3)) ||
+		    (xfilter->sadb_x_filter_dplen >=
+			(sizeof(xfrm_address_t) << 3))) {
+			mutex_unlock(&pfk->dump_lock);
+			return -EINVAL;
+		}
+		filter = kmalloc(sizeof(*filter), GFP_KERNEL);
+		if (filter == NULL) {
+			mutex_unlock(&pfk->dump_lock);
+			return -ENOMEM;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		memcpy(&filter->saddr, &xfilter->sadb_x_filter_saddr,
 		       sizeof(xfrm_address_t));
@@ -1820,6 +1992,10 @@ static int pfkey_dump(struct sock *sk, struct sk_buff *skb, const struct sadb_ms
 	pfk->dump.dump = pfkey_dump_sa;
 	pfk->dump.done = pfkey_dump_sa_done;
 	xfrm_state_walk_init(&pfk->dump.u.state, proto, filter);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&pfk->dump_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return pfkey_do_dump(pfk);
 }
@@ -1895,8 +2071,15 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
 
 	if (rq->sadb_x_ipsecrequest_mode == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 
 	t->id.proto = rq->sadb_x_ipsecrequest_proto; /* XXX check proto */
+=======
+	if (!xfrm_id_proto_valid(rq->sadb_x_ipsecrequest_proto))
+		return -EINVAL;
+
+	t->id.proto = rq->sadb_x_ipsecrequest_proto;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if ((mode = pfkey_mode_to_xfrm(rq->sadb_x_ipsecrequest_mode)) < 0)
 		return -EINVAL;
 	t->mode = mode;
@@ -1912,6 +2095,7 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
 
 	/* addresses present only in tunnel mode */
 	if (t->mode == XFRM_MODE_TUNNEL) {
+<<<<<<< HEAD
 		u8 *sa = (u8 *) (rq + 1);
 		int family, socklen;
 
@@ -1925,6 +2109,16 @@ parse_ipsecrequest(struct xfrm_policy *xp, struct sadb_x_ipsecrequest *rq)
 					   &t->id.daddr) != family)
 			return -EINVAL;
 		t->encap_family = family;
+=======
+		int err;
+
+		err = parse_sockaddr_pair(
+			(struct sockaddr *)(rq + 1),
+			rq->sadb_x_ipsecrequest_len - sizeof(*rq),
+			&t->saddr, &t->id.daddr, &t->encap_family);
+		if (err)
+			return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else
 		t->encap_family = xp->family;
 
@@ -1944,7 +2138,15 @@ parse_ipsecrequests(struct xfrm_policy *xp, struct sadb_x_policy *pol)
 	if (pol->sadb_x_policy_len * 8 < sizeof(struct sadb_x_policy))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	while (len >= sizeof(struct sadb_x_ipsecrequest)) {
+=======
+	while (len >= sizeof(*rq)) {
+		if (len < rq->sadb_x_ipsecrequest_len ||
+		    rq->sadb_x_ipsecrequest_len < sizeof(*rq))
+			return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if ((err = parse_ipsecrequest(xp, rq)) < 0)
 			return err;
 		len -= rq->sadb_x_ipsecrequest_len;
@@ -2390,8 +2592,15 @@ static int key_pol_get_resp(struct sock *sk, struct xfrm_policy *xp, const struc
 		goto out;
 	}
 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+<<<<<<< HEAD
 	if (err < 0)
 		goto out;
+=======
+	if (err < 0) {
+		kfree_skb(out_skb);
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	out_hdr = (struct sadb_msg *) out_skb->data;
 	out_hdr->sadb_msg_version = hdr->sadb_msg_version;
@@ -2407,7 +2616,10 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_NET_KEY_MIGRATE
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int pfkey_sockaddr_pair_size(sa_family_t family)
 {
 	return PFKEY_ALIGN8(pfkey_sockaddr_len(family) * 2);
@@ -2419,7 +2631,11 @@ static int parse_sockaddr_pair(struct sockaddr *sa, int ext_len,
 {
 	int af, socklen;
 
+<<<<<<< HEAD
 	if (ext_len < pfkey_sockaddr_pair_size(sa->sa_family))
+=======
+	if (ext_len < 2 || ext_len < pfkey_sockaddr_pair_size(sa->sa_family))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	af = pfkey_sockaddr_extract(sa, saddr);
@@ -2435,6 +2651,10 @@ static int parse_sockaddr_pair(struct sockaddr *sa, int ext_len,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NET_KEY_MIGRATE
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int ipsecrequests_to_migrate(struct sadb_x_ipsecrequest *rq1, int len,
 				    struct xfrm_migrate *m)
 {
@@ -2442,13 +2662,23 @@ static int ipsecrequests_to_migrate(struct sadb_x_ipsecrequest *rq1, int len,
 	struct sadb_x_ipsecrequest *rq2;
 	int mode;
 
+<<<<<<< HEAD
 	if (len <= sizeof(struct sadb_x_ipsecrequest) ||
 	    len < rq1->sadb_x_ipsecrequest_len)
+=======
+	if (len < sizeof(*rq1) ||
+	    len < rq1->sadb_x_ipsecrequest_len ||
+	    rq1->sadb_x_ipsecrequest_len < sizeof(*rq1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	/* old endoints */
 	err = parse_sockaddr_pair((struct sockaddr *)(rq1 + 1),
+<<<<<<< HEAD
 				  rq1->sadb_x_ipsecrequest_len,
+=======
+				  rq1->sadb_x_ipsecrequest_len - sizeof(*rq1),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  &m->old_saddr, &m->old_daddr,
 				  &m->old_family);
 	if (err)
@@ -2457,13 +2687,23 @@ static int ipsecrequests_to_migrate(struct sadb_x_ipsecrequest *rq1, int len,
 	rq2 = (struct sadb_x_ipsecrequest *)((u8 *)rq1 + rq1->sadb_x_ipsecrequest_len);
 	len -= rq1->sadb_x_ipsecrequest_len;
 
+<<<<<<< HEAD
 	if (len <= sizeof(struct sadb_x_ipsecrequest) ||
 	    len < rq2->sadb_x_ipsecrequest_len)
+=======
+	if (len <= sizeof(*rq2) ||
+	    len < rq2->sadb_x_ipsecrequest_len ||
+	    rq2->sadb_x_ipsecrequest_len < sizeof(*rq2))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 
 	/* new endpoints */
 	err = parse_sockaddr_pair((struct sockaddr *)(rq2 + 1),
+<<<<<<< HEAD
 				  rq2->sadb_x_ipsecrequest_len,
+=======
+				  rq2->sadb_x_ipsecrequest_len - sizeof(*rq2),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  &m->new_saddr, &m->new_daddr,
 				  &m->new_family);
 	if (err)
@@ -2642,8 +2882,15 @@ static int dump_sp(struct xfrm_policy *xp, int dir, int count, void *ptr)
 		return PTR_ERR(out_skb);
 
 	err = pfkey_xfrm_policy2msg(out_skb, xp, dir);
+<<<<<<< HEAD
 	if (err < 0)
 		return err;
+=======
+	if (err < 0) {
+		kfree_skb(out_skb);
+		return err;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	out_hdr = (struct sadb_msg *) out_skb->data;
 	out_hdr->sadb_msg_version = pfk->dump.msg_version;
@@ -2678,14 +2925,26 @@ static int pfkey_spddump(struct sock *sk, struct sk_buff *skb, const struct sadb
 {
 	struct pfkey_sock *pfk = pfkey_sk(sk);
 
+<<<<<<< HEAD
 	if (pfk->dump.dump != NULL)
 		return -EBUSY;
+=======
+	mutex_lock(&pfk->dump_lock);
+	if (pfk->dump.dump != NULL) {
+		mutex_unlock(&pfk->dump_lock);
+		return -EBUSY;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pfk->dump.msg_version = hdr->sadb_msg_version;
 	pfk->dump.msg_portid = hdr->sadb_msg_pid;
 	pfk->dump.dump = pfkey_dump_sp;
 	pfk->dump.done = pfkey_dump_sp_done;
 	xfrm_policy_walk_init(&pfk->dump.u.policy, XFRM_POLICY_TYPE_MAIN);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&pfk->dump_lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return pfkey_do_dump(pfk);
 }
@@ -2841,7 +3100,11 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
 			break;
 		if (!aalg->pfkey_supported)
 			continue;
+<<<<<<< HEAD
 		if (aalg_tmpl_set(t, aalg) && aalg->available)
+=======
+		if (aalg_tmpl_set(t, aalg))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			sz += sizeof(struct sadb_comb);
 	}
 	return sz + sizeof(struct sadb_prop);
@@ -2859,7 +3122,11 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
 		if (!ealg->pfkey_supported)
 			continue;
 
+<<<<<<< HEAD
 		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
+=======
+		if (!(ealg_tmpl_set(t, ealg)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 
 		for (k = 1; ; k++) {
@@ -2870,7 +3137,11 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
 			if (!aalg->pfkey_supported)
 				continue;
 
+<<<<<<< HEAD
 			if (aalg_tmpl_set(t, aalg) && aalg->available)
+=======
+			if (aalg_tmpl_set(t, aalg))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				sz += sizeof(struct sadb_comb);
 		}
 	}
@@ -3249,7 +3520,11 @@ static struct xfrm_policy *pfkey_compile_policy(struct sock *sk, int opt,
 		p += pol->sadb_x_policy_len*8;
 		sec_ctx = (struct sadb_x_sec_ctx *)p;
 		if (len < pol->sadb_x_policy_len*8 +
+<<<<<<< HEAD
 		    sec_ctx->sadb_x_sec_len) {
+=======
+		    sec_ctx->sadb_x_sec_len*8) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			*dir = -EINVAL;
 			goto out;
 		}

@@ -396,8 +396,13 @@ static int ad7266_probe(struct spi_device *spi)
 
 	st = iio_priv(indio_dev);
 
+<<<<<<< HEAD
 	st->reg = devm_regulator_get(&spi->dev, "vref");
 	if (!IS_ERR_OR_NULL(st->reg)) {
+=======
+	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
+	if (!IS_ERR(st->reg)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = regulator_enable(st->reg);
 		if (ret)
 			return ret;
@@ -408,6 +413,12 @@ static int ad7266_probe(struct spi_device *spi)
 
 		st->vref_mv = ret / 1000;
 	} else {
+<<<<<<< HEAD
+=======
+		/* Any other error indicates that the regulator does exist */
+		if (PTR_ERR(st->reg) != -ENODEV)
+			return PTR_ERR(st->reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Use internal reference */
 		st->vref_mv = 2500;
 	}

@@ -147,9 +147,16 @@ enum mlx4_resource {
 	RES_MTT,
 	RES_MAC,
 	RES_VLAN,
+<<<<<<< HEAD
 	RES_EQ,
 	RES_COUNTER,
 	RES_FS_RULE,
+=======
+	RES_NPORT_ID,
+	RES_COUNTER,
+	RES_FS_RULE,
+	RES_EQ,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	MLX4_NUM_OF_RESOURCE_TYPE
 };
 
@@ -516,8 +523,13 @@ struct slave_list {
 struct resource_allocator {
 	spinlock_t alloc_lock; /* protect quotas */
 	union {
+<<<<<<< HEAD
 		int res_reserved;
 		int res_port_rsvd[MLX4_MAX_PORTS];
+=======
+		unsigned int res_reserved;
+		unsigned int res_port_rsvd[MLX4_MAX_PORTS];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	};
 	union {
 		int res_free;

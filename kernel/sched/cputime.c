@@ -6,6 +6,10 @@
 #include <linux/static_key.h>
 #include <linux/context_tracking.h>
 #include "sched.h"
+<<<<<<< HEAD
+=======
+#include "walt.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
@@ -50,6 +54,13 @@ void irqtime_account_irq(struct task_struct *curr)
 	unsigned long flags;
 	s64 delta;
 	int cpu;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SCHED_WALT
+	u64 wallclock;
+	bool account = true;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!sched_clock_irqtime)
 		return;
@@ -57,6 +68,12 @@ void irqtime_account_irq(struct task_struct *curr)
 	local_irq_save(flags);
 
 	cpu = smp_processor_id();
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SCHED_WALT
+	wallclock = sched_clock_cpu(cpu);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	delta = sched_clock_cpu(cpu) - __this_cpu_read(irq_start_time);
 	__this_cpu_add(irq_start_time, delta);
 
@@ -71,8 +88,21 @@ void irqtime_account_irq(struct task_struct *curr)
 		__this_cpu_add(cpu_hardirq_time, delta);
 	else if (in_serving_softirq() && curr != this_cpu_ksoftirqd())
 		__this_cpu_add(cpu_softirq_time, delta);
+<<<<<<< HEAD
 
 	irq_time_write_end();
+=======
+#ifdef CONFIG_SCHED_WALT
+	else
+		account = false;
+#endif
+
+	irq_time_write_end();
+#ifdef CONFIG_SCHED_WALT
+	if (account)
+		walt_account_irqtime(cpu, curr, delta, wallclock);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_irq_restore(flags);
 }
 EXPORT_SYMBOL_GPL(irqtime_account_irq);
@@ -270,12 +300,17 @@ static __always_inline bool steal_account_process_tick(void)
 #ifdef CONFIG_PARAVIRT
 	if (static_key_false(&paravirt_steal_enabled)) {
 		u64 steal;
+<<<<<<< HEAD
 		cputime_t steal_ct;
+=======
+		unsigned long steal_jiffies;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		steal = paravirt_steal_clock(smp_processor_id());
 		steal -= this_rq()->prev_steal_time;
 
 		/*
+<<<<<<< HEAD
 		 * cputime_t may be less precise than nsecs (eg: if it's
 		 * based on jiffies). Lets cast the result to cputime
 		 * granularity and account the rest on the next rounds.
@@ -285,6 +320,17 @@ static __always_inline bool steal_account_process_tick(void)
 
 		account_steal_time(steal_ct);
 		return steal_ct;
+=======
+		 * steal is in nsecs but our caller is expecting steal
+		 * time in jiffies. Lets cast the result to jiffies
+		 * granularity and account the rest on the next rounds.
+		 */
+		steal_jiffies = nsecs_to_jiffies(steal);
+		this_rq()->prev_steal_time += jiffies_to_nsecs(steal_jiffies);
+
+		account_steal_time(jiffies_to_cputime(steal_jiffies));
+		return steal_jiffies;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 #endif
 	return false;
@@ -578,7 +624,11 @@ static void cputime_advance(cputime_t *counter, cputime_t new)
 {
 	cputime_t old;
 
+<<<<<<< HEAD
 	while (new > (old = ACCESS_ONCE(*counter)))
+=======
+	while (new > (old = READ_ONCE(*counter)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cmpxchg_cputime(counter, old, new);
 }
 

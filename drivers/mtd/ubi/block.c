@@ -322,7 +322,11 @@ static int ubiblock_open(struct block_device *bdev, fmode_t mode)
 	 * in any case.
 	 */
 	if (mode & FMODE_WRITE) {
+<<<<<<< HEAD
 		ret = -EPERM;
+=======
+		ret = -EROFS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out_unlock;
 	}
 
@@ -387,6 +391,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	/* Check that the volume isn't already handled */
 	mutex_lock(&devices_mutex);
 	if (find_dev_nolock(vi->ubi_num, vi->vol_id)) {
+<<<<<<< HEAD
 		mutex_unlock(&devices_mutex);
 		return -EEXIST;
 	}
@@ -395,6 +400,17 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	dev = kzalloc(sizeof(struct ubiblock), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
+=======
+		ret = -EEXIST;
+		goto out_unlock;
+	}
+
+	dev = kzalloc(sizeof(struct ubiblock), GFP_KERNEL);
+	if (!dev) {
+		ret = -ENOMEM;
+		goto out_unlock;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_init(&dev->dev_mutex);
 
@@ -440,14 +456,22 @@ int ubiblock_create(struct ubi_volume_info *vi)
 	}
 	INIT_WORK(&dev->work, ubiblock_do_work);
 
+<<<<<<< HEAD
 	mutex_lock(&devices_mutex);
 	list_add_tail(&dev->list, &ubiblock_devices);
 	mutex_unlock(&devices_mutex);
+=======
+	list_add_tail(&dev->list, &ubiblock_devices);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Must be the last step: anyone can call file ops from now on */
 	add_disk(dev->gd);
 	ubi_msg("%s created from ubi%d:%d(%s)",
 		dev->gd->disk_name, dev->ubi_num, dev->vol_id, vi->name);
+<<<<<<< HEAD
+=======
+	mutex_unlock(&devices_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 
 out_free_queue:
@@ -456,6 +480,11 @@ out_put_disk:
 	put_disk(dev->gd);
 out_free_dev:
 	kfree(dev);
+<<<<<<< HEAD
+=======
+out_unlock:
+	mutex_unlock(&devices_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -471,33 +500,63 @@ static void ubiblock_cleanup(struct ubiblock *dev)
 int ubiblock_remove(struct ubi_volume_info *vi)
 {
 	struct ubiblock *dev;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&devices_mutex);
 	dev = find_dev_nolock(vi->ubi_num, vi->vol_id);
 	if (!dev) {
+<<<<<<< HEAD
 		mutex_unlock(&devices_mutex);
 		return -ENODEV;
+=======
+		ret = -ENODEV;
+		goto out_unlock;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Found a device, let's lock it so we can check if it's busy */
 	mutex_lock(&dev->dev_mutex);
 	if (dev->refcnt > 0) {
+<<<<<<< HEAD
 		mutex_unlock(&dev->dev_mutex);
 		mutex_unlock(&devices_mutex);
 		return -EBUSY;
+=======
+		ret = -EBUSY;
+		goto out_unlock_dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* Remove from device list */
 	list_del(&dev->list);
+<<<<<<< HEAD
 	mutex_unlock(&devices_mutex);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Flush pending work and stop this workqueue */
 	destroy_workqueue(dev->wq);
 
 	ubiblock_cleanup(dev);
 	mutex_unlock(&dev->dev_mutex);
+<<<<<<< HEAD
 	kfree(dev);
 	return 0;
+=======
+	mutex_unlock(&devices_mutex);
+
+	kfree(dev);
+	return 0;
+
+out_unlock_dev:
+	mutex_unlock(&dev->dev_mutex);
+out_unlock:
+	mutex_unlock(&devices_mutex);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int ubiblock_resize(struct ubi_volume_info *vi)
@@ -620,6 +679,10 @@ static void ubiblock_remove_all(void)
 	struct ubiblock *next;
 	struct ubiblock *dev;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&devices_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry_safe(dev, next, &ubiblock_devices, list) {
 		/* Flush pending work and stop workqueue */
 		destroy_workqueue(dev->wq);
@@ -630,6 +693,10 @@ static void ubiblock_remove_all(void)
 		ubiblock_cleanup(dev);
 		kfree(dev);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&devices_mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int __init ubiblock_init(void)

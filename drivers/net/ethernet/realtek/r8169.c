@@ -324,8 +324,16 @@ enum cfg_version {
 };
 
 static const struct pci_device_id rtl8169_pci_tbl[] = {
+<<<<<<< HEAD
 	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8129), 0, 0, RTL_CFG_0 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8136), 0, 0, RTL_CFG_2 },
+=======
+	{ PCI_VDEVICE(REALTEK,	0x2502), RTL_CFG_1 },
+	{ PCI_VDEVICE(REALTEK,	0x2600), RTL_CFG_1 },
+	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8129), 0, 0, RTL_CFG_0 },
+	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8136), 0, 0, RTL_CFG_2 },
+	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8161), 0, 0, RTL_CFG_1 },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8167), 0, 0, RTL_CFG_0 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8168), 0, 0, RTL_CFG_1 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_REALTEK,	0x8169), 0, 0, RTL_CFG_0 },
@@ -748,7 +756,11 @@ struct rtl8169_counters {
 };
 
 enum rtl_flag {
+<<<<<<< HEAD
 	RTL_FLAG_TASK_ENABLED,
+=======
+	RTL_FLAG_TASK_ENABLED = 0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	RTL_FLAG_TASK_SLOW_PENDING,
 	RTL_FLAG_TASK_RESET_PENDING,
 	RTL_FLAG_TASK_PHY_PENDING,
@@ -1374,7 +1386,11 @@ DECLARE_RTL_COND(rtl_ocp_tx_cond)
 {
 	void __iomem *ioaddr = tp->mmio_addr;
 
+<<<<<<< HEAD
 	return RTL_R8(IBISR0) & 0x02;
+=======
+	return RTL_R8(IBISR0) & 0x20;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl8168dp_driver_start(struct rtl8169_private *tp)
@@ -1420,7 +1436,11 @@ static void rtl8168ep_driver_stop(struct rtl8169_private *tp)
 	void __iomem *ioaddr = tp->mmio_addr;
 
 	RTL_W8(IBCR2, RTL_R8(IBCR2) & ~0x01);
+<<<<<<< HEAD
 	rtl_msleep_loop_wait_low(tp, &rtl_ocp_tx_cond, 50, 2000);
+=======
+	rtl_msleep_loop_wait_high(tp, &rtl_ocp_tx_cond, 50, 2000);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	RTL_W8(IBISR0, RTL_R8(IBISR0) | 0x20);
 	RTL_W8(IBCR0, RTL_R8(IBCR0) & ~0x01);
 	ocp_write(tp, 0x01, 0x180, OOB_CMD_DRIVER_STOP);
@@ -4763,6 +4783,12 @@ static void rtl_pll_power_down(struct rtl8169_private *tp)
 static void rtl_pll_power_up(struct rtl8169_private *tp)
 {
 	rtl_generic_op(tp, tp->pll_power_ops.up);
+<<<<<<< HEAD
+=======
+
+	/* give MAC/PHY some time to resume */
+	msleep(20);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void rtl_init_pll_power_ops(struct rtl8169_private *tp)
@@ -7441,17 +7467,27 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
 	struct rtl8169_private *tp = container_of(napi, struct rtl8169_private, napi);
 	struct net_device *dev = tp->dev;
 	u16 enable_mask = RTL_EVENT_NAPI | tp->event_slow;
+<<<<<<< HEAD
 	int work_done= 0;
+=======
+	int work_done;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u16 status;
 
 	status = rtl_get_events(tp);
 	rtl_ack_events(tp, status & ~tp->event_slow);
 
+<<<<<<< HEAD
 	if (status & RTL_EVENT_NAPI_RX)
 		work_done = rtl_rx(dev, tp, (u32) budget);
 
 	if (status & RTL_EVENT_NAPI_TX)
 		rtl_tx(dev, tp);
+=======
+	work_done = rtl_rx(dev, tp, (u32) budget);
+
+	rtl_tx(dev, tp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (status & tp->event_slow) {
 		enable_mask &= ~tp->event_slow;
@@ -7519,7 +7555,12 @@ static int rtl8169_close(struct net_device *dev)
 	rtl8169_update_counters(dev);
 
 	rtl_lock_work(tp);
+<<<<<<< HEAD
 	clear_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags);
+=======
+	/* Clear all task flags */
+	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rtl8169_down(dev);
 	rtl_unlock_work(tp);
@@ -7675,7 +7716,13 @@ static void rtl8169_net_suspend(struct net_device *dev)
 
 	rtl_lock_work(tp);
 	napi_disable(&tp->napi);
+<<<<<<< HEAD
 	clear_bit(RTL_FLAG_TASK_ENABLED, tp->wk.flags);
+=======
+	/* Clear all task flags */
+	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rtl_unlock_work(tp);
 
 	rtl_pll_power_down(tp);
@@ -8277,12 +8324,20 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	tp->rtl_fw = RTL_FIRMWARE_UNKNOWN;
 
+<<<<<<< HEAD
+=======
+	pci_set_drvdata(pdev, dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rc = register_netdev(dev);
 	if (rc < 0)
 		goto err_out_msi_4;
 
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_info(tp, probe, dev, "%s at 0x%p, %pM, XID %08x IRQ %d\n",
 		   rtl_chip_infos[chipset].name, ioaddr, dev->dev_addr,
 		   (u32)(RTL_R32(TxConfig) & 0x9cf0f8ff), pdev->irq);

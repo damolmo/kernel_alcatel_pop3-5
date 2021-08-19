@@ -8,6 +8,12 @@
 #include <asm/thread_info.h>
 #include <asm/memory.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_KERNMEM_PERMS
+#include <asm/pgtable.h>
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	
 #define PROC_INFO							\
 	. = ALIGN(4);							\
@@ -90,6 +96,14 @@ SECTIONS
 		_text = .;
 		HEAD_TEXT
 	}
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_ARM_KERNMEM_PERMS
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.text : {			/* Real text segment		*/
 		_stext = .;		/* Text and read-only data	*/
 			__exception_text_start = .;
@@ -112,10 +126,18 @@ SECTIONS
 			ARM_CPU_KEEP(PROC_INFO)
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTK_AEE_MRDUMP
 	.mrdump ALIGN (0x400): {
 	}
 #endif
+=======
+#ifdef CONFIG_DEBUG_RODATA
+	. = ALIGN(1<<SECTION_SHIFT);
+#endif
+	_etext = .;			/* End of text section */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	RO_DATA(PAGE_SIZE)
 
 	. = ALIGN(4);
@@ -146,10 +168,19 @@ SECTIONS
 
 	NOTES
 
+<<<<<<< HEAD
 	_etext = .;			/* End of text and rodata section */
 
 #ifndef CONFIG_XIP_KERNEL
 	. = ALIGN(PAGE_SIZE);
+=======
+#ifndef CONFIG_XIP_KERNEL
+# ifdef CONFIG_ARM_KERNMEM_PERMS
+	. = ALIGN(1<<SECTION_SHIFT);
+# else
+	. = ALIGN(PAGE_SIZE);
+# endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__init_begin = .;
 #endif
 	/*
@@ -223,8 +254,17 @@ SECTIONS
 	__data_loc = ALIGN(4);		/* location in binary */
 	. = PAGE_OFFSET + TEXT_OFFSET;
 #else
+<<<<<<< HEAD
 	. = ALIGN(THREAD_SIZE);
 	__init_end = .;
+=======
+	__init_end = .;
+#ifdef CONFIG_ARM_KERNMEM_PERMS
+	. = ALIGN(1<<SECTION_SHIFT);
+#else
+	. = ALIGN(THREAD_SIZE);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__data_loc = .;
 #endif
 

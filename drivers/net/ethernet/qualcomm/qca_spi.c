@@ -297,8 +297,14 @@ qcaspi_receive(struct qcaspi *qca)
 
 	/* Allocate rx SKB if we don't have one available. */
 	if (!qca->rx_skb) {
+<<<<<<< HEAD
 		qca->rx_skb = netdev_alloc_skb(net_dev,
 					       net_dev->mtu + VLAN_ETH_HLEN);
+=======
+		qca->rx_skb = netdev_alloc_skb_ip_align(net_dev,
+							net_dev->mtu +
+							VLAN_ETH_HLEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!qca->rx_skb) {
 			netdev_dbg(net_dev, "out of RX resources\n");
 			qca->stats.out_of_mem++;
@@ -378,7 +384,11 @@ qcaspi_receive(struct qcaspi *qca)
 					qca->rx_skb, qca->rx_skb->dev);
 				qca->rx_skb->ip_summed = CHECKSUM_UNNECESSARY;
 				netif_rx_ni(qca->rx_skb);
+<<<<<<< HEAD
 				qca->rx_skb = netdev_alloc_skb(net_dev,
+=======
+				qca->rx_skb = netdev_alloc_skb_ip_align(net_dev,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					net_dev->mtu + VLAN_ETH_HLEN);
 				if (!qca->rx_skb) {
 					netdev_dbg(net_dev, "out of RX resources\n");
@@ -438,7 +448,10 @@ qcaspi_qca7k_sync(struct qcaspi *qca, int event)
 	u16 signature = 0;
 	u16 spi_config;
 	u16 wrbuf_space = 0;
+<<<<<<< HEAD
 	static u16 reset_count;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (event == QCASPI_EVENT_CPUON) {
 		/* Read signature twice, if not valid
@@ -491,6 +504,7 @@ qcaspi_qca7k_sync(struct qcaspi *qca, int event)
 
 		qca->sync = QCASPI_SYNC_RESET;
 		qca->stats.trig_reset++;
+<<<<<<< HEAD
 		reset_count = 0;
 		break;
 	case QCASPI_SYNC_RESET:
@@ -498,6 +512,15 @@ qcaspi_qca7k_sync(struct qcaspi *qca, int event)
 		netdev_dbg(qca->net_dev, "sync: waiting for CPU on, count %u.\n",
 			   reset_count);
 		if (reset_count >= QCASPI_RESET_TIMEOUT) {
+=======
+		qca->reset_count = 0;
+		break;
+	case QCASPI_SYNC_RESET:
+		qca->reset_count++;
+		netdev_dbg(qca->net_dev, "sync: waiting for CPU on, count %u.\n",
+			   qca->reset_count);
+		if (qca->reset_count >= QCASPI_RESET_TIMEOUT) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* reset did not seem to take place, try again */
 			qca->sync = QCASPI_SYNC_UNKNOWN;
 			qca->stats.reset_timeout++;
@@ -635,7 +658,11 @@ qcaspi_netdev_open(struct net_device *dev)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	netif_start_queue(qca->net_dev);
+=======
+	/* SPI thread takes care of TX queue */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -737,9 +764,17 @@ qcaspi_netdev_tx_timeout(struct net_device *dev)
 	netdev_info(qca->net_dev, "Transmit timeout at %ld, latency %ld\n",
 		    jiffies, jiffies - dev->trans_start);
 	qca->net_dev->stats.tx_errors++;
+<<<<<<< HEAD
 	/* wake the queue if there is room */
 	if (qcaspi_tx_ring_has_space(&qca->txr))
 		netif_wake_queue(dev);
+=======
+	/* Trigger tx queue flush and QCA7000 reset */
+	qca->sync = QCASPI_SYNC_UNKNOWN;
+
+	if (qca->spi_thread)
+		wake_up_process(qca->spi_thread);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
@@ -761,7 +796,12 @@ qcaspi_netdev_init(struct net_device *dev)
 	if (!qca->rx_buffer)
 		return -ENOBUFS;
 
+<<<<<<< HEAD
 	qca->rx_skb = netdev_alloc_skb(dev, qca->net_dev->mtu + VLAN_ETH_HLEN);
+=======
+	qca->rx_skb = netdev_alloc_skb_ip_align(dev, qca->net_dev->mtu +
+						VLAN_ETH_HLEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!qca->rx_skb) {
 		kfree(qca->rx_buffer);
 		netdev_info(qca->net_dev, "Failed to allocate RX sk_buff.\n");
@@ -813,7 +853,11 @@ qcaspi_netdev_setup(struct net_device *dev)
 	dev->netdev_ops = &qcaspi_netdev_ops;
 	qcaspi_set_ethtool_ops(dev);
 	dev->watchdog_timeo = QCASPI_TX_TIMEOUT;
+<<<<<<< HEAD
 	dev->flags = IFF_MULTICAST;
+=======
+	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->tx_queue_len = 100;
 
 	qca = netdev_priv(dev);
@@ -865,21 +909,33 @@ qca_spi_probe(struct spi_device *spi_device)
 
 	if ((qcaspi_clkspeed < QCASPI_CLK_SPEED_MIN) ||
 	    (qcaspi_clkspeed > QCASPI_CLK_SPEED_MAX)) {
+<<<<<<< HEAD
 		dev_info(&spi_device->dev, "Invalid clkspeed: %d\n",
+=======
+		dev_err(&spi_device->dev, "Invalid clkspeed: %d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 qcaspi_clkspeed);
 		return -EINVAL;
 	}
 
 	if ((qcaspi_burst_len < QCASPI_BURST_LEN_MIN) ||
 	    (qcaspi_burst_len > QCASPI_BURST_LEN_MAX)) {
+<<<<<<< HEAD
 		dev_info(&spi_device->dev, "Invalid burst len: %d\n",
+=======
+		dev_err(&spi_device->dev, "Invalid burst len: %d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 qcaspi_burst_len);
 		return -EINVAL;
 	}
 
 	if ((qcaspi_pluggable < QCASPI_PLUGGABLE_MIN) ||
 	    (qcaspi_pluggable > QCASPI_PLUGGABLE_MAX)) {
+<<<<<<< HEAD
 		dev_info(&spi_device->dev, "Invalid pluggable: %d\n",
+=======
+		dev_err(&spi_device->dev, "Invalid pluggable: %d\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 qcaspi_pluggable);
 		return -EINVAL;
 	}
@@ -939,7 +995,11 @@ qca_spi_probe(struct spi_device *spi_device)
 	}
 
 	if (register_netdev(qcaspi_devs)) {
+<<<<<<< HEAD
 		dev_info(&spi_device->dev, "Unable to register net device %s\n",
+=======
+		dev_err(&spi_device->dev, "Unable to register net device %s\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 qcaspi_devs->name);
 		free_netdev(qcaspi_devs);
 		return -EFAULT;

@@ -223,6 +223,10 @@ struct smb_version_operations {
 	/* verify the message */
 	int (*check_message)(char *, unsigned int);
 	bool (*is_oplock_break)(char *, struct TCP_Server_Info *);
+<<<<<<< HEAD
+=======
+	int (*handle_cancelled_mid)(char *, struct TCP_Server_Info *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void (*downgrade_oplock)(struct TCP_Server_Info *,
 					struct cifsInodeInfo *, bool);
 	/* process transaction2 response */
@@ -346,6 +350,11 @@ struct smb_version_operations {
 	unsigned int (*calc_smb_size)(void *);
 	/* check for STATUS_PENDING and process it in a positive case */
 	bool (*is_status_pending)(char *, struct TCP_Server_Info *, int);
+<<<<<<< HEAD
+=======
+	/* check for STATUS_NETWORK_SESSION_EXPIRED */
+	bool (*is_session_expired)(char *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* send oplock break response */
 	int (*oplock_response)(struct cifs_tcon *, struct cifs_fid *,
 			       struct cifsInodeInfo *);
@@ -615,6 +624,11 @@ struct TCP_Server_Info {
 #ifdef CONFIG_CIFS_SMB2
 	unsigned int	max_read;
 	unsigned int	max_write;
+<<<<<<< HEAD
+=======
+	struct delayed_work reconnect; /* reconnect workqueue job */
+	struct mutex reconnect_mutex; /* prevent simultaneous reconnects */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_CIFS_SMB2 */
 };
 
@@ -814,7 +828,13 @@ cap_unix(struct cifs_ses *ses)
 struct cifs_tcon {
 	struct list_head tcon_list;
 	int tc_count;
+<<<<<<< HEAD
 	struct list_head openFileList;
+=======
+	struct list_head rlist; /* reconnect list */
+	struct list_head openFileList;
+	spinlock_t open_file_lock; /* protects list above */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct cifs_ses *ses;	/* pointer to session associated with */
 	char treeName[MAX_TREE_SIZE + 1]; /* UNC name of resource in ASCII */
 	char *nativeFileSystem;
@@ -871,7 +891,11 @@ struct cifs_tcon {
 #endif /* CONFIG_CIFS_STATS2 */
 	__u64    bytes_read;
 	__u64    bytes_written;
+<<<<<<< HEAD
 	spinlock_t stat_lock;
+=======
+	spinlock_t stat_lock;  /* protects the two fields above */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_CIFS_STATS */
 	FILE_SYSTEM_DEVICE_INFO fsDevInfo;
 	FILE_SYSTEM_ATTRIBUTE_INFO fsAttrInfo; /* ok if fs name truncated */
@@ -888,7 +912,10 @@ struct cifs_tcon {
 	bool need_reconnect:1; /* connection reset, tid now invalid */
 #ifdef CONFIG_CIFS_SMB2
 	bool print:1;		/* set if connection to printer share */
+<<<<<<< HEAD
 	bool bad_network_name:1; /* set if ret status STATUS_BAD_NETWORK_NAME */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__le32 capabilities;
 	__u32 share_flags;
 	__u32 maximal_access;
@@ -1019,8 +1046,15 @@ struct cifs_fid_locks {
 };
 
 struct cifsFileInfo {
+<<<<<<< HEAD
 	struct list_head tlist;	/* pointer to next fid owned by tcon */
 	struct list_head flist;	/* next fid (file instance) for this inode */
+=======
+	/* following two lists are protected by tcon->open_file_lock */
+	struct list_head tlist;	/* pointer to next fid owned by tcon */
+	struct list_head flist;	/* next fid (file instance) for this inode */
+	/* lock list below protected by cifsi->lock_sem */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct cifs_fid_locks *llist;	/* brlocks held by this fid */
 	kuid_t uid;		/* allows finding which FileInfo structure */
 	__u32 pid;		/* process id who opened file */
@@ -1028,11 +1062,20 @@ struct cifsFileInfo {
 	/* BB add lock scope info here if needed */ ;
 	/* lock scope id (0 if none) */
 	struct dentry *dentry;
+<<<<<<< HEAD
 	unsigned int f_flags;
 	struct tcon_link *tlink;
 	bool invalidHandle:1;	/* file closed via session abend */
 	bool oplock_break_cancelled:1;
 	int count;		/* refcount protected by cifs_file_list_lock */
+=======
+	struct tcon_link *tlink;
+	unsigned int f_flags;
+	bool invalidHandle:1;	/* file closed via session abend */
+	bool oplock_break_cancelled:1;
+	int count;
+	spinlock_t file_info_lock; /* protects four flag/count fields above */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct mutex fh_mutex; /* prevents reopen race after dead ses*/
 	struct cifs_search_info srch_inf;
 	struct work_struct oplock_break; /* work for oplock breaks */
@@ -1099,7 +1142,11 @@ struct cifs_writedata {
 
 /*
  * Take a reference on the file private data. Must be called with
+<<<<<<< HEAD
  * cifs_file_list_lock held.
+=======
+ * cfile->file_info_lock held.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static inline void
 cifsFileInfo_get_locked(struct cifsFileInfo *cifs_file)
@@ -1128,6 +1175,14 @@ void cifsFileInfo_put(struct cifsFileInfo *cifs_file);
 struct cifsInodeInfo {
 	bool can_cache_brlcks;
 	struct list_head llist;	/* locks helb by this inode */
+<<<<<<< HEAD
+=======
+	/*
+	 * NOTE: Some code paths call down_read(lock_sem) twice, so
+	 * we must always use use cifs_down_write() instead of down_write()
+	 * for this semaphore to avoid deadlocks.
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct rw_semaphore lock_sem;	/* protect the fields above */
 	/* BB add in lists for dirty pages i.e. write caching info for oplock */
 	struct list_head openFileList;
@@ -1262,12 +1317,25 @@ struct mid_q_entry {
 	void *callback_data;	  /* general purpose pointer for callback */
 	void *resp_buf;		/* pointer to received SMB header */
 	int mid_state;	/* wish this were enum but can not pass to wait_event */
+<<<<<<< HEAD
+=======
+	unsigned int mid_flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	__le16 command;		/* smb command code */
 	bool large_buf:1;	/* if valid response, is pointer to large buf */
 	bool multiRsp:1;	/* multiple trans2 responses for one request  */
 	bool multiEnd:1;	/* both received */
 };
 
+<<<<<<< HEAD
+=======
+struct close_cancelled_open {
+	struct cifs_fid         fid;
+	struct cifs_tcon        *tcon;
+	struct work_struct      work;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*	Make code in transport.c a little cleaner by moving
 	update of optional stats into function below */
 #ifdef CONFIG_CIFS_STATS2
@@ -1399,6 +1467,12 @@ static inline void free_dfs_info_array(struct dfs_info3_param *param,
 #define   MID_RESPONSE_MALFORMED 0x10
 #define   MID_SHUTDOWN		 0x20
 
+<<<<<<< HEAD
+=======
+/* Flags */
+#define   MID_WAIT_CANCELLED	 1 /* Cancelled while waiting for response */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Types of response buffer returned from SendReceive2 */
 #define   CIFS_NO_BUFFER        0    /* Response buffer not returned */
 #define   CIFS_SMALL_BUFFER     1
@@ -1487,8 +1561,15 @@ require use of the stronger protocol */
  *  GlobalMid_Lock protects:
  *	list operations on pending_mid_q and oplockQ
  *      updates to XID counters, multiplex id  and SMB sequence numbers
+<<<<<<< HEAD
  *  cifs_file_list_lock protects:
  *	list operations on tcp and SMB session lists and tCon lists
+=======
+ *  tcp_ses_lock protects:
+ *	list operations on tcp and SMB session lists
+ *  tcon->open_file_lock protects the list of open files hanging off the tcon
+ *  cfile->file_info_lock protects counters and fields in cifs file struct
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *  f_owner.lock protects certain per file struct operations
  *  mapping->page_lock protects certain per page operations
  *
@@ -1520,6 +1601,7 @@ GLOBAL_EXTERN struct list_head		cifs_tcp_ses_list;
  * tcp session, and the list of tcon's per smb session. It also protects
  * the reference counters for the server, smb session, and tcon. Finally,
  * changes to the tcon->tidStatus should be done while holding this lock.
+<<<<<<< HEAD
  */
 GLOBAL_EXTERN spinlock_t		cifs_tcp_ses_lock;
 
@@ -1532,6 +1614,14 @@ GLOBAL_EXTERN spinlock_t		cifs_tcp_ses_lock;
  */
 GLOBAL_EXTERN spinlock_t	cifs_file_list_lock;
 
+=======
+ * generally the locks should be taken in order tcp_ses_lock before
+ * tcon->open_file_lock and that before file->file_info_lock since the
+ * structure order is cifs_socket-->cifs_ses-->cifs_tcon-->cifs_file
+ */
+GLOBAL_EXTERN spinlock_t		cifs_tcp_ses_lock;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_CIFS_DNOTIFY_EXPERIMENTAL /* unused temporarily */
 /* Outstanding dir notify requests */
 GLOBAL_EXTERN struct list_head GlobalDnotifyReqList;

@@ -487,7 +487,11 @@ nfs_get_client(const struct nfs_client_initdata *cl_init,
 
 	if (cl_init->hostname == NULL) {
 		WARN_ON(1);
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-EINVAL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	dprintk("--> nfs_get_client(%s,v%u)\n",
@@ -776,7 +780,11 @@ static int nfs_init_server(struct nfs_server *server,
 	server->options = data->options;
 	server->caps |= NFS_CAP_HARDLINKS|NFS_CAP_SYMLINKS|NFS_CAP_FILEID|
 		NFS_CAP_MODE|NFS_CAP_NLINK|NFS_CAP_OWNER|NFS_CAP_OWNER_GROUP|
+<<<<<<< HEAD
 		NFS_CAP_ATIME|NFS_CAP_CTIME|NFS_CAP_MTIME|NFS_CAP_CHANGE_ATTR;
+=======
+		NFS_CAP_ATIME|NFS_CAP_CTIME|NFS_CAP_MTIME;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (data->rsize)
 		server->rsize = nfs_block_size(data->rsize, NULL);

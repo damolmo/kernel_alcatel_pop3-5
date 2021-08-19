@@ -4,6 +4,10 @@
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007-2008	Johannes Berg <johannes@sipsolutions.net>
  * Copyright 2013-2014  Intel Mobile Communications GmbH
+<<<<<<< HEAD
+=======
+ * Copyright 2017	Intel Deutschland GmbH
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +22,10 @@
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <net/mac80211.h>
+<<<<<<< HEAD
+=======
+#include <crypto/algapi.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/unaligned.h>
 #include "ieee80211_i.h"
 #include "driver-ops.h"
@@ -474,11 +482,48 @@ void ieee80211_key_free_unused(struct ieee80211_key *key)
 	ieee80211_key_free_common(key);
 }
 
+<<<<<<< HEAD
+=======
+static bool ieee80211_key_identical(struct ieee80211_sub_if_data *sdata,
+				    struct ieee80211_key *old,
+				    struct ieee80211_key *new)
+{
+	u8 tkip_old[WLAN_KEY_LEN_TKIP], tkip_new[WLAN_KEY_LEN_TKIP];
+	u8 *tk_old, *tk_new;
+
+	if (!old || new->conf.keylen != old->conf.keylen)
+		return false;
+
+	tk_old = old->conf.key;
+	tk_new = new->conf.key;
+
+	/*
+	 * In station mode, don't compare the TX MIC key, as it's never used
+	 * and offloaded rekeying may not care to send it to the host. This
+	 * is the case in iwlwifi, for example.
+	 */
+	if (sdata->vif.type == NL80211_IFTYPE_STATION &&
+	    new->conf.cipher == WLAN_CIPHER_SUITE_TKIP &&
+	    new->conf.keylen == WLAN_KEY_LEN_TKIP &&
+	    !(new->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
+		memcpy(tkip_old, tk_old, WLAN_KEY_LEN_TKIP);
+		memcpy(tkip_new, tk_new, WLAN_KEY_LEN_TKIP);
+		memset(tkip_old + NL80211_TKIP_DATA_OFFSET_TX_MIC_KEY, 0, 8);
+		memset(tkip_new + NL80211_TKIP_DATA_OFFSET_TX_MIC_KEY, 0, 8);
+		tk_old = tkip_old;
+		tk_new = tkip_new;
+	}
+
+	return !crypto_memneq(tk_old, tk_new, new->conf.keylen);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ieee80211_key_link(struct ieee80211_key *key,
 		       struct ieee80211_sub_if_data *sdata,
 		       struct sta_info *sta)
 {
 	struct ieee80211_local *local = sdata->local;
+<<<<<<< HEAD
 	struct ieee80211_key *old_key;
 	int idx, ret;
 	bool pairwise;
@@ -488,6 +533,19 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	key->local = sdata->local;
 	key->sdata = sdata;
 	key->sta = sta;
+=======
+	static atomic_t key_color = ATOMIC_INIT(0);
+	struct ieee80211_key *old_key;
+	int idx = key->conf.keyidx;
+	bool pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
+	/*
+	 * We want to delay tailroom updates only for station - in that
+	 * case it helps roaming speed, but in other cases it hurts and
+	 * can cause warnings to appear.
+	 */
+	bool delay_tailroom = sdata->vif.type == NL80211_IFTYPE_STATION;
+	int ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&sdata->local->key_mtx);
 
@@ -498,21 +556,56 @@ int ieee80211_key_link(struct ieee80211_key *key,
 	else
 		old_key = key_mtx_dereference(sdata->local, sdata->keys[idx]);
 
+<<<<<<< HEAD
 	increment_tailroom_need_count(sdata);
 
 	ieee80211_key_replace(sdata, sta, pairwise, old_key, key);
 	ieee80211_key_destroy(old_key, true);
+=======
+	/*
+	 * Silently accept key re-installation without really installing the
+	 * new version of the key to avoid nonce reuse or replay issues.
+	 */
+	if (ieee80211_key_identical(sdata, old_key, key)) {
+		ieee80211_key_free_unused(key);
+		ret = 0;
+		goto out;
+	}
+
+	key->local = sdata->local;
+	key->sdata = sdata;
+	key->sta = sta;
+
+	/*
+	 * Assign a unique ID to every key so we can easily prevent mixed
+	 * key and fragment cache attacks.
+	 */
+	key->color = atomic_inc_return(&key_color);
+
+	increment_tailroom_need_count(sdata);
+
+	ieee80211_key_replace(sdata, sta, pairwise, old_key, key);
+	ieee80211_key_destroy(old_key, delay_tailroom);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ieee80211_debugfs_key_add(key);
 
 	if (!local->wowlan) {
 		ret = ieee80211_key_enable_hw_accel(key);
 		if (ret)
+<<<<<<< HEAD
 			ieee80211_key_free(key, true);
+=======
+			ieee80211_key_free(key, delay_tailroom);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		ret = 0;
 	}
 
+<<<<<<< HEAD
+=======
+ out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&sdata->local->key_mtx);
 
 	return ret;
@@ -658,7 +751,12 @@ void ieee80211_free_sta_keys(struct ieee80211_local *local,
 		ieee80211_key_replace(key->sdata, key->sta,
 				key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE,
 				key, NULL);
+<<<<<<< HEAD
 		__ieee80211_key_destroy(key, true);
+=======
+		__ieee80211_key_destroy(key, key->sdata->vif.type ==
+					NL80211_IFTYPE_STATION);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	for (i = 0; i < NUM_DEFAULT_KEYS; i++) {
@@ -668,7 +766,12 @@ void ieee80211_free_sta_keys(struct ieee80211_local *local,
 		ieee80211_key_replace(key->sdata, key->sta,
 				key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE,
 				key, NULL);
+<<<<<<< HEAD
 		__ieee80211_key_destroy(key, true);
+=======
+		__ieee80211_key_destroy(key, key->sdata->vif.type ==
+					NL80211_IFTYPE_STATION);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	mutex_unlock(&local->key_mtx);

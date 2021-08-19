@@ -67,7 +67,35 @@ void ci_handle_vbus_change(struct ci_hdrc *ci)
 		usb_gadget_vbus_disconnect(&ci->gadget);
 }
 
+<<<<<<< HEAD
 #define CI_VBUS_STABLE_TIMEOUT_MS 5000
+=======
+/**
+ * When we switch to device mode, the vbus value should be lower
+ * than OTGSC_BSV before connecting to host.
+ *
+ * @ci: the controller
+ *
+ * This function returns an error code if timeout
+ */
+static int hw_wait_vbus_lower_bsv(struct ci_hdrc *ci)
+{
+	unsigned long elapse = jiffies + msecs_to_jiffies(5000);
+	u32 mask = OTGSC_BSV;
+
+	while (hw_read_otgsc(ci, mask)) {
+		if (time_after(jiffies, elapse)) {
+			dev_err(ci->dev, "timeout waiting for %08x in OTGSC\n",
+					mask);
+			return -ETIMEDOUT;
+		}
+		msleep(20);
+	}
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void ci_handle_id_switch(struct ci_hdrc *ci)
 {
 	enum ci_role role = ci_otg_role(ci);
@@ -77,9 +105,19 @@ static void ci_handle_id_switch(struct ci_hdrc *ci)
 			ci_role(ci)->name, ci->roles[role]->name);
 
 		ci_role_stop(ci);
+<<<<<<< HEAD
 		/* wait vbus lower than OTGSC_BSV */
 		hw_wait_reg(ci, OP_OTGSC, OTGSC_BSV, 0,
 				CI_VBUS_STABLE_TIMEOUT_MS);
+=======
+
+		/*
+		 * wait vbus lower than OTGSC_BSV before connecting
+		 * to host
+		 */
+		hw_wait_vbus_lower_bsv(ci);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ci_role_start(ci, role);
 	}
 }
@@ -99,11 +137,20 @@ static void ci_otg_work(struct work_struct *work)
 	if (ci->id_event) {
 		ci->id_event = false;
 		ci_handle_id_switch(ci);
+<<<<<<< HEAD
 	} else if (ci->b_sess_valid_event) {
 		ci->b_sess_valid_event = false;
 		ci_handle_vbus_change(ci);
 	} else
 		dev_err(ci->dev, "unexpected event occurs at %s\n", __func__);
+=======
+	}
+
+	if (ci->b_sess_valid_event) {
+		ci->b_sess_valid_event = false;
+		ci_handle_vbus_change(ci);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	enable_irq(ci->irq);
 }
@@ -116,7 +163,11 @@ static void ci_otg_work(struct work_struct *work)
 int ci_hdrc_otg_init(struct ci_hdrc *ci)
 {
 	INIT_WORK(&ci->work, ci_otg_work);
+<<<<<<< HEAD
 	ci->wq = create_singlethread_workqueue("ci_otg");
+=======
+	ci->wq = create_freezable_workqueue("ci_otg");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!ci->wq) {
 		dev_err(ci->dev, "can't create workqueue\n");
 		return -ENODEV;

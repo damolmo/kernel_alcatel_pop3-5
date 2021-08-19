@@ -329,12 +329,24 @@ qla2x00_sysfs_read_optrom(struct file *filp, struct kobject *kobj,
 	struct qla_hw_data *ha = vha->hw;
 	ssize_t rval = 0;
 
+<<<<<<< HEAD
 	if (ha->optrom_state != QLA_SREADING)
 		return 0;
 
 	mutex_lock(&ha->optrom_mutex);
 	rval = memory_read_from_buffer(buf, count, &off, ha->optrom_buffer,
 	    ha->optrom_region_size);
+=======
+	mutex_lock(&ha->optrom_mutex);
+
+	if (ha->optrom_state != QLA_SREADING)
+		goto out;
+
+	rval = memory_read_from_buffer(buf, count, &off, ha->optrom_buffer,
+	    ha->optrom_region_size);
+
+out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&ha->optrom_mutex);
 
 	return rval;
@@ -349,6 +361,7 @@ qla2x00_sysfs_write_optrom(struct file *filp, struct kobject *kobj,
 	    struct device, kobj)));
 	struct qla_hw_data *ha = vha->hw;
 
+<<<<<<< HEAD
 	if (ha->optrom_state != QLA_SWRITING)
 		return -EINVAL;
 	if (off > ha->optrom_region_size)
@@ -357,6 +370,21 @@ qla2x00_sysfs_write_optrom(struct file *filp, struct kobject *kobj,
 		count = ha->optrom_region_size - off;
 
 	mutex_lock(&ha->optrom_mutex);
+=======
+	mutex_lock(&ha->optrom_mutex);
+
+	if (ha->optrom_state != QLA_SWRITING) {
+		mutex_unlock(&ha->optrom_mutex);
+		return -EINVAL;
+	}
+	if (off > ha->optrom_region_size) {
+		mutex_unlock(&ha->optrom_mutex);
+		return -ERANGE;
+	}
+	if (off + count > ha->optrom_region_size)
+		count = ha->optrom_region_size - off;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	memcpy(&ha->optrom_buffer[off], buf, count);
 	mutex_unlock(&ha->optrom_mutex);
 
@@ -396,6 +424,11 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 		return -EINVAL;
 	if (start > ha->optrom_size)
 		return -EINVAL;
+<<<<<<< HEAD
+=======
+	if (size > ha->optrom_size - start)
+		size = ha->optrom_size - start;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mutex_lock(&ha->optrom_mutex);
 	switch (val) {
@@ -421,8 +454,12 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 		}
 
 		ha->optrom_region_start = start;
+<<<<<<< HEAD
 		ha->optrom_region_size = start + size > ha->optrom_size ?
 		    ha->optrom_size - start : size;
+=======
+		ha->optrom_region_size = size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		ha->optrom_state = QLA_SREADING;
 		ha->optrom_buffer = vmalloc(ha->optrom_region_size);
@@ -495,8 +532,12 @@ qla2x00_sysfs_write_optrom_ctl(struct file *filp, struct kobject *kobj,
 		}
 
 		ha->optrom_region_start = start;
+<<<<<<< HEAD
 		ha->optrom_region_size = start + size > ha->optrom_size ?
 		    ha->optrom_size - start : size;
+=======
+		ha->optrom_region_size = size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		ha->optrom_state = QLA_SWRITING;
 		ha->optrom_buffer = vmalloc(ha->optrom_region_size);
@@ -752,7 +793,12 @@ qla2x00_sysfs_write_reset(struct file *filp, struct kobject *kobj,
 			break;
 		} else {
 			/* Make sure FC side is not in reset */
+<<<<<<< HEAD
 			qla2x00_wait_for_hba_online(vha);
+=======
+			WARN_ON_ONCE(qla2x00_wait_for_hba_online(vha) !=
+				     QLA_SUCCESS);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			/* Issue MPI reset */
 			scsi_block_requests(vha->host);

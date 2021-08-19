@@ -261,6 +261,12 @@ void udf_truncate_extents(struct inode *inode)
 			epos.block = eloc;
 			epos.bh = udf_tread(sb,
 					udf_get_lb_pblock(sb, &eloc, 0));
+<<<<<<< HEAD
+=======
+			/* Error reading indirect block? */
+			if (!epos.bh)
+				return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (elen)
 				indirect_ext_len =
 					(elen + sb->s_blocksize - 1) >>

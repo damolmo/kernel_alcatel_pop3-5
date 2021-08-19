@@ -41,6 +41,7 @@ struct blk_flush_queue;
 #define BLKDEV_MIN_RQ	4
 #define BLKDEV_MAX_RQ	128	/* Default maximum */
 
+<<<<<<< HEAD
 
 #if !defined(FEATURE_STORAGE_PERF_INDEX) && defined(CONFIG_MT_ENG_BUILD)
 extern bool start_async_req[];
@@ -171,6 +172,8 @@ struct pid_rw_file_name {
 
 
 #endif /* FEATURE_STORAGE_PID_LOGGER */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Maximum number of blkcg policies allowed to be registered concurrently.
  * Defined here to simplify include dependency.
@@ -339,8 +342,21 @@ struct request {
 
 	/* for bidi */
 	struct request *next_rq;
+<<<<<<< HEAD
 };
 
+=======
+
+	ktime_t			lat_hist_io_start;
+	int			lat_hist_enabled;
+};
+
+static inline bool blk_rq_is_passthrough(struct request *rq)
+{
+	return rq->cmd_type != REQ_TYPE_FS;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline unsigned short req_get_ioprio(struct request *req)
 {
 	return req->ioprio;
@@ -416,6 +432,10 @@ struct queue_limits {
 	unsigned int		max_sectors;
 	unsigned int		max_segment_size;
 	unsigned int		physical_block_size;
+<<<<<<< HEAD
+=======
+	unsigned int		logical_block_size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int		alignment_offset;
 	unsigned int		io_min;
 	unsigned int		io_opt;
@@ -424,7 +444,10 @@ struct queue_limits {
 	unsigned int		discard_granularity;
 	unsigned int		discard_alignment;
 
+<<<<<<< HEAD
 	unsigned short		logical_block_size;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned short		max_segments;
 	unsigned short		max_integrity_segments;
 
@@ -579,7 +602,12 @@ struct request_queue {
 	unsigned int		sg_reserved_size;
 	int			node;
 #ifdef CONFIG_BLK_DEV_IO_TRACE
+<<<<<<< HEAD
 	struct blk_trace	*blk_trace;
+=======
+	struct blk_trace __rcu	*blk_trace;
+	struct mutex		blk_trace_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 	/*
 	 * for flush operations
@@ -731,9 +759,16 @@ static inline void queue_flag_clear(unsigned int flag, struct request_queue *q)
 	((rq)->cmd_flags & (REQ_FAILFAST_DEV|REQ_FAILFAST_TRANSPORT| \
 			     REQ_FAILFAST_DRIVER))
 
+<<<<<<< HEAD
 #define blk_account_rq(rq) \
 	(((rq)->cmd_flags & REQ_STARTED) && \
 	 ((rq)->cmd_type == REQ_TYPE_FS))
+=======
+static inline bool blk_account_rq(struct request *rq)
+{
+	return (rq->cmd_flags & REQ_STARTED) && !blk_rq_is_passthrough(rq);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define blk_pm_request(rq)	\
 	((rq)->cmd_type == REQ_TYPE_PM_SUSPEND || \
@@ -746,7 +781,11 @@ static inline void queue_flag_clear(unsigned int flag, struct request_queue *q)
 
 #define list_entry_rq(ptr)	list_entry((ptr), struct request, queuelist)
 
+<<<<<<< HEAD
 #define rq_data_dir(rq)		(((rq)->cmd_flags & 1) != 0)
+=======
+#define rq_data_dir(rq)		((int)((rq)->cmd_flags & 1))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Driver can handle struct request, if it either has an old style
@@ -798,7 +837,11 @@ static inline void blk_clear_rl_full(struct request_list *rl, bool sync)
 
 static inline bool rq_mergeable(struct request *rq)
 {
+<<<<<<< HEAD
 	if (rq->cmd_type != REQ_TYPE_FS)
+=======
+	if (blk_rq_is_passthrough(rq))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return false;
 
 	if (rq->cmd_flags & REQ_NOMERGE_FLAGS)
@@ -1049,15 +1092,24 @@ static inline unsigned int blk_max_size_offset(struct request_queue *q,
 	if (!q->limits.chunk_sectors)
 		return q->limits.max_sectors;
 
+<<<<<<< HEAD
 	return q->limits.chunk_sectors -
 			(offset & (q->limits.chunk_sectors - 1));
+=======
+	return min(q->limits.max_sectors, (unsigned int)(q->limits.chunk_sectors -
+			(offset & (q->limits.chunk_sectors - 1))));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline unsigned int blk_rq_get_max_sectors(struct request *rq)
 {
 	struct request_queue *q = rq->q;
 
+<<<<<<< HEAD
 	if (unlikely(rq->cmd_type == REQ_TYPE_BLOCK_PC))
+=======
+	if (unlikely(rq->cmd_type != REQ_TYPE_FS))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return q->limits.max_hw_sectors;
 
 	if (!q->limits.chunk_sectors)
@@ -1137,7 +1189,11 @@ extern void blk_queue_max_discard_sectors(struct request_queue *q,
 		unsigned int max_discard_sectors);
 extern void blk_queue_max_write_same_sectors(struct request_queue *q,
 		unsigned int max_write_same_sectors);
+<<<<<<< HEAD
 extern void blk_queue_logical_block_size(struct request_queue *, unsigned short);
+=======
+extern void blk_queue_logical_block_size(struct request_queue *, unsigned int);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void blk_queue_physical_block_size(struct request_queue *, unsigned int);
 extern void blk_queue_alignment_offset(struct request_queue *q,
 				       unsigned int alignment);
@@ -1352,7 +1408,11 @@ static inline unsigned int queue_max_segment_size(struct request_queue *q)
 	return q->limits.max_segment_size;
 }
 
+<<<<<<< HEAD
 static inline unsigned short queue_logical_block_size(struct request_queue *q)
+=======
+static inline unsigned queue_logical_block_size(struct request_queue *q)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	int retval = 512;
 
@@ -1362,7 +1422,11 @@ static inline unsigned short queue_logical_block_size(struct request_queue *q)
 	return retval;
 }
 
+<<<<<<< HEAD
 static inline unsigned short bdev_logical_block_size(struct block_device *bdev)
+=======
+static inline unsigned int bdev_logical_block_size(struct block_device *bdev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	return queue_logical_block_size(bdev_get_queue(bdev));
 }
@@ -1752,6 +1816,65 @@ extern int __blkdev_driver_ioctl(struct block_device *, fmode_t, unsigned int,
 extern int bdev_read_page(struct block_device *, sector_t, struct page *);
 extern int bdev_write_page(struct block_device *, sector_t, struct page *,
 						struct writeback_control *);
+<<<<<<< HEAD
+=======
+
+/*
+ * X-axis for IO latency histogram support.
+ */
+static const u_int64_t latency_x_axis_us[] = {
+	100,
+	200,
+	300,
+	400,
+	500,
+	600,
+	700,
+	800,
+	900,
+	1000,
+	1200,
+	1400,
+	1600,
+	1800,
+	2000,
+	2500,
+	3000,
+	4000,
+	5000,
+	6000,
+	7000,
+	9000,
+	10000
+};
+
+#define BLK_IO_LAT_HIST_DISABLE         0
+#define BLK_IO_LAT_HIST_ENABLE          1
+#define BLK_IO_LAT_HIST_ZERO            2
+
+struct io_latency_state {
+	u_int64_t	latency_y_axis[ARRAY_SIZE(latency_x_axis_us) + 1];
+	u_int64_t	latency_elems;
+	u_int64_t	latency_sum;
+};
+
+static inline void
+blk_update_latency_hist(struct io_latency_state *s, u_int64_t delta_us)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(latency_x_axis_us); i++)
+		if (delta_us < (u_int64_t)latency_x_axis_us[i])
+			break;
+	s->latency_y_axis[i]++;
+	s->latency_elems++;
+	s->latency_sum += delta_us;
+}
+
+ssize_t blk_latency_hist_show(char* name, struct io_latency_state *s,
+		char *buf, int buf_size);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #else /* CONFIG_BLOCK */
 
 struct block_device;

@@ -109,7 +109,10 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	u32 prev;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
@@ -120,6 +123,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 
 	__asm__ __volatile__ (
 	"	# futex_atomic_cmpxchg_inatomic\n"
+<<<<<<< HEAD
 	"1:	l32i	%1, %3, 0\n"
 	"	mov	%0, %5\n"
 	"	wsr	%1, scompare1\n"
@@ -140,6 +144,26 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: "memory");
 
 	*uval = prev;
+=======
+	"	wsr	%5, scompare1\n"
+	"1:	s32c1i	%1, %4, 0\n"
+	"	s32i	%1, %6, 0\n"
+	"2:\n"
+	"	.section .fixup,\"ax\"\n"
+	"	.align 4\n"
+	"3:	.long	2b\n"
+	"4:	l32r	%1, 3b\n"
+	"	movi	%0, %7\n"
+	"	jx	%1\n"
+	"	.previous\n"
+	"	.section __ex_table,\"a\"\n"
+	"	.long 1b,4b\n"
+	"	.previous\n"
+	: "+r" (ret), "+r" (newval), "+m" (*uaddr), "+m" (*uval)
+	: "r" (uaddr), "r" (oldval), "r" (uval), "I" (-EFAULT)
+	: "memory");
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 

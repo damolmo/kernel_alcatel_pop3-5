@@ -129,12 +129,22 @@ static int kobj_usermode_filter(struct kobject *kobj)
 
 static int init_uevent_argv(struct kobj_uevent_env *env, const char *subsystem)
 {
+<<<<<<< HEAD
 	int len;
 
 	len = strlcpy(&env->buf[env->buflen], subsystem,
 		      sizeof(env->buf) - env->buflen);
 	if (len >= (sizeof(env->buf) - env->buflen)) {
 		WARN(1, KERN_ERR "init_uevent_argv: buffer size too small\n");
+=======
+	int buffer_size = sizeof(env->buf) - env->buflen;
+	int len;
+
+	len = strlcpy(&env->buf[env->buflen], subsystem, buffer_size);
+	if (len >= buffer_size) {
+		pr_warn("init_uevent_argv: buffer size of %d too small, needed %d\n",
+			buffer_size, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	}
 

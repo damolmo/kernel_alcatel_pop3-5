@@ -182,6 +182,11 @@
 	tps659038: tps659038@58 {
 		compatible = "ti,tps659038";
 		reg = <0x58>;
+<<<<<<< HEAD
+=======
+		ti,palmas-override-powerhold;
+		ti,system-power-controller;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		tps659038_pmic {
 			compatible = "ti,tps659038-pmic";

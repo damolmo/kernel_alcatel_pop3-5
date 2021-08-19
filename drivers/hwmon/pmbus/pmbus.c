@@ -117,6 +117,11 @@ static int pmbus_identify(struct i2c_client *client,
 		} else {
 			info->pages = 1;
 		}
+<<<<<<< HEAD
+=======
+
+		pmbus_clear_faults(client);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (pmbus_check_byte_register(client, 0, PMBUS_VOUT_MODE)) {

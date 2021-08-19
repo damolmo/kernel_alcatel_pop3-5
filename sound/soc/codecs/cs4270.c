@@ -148,11 +148,19 @@ SND_SOC_DAPM_OUTPUT("AOUTR"),
 };
 
 static const struct snd_soc_dapm_route cs4270_dapm_routes[] = {
+<<<<<<< HEAD
 	{ "Capture", NULL, "AINA" },
 	{ "Capture", NULL, "AINB" },
 
 	{ "AOUTA", NULL, "Playback" },
 	{ "AOUTB", NULL, "Playback" },
+=======
+	{ "Capture", NULL, "AINL" },
+	{ "Capture", NULL, "AINR" },
+
+	{ "AOUTL", NULL, "Playback" },
+	{ "AOUTR", NULL, "Playback" },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -641,6 +649,10 @@ static const struct regmap_config cs4270_regmap = {
 	.reg_defaults =		cs4270_reg_defaults,
 	.num_reg_defaults =	ARRAY_SIZE(cs4270_reg_defaults),
 	.cache_type =		REGCACHE_RBTREE,
+<<<<<<< HEAD
+=======
+	.write_flag_mask =	CS4270_I2C_INCR,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	.readable_reg =		cs4270_reg_is_readable,
 	.volatile_reg =		cs4270_reg_is_volatile,

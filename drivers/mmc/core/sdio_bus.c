@@ -22,7 +22,13 @@
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/sdio_func.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/of.h>
+
+#include "core.h"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "sdio_cis.h"
 #include "sdio_bus.h"
 
@@ -276,7 +282,11 @@ static void sdio_release_func(struct device *dev)
 		sdio_free_func_cis(func);
 
 	kfree(func->info);
+<<<<<<< HEAD
 
+=======
+	kfree(func->tmpbuf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(func);
 }
 
@@ -291,6 +301,19 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 	if (!func)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * allocate buffer separately to make sure it's properly aligned for
+	 * DMA usage (incl. 64 bit DMA)
+	 */
+	func->tmpbuf = kmalloc(4, GFP_KERNEL);
+	if (!func->tmpbuf) {
+		kfree(func);
+		return ERR_PTR(-ENOMEM);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	func->card = card;
 
 	device_initialize(&func->dev);
@@ -314,6 +337,16 @@ static void sdio_acpi_set_handle(struct sdio_func *func)
 static inline void sdio_acpi_set_handle(struct sdio_func *func) {}
 #endif
 
+<<<<<<< HEAD
+=======
+static void sdio_set_of_node(struct sdio_func *func)
+{
+	struct mmc_host *host = func->card->host;
+
+	func->dev.of_node = mmc_of_find_child_device(host, func->num);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Register a new SDIO function with the driver model.
  */
@@ -323,6 +356,10 @@ int sdio_add_func(struct sdio_func *func)
 
 	dev_set_name(&func->dev, "%s:%d", mmc_card_id(func->card), func->num);
 
+<<<<<<< HEAD
+=======
+	sdio_set_of_node(func);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sdio_acpi_set_handle(func);
 	ret = device_add(&func->dev);
 	if (ret == 0) {
@@ -346,6 +383,10 @@ void sdio_remove_func(struct sdio_func *func)
 
 	dev_pm_domain_detach(&func->dev, false);
 	device_del(&func->dev);
+<<<<<<< HEAD
+=======
+	of_node_put(func->dev.of_node);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	put_device(&func->dev);
 }
 

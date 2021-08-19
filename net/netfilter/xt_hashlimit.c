@@ -668,8 +668,14 @@ static int hashlimit_mt_check(const struct xt_mtchk_param *par)
 
 	if (info->cfg.gc_interval == 0 || info->cfg.expire == 0)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (info->name[sizeof(info->name)-1] != '\0')
 		return -EINVAL;
+=======
+	ret = xt_check_proc_name(info->name, sizeof(info->name));
+	if (ret)
+		return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (par->family == NFPROTO_IPV4) {
 		if (info->cfg.srcmask > 32 || info->cfg.dstmask > 32)
 			return -EINVAL;

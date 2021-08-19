@@ -272,7 +272,11 @@ cleanup:
  * FUNCTION:    acpi_ds_get_field_names
  *
  * PARAMETERS:  info            - create_field info structure
+<<<<<<< HEAD
  *  `           walk_state      - Current method state
+=======
+ *              walk_state      - Current method state
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *              arg             - First parser arg for the field name list
  *
  * RETURN:      Status

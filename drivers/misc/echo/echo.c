@@ -454,7 +454,11 @@ int16_t oslec_update(struct oslec_state *ec, int16_t tx, int16_t rx)
 	 */
 	ec->factor = 0;
 	ec->shift = 0;
+<<<<<<< HEAD
 	if ((ec->nonupdate_dwell == 0)) {
+=======
+	if (!ec->nonupdate_dwell) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		int p, logp, shift;
 
 		/* Determine:

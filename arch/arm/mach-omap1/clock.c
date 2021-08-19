@@ -1031,17 +1031,29 @@ static int clk_debugfs_register_one(struct clk *c)
 		return -ENOMEM;
 	c->dent = d;
 
+<<<<<<< HEAD
 	d = debugfs_create_u8("usecount", S_IRUGO, c->dent, (u8 *)&c->usecount);
+=======
+	d = debugfs_create_u8("usecount", S_IRUGO, c->dent, &c->usecount);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!d) {
 		err = -ENOMEM;
 		goto err_out;
 	}
+<<<<<<< HEAD
 	d = debugfs_create_u32("rate", S_IRUGO, c->dent, (u32 *)&c->rate);
+=======
+	d = debugfs_create_ulong("rate", S_IRUGO, c->dent, &c->rate);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!d) {
 		err = -ENOMEM;
 		goto err_out;
 	}
+<<<<<<< HEAD
 	d = debugfs_create_x32("flags", S_IRUGO, c->dent, (u32 *)&c->flags);
+=======
+	d = debugfs_create_x8("flags", S_IRUGO, c->dent, &c->flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!d) {
 		err = -ENOMEM;
 		goto err_out;

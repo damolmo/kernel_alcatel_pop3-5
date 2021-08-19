@@ -1262,6 +1262,10 @@ static void release_offload_resources(struct cxgbi_sock *csk)
 		csk, csk->state, csk->flags, csk->tid);
 
 	cxgbi_sock_free_cpl_skbs(csk);
+<<<<<<< HEAD
+=======
+	cxgbi_sock_purge_write_queue(csk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (csk->wr_cred != csk->wr_max_cred) {
 		cxgbi_sock_purge_wr_queue(csk);
 		cxgbi_sock_reset_wr_list(csk);

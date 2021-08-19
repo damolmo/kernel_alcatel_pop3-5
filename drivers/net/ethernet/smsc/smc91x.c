@@ -535,7 +535,11 @@ static inline void  smc_rcv(struct net_device *dev)
 #define smc_special_lock(lock, flags)		spin_lock_irqsave(lock, flags)
 #define smc_special_unlock(lock, flags) 	spin_unlock_irqrestore(lock, flags)
 #else
+<<<<<<< HEAD
 #define smc_special_trylock(lock, flags)	(flags == flags)
+=======
+#define smc_special_trylock(lock, flags)	((void)flags, true)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define smc_special_lock(lock, flags)   	do { flags = 0; } while (0)
 #define smc_special_unlock(lock, flags)	do { flags = 0; } while (0)
 #endif
@@ -632,7 +636,12 @@ done:	if (!THROTTLE_TX_PKTS)
  * now, or set the card to generates an interrupt when ready
  * for the packet.
  */
+<<<<<<< HEAD
 static int smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct smc_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->base;
@@ -2278,7 +2287,11 @@ static int smc_drv_probe(struct platform_device *pdev)
 		ret = try_toggle_control_gpio(&pdev->dev, &lp->power_gpio,
 					      "power", 0, 0, 100);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto out_free_netdev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * Optional reset GPIO configured? Minimum 100 ns reset needed
@@ -2287,7 +2300,11 @@ static int smc_drv_probe(struct platform_device *pdev)
 		ret = try_toggle_control_gpio(&pdev->dev, &lp->reset_gpio,
 					      "reset", 0, 0, 100);
 		if (ret)
+<<<<<<< HEAD
 			return ret;
+=======
+			goto out_free_netdev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/*
 		 * Need to wait for optional EEPROM to load, max 750 us according

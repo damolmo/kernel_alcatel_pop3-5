@@ -21,13 +21,22 @@ static struct xfrm_policy_afinfo xfrm4_policy_afinfo;
 static struct dst_entry *__xfrm4_dst_lookup(struct net *net, struct flowi4 *fl4,
 					    int tos,
 					    const xfrm_address_t *saddr,
+<<<<<<< HEAD
 					    const xfrm_address_t *daddr)
+=======
+					    const xfrm_address_t *daddr,
+					    u32 mark)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct rtable *rt;
 
 	memset(fl4, 0, sizeof(*fl4));
 	fl4->daddr = daddr->a4;
 	fl4->flowi4_tos = tos;
+<<<<<<< HEAD
+=======
+	fl4->flowi4_mark = mark;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (saddr)
 		fl4->saddr = saddr->a4;
 
@@ -40,6 +49,7 @@ static struct dst_entry *__xfrm4_dst_lookup(struct net *net, struct flowi4 *fl4,
 
 static struct dst_entry *xfrm4_dst_lookup(struct net *net, int tos,
 					  const xfrm_address_t *saddr,
+<<<<<<< HEAD
 					  const xfrm_address_t *daddr)
 {
 	struct flowi4 fl4;
@@ -49,11 +59,28 @@ static struct dst_entry *xfrm4_dst_lookup(struct net *net, int tos,
 
 static int xfrm4_get_saddr(struct net *net,
 			   xfrm_address_t *saddr, xfrm_address_t *daddr)
+=======
+					  const xfrm_address_t *daddr,
+					  u32 mark)
+{
+	struct flowi4 fl4;
+
+	return __xfrm4_dst_lookup(net, &fl4, tos, saddr, daddr, mark);
+}
+
+static int xfrm4_get_saddr(struct net *net,
+			   xfrm_address_t *saddr, xfrm_address_t *daddr,
+			   u32 mark)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dst_entry *dst;
 	struct flowi4 fl4;
 
+<<<<<<< HEAD
 	dst = __xfrm4_dst_lookup(net, &fl4, 0, NULL, daddr);
+=======
+	dst = __xfrm4_dst_lookup(net, &fl4, 0, NULL, daddr, mark);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (IS_ERR(dst))
 		return -EHOSTUNREACH;
 
@@ -93,6 +120,10 @@ static int xfrm4_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 	xdst->u.rt.rt_gateway = rt->rt_gateway;
 	xdst->u.rt.rt_uses_gateway = rt->rt_uses_gateway;
 	xdst->u.rt.rt_pmtu = rt->rt_pmtu;
+<<<<<<< HEAD
+=======
+	xdst->u.rt.rt_mtu_locked = rt->rt_mtu_locked;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	INIT_LIST_HEAD(&xdst->u.rt.rt_uncached);
 
 	return 0;
@@ -230,7 +261,11 @@ static void xfrm4_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
 	xfrm_dst_ifdown(dst, dev);
 }
 
+<<<<<<< HEAD
 static struct dst_ops xfrm4_dst_ops = {
+=======
+static struct dst_ops xfrm4_dst_ops_template = {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.family =		AF_INET,
 	.protocol =		cpu_to_be16(ETH_P_IP),
 	.gc =			xfrm4_garbage_collect,
@@ -245,7 +280,11 @@ static struct dst_ops xfrm4_dst_ops = {
 
 static struct xfrm_policy_afinfo xfrm4_policy_afinfo = {
 	.family = 		AF_INET,
+<<<<<<< HEAD
 	.dst_ops =		&xfrm4_dst_ops,
+=======
+	.dst_ops =		&xfrm4_dst_ops_template,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.dst_lookup =		xfrm4_dst_lookup,
 	.get_saddr =		xfrm4_get_saddr,
 	.decode_session =	_decode_session4,
@@ -267,7 +306,11 @@ static struct ctl_table xfrm4_policy_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static int __net_init xfrm4_net_init(struct net *net)
+=======
+static int __net_init xfrm4_net_sysctl_init(struct net *net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ctl_table *table;
 	struct ctl_table_header *hdr;
@@ -295,7 +338,11 @@ err_alloc:
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 static void __net_exit xfrm4_net_exit(struct net *net)
+=======
+static void __net_exit xfrm4_net_sysctl_exit(struct net *net)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ctl_table *table;
 
@@ -307,12 +354,51 @@ static void __net_exit xfrm4_net_exit(struct net *net)
 	if (!net_eq(net, &init_net))
 		kfree(table);
 }
+<<<<<<< HEAD
+=======
+#else /* CONFIG_SYSCTL */
+static int inline xfrm4_net_sysctl_init(struct net *net)
+{
+	return 0;
+}
+
+static void inline xfrm4_net_sysctl_exit(struct net *net)
+{
+}
+#endif
+
+static int __net_init xfrm4_net_init(struct net *net)
+{
+	int ret;
+
+	memcpy(&net->xfrm.xfrm4_dst_ops, &xfrm4_dst_ops_template,
+	       sizeof(xfrm4_dst_ops_template));
+	ret = dst_entries_init(&net->xfrm.xfrm4_dst_ops);
+	if (ret)
+		return ret;
+
+	ret = xfrm4_net_sysctl_init(net);
+	if (ret)
+		dst_entries_destroy(&net->xfrm.xfrm4_dst_ops);
+
+	return ret;
+}
+
+static void __net_exit xfrm4_net_exit(struct net *net)
+{
+	xfrm4_net_sysctl_exit(net);
+	dst_entries_destroy(&net->xfrm.xfrm4_dst_ops);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct pernet_operations __net_initdata xfrm4_net_ops = {
 	.init	= xfrm4_net_init,
 	.exit	= xfrm4_net_exit,
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static void __init xfrm4_policy_init(void)
 {
@@ -321,6 +407,7 @@ static void __init xfrm4_policy_init(void)
 
 void __init xfrm4_init(void)
 {
+<<<<<<< HEAD
 	dst_entries_init(&xfrm4_dst_ops);
 
 	xfrm4_state_init();
@@ -329,5 +416,11 @@ void __init xfrm4_init(void)
 #ifdef CONFIG_SYSCTL
 	register_pernet_subsys(&xfrm4_net_ops);
 #endif
+=======
+	xfrm4_state_init();
+	xfrm4_policy_init();
+	xfrm4_protocol_init();
+	register_pernet_subsys(&xfrm4_net_ops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 

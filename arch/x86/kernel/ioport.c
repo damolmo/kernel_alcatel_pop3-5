@@ -96,9 +96,20 @@ asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
 SYSCALL_DEFINE1(iopl, unsigned int, level)
 {
 	struct pt_regs *regs = current_pt_regs();
+<<<<<<< HEAD
 	unsigned int old = (regs->flags >> 12) & 3;
 	struct thread_struct *t = &current->thread;
 
+=======
+	struct thread_struct *t = &current->thread;
+
+	/*
+	 * Careful: the IOPL bits in regs->flags are undefined under Xen PV
+	 * and changing them has no effect.
+	 */
+	unsigned int old = t->iopl >> X86_EFLAGS_IOPL_BIT;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (level > 3)
 		return -EINVAL;
 	/* Trying to gain more privileges? */
@@ -106,8 +117,14 @@ SYSCALL_DEFINE1(iopl, unsigned int, level)
 		if (!capable(CAP_SYS_RAWIO))
 			return -EPERM;
 	}
+<<<<<<< HEAD
 	regs->flags = (regs->flags & ~X86_EFLAGS_IOPL) | (level << 12);
 	t->iopl = level << 12;
+=======
+	regs->flags = (regs->flags & ~X86_EFLAGS_IOPL) |
+		(level << X86_EFLAGS_IOPL_BIT);
+	t->iopl = level << X86_EFLAGS_IOPL_BIT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	set_iopl_mask(t->iopl);
 
 	return 0;

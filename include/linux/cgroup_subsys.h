@@ -15,6 +15,17 @@ SUBSYS(cpu)
 SUBSYS(cpuacct)
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_CGROUP_SCHEDTUNE)
+SUBSYS(schedtune)
+#endif
+
+#if IS_ENABLED(CONFIG_BLK_CGROUP)
+SUBSYS(blkio)
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if IS_ENABLED(CONFIG_MEMCG)
 SUBSYS(memory)
 #endif
@@ -31,10 +42,13 @@ SUBSYS(freezer)
 SUBSYS(net_cls)
 #endif
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_BLK_CGROUP)
 SUBSYS(blkio)
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if IS_ENABLED(CONFIG_CGROUP_PERF)
 SUBSYS(perf_event)
 #endif

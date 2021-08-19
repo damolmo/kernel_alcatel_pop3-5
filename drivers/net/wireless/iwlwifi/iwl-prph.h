@@ -368,4 +368,13 @@ enum secure_load_status_reg {
 #define MON_BUFF_WRPTR			(0xa03c44)
 #define MON_BUFF_CYCLE_CNT		(0xa03c48)
 
+<<<<<<< HEAD
+=======
+/* FW chicken bits */
+#define LMPM_CHICK			0xA01FF8
+enum {
+	LMPM_CHICK_EXTENDED_ADDR_SPACE = BIT(0),
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif				/* __iwl_prph_h__ */

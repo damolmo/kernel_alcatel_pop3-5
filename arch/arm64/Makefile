@@ -10,7 +10,11 @@
 #
 # Copyright (C) 1995-2001 by Russell King
 
+<<<<<<< HEAD
 LDFLAGS_vmlinux	:=-p --no-undefined -X
+=======
+LDFLAGS_vmlinux	:=--no-undefined -X
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 CPPFLAGS_vmlinux.lds = -DTEXT_OFFSET=$(TEXT_OFFSET)
 OBJCOPYFLAGS	:=-O binary -R .note -R .note.gnu.build-id -R .comment -S
 GZFLAGS		:=-9
@@ -21,6 +25,11 @@ KBUILD_DEFCONFIG := defconfig
 
 KBUILD_CFLAGS	+= -mgeneral-regs-only
 KBUILD_CFLAGS	+= -fno-pic
+<<<<<<< HEAD
+=======
+KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ifeq ($(CONFIG_CPU_BIG_ENDIAN), y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
@@ -33,6 +42,13 @@ endif
 
 CHECKFLAGS	+= -D__aarch64__
 
+<<<<<<< HEAD
+=======
+ifeq ($(CONFIG_ARM64_ERRATUM_843419), y)
+KBUILD_CFLAGS_MODULE	+= -mcmodel=large
+endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 # Default value
 head-y		:= arch/arm64/kernel/head.o
 
@@ -42,6 +58,10 @@ TEXT_OFFSET := $(shell awk 'BEGIN {srand(); printf "0x%03x000\n", int(512 * rand
 else
 TEXT_OFFSET := 0x00080000
 endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 export	TEXT_OFFSET GZFLAGS
 
 core-y		+= arch/arm64/kernel/ arch/arm64/mm/
@@ -64,6 +84,7 @@ KBUILD_DTBS	:= dtbs
 
 all:	$(KBUILD_IMAGE) $(KBUILD_DTBS)
 
+<<<<<<< HEAD
 MTK_PLATFORM := $(CONFIG_MTK_PLATFORM:"%"=%)
 MTK_PROJECT := $(CONFIG_ARCH_MTK_PROJECT:"%"=%)
 export MTK_PLATFORM MTK_PROJECT MTK_TARGET_PROJECT
@@ -71,6 +92,8 @@ export MTK_PLATFORM MTK_PROJECT MTK_TARGET_PROJECT
 archprepare: $(DRVGEN_FILE_LIST)
 dtbs: $(DRVGEN_FILE_LIST)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 boot := arch/arm64/boot
 
 Image Image.gz: vmlinux
@@ -85,7 +108,11 @@ zinstall install: vmlinux
 dtbs: scripts
 	$(Q)$(MAKE) $(build)=$(boot)/dts dtbs
 
+<<<<<<< HEAD
 Image.gz-dtb: vmlinux scripts dtbs
+=======
+Image-dtb Image.gz-dtb: vmlinux scripts dtbs
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
 PHONY += vdso_install
@@ -96,6 +123,19 @@ vdso_install:
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
 
+<<<<<<< HEAD
+=======
+# We need to generate vdso-offsets.h before compiling certain files in kernel/.
+# In order to do that, we should use the archprepare target, but we can't since
+# asm-offsets.h is included in some files used to generate vdso-offsets.h, and
+# asm-offsets.h is built in prepare0, for which archprepare is a dependency.
+# Therefore we need to generate the header after prepare0 has been made, hence
+# this hack.
+prepare: vdso_prepare
+vdso_prepare: prepare0
+	$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso include/generated/vdso-offsets.h
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 define archhelp
   echo  '* Image.gz      - Compressed kernel image (arch/$(ARCH)/boot/Image.gz)'
   echo  '  Image         - Uncompressed kernel image (arch/$(ARCH)/boot/Image)'

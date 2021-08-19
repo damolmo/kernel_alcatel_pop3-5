@@ -231,6 +231,10 @@ FEXPORT(__kvm_mips_load_k0k1)
 
 	/* Jump to guest */
 	eret
+<<<<<<< HEAD
+=======
+EXPORT(__kvm_mips_vcpu_run_end)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 VECTOR(MIPSX(exception), unknown)
 /* Find out what mode we came from and jump to the proper handler. */

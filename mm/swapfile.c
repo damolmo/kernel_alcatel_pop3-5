@@ -9,7 +9,10 @@
 #include <linux/hugetlb.h>
 #include <linux/mman.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/export.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/kernel_stat.h>
 #include <linux/swap.h>
 #include <linux/vmalloc.h>
@@ -44,6 +47,10 @@
 static bool swap_count_continued(struct swap_info_struct *, pgoff_t,
 				 unsigned char);
 static void free_swap_count_continuations(struct swap_info_struct *);
+<<<<<<< HEAD
+=======
+static sector_t map_swap_entry(swp_entry_t, struct block_device**);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 DEFINE_SPINLOCK(swap_lock);
 static unsigned int nr_swapfiles;
@@ -86,6 +93,7 @@ static DECLARE_WAIT_QUEUE_HEAD(proc_poll_wait);
 /* Activity counter to indicate that a swapon or swapoff has occurred */
 static atomic_t proc_poll_event = ATOMIC_INIT(0);
 
+<<<<<<< HEAD
 #ifdef CONFIG_ZNDSWAP
 /*
  * The principle of this function is to mitigate memory pressure(might be caused by in-RAM swap).
@@ -126,6 +134,8 @@ static bool dynamic_swap_selection(void)
 #define dynamic_swap_selection()	(false)
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline unsigned char swap_count(unsigned char ent)
 {
 	return ent & ~SWAP_HAS_CACHE;	/* may include SWAP_HAS_CONT flag */
@@ -314,7 +324,10 @@ static void swap_cluster_schedule_discard(struct swap_info_struct *si,
 						idx, 0);
 	} else {
 		unsigned int tail = cluster_next(&si->discard_cluster_tail);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cluster_set_next(&si->cluster_info[tail], idx);
 		cluster_set_next_flag(&si->discard_cluster_tail,
 						idx, 0);
@@ -441,7 +454,10 @@ static void dec_cluster_info_page(struct swap_info_struct *p,
 			cluster_set_next_flag(&p->free_cluster_tail, idx, 0);
 		} else {
 			unsigned int tail = cluster_next(&p->free_cluster_tail);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cluster_set_next(&cluster_info[tail], idx);
 			cluster_set_next_flag(&p->free_cluster_tail, idx, 0);
 		}
@@ -608,7 +624,10 @@ checks:
 	/* reuse swap entry of cache-only swap if not busy. */
 	if (vm_swap_full() && si->swap_map[offset] == SWAP_HAS_CACHE) {
 		int swap_was_freed;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		spin_unlock(&si->lock);
 		swap_was_freed = __try_to_reclaim_swap(si, offset);
 		spin_lock(&si->lock);
@@ -683,7 +702,10 @@ swp_entry_t get_swap_page(void)
 {
 	struct swap_info_struct *si, *next;
 	pgoff_t offset;
+<<<<<<< HEAD
 	bool low_prio_first = false, low_prio_tried = false;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (atomic_long_read(&nr_swap_pages) <= 0)
 		goto noswap;
@@ -691,6 +713,7 @@ swp_entry_t get_swap_page(void)
 
 	spin_lock(&swap_avail_lock);
 
+<<<<<<< HEAD
 	/* Check whether it should be low priority first */
 	low_prio_first = dynamic_swap_selection();
 
@@ -703,6 +726,10 @@ start_over:
 			goto nextsi;
 		}
 
+=======
+start_over:
+	plist_for_each_entry_safe(si, next, &swap_avail_head, avail_list) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* requeue si to after same-priority siblings */
 		plist_requeue(&si->avail_list, &swap_avail_head);
 		spin_unlock(&swap_avail_lock);
@@ -747,6 +774,7 @@ nextsi:
 			goto start_over;
 	}
 
+<<<<<<< HEAD
 	/* If no entry found, try again */
 	if (low_prio_tried) {
 		/* Reset low_prio_* to avoid infinite loop */
@@ -754,6 +782,8 @@ nextsi:
 		goto start_over;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&swap_avail_lock);
 
 	atomic_long_inc(&nr_swap_pages);
@@ -782,6 +812,7 @@ swp_entry_t get_swap_page_of_type(int type)
 	spin_unlock(&si->lock);
 	return (swp_entry_t) {0};
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(get_swap_page_of_type);
 
 static unsigned int find_next_to_unuse(struct swap_info_struct *si,
@@ -843,6 +874,10 @@ EXPORT_SYMBOL_GPL(get_swap_range_of_type);
 /* M for pswap interface */
 /* static struct swap_info_struct *swap_info_get(swp_entry_t entry)*/
 struct swap_info_struct *swap_info_get(swp_entry_t entry)
+=======
+
+static struct swap_info_struct *swap_info_get(swp_entry_t entry)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct swap_info_struct *p;
 	unsigned long offset, type;
@@ -878,12 +913,15 @@ out:
 	return NULL;
 }
 
+<<<<<<< HEAD
 /* M for pswap interface */
 void swap_info_unlock(struct swap_info_struct *si)
 {
 	spin_unlock(&si->lock);
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static unsigned char swap_entry_free(struct swap_info_struct *p,
 				     swp_entry_t entry, unsigned char usage)
 {
@@ -927,7 +965,10 @@ static unsigned char swap_entry_free(struct swap_info_struct *p,
 			p->lowest_bit = offset;
 		if (offset > p->highest_bit) {
 			bool was_full = !p->highest_bit;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			p->highest_bit = offset;
 			if (was_full && (p->flags & SWP_WRITEOK)) {
 				spin_lock(&swap_avail_lock);
@@ -943,7 +984,10 @@ static unsigned char swap_entry_free(struct swap_info_struct *p,
 		frontswap_invalidate_page(p->type, offset);
 		if (p->flags & SWP_BLKDEV) {
 			struct gendisk *disk = p->bdev->bd_disk;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (disk->fops->swap_slot_free_notify)
 				disk->fops->swap_slot_free_notify(p->bdev,
 								  offset);
@@ -981,7 +1025,10 @@ void swapcache_free(swp_entry_t entry)
 		spin_unlock(&p->lock);
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(swap_free);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * How many references to page are currently swapped out?
@@ -1004,6 +1051,51 @@ int page_swapcount(struct page *page)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * How many references to @entry are currently swapped out?
+ * This considers COUNT_CONTINUED so it returns exact answer.
+ */
+int swp_swapcount(swp_entry_t entry)
+{
+	int count, tmp_count, n;
+	struct swap_info_struct *p;
+	struct page *page;
+	pgoff_t offset;
+	unsigned char *map;
+
+	p = swap_info_get(entry);
+	if (!p)
+		return 0;
+
+	count = swap_count(p->swap_map[swp_offset(entry)]);
+	if (!(count & COUNT_CONTINUED))
+		goto out;
+
+	count &= ~COUNT_CONTINUED;
+	n = SWAP_MAP_MAX + 1;
+
+	offset = swp_offset(entry);
+	page = vmalloc_to_page(p->swap_map + offset);
+	offset &= ~PAGE_MASK;
+	VM_BUG_ON(page_private(page) != SWP_CONTINUED);
+
+	do {
+		page = list_entry(page->lru.next, struct page, lru);
+		map = kmap_atomic(page);
+		tmp_count = map[offset];
+		kunmap_atomic(map);
+
+		count += (tmp_count & ~COUNT_CONTINUED) * n;
+		n *= (SWAP_CONT_MAX + 1);
+	} while (tmp_count & COUNT_CONTINUED);
+out:
+	spin_unlock(&p->lock);
+	return count;
+}
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * We can write to an anon page without COW if there are no other references
  * to it.  And as a side-effect, free up its swap: because the old content
  * on disk will never be read, and seeking back there to write new content
@@ -1207,7 +1299,10 @@ static inline int maybe_same_pte(pte_t pte, pte_t swp_pte)
 	 * pte from logical point of view.
 	 */
 	pte_t swp_pte_dirty = pte_swp_mksoft_dirty(swp_pte);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return pte_same(pte, swp_pte) || pte_same(pte, swp_pte_dirty);
 #else
 	return pte_same(pte, swp_pte);
@@ -1361,7 +1456,12 @@ static int unuse_vma(struct vm_area_struct *vma,
 		addr = page_address_in_vma(page, vma);
 		if (addr == -EFAULT)
 			return 0;
+<<<<<<< HEAD
 		end = addr + PAGE_SIZE;
+=======
+		else
+			end = addr + PAGE_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		addr = vma->vm_start;
 		end = vma->vm_end;
@@ -1396,6 +1496,7 @@ static int unuse_mm(struct mm_struct *mm,
 		lock_page(page);
 	}
 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+<<<<<<< HEAD
 		if (vma->anon_vma) {
 			ret = unuse_vma(vma, entry, page);
 			if (ret)
@@ -1404,6 +1505,13 @@ static int unuse_mm(struct mm_struct *mm,
 	}
 	up_read(&mm->mmap_sem);
 	return (ret < 0) ? ret : 0;
+=======
+		if (vma->anon_vma && (ret = unuse_vma(vma, entry, page)))
+			break;
+	}
+	up_read(&mm->mmap_sem);
+	return (ret < 0)? ret: 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1441,7 +1549,12 @@ static unsigned int find_next_to_unuse(struct swap_info_struct *si,
 		if (frontswap) {
 			if (frontswap_test(si, i))
 				break;
+<<<<<<< HEAD
 			continue;
+=======
+			else
+				continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 		count = ACCESS_ONCE(si->swap_map[i]);
 		if (count && swap_count(count) != SWAP_MAP_BAD)
@@ -1463,11 +1576,19 @@ int try_to_unuse(unsigned int type, bool frontswap,
 {
 	struct swap_info_struct *si = swap_info[type];
 	struct mm_struct *start_mm;
+<<<<<<< HEAD
 	/*
 	 * swap_map is accessed without locking. Mark it as volatile
 	 * to prevent compiler doing something odd.
 	 */
 	volatile unsigned char *swap_map;
+=======
+	volatile unsigned char *swap_map; /* swap_map is accessed without
+					   * locking. Mark it as volatile
+					   * to prevent compiler doing
+					   * something odd.
+					   */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned char swcount;
 	struct page *page;
 	swp_entry_t entry;
@@ -1707,7 +1828,11 @@ static void drain_mmlist(void)
  * Note that the type of this function is sector_t, but it returns page offset
  * into the bdev, not sector offset.
  */
+<<<<<<< HEAD
 sector_t map_swap_entry(swp_entry_t entry, struct block_device **bdev)
+=======
+static sector_t map_swap_entry(swp_entry_t entry, struct block_device **bdev)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct swap_info_struct *sis;
 	struct swap_extent *start_se;
@@ -1734,7 +1859,10 @@ sector_t map_swap_entry(swp_entry_t entry, struct block_device **bdev)
 		BUG_ON(se == start_se);		/* It *must* be present */
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(map_swap_entry);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Returns the page offset into bdev for the specified page's swap entry.
@@ -1742,9 +1870,14 @@ EXPORT_SYMBOL_GPL(map_swap_entry);
 sector_t map_swap_page(struct page *page, struct block_device **bdev)
 {
 	swp_entry_t entry;
+<<<<<<< HEAD
 
 	entry.val = page_private(page);
 	return map_swap_entry(entry, bdev);
+=======
+	entry.val = page_private(page);
+	return map_swap_entry(entry, bdev) << (PAGE_SHIFT - 9);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1948,6 +2081,7 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+<<<<<<< HEAD
 #ifdef CONFIG_TOI
 	/* FIXME: Turn it off due to current->mm may be NULL in kernel space */
 	/* by calling sys_swapoff(swapfilename) in disable_swapfile() @ tuxonice_swap.c */
@@ -1957,6 +2091,9 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
 #else
 	BUG_ON(!current->mm);
 #endif
+=======
+	BUG_ON(!current->mm);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	pathname = getname(specialfile);
 	if (IS_ERR(pathname))
@@ -2066,7 +2203,10 @@ SYSCALL_DEFINE1(swapoff, const char __user *, specialfile)
 	inode = mapping->host;
 	if (S_ISBLK(inode->i_mode)) {
 		struct block_device *bdev = I_BDEV(inode);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		set_blocksize(bdev, old_block_size);
 		blkdev_put(bdev, FMODE_READ | FMODE_WRITE | FMODE_EXCL);
 	} else {
@@ -2095,7 +2235,10 @@ out:
 	putname(pathname);
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sys_swapoff);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifdef CONFIG_PROC_FS
 static unsigned swaps_poll(struct file *file, poll_table *wait)
@@ -2170,7 +2313,11 @@ static int swap_show(struct seq_file *swap, void *v)
 	int len;
 
 	if (si == SEQ_START_TOKEN) {
+<<<<<<< HEAD
 		seq_puts(swap, "Filename\t\t\t\tType\t\tSize\tUsed\tPriority\n");
+=======
+		seq_puts(swap,"Filename\t\t\t\tType\t\tSize\tUsed\tPriority\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 	}
 
@@ -2220,7 +2367,11 @@ static int __init procswaps_init(void)
 	proc_create("swaps", 0, NULL, &proc_swaps_operations);
 	return 0;
 }
+<<<<<<< HEAD
 device_initcall(procswaps_init);
+=======
+__initcall(procswaps_init);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* CONFIG_PROC_FS */
 
 #ifdef MAX_SWAPFILES_CHECK
@@ -2327,6 +2478,11 @@ static unsigned long read_swap_header(struct swap_info_struct *p,
 		swab32s(&swap_header->info.version);
 		swab32s(&swap_header->info.last_page);
 		swab32s(&swap_header->info.nr_badpages);
+<<<<<<< HEAD
+=======
+		if (swap_header->info.nr_badpages > MAX_SWAP_BADPAGES)
+			return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		for (i = 0; i < swap_header->info.nr_badpages; i++)
 			swab32s(&swap_header->info.badpages[i]);
 	}
@@ -2358,6 +2514,13 @@ static unsigned long read_swap_header(struct swap_info_struct *p,
 	maxpages = swp_offset(pte_to_swp_entry(
 			swp_entry_to_pte(swp_entry(0, ~0UL)))) + 1;
 	last_page = swap_header->info.last_page;
+<<<<<<< HEAD
+=======
+	if (!last_page) {
+		pr_warn("Empty swap-file\n");
+		return 0;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (last_page > maxpages) {
 		pr_warn("Truncating oversized swap area, only using %luk out of %luk\n",
 			maxpages << (PAGE_SHIFT - 10),
@@ -2408,7 +2571,10 @@ static int setup_swap_map_and_extents(struct swap_info_struct *p,
 
 	for (i = 0; i < swap_header->info.nr_badpages; i++) {
 		unsigned int page_nr = swap_header->info.badpages[i];
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (page_nr == 0 || page_nr > swap_header->info.last_page)
 			return -EINVAL;
 		if (page_nr < maxpages) {
@@ -2597,7 +2763,10 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 		}
 		for_each_possible_cpu(i) {
 			struct percpu_cluster *cluster;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cluster = per_cpu_ptr(p->percpu_cluster, i);
 			cluster_set_null(&cluster->index);
 		}
@@ -2617,7 +2786,11 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 	if (frontswap_enabled)
 		frontswap_map = vzalloc(BITS_TO_LONGS(maxpages) * sizeof(long));
 
+<<<<<<< HEAD
 	if (p->bdev && (swap_flags & SWAP_FLAG_DISCARD) && swap_discardable(p)) {
+=======
+	if (p->bdev &&(swap_flags & SWAP_FLAG_DISCARD) && swap_discardable(p)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * When discard is enabled for swap with no particular
 		 * policy flagged, we set all swap discard flags here in
@@ -2641,7 +2814,10 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 		/* issue a swapon-time discard if it's still required */
 		if (p->flags & SWP_AREA_DISCARD) {
 			int err = discard_swap(p);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (unlikely(err))
 				pr_err("swapon: discard_swap(%p): %d\n",
 					p, err);
@@ -2706,7 +2882,10 @@ out:
 		mutex_unlock(&inode->i_mutex);
 	return error;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(sys_swapon);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void si_swapinfo(struct sysinfo *val)
 {
@@ -2724,7 +2903,10 @@ void si_swapinfo(struct sysinfo *val)
 	val->totalswap = total_swap_pages + nr_to_be_unused;
 	spin_unlock(&swap_lock);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(si_swapinfo);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Verify that a swap entry is valid and increment its swap map count.
@@ -2849,7 +3031,10 @@ int swapcache_prepare(swp_entry_t entry)
 struct swap_info_struct *page_swap_info(struct page *page)
 {
 	swp_entry_t swap = { .val = page_private(page) };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BUG_ON(!PageSwapCache(page));
 	return swap_info[swp_type(swap)];
 }
@@ -2867,18 +3052,24 @@ EXPORT_SYMBOL_GPL(__page_file_mapping);
 pgoff_t __page_file_index(struct page *page)
 {
 	swp_entry_t swap = { .val = page_private(page) };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	VM_BUG_ON_PAGE(!PageSwapCache(page), page);
 	return swp_offset(swap);
 }
 EXPORT_SYMBOL_GPL(__page_file_index);
 
+<<<<<<< HEAD
 struct swap_info_struct *get_swap_info_struct(unsigned type)
 {
 	return swap_info[type];
 }
 EXPORT_SYMBOL_GPL(get_swap_info_struct);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * add_swap_count_continuation - called when a swap count is duplicated
  * beyond SWAP_MAP_MAX, it allocates a new page and links that to the entry's
@@ -3082,6 +3273,7 @@ static void free_swap_count_continuations(struct swap_info_struct *si)
 
 	for (offset = 0; offset < si->max; offset += PAGE_SIZE) {
 		struct page *head;
+<<<<<<< HEAD
 
 		head = vmalloc_to_page(si->swap_map + offset);
 		if (page_private(head)) {
@@ -3090,6 +3282,13 @@ static void free_swap_count_continuations(struct swap_info_struct *si)
 			list_for_each_safe(this, next, &head->lru) {
 				struct page *page;
 
+=======
+		head = vmalloc_to_page(si->swap_map + offset);
+		if (page_private(head)) {
+			struct list_head *this, *next;
+			list_for_each_safe(this, next, &head->lru) {
+				struct page *page;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				page = list_entry(this, struct page, lru);
 				list_del(this);
 				__free_page(page);

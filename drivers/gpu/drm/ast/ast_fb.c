@@ -335,18 +335,41 @@ int ast_fbdev_init(struct drm_device *dev)
 
 	ret = drm_fb_helper_init(dev, &afbdev->helper,
 				 1, 1);
+<<<<<<< HEAD
 	if (ret) {
 		kfree(afbdev);
 		return ret;
 	}
 
 	drm_fb_helper_single_add_all_connectors(&afbdev->helper);
+=======
+	if (ret)
+		goto free;
+
+	ret = drm_fb_helper_single_add_all_connectors(&afbdev->helper);
+	if (ret)
+		goto fini;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* disable all the possible outputs/crtcs before entering KMS mode */
 	drm_helper_disable_unused_functions(dev);
 
+<<<<<<< HEAD
 	drm_fb_helper_initial_config(&afbdev->helper, 32);
 	return 0;
+=======
+	ret = drm_fb_helper_initial_config(&afbdev->helper, 32);
+	if (ret)
+		goto fini;
+
+	return 0;
+
+fini:
+	drm_fb_helper_fini(&afbdev->helper);
+free:
+	kfree(afbdev);
+	return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void ast_fbdev_fini(struct drm_device *dev)

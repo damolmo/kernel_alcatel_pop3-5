@@ -24,6 +24,10 @@
 #include <linux/topology.h>
 #include <linux/notifier.h>
 #include <linux/property.h>
+<<<<<<< HEAD
+=======
+#include <linux/list.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/byteorder.h>
 #include <asm/errno.h>
@@ -238,6 +242,11 @@ extern struct device_node *of_get_next_child(const struct device_node *node,
 extern struct device_node *of_get_next_available_child(
 	const struct device_node *node, struct device_node *prev);
 
+<<<<<<< HEAD
+=======
+extern struct device_node *of_get_compatible_child(const struct device_node *parent,
+					const char *compatible);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern struct device_node *of_get_child_by_name(const struct device_node *node,
 					const char *name);
 
@@ -418,6 +427,15 @@ static inline bool of_have_populated_dt(void)
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static inline struct device_node *of_get_compatible_child(const struct device_node *parent,
+					const char *compatible)
+{
+	return NULL;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline struct device_node *of_get_child_by_name(
 					const struct device_node *node,
 					const char *name)
@@ -593,7 +611,14 @@ static inline const char *of_prop_next_string(struct property *prop,
 #if defined(CONFIG_OF) && defined(CONFIG_NUMA)
 extern int of_node_to_nid(struct device_node *np);
 #else
+<<<<<<< HEAD
 static inline int of_node_to_nid(struct device_node *device) { return 0; }
+=======
+static inline int of_node_to_nid(struct device_node *device)
+{
+	return NUMA_NO_NODE;
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 static inline struct device_node *of_find_matching_node(
@@ -837,6 +862,10 @@ static inline int of_get_available_child_count(const struct device_node *np)
 #define _OF_DECLARE(table, name, compat, fn, fn_type)			\
 	static const struct of_device_id __of_table_##name		\
 		__used __section(__##table##_of_table)			\
+<<<<<<< HEAD
+=======
+		__aligned(__alignof__(struct of_device_id))		\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		 = { .compatible = compat,				\
 		     .data = (fn == (fn_type)NULL) ? fn : fn  }
 #else
@@ -934,4 +963,37 @@ static inline int of_changeset_update_property(struct of_changeset *ocs,
 /* CONFIG_OF_RESOLVE api */
 extern int of_resolve_phandles(struct device_node *tree);
 
+<<<<<<< HEAD
+=======
+/**
+ * Overlay support
+ */
+
+#ifdef CONFIG_OF_OVERLAY
+
+/* ID based overlays; the API for external users */
+int of_overlay_create(struct device_node *tree);
+int of_overlay_destroy(int id);
+int of_overlay_destroy_all(void);
+
+#else
+
+static inline int of_overlay_create(struct device_node *tree)
+{
+	return -ENOTSUPP;
+}
+
+static inline int of_overlay_destroy(int id)
+{
+	return -ENOTSUPP;
+}
+
+static inline int of_overlay_destroy_all(void)
+{
+	return -ENOTSUPP;
+}
+
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif /* _LINUX_OF_H */

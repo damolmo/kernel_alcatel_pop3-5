@@ -1144,7 +1144,11 @@ static void __init load_hv_initrd(void)
 
 void __init free_initrd_mem(unsigned long begin, unsigned long end)
 {
+<<<<<<< HEAD
 	free_bootmem(__pa(begin), end - begin);
+=======
+	free_bootmem_late(__pa(begin), end - begin);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int __init setup_initrd(char *str)

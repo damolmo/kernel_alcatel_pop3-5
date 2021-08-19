@@ -8,6 +8,7 @@
 
 #include "af_netlink.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_NETLINK_MMAP
 static int sk_diag_put_ring(struct netlink_ring *ring, int nl_type,
 			    struct sk_buff *nlskb)
@@ -43,6 +44,8 @@ static int sk_diag_put_rings_cfg(struct sock *sk, struct sk_buff *nlskb)
 }
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int sk_diag_dump_groups(struct sock *sk, struct sk_buff *nlskb)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -87,10 +90,13 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
 	    sock_diag_put_meminfo(sk, skb, NETLINK_DIAG_MEMINFO))
 		goto out_nlmsg_trim;
 
+<<<<<<< HEAD
 	if ((req->ndiag_show & NDIAG_SHOW_RING_CFG) &&
 	    sk_diag_put_rings_cfg(sk, skb))
 		goto out_nlmsg_trim;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return nlmsg_end(skb, nlh);
 
 out_nlmsg_trim:

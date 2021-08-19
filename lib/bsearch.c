@@ -11,6 +11,10 @@
 
 #include <linux/export.h>
 #include <linux/bsearch.h>
+<<<<<<< HEAD
+=======
+#include <linux/kprobes.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * bsearch - binary search an array of elements
@@ -51,3 +55,7 @@ void *bsearch(const void *key, const void *base, size_t num, size_t size,
 	return NULL;
 }
 EXPORT_SYMBOL(bsearch);
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(bsearch);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

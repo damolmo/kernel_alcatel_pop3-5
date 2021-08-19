@@ -26,6 +26,22 @@
 #define EPOLL_CTL_DEL 2
 #define EPOLL_CTL_MOD 3
 
+<<<<<<< HEAD
+=======
+/* Epoll event masks */
+#define EPOLLIN		0x00000001
+#define EPOLLPRI	0x00000002
+#define EPOLLOUT	0x00000004
+#define EPOLLERR	0x00000008
+#define EPOLLHUP	0x00000010
+#define EPOLLRDNORM	0x00000040
+#define EPOLLRDBAND	0x00000080
+#define EPOLLWRNORM	0x00000100
+#define EPOLLWRBAND	0x00000200
+#define EPOLLMSG	0x00000400
+#define EPOLLRDHUP	0x00002000
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Request the handling of system wakeup events so as to prevent system suspends
  * from happening while those events are being processed.

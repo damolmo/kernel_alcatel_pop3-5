@@ -62,9 +62,12 @@ do_async_gen_syndrome(struct dma_chan *chan,
 	dma_addr_t dma_dest[2];
 	int src_off = 0;
 
+<<<<<<< HEAD
 	if (submit->flags & ASYNC_TX_FENCE)
 		dma_flags |= DMA_PREP_FENCE;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	while (src_cnt > 0) {
 		submit->flags = flags_orig;
 		pq_src_cnt = min(src_cnt, dma_maxpq(dma, dma_flags));
@@ -83,6 +86,11 @@ do_async_gen_syndrome(struct dma_chan *chan,
 			if (cb_fn_orig)
 				dma_flags |= DMA_PREP_INTERRUPT;
 		}
+<<<<<<< HEAD
+=======
+		if (submit->flags & ASYNC_TX_FENCE)
+			dma_flags |= DMA_PREP_FENCE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* Drivers force forward progress in case they can not provide
 		 * a descriptor
@@ -355,8 +363,11 @@ async_syndrome_val(struct page **blocks, unsigned int offset, int disks,
 
 		dma_set_unmap(tx, unmap);
 		async_tx_submit(chan, tx, submit);
+<<<<<<< HEAD
 
 		return tx;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		struct page *p_src = P(blocks, disks);
 		struct page *q_src = Q(blocks, disks);
@@ -411,9 +422,17 @@ async_syndrome_val(struct page **blocks, unsigned int offset, int disks,
 		submit->cb_param = cb_param_orig;
 		submit->flags = flags_orig;
 		async_tx_sync_epilog(submit);
+<<<<<<< HEAD
 
 		return NULL;
 	}
+=======
+		tx = NULL;
+	}
+	dmaengine_unmap_put(unmap);
+
+	return tx;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(async_syndrome_val);
 

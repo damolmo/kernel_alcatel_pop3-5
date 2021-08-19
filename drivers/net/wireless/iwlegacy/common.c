@@ -717,7 +717,11 @@ il_eeprom_init(struct il_priv *il)
 	u32 gp = _il_rd(il, CSR_EEPROM_GP);
 	int sz;
 	int ret;
+<<<<<<< HEAD
 	u16 addr;
+=======
+	int addr;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* allocate eeprom */
 	sz = il->cfg->eeprom_size;
@@ -4294,8 +4298,13 @@ il_apm_init(struct il_priv *il)
 	 *    power savings, even without L1.
 	 */
 	if (il->cfg->set_l0s) {
+<<<<<<< HEAD
 		pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
 		if (lctl & PCI_EXP_LNKCTL_ASPM_L1) {
+=======
+		ret = pcie_capability_read_word(il->pci_dev, PCI_EXP_LNKCTL, &lctl);
+		if (!ret && (lctl & PCI_EXP_LNKCTL_ASPM_L1)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			/* L1-ASPM enabled; disable(!) L0S  */
 			il_set_bit(il, CSR_GIO_REG,
 				   CSR_GIO_REG_VAL_L0S_ENABLED);

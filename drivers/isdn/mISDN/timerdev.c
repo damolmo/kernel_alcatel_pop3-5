@@ -168,8 +168,13 @@ dev_expire_timer(unsigned long data)
 	spin_lock_irqsave(&timer->dev->lock, flags);
 	if (timer->id >= 0)
 		list_move_tail(&timer->list, &timer->dev->expired);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&timer->dev->lock, flags);
 	wake_up_interruptible(&timer->dev->wait);
+=======
+	wake_up_interruptible(&timer->dev->wait);
+	spin_unlock_irqrestore(&timer->dev->lock, flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int

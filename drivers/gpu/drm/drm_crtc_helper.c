@@ -34,11 +34,15 @@
 #include <linux/moduleparam.h>
 
 #include <drm/drmP.h>
+<<<<<<< HEAD
 #include <drm/drm_atomic.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <drm/drm_crtc.h>
 #include <drm/drm_fourcc.h>
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_fb_helper.h>
+<<<<<<< HEAD
 #include <drm/drm_plane_helper.h>
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_edid.h>
@@ -63,6 +67,10 @@
  * but need to implement the atomic interface instead, potentially using the
  * atomic helpers for that.
  */
+=======
+#include <drm/drm_edid.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 MODULE_AUTHOR("David Airlie, Jesse Barnes");
 MODULE_DESCRIPTION("DRM KMS helper");
 MODULE_LICENSE("GPL and additional rights");
@@ -911,6 +919,7 @@ void drm_helper_resume_force_mode(struct drm_device *dev)
 	drm_modeset_unlock_all(dev);
 }
 EXPORT_SYMBOL(drm_helper_resume_force_mode);
+<<<<<<< HEAD
 
 /**
  * drm_helper_crtc_mode_set - mode_set implementation for atomic plane helpers
@@ -1024,3 +1033,5 @@ int drm_helper_crtc_mode_set_base(struct drm_crtc *crtc, int x, int y,
 	return drm_plane_helper_commit(plane, plane_state, old_fb);
 }
 EXPORT_SYMBOL(drm_helper_crtc_mode_set_base);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

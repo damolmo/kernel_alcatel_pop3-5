@@ -771,8 +771,12 @@ struct ib_cq *mlx5_ib_create_cq(struct ib_device *ibdev, int entries,
 		if (err)
 			goto err_create;
 	} else {
+<<<<<<< HEAD
 		/* for now choose 64 bytes till we have a proper interface */
 		cqe_size = 64;
+=======
+		cqe_size = cache_line_size() == 128 ? 128 : 64;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = create_cq_kernel(dev, cq, entries, cqe_size, &cqb,
 				       &index, &inlen);
 		if (err)
@@ -957,7 +961,16 @@ static int resize_user(struct mlx5_ib_dev *dev, struct mlx5_ib_cq *cq,
 	if (ucmd.reserved0 || ucmd.reserved1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	umem = ib_umem_get(context, ucmd.buf_addr, entries * ucmd.cqe_size,
+=======
+	/* check multiplication overflow */
+	if (ucmd.cqe_size && SIZE_MAX / ucmd.cqe_size <= entries - 1)
+		return -EINVAL;
+
+	umem = ib_umem_get(context, ucmd.buf_addr,
+			   (size_t)ucmd.cqe_size * entries,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			   IB_ACCESS_LOCAL_WRITE, 1);
 	if (IS_ERR(umem)) {
 		err = PTR_ERR(umem);

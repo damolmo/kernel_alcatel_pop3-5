@@ -99,7 +99,11 @@ SYSCALL_DEFINE5(add_key, const char __user *, _type,
 	payload = NULL;
 
 	vm = false;
+<<<<<<< HEAD
 	if (_payload) {
+=======
+	if (plen) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENOMEM;
 		payload = kmalloc(plen, GFP_KERNEL | __GFP_NOWARN);
 		if (!payload) {
@@ -277,7 +281,12 @@ error:
  * Create and join an anonymous session keyring or join a named session
  * keyring, creating it if necessary.  A named session keyring must have Search
  * permission for it to be joined.  Session keyrings without this permit will
+<<<<<<< HEAD
  * be skipped over.
+=======
+ * be skipped over.  It is not permitted for userspace to create or join
+ * keyrings whose name begin with a dot.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * If successful, the ID of the joined session keyring will be returned.
  */
@@ -294,12 +303,24 @@ long keyctl_join_session_keyring(const char __user *_name)
 			ret = PTR_ERR(name);
 			goto error;
 		}
+<<<<<<< HEAD
+=======
+
+		ret = -EPERM;
+		if (name[0] == '.')
+			goto error_name;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* join the session */
 	ret = join_session_keyring(name);
+<<<<<<< HEAD
 	kfree(name);
 
+=======
+error_name:
+	kfree(name);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 error:
 	return ret;
 }
@@ -328,7 +349,11 @@ long keyctl_update_key(key_serial_t id,
 
 	/* pull the payload in if one was supplied */
 	payload = NULL;
+<<<<<<< HEAD
 	if (_payload) {
+=======
+	if (plen) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = -ENOMEM;
 		payload = kmalloc(plen, GFP_KERNEL);
 		if (!payload)
@@ -739,6 +764,13 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
 
 	key = key_ref_to_ptr(key_ref);
 
+<<<<<<< HEAD
+=======
+	ret = key_read_state(key);
+	if (ret < 0)
+		goto error2; /* Negatively instantiated */
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* see if we can read it directly */
 	ret = key_permission(key_ref, KEY_NEED_READ);
 	if (ret == 0)
@@ -757,6 +789,7 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
 
 	/* the key is probably readable - now try to read it */
 can_read_key:
+<<<<<<< HEAD
 	ret = key_validate(key);
 	if (ret == 0) {
 		ret = -EOPNOTSUPP;
@@ -767,6 +800,18 @@ can_read_key:
 			ret = key->type->read(key, buffer, buflen);
 			up_read(&key->sem);
 		}
+=======
+	ret = -EOPNOTSUPP;
+	if (key->type->read) {
+		/* Read the data with the semaphore held (since we might sleep)
+		 * to protect against the key being updated or revoked.
+		 */
+		down_read(&key->sem);
+		ret = key_validate(key);
+		if (ret == 0)
+			ret = key->type->read(key, buffer, buflen);
+		up_read(&key->sem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 error2:
@@ -850,8 +895,13 @@ long keyctl_chown_key(key_serial_t id, uid_t user, gid_t group)
 				key_quota_root_maxbytes : key_quota_maxbytes;
 
 			spin_lock(&newowner->lock);
+<<<<<<< HEAD
 			if (newowner->qnkeys + 1 >= maxkeys ||
 			    newowner->qnbytes + key->quotalen >= maxbytes ||
+=======
+			if (newowner->qnkeys + 1 > maxkeys ||
+			    newowner->qnbytes + key->quotalen > maxbytes ||
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			    newowner->qnbytes + key->quotalen <
 			    newowner->qnbytes)
 				goto quota_overrun;
@@ -869,7 +919,11 @@ long keyctl_chown_key(key_serial_t id, uid_t user, gid_t group)
 		atomic_dec(&key->user->nkeys);
 		atomic_inc(&newowner->nkeys);
 
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags)) {
+=======
+		if (key->state != KEY_IS_UNINSTANTIATED) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			atomic_dec(&key->user->nikeys);
 			atomic_inc(&newowner->nikeys);
 		}
@@ -1253,8 +1307,13 @@ error:
  * Read or set the default keyring in which request_key() will cache keys and
  * return the old setting.
  *
+<<<<<<< HEAD
  * If a process keyring is specified then this will be created if it doesn't
  * yet exist.  The old setting will be returned if successful.
+=======
+ * If a thread or process keyring is specified then it will be created if it
+ * doesn't yet exist.  The old setting will be returned if successful.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 long keyctl_set_reqkey_keyring(int reqkey_defl)
 {
@@ -1279,11 +1338,16 @@ long keyctl_set_reqkey_keyring(int reqkey_defl)
 
 	case KEY_REQKEY_DEFL_PROCESS_KEYRING:
 		ret = install_process_keyring_to_cred(new);
+<<<<<<< HEAD
 		if (ret < 0) {
 			if (ret != -EEXIST)
 				goto error;
 			ret = 0;
 		}
+=======
+		if (ret < 0)
+			goto error;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto set;
 
 	case KEY_REQKEY_DEFL_DEFAULT:

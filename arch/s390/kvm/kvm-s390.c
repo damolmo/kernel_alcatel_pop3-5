@@ -207,6 +207,12 @@ int kvm_vm_ioctl_get_dirty_log(struct kvm *kvm,
 	struct kvm_memory_slot *memslot;
 	int is_dirty = 0;
 
+<<<<<<< HEAD
+=======
+	if (kvm_is_ucontrol(kvm))
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&kvm->slots_lock);
 
 	r = -EINVAL;

@@ -621,8 +621,16 @@ static int __init populate_rootfs(void)
 {
 	char *err;
 
+<<<<<<< HEAD
 	if (do_skip_initramfs)
 		return default_rootfs();
+=======
+	if (do_skip_initramfs) {
+		if (initrd_start)
+			free_initrd();
+		return default_rootfs();
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
 	if (err)

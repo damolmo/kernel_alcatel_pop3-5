@@ -227,8 +227,13 @@ static struct undef_hook arm_break_hook = {
 };
 
 static struct undef_hook thumb_break_hook = {
+<<<<<<< HEAD
 	.instr_mask	= 0xffff,
 	.instr_val	= 0xde01,
+=======
+	.instr_mask	= 0xffffffff,
+	.instr_val	= 0x0000de01,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.cpsr_mask	= PSR_T_BIT,
 	.cpsr_val	= PSR_T_BIT,
 	.fn		= break_trap,
@@ -600,7 +605,11 @@ static int gpr_set(struct task_struct *target,
 		   const void *kbuf, const void __user *ubuf)
 {
 	int ret;
+<<<<<<< HEAD
 	struct pt_regs newregs;
+=======
+	struct pt_regs newregs = *task_pt_regs(target);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 &newregs,
@@ -733,8 +742,13 @@ static int vfp_set(struct task_struct *target,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	vfp_flush_hwstate(thread);
 	thread->vfpstate.hard = new_vfp;
+=======
+	thread->vfpstate.hard = new_vfp;
+	vfp_flush_hwstate(thread);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -932,6 +946,7 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
 {
 	current_thread_info()->syscall = scno;
 
+<<<<<<< HEAD
 	/* Do the secure computing check first; failures should be fast. */
 #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
 	if (secure_computing() == -1)
@@ -944,6 +959,21 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
 
+=======
+	if (test_thread_flag(TIF_SYSCALL_TRACE))
+		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
+
+	/* Do seccomp after ptrace; syscall may have changed. */
+#ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+	if (secure_computing(NULL) == -1)
+		return -1;
+#else
+	/* XXX: remove this once OABI gets fixed */
+	secure_computing_strict(current_thread_info()->syscall);
+#endif
+
+	/* Tracer or seccomp may have changed syscall. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	scno = current_thread_info()->syscall;
 
 	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))

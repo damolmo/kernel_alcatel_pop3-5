@@ -161,7 +161,11 @@ err_tfm0:
 	crypto_free_blkcipher(key->tfm0);
 err_tfm:
 	for (i = 0; i < ARRAY_SIZE(key->tfm); i++)
+<<<<<<< HEAD
 		if (key->tfm[i])
+=======
+		if (!IS_ERR_OR_NULL(key->tfm[i]))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			crypto_free_aead(key->tfm[i]);
 
 	kfree(key);

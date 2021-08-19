@@ -38,6 +38,10 @@ obj-y			+= alternative.o i8253.o pci-nommu.o hw_breakpoint.o
 obj-y			+= tsc.o tsc_msr.o io_delay.o rtc.o
 obj-y			+= pci-iommu_table.o
 obj-y			+= resource.o
+<<<<<<< HEAD
+=======
+obj-y			+= irqflags.o
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 obj-y				+= process.o
 obj-y				+= i387.o xsave.o

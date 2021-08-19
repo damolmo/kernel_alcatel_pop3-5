@@ -262,7 +262,11 @@ void __btrfs_abort_transaction(struct btrfs_trans_handle *trans,
 	trans->aborted = errno;
 	/* Nothing used. The other threads that have joined this
 	 * transaction may be able to continue. */
+<<<<<<< HEAD
 	if (!trans->blocks_used) {
+=======
+	if (!trans->dirty && list_empty(&trans->new_bgs)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		const char *errstr;
 
 		errstr = btrfs_decode_error(errno);
@@ -901,6 +905,18 @@ find_root:
 	if (IS_ERR(new_root))
 		return ERR_CAST(new_root);
 
+<<<<<<< HEAD
+=======
+	if (!(sb->s_flags & MS_RDONLY)) {
+		int ret;
+		down_read(&fs_info->cleanup_work_sem);
+		ret = btrfs_orphan_cleanup(new_root);
+		up_read(&fs_info->cleanup_work_sem);
+		if (ret)
+			return ERR_PTR(ret);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dir_id = btrfs_root_dirid(&new_root->root_item);
 setup_root:
 	location.objectid = dir_id;
@@ -1541,6 +1557,11 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 		}
 
 		if (btrfs_super_log_root(fs_info->super_copy) != 0) {
+<<<<<<< HEAD
+=======
+			btrfs_warn(fs_info,
+		"mount required to replay tree-log, cannot remount read-write");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			ret = -EINVAL;
 			goto restore;
 		}
@@ -1566,6 +1587,11 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 			goto restore;
 		}
 
+<<<<<<< HEAD
+=======
+		btrfs_qgroup_rescan_resume(fs_info);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!fs_info->uuid_root) {
 			btrfs_info(fs_info, "creating UUID tree");
 			ret = btrfs_create_uuid_tree(fs_info);
@@ -1766,6 +1792,11 @@ static int btrfs_calc_avail_data_space(struct btrfs_root *root, u64 *free_bytes)
  * there are other factors that may change the result (like a new metadata
  * chunk).
  *
+<<<<<<< HEAD
+=======
+ * If metadata is exhausted, f_bavail will be 0.
+ *
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * FIXME: not accurate for mixed block groups, total and free/used are ok,
  * available appears slightly larger.
  */
@@ -1777,11 +1808,20 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	struct btrfs_space_info *found;
 	u64 total_used = 0;
 	u64 total_free_data = 0;
+<<<<<<< HEAD
+=======
+	u64 total_free_meta = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int bits = dentry->d_sb->s_blocksize_bits;
 	__be32 *fsid = (__be32 *)fs_info->fsid;
 	unsigned factor = 1;
 	struct btrfs_block_rsv *block_rsv = &fs_info->global_block_rsv;
 	int ret;
+<<<<<<< HEAD
+=======
+	u64 thresh = 0;
+	int mixed = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * holding chunk_muext to avoid allocating new chunks, holding
@@ -1810,6 +1850,20 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 			}
 		}
 
+<<<<<<< HEAD
+=======
+		/*
+		 * Metadata in mixed block goup profiles are accounted in data
+		 */
+		if (!mixed && found->flags & BTRFS_BLOCK_GROUP_METADATA) {
+			if (found->flags & BTRFS_BLOCK_GROUP_DATA)
+				mixed = 1;
+			else
+				total_free_meta += found->disk_total -
+					found->disk_used;
+		}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		total_used += found->disk_used;
 	}
 
@@ -1836,6 +1890,35 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	mutex_unlock(&fs_info->chunk_mutex);
 	mutex_unlock(&fs_info->fs_devices->device_list_mutex);
 
+<<<<<<< HEAD
+=======
+	/*
+	 * We calculate the remaining metadata space minus global reserve. If
+	 * this is (supposedly) smaller than zero, there's no space. But this
+	 * does not hold in practice, the exhausted state happens where's still
+	 * some positive delta. So we apply some guesswork and compare the
+	 * delta to a 4M threshold.  (Practically observed delta was ~2M.)
+	 *
+	 * We probably cannot calculate the exact threshold value because this
+	 * depends on the internal reservations requested by various
+	 * operations, so some operations that consume a few metadata will
+	 * succeed even if the Avail is zero. But this is better than the other
+	 * way around.
+	 */
+	thresh = 4 * 1024 * 1024;
+
+	/*
+	 * We only want to claim there's no available space if we can no longer
+	 * allocate chunks for our metadata profile and our global reserve will
+	 * not fit in the free metadata space.  If we aren't ->full then we
+	 * still can allocate chunks and thus are fine using the currently
+	 * calculated f_bavail.
+	 */
+	if (!mixed && block_rsv->space_info->full &&
+	    total_free_meta - thresh < block_rsv->size)
+		buf->f_bavail = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	buf->f_type = BTRFS_SUPER_MAGIC;
 	buf->f_bsize = dentry->d_sb->s_blocksize;
 	buf->f_namelen = BTRFS_NAME_LEN;
@@ -1884,6 +1967,10 @@ static long btrfs_control_ioctl(struct file *file, unsigned int cmd,
 	vol = memdup_user((void __user *)arg, sizeof(*vol));
 	if (IS_ERR(vol))
 		return PTR_ERR(vol);
+<<<<<<< HEAD
+=======
+	vol->name[BTRFS_PATH_NAME_MAX] = '\0';
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	switch (cmd) {
 	case BTRFS_IOC_SCAN_DEV:

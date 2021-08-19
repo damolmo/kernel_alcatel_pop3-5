@@ -802,7 +802,11 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
 
 	memset(&adapter->cc, 0, sizeof(adapter->cc));
 	adapter->cc.read = ixgbe_ptp_read;
+<<<<<<< HEAD
 	adapter->cc.mask = CLOCKSOURCE_MASK(64);
+=======
+	adapter->cc.mask = CYCLECOUNTER_MASK(64);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	adapter->cc.shift = shift;
 	adapter->cc.mult = 1;
 

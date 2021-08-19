@@ -261,7 +261,10 @@ int mdiobus_register(struct mii_bus *bus)
 	err = device_register(&bus->dev);
 	if (err) {
 		pr_err("mii_bus %s failed to register\n", bus->id);
+<<<<<<< HEAD
 		put_device(&bus->dev);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 	}
 
@@ -300,7 +303,12 @@ void mdiobus_unregister(struct mii_bus *bus)
 {
 	int i;
 
+<<<<<<< HEAD
 	BUG_ON(bus->state != MDIOBUS_REGISTERED);
+=======
+	if (WARN_ON_ONCE(bus->state != MDIOBUS_REGISTERED))
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bus->state = MDIOBUS_UNREGISTERED;
 
 	device_del(&bus->dev);

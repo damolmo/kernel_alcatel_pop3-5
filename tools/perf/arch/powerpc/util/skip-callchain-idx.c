@@ -58,9 +58,19 @@ static int check_return_reg(int ra_regno, Dwarf_Frame *frame)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Check if return address is on the stack.
 	 */
 	if (nops != 0 || ops != NULL)
+=======
+	 * Check if return address is on the stack. If return address
+	 * is in a register (typically R0), it is yet to be saved on
+	 * the stack.
+	 */
+	if ((nops != 0 || ops != NULL) &&
+		!(nops == 1 && ops[0].atom == DW_OP_regx &&
+			ops[0].number2 == 0 && ops[0].offset == 0))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	/*
@@ -230,10 +240,17 @@ int arch_skip_callchain_idx(struct machine *machine, struct thread *thread,
 	u64 ip;
 	u64 skip_slot = -1;
 
+<<<<<<< HEAD
 	if (chain->nr < 3)
 		return skip_slot;
 
 	ip = chain->ips[2];
+=======
+	if (!chain || chain->nr < 3)
+		return skip_slot;
+
+	ip = chain->ips[1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	thread__find_addr_location(thread, machine, PERF_RECORD_MISC_USER,
 			MAP__FUNCTION, ip, &al);

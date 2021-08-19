@@ -102,7 +102,11 @@ __early_ioremap(resource_size_t phys_addr, unsigned long size, pgprot_t prot)
 	enum fixed_addresses idx;
 	int i, slot;
 
+<<<<<<< HEAD
 	WARN_ON(system_state != SYSTEM_BOOTING);
+=======
+	WARN_ON(system_state >= SYSTEM_RUNNING);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	slot = -1;
 	for (i = 0; i < FIX_BTMAPS_SLOTS; i++) {

@@ -121,7 +121,10 @@ struct mmc_data {
 	struct mmc_request	*mrq;		/* associated request */
 
 	unsigned int		sg_len;		/* size of scatter list */
+<<<<<<< HEAD
 	int			sg_count;	/* mapped sg entries */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct scatterlist	*sg;		/* I/O scatter list */
 	s32			host_cookie;	/* host private data */
 };
@@ -136,15 +139,25 @@ struct mmc_request {
 	struct completion	completion;
 	void			(*done)(struct mmc_request *);/* completion function */
 	struct mmc_host		*host;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLOCK
+	ktime_t			io_start;
+	int			lat_hist_enabled;
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct mmc_card;
 struct mmc_async_req;
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 extern void mmc_start_delayed_bkops(struct mmc_card *card);
 extern void mmc_start_idle_time_bkops(struct work_struct *work);
 extern void mmc_blk_init_bkops_statistics(struct mmc_card *card);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 extern int mmc_stop_bkops(struct mmc_card *);
 extern int mmc_read_bkops_status(struct mmc_card *);
@@ -187,6 +200,10 @@ extern int mmc_set_blocklen(struct mmc_card *card, unsigned int blocklen);
 extern int mmc_set_blockcount(struct mmc_card *card, unsigned int blockcount,
 			      bool is_rel_write);
 extern int mmc_hw_reset(struct mmc_host *host);
+<<<<<<< HEAD
+=======
+extern int mmc_hw_reset_check(struct mmc_host *host);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int mmc_can_reset(struct mmc_card *card);
 
 extern void mmc_set_data_timeout(struct mmc_data *, const struct mmc_card *);
@@ -202,10 +219,13 @@ extern int mmc_flush_cache(struct mmc_card *);
 
 extern int mmc_detect_card_removed(struct mmc_host *host);
 
+<<<<<<< HEAD
 #if defined(CONFIG_MMC_FFU)
 extern int mmc_reinit_oldcard(struct mmc_host *host);
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  *	mmc_claim_host - exclusively claim a host
  *	@host: mmc host to claim

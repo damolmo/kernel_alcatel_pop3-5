@@ -843,11 +843,14 @@ static int scrub_handle_errored_block(struct scrub_block *sblock_to_check)
 	csum = sblock_to_check->pagev[0]->csum;
 	dev = sblock_to_check->pagev[0]->dev;
 
+<<<<<<< HEAD
 	if (sctx->is_dev_replace && !is_metadata && !have_csum) {
 		sblocks_for_recheck = NULL;
 		goto nodatasum_case;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * read all mirrors one after the other. This includes to
 	 * re-read the extent or metadata block that failed (that was
@@ -962,10 +965,24 @@ static int scrub_handle_errored_block(struct scrub_block *sblock_to_check)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (!is_metadata && !have_csum) {
 		struct scrub_fixup_nodatasum *fixup_nodatasum;
 
 nodatasum_case:
+=======
+	/*
+	 * NOTE: Even for nodatasum case, it's still possible that it's a
+	 * compressed data extent, thus scrub_fixup_nodatasum(), which write
+	 * inode page cache onto disk, could cause serious data corruption.
+	 *
+	 * So here we could only read from disk, and hope our recovery could
+	 * reach disk before the newer write.
+	 */
+	if (0 && !is_metadata && !have_csum) {
+		struct scrub_fixup_nodatasum *fixup_nodatasum;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		WARN_ON(sctx->is_dev_replace);
 
 		/*
@@ -2207,7 +2224,11 @@ static int scrub_extent(struct scrub_ctx *sctx, u64 logical, u64 len,
 			have_csum = scrub_find_csum(sctx, logical, l, csum);
 			if (have_csum == 0)
 				++sctx->stat.no_csum;
+<<<<<<< HEAD
 			if (sctx->is_dev_replace && !have_csum) {
+=======
+			if (0 && sctx->is_dev_replace && !have_csum) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				ret = copy_nocow_pages(sctx, logical, l,
 						       mirror_num,
 						      physical_for_dev_replace);
@@ -2628,7 +2649,11 @@ static noinline_for_stack int scrub_chunk(struct scrub_ctx *sctx,
 	if (!em)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	map = (struct map_lookup *)em->bdev;
+=======
+	map = em->map_lookup;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (em->start != chunk_offset)
 		goto out;
 

@@ -4051,7 +4051,11 @@ xfs_btree_change_owner(
 			xfs_btree_readahead_ptr(cur, ptr, 1);
 
 			/* save for the next iteration of the loop */
+<<<<<<< HEAD
 			lptr = *ptr;
+=======
+			xfs_btree_copy_ptrs(cur, &lptr, ptr, 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 
 		/* for each buffer in the level */

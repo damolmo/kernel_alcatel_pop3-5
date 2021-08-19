@@ -71,6 +71,17 @@
 #include <net/rtnetlink.h>
 #include <net/sock.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <net/ieee802154.h>
+#include <linux/if_ltalk.h>
+#include <uapi/linux/if_fddi.h>
+#include <uapi/linux/if_hippi.h>
+#include <uapi/linux/if_fc.h>
+#include <net/ax25.h>
+#include <net/rose.h>
+#include <net/6lowpan.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/uaccess.h>
 
@@ -499,11 +510,19 @@ static void tun_detach_all(struct net_device *dev)
 	for (i = 0; i < n; i++) {
 		tfile = rtnl_dereference(tun->tfiles[i]);
 		BUG_ON(!tfile);
+<<<<<<< HEAD
+=======
+		tfile->socket.sk->sk_shutdown = RCV_SHUTDOWN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tfile->socket.sk->sk_data_ready(tfile->socket.sk);
 		RCU_INIT_POINTER(tfile->tun, NULL);
 		--tun->numqueues;
 	}
 	list_for_each_entry(tfile, &tun->disabled, next) {
+<<<<<<< HEAD
+=======
+		tfile->socket.sk->sk_shutdown = RCV_SHUTDOWN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		tfile->socket.sk->sk_data_ready(tfile->socket.sk);
 		RCU_INIT_POINTER(tfile->tun, NULL);
 	}
@@ -527,7 +546,12 @@ static void tun_detach_all(struct net_device *dev)
 		module_put(THIS_MODULE);
 }
 
+<<<<<<< HEAD
 static int tun_attach(struct tun_struct *tun, struct file *file, bool skip_filter)
+=======
+static int tun_attach(struct tun_struct *tun, struct file *file,
+		      bool skip_filter, bool publish_tun)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct tun_file *tfile = file->private_data;
 	int err;
@@ -558,7 +582,13 @@ static int tun_attach(struct tun_struct *tun, struct file *file, bool skip_filte
 			goto out;
 	}
 	tfile->queue_index = tun->numqueues;
+<<<<<<< HEAD
 	rcu_assign_pointer(tfile->tun, tun);
+=======
+	tfile->socket.sk->sk_shutdown &= ~RCV_SHUTDOWN;
+	if (publish_tun)
+		rcu_assign_pointer(tfile->tun, tun);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
 	tun->numqueues++;
 
@@ -931,7 +961,10 @@ static void tun_net_init(struct net_device *dev)
 		/* Zero header length */
 		dev->type = ARPHRD_NONE;
 		dev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
+<<<<<<< HEAD
 		dev->tx_queue_len = TUN_READQ_SIZE;  /* We prefer our own queue length */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 
 	case TUN_TAP_DEV:
@@ -943,7 +976,10 @@ static void tun_net_init(struct net_device *dev)
 
 		eth_hw_addr_random(dev);
 
+<<<<<<< HEAD
 		dev->tx_queue_len = TUN_READQ_SIZE;  /* We prefer our own queue length */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	}
 }
@@ -1163,7 +1199,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
 			}
 			skb_shinfo(skb)->gso_type = SKB_GSO_UDP;
 			if (skb->protocol == htons(ETH_P_IPV6))
+<<<<<<< HEAD
 				ipv6_proxy_select_ident(skb);
+=======
+				ipv6_proxy_select_ident(dev_net(skb->dev), skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 		default:
@@ -1356,9 +1396,12 @@ static ssize_t tun_do_read(struct tun_struct *tun, struct tun_file *tfile,
 	if (!len)
 		return ret;
 
+<<<<<<< HEAD
 	if (tun->dev->reg_state != NETREG_REGISTERED)
 		return -EIO;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Read frames from queue */
 	skb = __skb_recv_datagram(tfile->socket.sk, noblock ? MSG_DONTWAIT : 0,
 				  &peeked, &off, &err);
@@ -1416,6 +1459,11 @@ static void tun_setup(struct net_device *dev)
 
 	dev->ethtool_ops = &tun_ethtool_ops;
 	dev->destructor = tun_free_netdev;
+<<<<<<< HEAD
+=======
+	/* We prefer our own queue length */
+	dev->tx_queue_len = TUN_READQ_SIZE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Trivial set of netlink ops to allow deleting tun or tap
@@ -1423,7 +1471,13 @@ static void tun_setup(struct net_device *dev)
  */
 static int tun_validate(struct nlattr *tb[], struct nlattr *data[])
 {
+<<<<<<< HEAD
 	return -EINVAL;
+=======
+	/* NL_SET_ERR_MSG(extack,
+		       "tun/tap creation via rtnetlink is not supported."); */
+	return -EOPNOTSUPP;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct rtnl_link_ops tun_link_ops __read_mostly = {
@@ -1611,7 +1665,11 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 		if (err < 0)
 			return err;
 
+<<<<<<< HEAD
 		err = tun_attach(tun, file, ifr->ifr_flags & IFF_NOFILTER);
+=======
+		err = tun_attach(tun, file, ifr->ifr_flags & IFF_NOFILTER, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0)
 			return err;
 
@@ -1656,6 +1714,12 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 
 		if (!dev)
 			return -ENOMEM;
+<<<<<<< HEAD
+=======
+		err = dev_get_valid_name(net, dev, name);
+		if (err < 0)
+			goto err_free_dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		dev_net_set(dev, net);
 		dev->rtnl_link_ops = &tun_link_ops;
@@ -1688,13 +1752,24 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 				       NETIF_F_HW_VLAN_STAG_TX);
 
 		INIT_LIST_HEAD(&tun->disabled);
+<<<<<<< HEAD
 		err = tun_attach(tun, file, false);
+=======
+		err = tun_attach(tun, file, false, false);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (err < 0)
 			goto err_free_flow;
 
 		err = register_netdevice(tun->dev);
 		if (err < 0)
 			goto err_detach;
+<<<<<<< HEAD
+=======
+		/* free_netdev() won't check refcnt, to aovid race
+		 * with dev_put() we need publish tun after registration.
+		 */
+		rcu_assign_pointer(tfile->tun, tun);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		if (device_create_file(&tun->dev->dev, &dev_attr_tun_flags) ||
 		    device_create_file(&tun->dev->dev, &dev_attr_owner) ||
@@ -1852,7 +1927,11 @@ static int tun_set_queue(struct file *file, struct ifreq *ifr)
 		ret = security_tun_dev_attach_queue(tun->security);
 		if (ret < 0)
 			goto unlock;
+<<<<<<< HEAD
 		ret = tun_attach(tun, file, false);
+=======
+		ret = tun_attach(tun, file, false, true);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (ifr->ifr_flags & IFF_DETACH_QUEUE) {
 		tun = rtnl_dereference(tfile->tun);
 		if (!tun || !(tun->flags & TUN_TAP_MQ) || tfile->detached)
@@ -1867,6 +1946,48 @@ unlock:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/* Return correct value for tun->dev->addr_len based on tun->dev->type. */
+static unsigned char tun_get_addr_len(unsigned short type)
+{
+	switch (type) {
+	case ARPHRD_IP6GRE:
+	case ARPHRD_TUNNEL6:
+		return sizeof(struct in6_addr);
+	case ARPHRD_IPGRE:
+	case ARPHRD_TUNNEL:
+	case ARPHRD_SIT:
+		return 4;
+	case ARPHRD_ETHER:
+		return ETH_ALEN;
+	case ARPHRD_IEEE802154:
+	case ARPHRD_IEEE802154_MONITOR:
+		return IEEE802154_EXTENDED_ADDR_LEN;
+	case ARPHRD_PHONET_PIPE:
+	case ARPHRD_PPP:
+	case ARPHRD_NONE:
+		return 0;
+	case ARPHRD_6LOWPAN:
+		return EUI64_ADDR_LEN;
+	case ARPHRD_FDDI:
+		return FDDI_K_ALEN;
+	case ARPHRD_HIPPI:
+		return HIPPI_ALEN;
+	case ARPHRD_IEEE802:
+		return FC_ALEN;
+	case ARPHRD_ROSE:
+		return ROSE_ADDR_LEN;
+	case ARPHRD_NETROM:
+		return AX25_ADDR_LEN;
+	case ARPHRD_LOCALTLK:
+		return LTALK_ALEN;
+	default:
+		return 0;
+	}
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 			    unsigned long arg, int ifreq_len)
 {
@@ -2010,6 +2131,10 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 			ret = -EBUSY;
 		} else {
 			tun->dev->type = (int) arg;
+<<<<<<< HEAD
+=======
+			tun->dev->addr_len = tun_get_addr_len(tun->dev->type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			tun_debug(KERN_INFO, tun, "linktype set to %d\n",
 				  tun->dev->type);
 			ret = 0;
@@ -2060,6 +2185,13 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
 			ret = -EFAULT;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		if (sndbuf <= 0) {
+			ret = -EINVAL;
+			break;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		tun->sndbuf = sndbuf;
 		tun_set_sndbuf(tun);

@@ -6,6 +6,15 @@ OUTPUT_ARCH(ELF_ARCH)
 ENTRY(_start)
 jiffies = jiffies_64;
 
+<<<<<<< HEAD
+=======
+VERSION {
+  {
+    local: *;
+  };
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 SECTIONS
 {
   /* This must contain the right address - not quite the default ELF one.*/

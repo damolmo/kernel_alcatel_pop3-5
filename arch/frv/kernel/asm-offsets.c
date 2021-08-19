@@ -40,7 +40,10 @@ void foo(void)
 	OFFSET(TI_CPU,			thread_info, cpu);
 	OFFSET(TI_PREEMPT_COUNT,	thread_info, preempt_count);
 	OFFSET(TI_ADDR_LIMIT,		thread_info, addr_limit);
+<<<<<<< HEAD
 	OFFSET(TI_RESTART_BLOCK,	thread_info, restart_block);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BLANK();
 
 	/* offsets into register file storage */

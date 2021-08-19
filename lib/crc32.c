@@ -327,7 +327,11 @@ static inline u32 __pure crc32_be_generic(u32 crc, unsigned char const *p,
 	return crc;
 }
 
+<<<<<<< HEAD
 #if CRC_LE_BITS == 1
+=======
+#if CRC_BE_BITS == 1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 u32 __pure crc32_be(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_be_generic(crc, p, len, NULL, CRCPOLY_BE);

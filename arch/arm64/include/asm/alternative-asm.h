@@ -24,6 +24,7 @@
 	.endif
 .endm
 
+<<<<<<< HEAD
 .macro user_alternative_insn l insn1 insn2 cap
 661 :	\insn1
 662 :	.pushsection .altinstructions, "a"
@@ -41,6 +42,8 @@
 	.popsection
 .endm
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif  /*  __ASSEMBLY__  */
 
 #endif /* __ASM_ALTERNATIVE_ASM_H */

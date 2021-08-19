@@ -1146,10 +1146,15 @@ static int snd_cs4231_playback_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_cs4231_playback;
 
 	err = snd_cs4231_open(chip, CS4231_MODE_PLAY);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	chip->playback_substream = substream;
 	chip->p_periods_sent = 0;
 	snd_pcm_set_sync(substream);
@@ -1167,10 +1172,15 @@ static int snd_cs4231_capture_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_cs4231_capture;
 
 	err = snd_cs4231_open(chip, CS4231_MODE_RECORD);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	chip->capture_substream = substream;
 	chip->c_periods_sent = 0;
 	snd_pcm_set_sync(substream);

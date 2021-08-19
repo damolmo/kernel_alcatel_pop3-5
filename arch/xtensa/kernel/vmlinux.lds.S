@@ -110,6 +110,10 @@ SECTIONS
   .fixup   : { *(.fixup) }
 
   EXCEPTION_TABLE(16)
+<<<<<<< HEAD
+=======
+  NOTES
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
   /* Data section */
 
   _sdata = .;

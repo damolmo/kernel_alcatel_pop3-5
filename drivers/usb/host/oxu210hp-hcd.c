@@ -3748,8 +3748,15 @@ static struct usb_hcd *oxu_create(struct platform_device *pdev,
 	oxu->is_otg = otg;
 
 	ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
+<<<<<<< HEAD
 	if (ret < 0)
 		return ERR_PTR(ret);
+=======
+	if (ret < 0) {
+		usb_put_hcd(hcd);
+		return ERR_PTR(ret);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	device_wakeup_enable(hcd->self.controller);
 	return hcd;

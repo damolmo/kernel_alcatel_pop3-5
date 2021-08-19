@@ -25,8 +25,11 @@
  * Thanks to Arjan van de Ven for coming up with the initial idea of
  * mapping lock dependencies runtime.
  */
+<<<<<<< HEAD
 #define pr_fmt(fmt)	"lockdep: " fmt
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define DISABLE_BRANCH_PROFILING
 #include <linux/mutex.h>
 #include <linux/sched.h>
@@ -47,8 +50,11 @@
 #include <linux/bitops.h>
 #include <linux/gfp.h>
 #include <linux/kmemcheck.h>
+<<<<<<< HEAD
 #include <linux/printk.h>
 #include <mt-plat/aee.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/sections.h>
 
@@ -71,6 +77,7 @@ module_param(lock_stat, int, 0644);
 #define lock_stat 0
 #endif
 
+<<<<<<< HEAD
 
 static void lockdep_aee(void)
 {
@@ -83,6 +90,8 @@ static void lockdep_aee(void)
 	return;
 #endif
 }
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * lockdep_lock: protects the lockdep graph, the hashes and the
  *               class/list/hash allocators.
@@ -435,7 +444,10 @@ static int save_trace(struct stack_trace *trace)
 			return 0;
 
 		print_lockdep_off("BUG: MAX_STACK_TRACE_ENTRIES too low!");
+<<<<<<< HEAD
 		lockdep_aee();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dump_stack();
 
 		return 0;
@@ -568,6 +580,7 @@ static void print_lockdep_cache(struct lockdep_map *lock)
 
 static void print_lock(struct held_lock *hlock)
 {
+<<<<<<< HEAD
 	struct lock_class *lock = hlock_class(hlock);
 
 	if (lock != NULL) {
@@ -579,6 +592,11 @@ static void print_lock(struct held_lock *hlock)
 		pr_emerg("hold time: %lld.\n", hlock->holdtime_stamp);
 #endif
 	}
+=======
+	print_lock_name(hlock_class(hlock));
+	printk(", at: ");
+	print_ip_sym(hlock->acquire_ip);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void lockdep_print_held_locks(struct task_struct *curr)
@@ -589,10 +607,15 @@ static void lockdep_print_held_locks(struct task_struct *curr)
 		printk("no locks held by %s/%d.\n", curr->comm, task_pid_nr(curr));
 		return;
 	}
+<<<<<<< HEAD
 	if (curr->state == TASK_RUNNING)
 		pr_emerg("[Caution!] %s/%d is runable state\n", curr->comm, curr->pid);
 	pr_emerg("%d lock%s held by %s/%d tid:%d:\n",
 		depth, depth > 1 ? "s" : "", curr->comm, task_pid_nr(curr), task_tgid_nr(curr));
+=======
+	printk("%d lock%s held by %s/%d:\n",
+		depth, depth > 1 ? "s" : "", curr->comm, task_pid_nr(curr));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (i = 0; i < depth; i++) {
 		printk(" #%d: ", i);
@@ -870,7 +893,10 @@ static struct lock_list *alloc_list_entry(void)
 		if (!debug_locks_off_graph_unlock())
 			return NULL;
 
+<<<<<<< HEAD
 		lockdep_aee();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		print_lockdep_off("BUG: MAX_LOCKDEP_ENTRIES too low!");
 		dump_stack();
 		return NULL;
@@ -1182,10 +1208,13 @@ print_circular_bug_header(struct lock_list *entry, unsigned int depth,
 	if (debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	if (depth < 5)
 		lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("======================================================\n");
 	printk("[ INFO: possible circular locking dependency detected ]\n");
@@ -1285,11 +1314,21 @@ unsigned long lockdep_count_forward_deps(struct lock_class *class)
 	this.parent = NULL;
 	this.class = class;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	arch_spin_lock(&lockdep_lock);
 	ret = __lockdep_count_forward_deps(&this);
 	arch_spin_unlock(&lockdep_lock);
 	local_irq_restore(flags);
+=======
+	raw_local_irq_save(flags);
+	current->lockdep_recursion = 1;
+	arch_spin_lock(&lockdep_lock);
+	ret = __lockdep_count_forward_deps(&this);
+	arch_spin_unlock(&lockdep_lock);
+	current->lockdep_recursion = 0;
+	raw_local_irq_restore(flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -1312,11 +1351,21 @@ unsigned long lockdep_count_backward_deps(struct lock_class *class)
 	this.parent = NULL;
 	this.class = class;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	arch_spin_lock(&lockdep_lock);
 	ret = __lockdep_count_backward_deps(&this);
 	arch_spin_unlock(&lockdep_lock);
 	local_irq_restore(flags);
+=======
+	raw_local_irq_save(flags);
+	current->lockdep_recursion = 1;
+	arch_spin_lock(&lockdep_lock);
+	ret = __lockdep_count_backward_deps(&this);
+	arch_spin_unlock(&lockdep_lock);
+	current->lockdep_recursion = 0;
+	raw_local_irq_restore(flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return ret;
 }
@@ -1524,9 +1573,12 @@ print_bad_irq_dependency(struct task_struct *curr,
 	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("======================================================\n");
 	printk("[ INFO: %s-safe -> %s-unsafe lock order detected ]\n",
@@ -1757,9 +1809,12 @@ print_deadlock_bug(struct task_struct *curr, struct held_lock *prev,
 	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=============================================\n");
 	printk("[ INFO: possible recursive locking detected ]\n");
@@ -2264,9 +2319,12 @@ print_usage_bug(struct task_struct *curr, struct held_lock *this,
 	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=================================\n");
 	printk("[ INFO: inconsistent lock state ]\n");
@@ -2332,9 +2390,12 @@ print_irq_inversion_bug(struct task_struct *curr,
 	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=========================================================\n");
 	printk("[ INFO: possible irq lock inversion dependency detected ]\n");
@@ -3151,10 +3212,24 @@ static int __lock_acquire(struct lockdep_map *lock, unsigned int subclass,
 	if (depth) {
 		hlock = curr->held_locks + depth - 1;
 		if (hlock->class_idx == class_idx && nest_lock) {
+<<<<<<< HEAD
 			if (hlock->references)
 				hlock->references++;
 			else
 				hlock->references = 2;
+=======
+			if (!references)
+				references++;
+
+			if (!hlock->references)
+				hlock->references++;
+
+			hlock->references += references;
+
+			/* Overflow */
+			if (DEBUG_LOCKS_WARN_ON(hlock->references < references))
+				return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			return 1;
 		}
@@ -3263,9 +3338,12 @@ print_unlock_imbalance_bug(struct task_struct *curr, struct lockdep_map *lock,
 	if (debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=====================================\n");
 	printk("[ BUG: bad unlock balance detected! ]\n");
@@ -3352,6 +3430,12 @@ __lock_set_class(struct lockdep_map *lock, const char *name,
 	unsigned int depth;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (unlikely(!debug_locks))
+		return 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	depth = curr->lockdep_depth;
 	/*
 	 * This function is about (re)setting the class of a held lock,
@@ -3711,9 +3795,12 @@ print_lock_contention_bug(struct task_struct *curr, struct lockdep_map *lock,
 	if (debug_locks_silent)
 		return 0;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=================================\n");
 	printk("[ BUG: bad contention detected! ]\n");
@@ -3851,7 +3938,11 @@ void lock_contended(struct lockdep_map *lock, unsigned long ip)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (unlikely(!lock_stat))
+=======
+	if (unlikely(!lock_stat || !debug_locks))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	if (unlikely(current->lockdep_recursion))
@@ -3871,7 +3962,11 @@ void lock_acquired(struct lockdep_map *lock, unsigned long ip)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (unlikely(!lock_stat))
+=======
+	if (unlikely(!lock_stat || !debug_locks))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return;
 
 	if (unlikely(current->lockdep_recursion))
@@ -4090,9 +4185,12 @@ print_freed_lock_bug(struct task_struct *curr, const void *mem_from,
 	if (debug_locks_silent)
 		return;
 
+<<<<<<< HEAD
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("=========================\n");
 	printk("[ BUG: held lock freed! ]\n");
@@ -4129,7 +4227,11 @@ void debug_check_no_locks_freed(const void *mem_from, unsigned long mem_len)
 	if (unlikely(!debug_locks))
 		return;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
+=======
+	raw_local_irq_save(flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < curr->lockdep_depth; i++) {
 		hlock = curr->held_locks + i;
 
@@ -4140,7 +4242,11 @@ void debug_check_no_locks_freed(const void *mem_from, unsigned long mem_len)
 		print_freed_lock_bug(curr, mem_from, mem_from + mem_len, hlock);
 		break;
 	}
+<<<<<<< HEAD
 	local_irq_restore(flags);
+=======
+	raw_local_irq_restore(flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(debug_check_no_locks_freed);
 
@@ -4211,10 +4317,15 @@ retry:
 		 * if it's not sleeping (or if it's not the current
 		 * task):
 		 */
+<<<<<<< HEAD
 		if (p->state == TASK_RUNNING && p != current) {
 			pr_emerg("[Caution!] %s/%d is running now\n", p->comm, p->pid);
 			continue;
 		}
+=======
+		if (p->state == TASK_RUNNING && p != current)
+			continue;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (p->lockdep_depth)
 			lockdep_print_held_locks(p);
 		if (!unlock)
@@ -4272,10 +4383,13 @@ void lockdep_rcu_suspicious(const char *file, const int line, const char *s)
 		return;
 #endif /* #ifdef CONFIG_PROVE_RCU_REPEATEDLY */
 	/* Note: the following can be executed concurrently, so be careful. */
+<<<<<<< HEAD
 
 	/* Add by Mtk */
 	lockdep_aee();
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	printk("\n");
 	printk("===============================\n");
 	printk("[ INFO: suspicious RCU usage. ]\n");

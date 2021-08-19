@@ -106,6 +106,10 @@ static inline void genl_info_net_set(struct genl_info *info, struct net *net)
  * @flags: flags
  * @policy: attribute validation policy
  * @doit: standard command callback
+<<<<<<< HEAD
+=======
+ * @start: start callback for dumps
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @dumpit: callback for dumpers
  * @done: completion callback for dumps
  * @ops_list: operations list
@@ -114,6 +118,10 @@ struct genl_ops {
 	const struct nla_policy	*policy;
 	int		       (*doit)(struct sk_buff *skb,
 				       struct genl_info *info);
+<<<<<<< HEAD
+=======
+	int		       (*start)(struct netlink_callback *cb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int		       (*dumpit)(struct sk_buff *skb,
 					 struct netlink_callback *cb);
 	int		       (*done)(struct netlink_callback *cb);

@@ -20,7 +20,10 @@
 #include <linux/mm.h>
 #include <linux/sizes.h>
 #include <linux/of_reserved_mem.h>
+<<<<<<< HEAD
 #include <mt-plat/mtk_memcfg.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define MAX_RESERVED_REGIONS	16
 static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
@@ -32,11 +35,20 @@ int __init __weak early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
 	phys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,
 	phys_addr_t *res_base)
 {
+<<<<<<< HEAD
+=======
+	phys_addr_t base;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * We use __memblock_alloc_base() because memblock_alloc_base()
 	 * panic()s on allocation failure.
 	 */
+<<<<<<< HEAD
 	phys_addr_t base = __memblock_alloc_base(size, align, end);
+=======
+	end = !end ? MEMBLOCK_ALLOC_ANYWHERE : end;
+	base = __memblock_alloc_base(size, align, end);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!base)
 		return -ENOMEM;
 
@@ -168,6 +180,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 	*res_base = base;
 	*res_size = size;
 
+<<<<<<< HEAD
 	if (nomap)
 		MTK_MEMCFG_LOG_AND_PRINTK(
 			"[PHY layout]%s   :   0x%08llx - 0x%08llx (0x%llx)\n",
@@ -176,6 +189,8 @@ static int __init __reserved_mem_alloc_size(unsigned long node,
 			(unsigned long long)base + size - 1,
 			(unsigned long long)size);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

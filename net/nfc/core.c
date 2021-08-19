@@ -950,6 +950,11 @@ static void nfc_release(struct device *d)
 			kfree(se);
 	}
 
+<<<<<<< HEAD
+=======
+	ida_simple_remove(&nfc_index_ida, dev->idx);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(dev);
 }
 
@@ -1024,6 +1029,10 @@ struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
 				    int tx_headroom, int tx_tailroom)
 {
 	struct nfc_dev *dev;
+<<<<<<< HEAD
+=======
+	int rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!ops->start_poll || !ops->stop_poll || !ops->activate_target ||
 	    !ops->deactivate_target || !ops->im_transceive)
@@ -1036,6 +1045,18 @@ struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
 	if (!dev)
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	rc = ida_simple_get(&nfc_index_ida, 0, 0, GFP_KERNEL);
+	if (rc < 0)
+		goto err_free_dev;
+	dev->idx = rc;
+
+	dev->dev.class = &nfc_class;
+	dev_set_name(&dev->dev, "nfc%d", dev->idx);
+	device_initialize(&dev->dev);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	dev->ops = ops;
 	dev->supported_protocols = supported_protocols;
 	dev->tx_headroom = tx_headroom;
@@ -1058,6 +1079,14 @@ struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
 	}
 
 	return dev;
+<<<<<<< HEAD
+=======
+
+err_free_dev:
+	kfree(dev);
+
+	return NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(nfc_allocate_device);
 
@@ -1072,6 +1101,7 @@ int nfc_register_device(struct nfc_dev *dev)
 
 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
 
+<<<<<<< HEAD
 	dev->idx = ida_simple_get(&nfc_index_ida, 0, 0, GFP_KERNEL);
 	if (dev->idx < 0)
 		return dev->idx;
@@ -1080,6 +1110,8 @@ int nfc_register_device(struct nfc_dev *dev)
 	dev_set_name(&dev->dev, "nfc%d", dev->idx);
 	device_initialize(&dev->dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&nfc_devlist_mutex);
 	nfc_devlist_generation++;
 	rc = device_add(&dev->dev);
@@ -1117,12 +1149,19 @@ EXPORT_SYMBOL(nfc_register_device);
  */
 void nfc_unregister_device(struct nfc_dev *dev)
 {
+<<<<<<< HEAD
 	int rc, id;
 
 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
 
 	id = dev->idx;
 
+=======
+	int rc;
+
+	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dev->rfkill) {
 		rfkill_unregister(dev->rfkill);
 		rfkill_destroy(dev->rfkill);
@@ -1147,8 +1186,11 @@ void nfc_unregister_device(struct nfc_dev *dev)
 	nfc_devlist_generation++;
 	device_del(&dev->dev);
 	mutex_unlock(&nfc_devlist_mutex);
+<<<<<<< HEAD
 
 	ida_simple_remove(&nfc_index_ida, id);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(nfc_unregister_device);
 

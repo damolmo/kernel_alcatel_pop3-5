@@ -703,7 +703,12 @@ static void r4k_flush_icache_range(unsigned long start, unsigned long end)
 static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 {
 	/* Catch bad driver code */
+<<<<<<< HEAD
 	BUG_ON(size == 0);
+=======
+	if (WARN_ON(size == 0))
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	preempt_disable();
 	if (cpu_has_inclusive_pcaches) {
@@ -736,7 +741,12 @@ static void r4k_dma_cache_wback_inv(unsigned long addr, unsigned long size)
 static void r4k_dma_cache_inv(unsigned long addr, unsigned long size)
 {
 	/* Catch bad driver code */
+<<<<<<< HEAD
 	BUG_ON(size == 0);
+=======
+	if (WARN_ON(size == 0))
+		return;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	preempt_disable();
 	if (cpu_has_inclusive_pcaches) {

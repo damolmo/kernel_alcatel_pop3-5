@@ -16,7 +16,11 @@
 /*
  * Prototype:
  *
+<<<<<<< HEAD
  *	size_t __copy_to_user(void *to, const void *from, size_t n)
+=======
+ *	size_t arm_copy_to_user(void *to, const void *from, size_t n)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  *
  * Purpose:
  *
@@ -88,11 +92,19 @@
 	.text
 
 ENTRY(__copy_to_user_std)
+<<<<<<< HEAD
 WEAK(__copy_to_user)
 
 #include "copy_template.S"
 
 ENDPROC(__copy_to_user)
+=======
+WEAK(arm_copy_to_user)
+
+#include "copy_template.S"
+
+ENDPROC(arm_copy_to_user)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 ENDPROC(__copy_to_user_std)
 
 	.pushsection .fixup,"ax"

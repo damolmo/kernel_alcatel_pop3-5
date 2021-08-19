@@ -108,6 +108,10 @@ struct inet_timewait_sock {
 #define tw_family		__tw_common.skc_family
 #define tw_state		__tw_common.skc_state
 #define tw_reuse		__tw_common.skc_reuse
+<<<<<<< HEAD
+=======
+#define tw_reuseport		__tw_common.skc_reuseport
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define tw_ipv6only		__tw_common.skc_ipv6only
 #define tw_bound_dev_if		__tw_common.skc_bound_dev_if
 #define tw_node			__tw_common.skc_nulls_node

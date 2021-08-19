@@ -26,7 +26,10 @@ struct mipi_dsi_device;
  * struct mipi_dsi_msg - read/write DSI buffer
  * @channel: virtual channel id
  * @type: payload data type
+<<<<<<< HEAD
  * @flags: flags controlling this message transmission
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * @tx_len: length of @tx_buf
  * @tx_buf: data to be written
  * @rx_len: length of @rx_buf
@@ -44,6 +47,7 @@ struct mipi_dsi_msg {
 	void *rx_buf;
 };
 
+<<<<<<< HEAD
 bool mipi_dsi_packet_format_is_short(u8 type);
 bool mipi_dsi_packet_format_is_long(u8 type);
 
@@ -65,10 +69,13 @@ struct mipi_dsi_packet {
 int mipi_dsi_create_packet(struct mipi_dsi_packet *packet,
 			   const struct mipi_dsi_msg *msg);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * struct mipi_dsi_host_ops - DSI bus operations
  * @attach: attach DSI device to DSI host
  * @detach: detach DSI device from DSI host
+<<<<<<< HEAD
  * @transfer: transmit a DSI packet
  *
  * DSI packets transmitted by .transfer() are passed in as mipi_dsi_msg
@@ -82,6 +89,10 @@ int mipi_dsi_create_packet(struct mipi_dsi_packet *packet,
  * Note that typically DSI packet transmission is atomic, so the .transfer()
  * function will seldomly return anything other than the number of bytes
  * contained in the transmit buffer on success.
+=======
+ * @transfer: send and/or receive DSI packet, return number of received bytes,
+ * 	      or error
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 struct mipi_dsi_host_ops {
 	int (*attach)(struct mipi_dsi_host *host,
@@ -89,7 +100,11 @@ struct mipi_dsi_host_ops {
 	int (*detach)(struct mipi_dsi_host *host,
 		      struct mipi_dsi_device *dsi);
 	ssize_t (*transfer)(struct mipi_dsi_host *host,
+<<<<<<< HEAD
 			    const struct mipi_dsi_msg *msg);
+=======
+			    struct mipi_dsi_msg *msg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /**
@@ -163,6 +178,7 @@ static inline struct mipi_dsi_device *to_mipi_dsi_device(struct device *dev)
 	return container_of(dev, struct mipi_dsi_device, dev);
 }
 
+<<<<<<< HEAD
 struct mipi_dsi_device *of_find_mipi_dsi_device_by_node(struct device_node *np);
 int mipi_dsi_attach(struct mipi_dsi_device *dsi);
 int mipi_dsi_detach(struct mipi_dsi_device *dsi);
@@ -223,6 +239,14 @@ int mipi_dsi_dcs_set_tear_off(struct mipi_dsi_device *dsi);
 int mipi_dsi_dcs_set_tear_on(struct mipi_dsi_device *dsi,
 			     enum mipi_dsi_dcs_tear_mode mode);
 int mipi_dsi_dcs_set_pixel_format(struct mipi_dsi_device *dsi, u8 format);
+=======
+int mipi_dsi_attach(struct mipi_dsi_device *dsi);
+int mipi_dsi_detach(struct mipi_dsi_device *dsi);
+ssize_t mipi_dsi_dcs_write(struct mipi_dsi_device *dsi, const void *data,
+			    size_t len);
+ssize_t mipi_dsi_dcs_read(struct mipi_dsi_device *dsi, u8 cmd, void *data,
+			  size_t len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * struct mipi_dsi_driver - DSI driver
@@ -254,6 +278,7 @@ static inline void mipi_dsi_set_drvdata(struct mipi_dsi_device *dsi, void *data)
 	dev_set_drvdata(&dsi->dev, data);
 }
 
+<<<<<<< HEAD
 int mipi_dsi_driver_register_full(struct mipi_dsi_driver *driver,
 				  struct module *owner);
 void mipi_dsi_driver_unregister(struct mipi_dsi_driver *driver);
@@ -261,6 +286,11 @@ void mipi_dsi_driver_unregister(struct mipi_dsi_driver *driver);
 #define mipi_dsi_driver_register(driver) \
 	mipi_dsi_driver_register_full(driver, THIS_MODULE)
 
+=======
+int mipi_dsi_driver_register(struct mipi_dsi_driver *driver);
+void mipi_dsi_driver_unregister(struct mipi_dsi_driver *driver);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define module_mipi_dsi_driver(__mipi_dsi_driver) \
 	module_driver(__mipi_dsi_driver, mipi_dsi_driver_register, \
 			mipi_dsi_driver_unregister)

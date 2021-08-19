@@ -17,7 +17,13 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/assembler.h>
+=======
+
+#include <asm/cache.h>
+#include <asm/uaccess.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Copy from user space to user space (alignment handled by the hardware)
@@ -29,6 +35,7 @@
  * Returns:
  *	x0 - bytes not copied
  */
+<<<<<<< HEAD
 ENTRY(__copy_in_user)
 	add	x4, x0, x2			// upper user buffer boundary
 	subs	x2, x2, #8
@@ -53,11 +60,58 @@ USER(9f, strh	w3, [x0], #2	)
 USER(9f, ldrb	w3, [x1]	)
 USER(9f, strb	w3, [x0]	)
 5:	mov	x0, #0
+=======
+	.macro ldrb1 ptr, regB, val
+	uao_user_alternative 9998f, ldrb, ldtrb, \ptr, \regB, \val
+	.endm
+
+	.macro strb1 ptr, regB, val
+	uao_user_alternative 9998f, strb, sttrb, \ptr, \regB, \val
+	.endm
+
+	.macro ldrh1 ptr, regB, val
+	uao_user_alternative 9998f, ldrh, ldtrh, \ptr, \regB, \val
+	.endm
+
+	.macro strh1 ptr, regB, val
+	uao_user_alternative 9998f, strh, sttrh, \ptr, \regB, \val
+	.endm
+
+	.macro ldr1 ptr, regB, val
+	uao_user_alternative 9998f, ldr, ldtr, \ptr, \regB, \val
+	.endm
+
+	.macro str1 ptr, regB, val
+	uao_user_alternative 9998f, str, sttr, \ptr, \regB, \val
+	.endm
+
+	.macro ldp1 ptr, regB, regC, val
+	uao_ldp 9998f, \ptr, \regB, \regC, \val
+	.endm
+
+	.macro stp1 ptr, regB, regC, val
+	uao_stp 9998f, \ptr, \regB, \regC, \val
+	.endm
+
+end	.req	x5
+ENTRY(__copy_in_user)
+	uaccess_enable_not_uao x3, x4, x5
+	add	end, x0, x2
+#include "copy_template.S"
+	uaccess_disable_not_uao x3, x4
+	mov	x0, #0
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 ENDPROC(__copy_in_user)
 
 	.section .fixup,"ax"
 	.align	2
+<<<<<<< HEAD
 9:	sub	x0, x4, x0			// bytes not copied
+=======
+9998:	sub	x0, end, dst			// bytes not copied
+ALTERNATIVE("nop", __stringify(SET_PSTATE_PAN(1)), ARM64_HAS_PAN, \
+	    CONFIG_ARM64_PAN)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 	.previous

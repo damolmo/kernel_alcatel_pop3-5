@@ -193,15 +193,27 @@ AES_ENTRY(aes_cbc_encrypt)
 	cbz		w6, .Lcbcencloop
 
 	ld1		{v0.16b}, [x5]			/* get iv */
+<<<<<<< HEAD
 	enc_prepare	w3, x2, x5
+=======
+	enc_prepare	w3, x2, x6
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 .Lcbcencloop:
 	ld1		{v1.16b}, [x1], #16		/* get next pt block */
 	eor		v0.16b, v0.16b, v1.16b		/* ..and xor with iv */
+<<<<<<< HEAD
 	encrypt_block	v0, w3, x2, x5, w6
 	st1		{v0.16b}, [x0], #16
 	subs		w4, w4, #1
 	bne		.Lcbcencloop
+=======
+	encrypt_block	v0, w3, x2, x6, w7
+	st1		{v0.16b}, [x0], #16
+	subs		w4, w4, #1
+	bne		.Lcbcencloop
+	st1		{v0.16b}, [x5]			/* return iv */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 AES_ENDPROC(aes_cbc_encrypt)
 
@@ -211,7 +223,11 @@ AES_ENTRY(aes_cbc_decrypt)
 	cbz		w6, .LcbcdecloopNx
 
 	ld1		{v7.16b}, [x5]			/* get iv */
+<<<<<<< HEAD
 	dec_prepare	w3, x2, x5
+=======
+	dec_prepare	w3, x2, x6
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 .LcbcdecloopNx:
 #if INTERLEAVE >= 2
@@ -248,7 +264,11 @@ AES_ENTRY(aes_cbc_decrypt)
 .Lcbcdecloop:
 	ld1		{v1.16b}, [x1], #16		/* get next ct block */
 	mov		v0.16b, v1.16b			/* ...and copy to v0 */
+<<<<<<< HEAD
 	decrypt_block	v0, w3, x2, x5, w6
+=======
+	decrypt_block	v0, w3, x2, x6, w7
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	eor		v0.16b, v0.16b, v7.16b		/* xor with iv => pt */
 	mov		v7.16b, v1.16b			/* ct is next iv */
 	st1		{v0.16b}, [x0], #16
@@ -256,6 +276,10 @@ AES_ENTRY(aes_cbc_decrypt)
 	bne		.Lcbcdecloop
 .Lcbcdecout:
 	FRAME_POP
+<<<<<<< HEAD
+=======
+	st1		{v7.16b}, [x5]			/* return iv */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret
 AES_ENDPROC(aes_cbc_decrypt)
 
@@ -267,6 +291,7 @@ AES_ENDPROC(aes_cbc_decrypt)
 
 AES_ENTRY(aes_ctr_encrypt)
 	FRAME_PUSH
+<<<<<<< HEAD
 	cbnz		w6, .Lctrfirst		/* 1st time around? */
 	umov		x5, v4.d[1]		/* keep swabbed ctr in reg */
 	rev		x5, x5
@@ -285,6 +310,17 @@ AES_ENTRY(aes_ctr_encrypt)
 	rev		x5, x5
 #if INTERLEAVE >= 2
 	cmn		w5, w4			/* 32 bit overflow? */
+=======
+	cbz		w6, .Lctrnotfirst	/* 1st time around? */
+	enc_prepare	w3, x2, x6
+	ld1		{v4.16b}, [x5]
+
+.Lctrnotfirst:
+	umov		x8, v4.d[1]		/* keep swabbed ctr in reg */
+	rev		x8, x8
+#if INTERLEAVE >= 2
+	cmn		w8, w4			/* 32 bit overflow? */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bcs		.Lctrloop
 .LctrloopNx:
 	subs		w4, w4, #INTERLEAVE
@@ -292,11 +328,19 @@ AES_ENTRY(aes_ctr_encrypt)
 #if INTERLEAVE == 2
 	mov		v0.8b, v4.8b
 	mov		v1.8b, v4.8b
+<<<<<<< HEAD
 	rev		x7, x5
 	add		x5, x5, #1
 	ins		v0.d[1], x7
 	rev		x7, x5
 	add		x5, x5, #1
+=======
+	rev		x7, x8
+	add		x8, x8, #1
+	ins		v0.d[1], x7
+	rev		x7, x8
+	add		x8, x8, #1
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ins		v1.d[1], x7
 	ld1		{v2.16b-v3.16b}, [x1], #32	/* get 2 input blocks */
 	do_encrypt_block2x
@@ -305,7 +349,11 @@ AES_ENTRY(aes_ctr_encrypt)
 	st1		{v0.16b-v1.16b}, [x0], #32
 #else
 	ldr		q8, =0x30000000200000001	/* addends 1,2,3[,0] */
+<<<<<<< HEAD
 	dup		v7.4s, w5
+=======
+	dup		v7.4s, w8
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mov		v0.16b, v4.16b
 	add		v7.4s, v7.4s, v8.4s
 	mov		v1.16b, v4.16b
@@ -323,6 +371,7 @@ AES_ENTRY(aes_ctr_encrypt)
 	eor		v2.16b, v7.16b, v2.16b
 	eor		v3.16b, v5.16b, v3.16b
 	st1		{v0.16b-v3.16b}, [x0], #64
+<<<<<<< HEAD
 	add		x5, x5, #INTERLEAVE
 #endif
 	cbz		w4, .LctroutNx
@@ -335,6 +384,14 @@ AES_ENTRY(aes_ctr_encrypt)
 	rev		x7, x5
 	ins		v4.d[1], x7
 	b		.Lctrout
+=======
+	add		x8, x8, #INTERLEAVE
+#endif
+	rev		x7, x8
+	ins		v4.d[1], x7
+	cbz		w4, .Lctrout
+	b		.LctrloopNx
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 .Lctr1x:
 	adds		w4, w4, #INTERLEAVE
 	beq		.Lctrout
@@ -342,11 +399,22 @@ AES_ENTRY(aes_ctr_encrypt)
 .Lctrloop:
 	mov		v0.16b, v4.16b
 	encrypt_block	v0, w3, x2, x6, w7
+<<<<<<< HEAD
+=======
+
+	adds		x8, x8, #1		/* increment BE ctr */
+	rev		x7, x8
+	ins		v4.d[1], x7
+	bcs		.Lctrcarry		/* overflow? */
+
+.Lctrcarrydone:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	subs		w4, w4, #1
 	bmi		.Lctrhalfblock		/* blocks < 0 means 1/2 block */
 	ld1		{v3.16b}, [x1], #16
 	eor		v3.16b, v0.16b, v3.16b
 	st1		{v3.16b}, [x0], #16
+<<<<<<< HEAD
 	beq		.Lctrout
 .Lctrinc:
 	adds		x5, x5, #1		/* increment BE ctr */
@@ -359,13 +427,35 @@ AES_ENTRY(aes_ctr_encrypt)
 	rev		x7, x7
 	ins		v4.d[0], x7
 	b		.Lctrloop
+=======
+	bne		.Lctrloop
+
+.Lctrout:
+	st1		{v4.16b}, [x5]		/* return next CTR value */
+	FRAME_POP
+	ret
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 .Lctrhalfblock:
 	ld1		{v3.8b}, [x1]
 	eor		v3.8b, v0.8b, v3.8b
 	st1		{v3.8b}, [x0]
+<<<<<<< HEAD
 .Lctrout:
 	FRAME_POP
 	ret
+=======
+	FRAME_POP
+	ret
+
+.Lctrcarry:
+	umov		x7, v4.d[0]		/* load upper word of ctr  */
+	rev		x7, x7			/* ... to handle the carry */
+	add		x7, x7, #1
+	rev		x7, x7
+	ins		v4.d[0], x7
+	b		.Lctrcarrydone
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 AES_ENDPROC(aes_ctr_encrypt)
 	.ltorg
 
@@ -386,7 +476,12 @@ AES_ENDPROC(aes_ctr_encrypt)
 	.endm
 
 .Lxts_mul_x:
+<<<<<<< HEAD
 	.word		1, 0, 0x87, 0
+=======
+CPU_LE(	.quad		1, 0x87		)
+CPU_BE(	.quad		0x87, 1		)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 AES_ENTRY(aes_xts_encrypt)
 	FRAME_PUSH

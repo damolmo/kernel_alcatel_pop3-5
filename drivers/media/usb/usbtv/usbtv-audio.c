@@ -278,6 +278,12 @@ static void snd_usbtv_trigger(struct work_struct *work)
 {
 	struct usbtv *chip = container_of(work, struct usbtv, snd_trigger);
 
+<<<<<<< HEAD
+=======
+	if (!chip->snd)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (atomic_read(&chip->snd_stream))
 		usbtv_audio_start(chip);
 	else
@@ -378,8 +384,15 @@ err:
 
 void usbtv_audio_free(struct usbtv *usbtv)
 {
+<<<<<<< HEAD
 	if (usbtv->snd && usbtv->udev) {
 		snd_card_free(usbtv->snd);
+=======
+	cancel_work_sync(&usbtv->snd_trigger);
+
+	if (usbtv->snd && usbtv->udev) {
+		snd_card_free_when_closed(usbtv->snd);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		usbtv->snd = NULL;
 	}
 }

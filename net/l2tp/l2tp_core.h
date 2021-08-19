@@ -23,6 +23,7 @@
 #define L2TP_HASH_BITS_2	8
 #define L2TP_HASH_SIZE_2	(1 << L2TP_HASH_BITS_2)
 
+<<<<<<< HEAD
 /* Debug message categories for the DEBUG socket option */
 enum {
 	L2TP_MSG_DEBUG		= (1 << 0),	/* verbose debug (if
@@ -33,6 +34,8 @@ enum {
 	L2TP_MSG_DATA		= (1 << 3),	/* data packets */
 };
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct sk_buff;
 
 struct l2tp_stats {
@@ -85,6 +88,10 @@ struct l2tp_session_cfg {
 struct l2tp_session {
 	int			magic;		/* should be
 						 * L2TP_SESSION_MAGIC */
+<<<<<<< HEAD
+=======
+	long			dead;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct l2tp_tunnel	*tunnel;	/* back pointer to tunnel
 						 * context */
@@ -169,8 +176,20 @@ struct l2tp_tunnel_cfg {
 
 struct l2tp_tunnel {
 	int			magic;		/* Should be L2TP_TUNNEL_MAGIC */
+<<<<<<< HEAD
 	struct rcu_head rcu;
 	rwlock_t		hlist_lock;	/* protect session_hlist */
+=======
+
+	unsigned long		dead;
+
+	struct rcu_head rcu;
+	rwlock_t		hlist_lock;	/* protect session_hlist */
+	bool			acpt_newsess;	/* Indicates whether this
+						 * tunnel accepts new sessions.
+						 * Protected by hlist_lock.
+						 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct hlist_head	session_hlist[L2TP_HASH_SIZE];
 						/* hashed list of sessions,
 						 * hashed by id */
@@ -206,7 +225,13 @@ struct l2tp_tunnel {
 };
 
 struct l2tp_nl_cmd_ops {
+<<<<<<< HEAD
 	int (*session_create)(struct net *net, u32 tunnel_id, u32 session_id, u32 peer_session_id, struct l2tp_session_cfg *cfg);
+=======
+	int (*session_create)(struct net *net, struct l2tp_tunnel *tunnel,
+			      u32 session_id, u32 peer_session_id,
+			      struct l2tp_session_cfg *cfg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int (*session_delete)(struct l2tp_session *session);
 };
 
@@ -240,6 +265,7 @@ out:
 	return tunnel;
 }
 
+<<<<<<< HEAD
 struct l2tp_session *l2tp_session_find(struct net *net,
 				       struct l2tp_tunnel *tunnel,
 				       u32 session_id);
@@ -247,16 +273,40 @@ struct l2tp_session *l2tp_session_find_nth(struct l2tp_tunnel *tunnel, int nth);
 struct l2tp_session *l2tp_session_find_by_ifname(struct net *net, char *ifname);
 struct l2tp_tunnel *l2tp_tunnel_find(struct net *net, u32 tunnel_id);
 struct l2tp_tunnel *l2tp_tunnel_find_nth(struct net *net, int nth);
+=======
+struct l2tp_tunnel *l2tp_tunnel_get(const struct net *net, u32 tunnel_id);
+
+struct l2tp_session *l2tp_session_get(const struct net *net,
+				      struct l2tp_tunnel *tunnel,
+				      u32 session_id, bool do_ref);
+struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth,
+					  bool do_ref);
+struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
+						const char *ifname,
+						bool do_ref);
+struct l2tp_tunnel *l2tp_tunnel_find(const struct net *net, u32 tunnel_id);
+struct l2tp_tunnel *l2tp_tunnel_find_nth(const struct net *net, int nth);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id,
 		       u32 peer_tunnel_id, struct l2tp_tunnel_cfg *cfg,
 		       struct l2tp_tunnel **tunnelp);
 void l2tp_tunnel_closeall(struct l2tp_tunnel *tunnel);
+<<<<<<< HEAD
 int l2tp_tunnel_delete(struct l2tp_tunnel *tunnel);
+=======
+void l2tp_tunnel_delete(struct l2tp_tunnel *tunnel);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct l2tp_session *l2tp_session_create(int priv_size,
 					 struct l2tp_tunnel *tunnel,
 					 u32 session_id, u32 peer_session_id,
 					 struct l2tp_session_cfg *cfg);
+<<<<<<< HEAD
+=======
+int l2tp_session_register(struct l2tp_session *session,
+			  struct l2tp_tunnel *tunnel);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void __l2tp_session_unhash(struct l2tp_session *session);
 int l2tp_session_delete(struct l2tp_session *session);
 void l2tp_session_free(struct l2tp_session *session);
@@ -273,6 +323,21 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb,
 int l2tp_nl_register_ops(enum l2tp_pwtype pw_type,
 			 const struct l2tp_nl_cmd_ops *ops);
 void l2tp_nl_unregister_ops(enum l2tp_pwtype pw_type);
+<<<<<<< HEAD
+=======
+int l2tp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+
+static inline void l2tp_tunnel_inc_refcount(struct l2tp_tunnel *tunnel)
+{
+	atomic_inc(&tunnel->ref_count);
+}
+
+static inline void l2tp_tunnel_dec_refcount(struct l2tp_tunnel *tunnel)
+{
+	if (atomic_dec_and_test(&tunnel->ref_count))
+		kfree_rcu(tunnel, rcu);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /* Session reference counts. Incremented when code obtains a reference
  * to a session.
@@ -308,6 +373,40 @@ do {									\
 #define l2tp_session_dec_refcount(s) l2tp_session_dec_refcount_1(s)
 #endif
 
+<<<<<<< HEAD
+=======
+static inline int l2tp_get_l2specific_len(struct l2tp_session *session)
+{
+	switch (session->l2specific_type) {
+	case L2TP_L2SPECTYPE_DEFAULT:
+		return 4;
+	case L2TP_L2SPECTYPE_NONE:
+	default:
+		return 0;
+	}
+}
+
+static inline int l2tp_v3_ensure_opt_in_linear(struct l2tp_session *session, struct sk_buff *skb,
+					       unsigned char **ptr, unsigned char **optr)
+{
+	int opt_len = session->peer_cookie_len + l2tp_get_l2specific_len(session);
+
+	if (opt_len > 0) {
+		int off = *ptr - *optr;
+
+		if (!pskb_may_pull(skb, off + opt_len))
+			return -1;
+
+		if (skb->data != *optr) {
+			*optr = skb->data;
+			*ptr = skb->data + off;
+		}
+	}
+
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define l2tp_printk(ptr, type, func, fmt, ...)				\
 do {									\
 	if (((ptr)->debug) & (type))					\

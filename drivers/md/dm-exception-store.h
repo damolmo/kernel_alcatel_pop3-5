@@ -70,7 +70,11 @@ struct dm_exception_store_type {
 	 * Update the metadata with this exception.
 	 */
 	void (*commit_exception) (struct dm_exception_store *store,
+<<<<<<< HEAD
 				  struct dm_exception *e,
+=======
+				  struct dm_exception *e, int valid,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  void (*callback) (void *, int success),
 				  void *callback_context);
 

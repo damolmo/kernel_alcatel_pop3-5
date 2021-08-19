@@ -11,7 +11,10 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/types.h>
 #include <linux/device.h>
 
@@ -58,7 +61,11 @@ ep_matches (
 		return 0;
 
 	/* only support ep0 for portable CONTROL traffic */
+<<<<<<< HEAD
 	type = desc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK;
+=======
+	type = usb_endpoint_type(desc);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (USB_ENDPOINT_XFER_CONTROL == type)
 		return 0;
 
@@ -129,7 +136,11 @@ ep_matches (
 	 * and wants to know the maximum possible, provide the info.
 	 */
 	if (desc->wMaxPacketSize == 0)
+<<<<<<< HEAD
 		desc->wMaxPacketSize = cpu_to_le16(ep->maxpacket);
+=======
+		desc->wMaxPacketSize = cpu_to_le16(ep->maxpacket_limit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* endpoint maxpacket size is an input parameter, except for bulk
 	 * where it's an output parameter representing the full speed limit.
@@ -145,7 +156,11 @@ ep_matches (
 
 	case USB_ENDPOINT_XFER_ISOC:
 		/* ISO:  limit 1023 bytes full speed, 1024 high/super speed */
+<<<<<<< HEAD
 		if (ep->maxpacket < max)
+=======
+		if (ep->maxpacket_limit < max)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return 0;
 		if (!gadget_is_dualspeed(gadget) && max > 1023)
 			return 0;
@@ -178,7 +193,11 @@ ep_matches (
 
 	/* report (variable) full speed bulk maxpacket */
 	if ((USB_ENDPOINT_XFER_BULK == type) && !ep_comp) {
+<<<<<<< HEAD
 		int size = ep->maxpacket;
+=======
+		int size = ep->maxpacket_limit;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* min() doesn't work on bitfields with gcc-3.5 */
 		if (size > 64)

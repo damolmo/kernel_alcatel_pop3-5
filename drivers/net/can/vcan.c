@@ -81,9 +81,12 @@ static void vcan_rx(struct sk_buff *skb, struct net_device *dev)
 	skb->dev       = dev;
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 
+<<<<<<< HEAD
 	if (!(skb->tstamp.tv64))
 		__net_timestamp(skb);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netif_rx_ni(skb);
 }
 

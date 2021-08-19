@@ -276,6 +276,10 @@ struct x86_emulate_ctxt {
 	bool guest_mode; /* guest running a nested guest */
 	bool perm_ok; /* do not check permissions if true */
 	bool ud;	/* inject an #UD if host doesn't support insn */
+<<<<<<< HEAD
+=======
+	bool tf;	/* TF value before instruction (after for syscall/sysret) */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	bool have_exception;
 	struct x86_exception exception;

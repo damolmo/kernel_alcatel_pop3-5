@@ -156,8 +156,11 @@ static void dayna_block_output(struct net_device *dev, int count,
 #define memcpy_fromio(a, b, c)	memcpy((a), (void *)(b), (c))
 #define memcpy_toio(a, b, c)	memcpy((void *)(a), (b), (c))
 
+<<<<<<< HEAD
 #define memcmp_withio(a, b, c)	memcmp((a), (void *)(b), (c))
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* Slow Sane (16-bit chunk memory read/write) Cabletron uses this */
 static void slow_sane_get_8390_hdr(struct net_device *dev,
 				   struct e8390_pkt_hdr *hdr, int ring_page);
@@ -237,6 +240,7 @@ static enum mac8390_type __init mac8390_ident(struct nubus_dev *dev)
 
 static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 {
+<<<<<<< HEAD
 	unsigned long outdata = 0xA5A0B5B0;
 	unsigned long indata =  0x00000000;
 	/* Try writing 32 bits */
@@ -244,12 +248,31 @@ static enum mac8390_access __init mac8390_testio(volatile unsigned long membase)
 	/* Now compare them */
 	if (memcmp_withio(&outdata, membase, 4) == 0)
 		return ACCESS_32;
+=======
+	u32 outdata = 0xA5A0B5B0;
+	u32 indata = 0;
+
+	/* Try writing 32 bits */
+	nubus_writel(outdata, membase);
+	/* Now read it back */
+	indata = nubus_readl(membase);
+	if (outdata == indata)
+		return ACCESS_32;
+
+	outdata = 0xC5C0D5D0;
+	indata = 0;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Write 16 bit output */
 	word_memcpy_tocard(membase, &outdata, 4);
 	/* Now read it back */
 	word_memcpy_fromcard(&indata, membase, 4);
 	if (outdata == indata)
 		return ACCESS_16;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ACCESS_UNKNOWN;
 }
 

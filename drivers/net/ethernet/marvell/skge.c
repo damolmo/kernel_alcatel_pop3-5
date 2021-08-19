@@ -152,8 +152,15 @@ static void skge_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 	memset(p, 0, regs->len);
 	memcpy_fromio(p, io, B3_RAM_ADDR);
 
+<<<<<<< HEAD
 	memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
 		      regs->len - B3_RI_WTO_R1);
+=======
+	if (regs->len > B3_RI_WTO_R1) {
+		memcpy_fromio(p + B3_RI_WTO_R1, io + B3_RI_WTO_R1,
+			      regs->len - B3_RI_WTO_R1);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /* Wake on Lan only supported on Yukon chips with rev 1 or above */
@@ -3112,7 +3119,11 @@ static struct sk_buff *skge_rx_get(struct net_device *dev,
 	skb_put(skb, len);
 
 	if (dev->features & NETIF_F_RXCSUM) {
+<<<<<<< HEAD
 		skb->csum = csum;
+=======
+		skb->csum = le16_to_cpu(csum);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		skb->ip_summed = CHECKSUM_COMPLETE;
 	}
 

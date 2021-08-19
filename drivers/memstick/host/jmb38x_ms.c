@@ -947,7 +947,11 @@ static int jmb38x_ms_probe(struct pci_dev *pdev,
 	if (!cnt) {
 		rc = -ENODEV;
 		pci_dev_busy = 1;
+<<<<<<< HEAD
 		goto err_out;
+=======
+		goto err_out_int;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	jm = kzalloc(sizeof(struct jmb38x_ms)

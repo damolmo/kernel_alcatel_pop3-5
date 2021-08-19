@@ -19,8 +19,14 @@
 #include <linux/kmod.h>
 #include <trace/events/power.h>
 #include <linux/wakeup_reason.h>
+<<<<<<< HEAD
 
 /* 
+=======
+#include <linux/cpuset.h>
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Timeout for stopping processes
  */
 unsigned int __read_mostly freeze_timeout_msecs = 20 * MSEC_PER_SEC;
@@ -194,7 +200,10 @@ int freeze_processes(void)
 		thaw_processes();
 	return error;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(freeze_processes);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * freeze_kernel_threads - Make freezable kernel threads go to the refrigerator.
@@ -221,7 +230,10 @@ int freeze_kernel_threads(void)
 		thaw_kernel_threads();
 	return error;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(freeze_kernel_threads);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void thaw_processes(void)
 {
@@ -241,6 +253,11 @@ void thaw_processes(void)
 	__usermodehelper_set_disable_depth(UMH_FREEZING);
 	thaw_workqueues();
 
+<<<<<<< HEAD
+=======
+	cpuset_wait_for_hotplug();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	read_lock(&tasklist_lock);
 	for_each_process_thread(g, p) {
 		/* No other threads should have PF_SUSPEND_TASK set */
@@ -258,7 +275,10 @@ void thaw_processes(void)
 	printk("done.\n");
 	trace_suspend_resume(TPS("thaw_processes"), 0, false);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(thaw_processes);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void thaw_kernel_threads(void)
 {
@@ -279,4 +299,7 @@ void thaw_kernel_threads(void)
 	schedule();
 	printk("done.\n");
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(thaw_kernel_threads);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

@@ -82,10 +82,17 @@
 
 static void set_default_audio_parameters(struct snd_msnd *chip)
 {
+<<<<<<< HEAD
 	chip->play_sample_size = DEFSAMPLESIZE;
 	chip->play_sample_rate = DEFSAMPLERATE;
 	chip->play_channels = DEFCHANNELS;
 	chip->capture_sample_size = DEFSAMPLESIZE;
+=======
+	chip->play_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
+	chip->play_sample_rate = DEFSAMPLERATE;
+	chip->play_channels = DEFCHANNELS;
+	chip->capture_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	chip->capture_sample_rate = DEFSAMPLERATE;
 	chip->capture_channels = DEFCHANNELS;
 }
@@ -170,11 +177,16 @@ static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 {
 	struct snd_msnd *chip = dev_id;
 	void *pwDSPQData = chip->mappedbase + DSPQ_DATA_BUFF;
+<<<<<<< HEAD
+=======
+	u16 head, tail, size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Send ack to DSP */
 	/* inb(chip->io + HP_RXL); */
 
 	/* Evaluate queued DSP messages */
+<<<<<<< HEAD
 	while (readw(chip->DSPQ + JQS_wTail) != readw(chip->DSPQ + JQS_wHead)) {
 		u16 wTmp;
 
@@ -187,6 +199,20 @@ static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 		else
 			writew(wTmp, chip->DSPQ + JQS_wHead);
 	}
+=======
+	head = readw(chip->DSPQ + JQS_wHead);
+	tail = readw(chip->DSPQ + JQS_wTail);
+	size = readw(chip->DSPQ + JQS_wSize);
+	if (head > size || tail > size)
+		goto out;
+	while (head != tail) {
+		snd_msnd_eval_dsp_msg(chip, readw(pwDSPQData + 2 * head));
+		if (++head > size)
+			head = 0;
+		writew(head, chip->DSPQ + JQS_wHead);
+	}
+ out:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Send ack to DSP */
 	inb(chip->io + HP_RXL);
 	return IRQ_HANDLED;

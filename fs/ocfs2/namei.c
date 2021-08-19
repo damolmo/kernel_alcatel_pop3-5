@@ -253,7 +253,10 @@ static int ocfs2_mknod(struct inode *dir,
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 	sigset_t oldset;
 	int did_block_signals = 0;
+<<<<<<< HEAD
 	struct posix_acl *default_acl = NULL, *acl = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct ocfs2_dentry_lock *dl = NULL;
 
 	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
@@ -356,12 +359,15 @@ static int ocfs2_mknod(struct inode *dir,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	status = posix_acl_create(dir, &mode, &default_acl, &acl);
 	if (status) {
 		mlog_errno(status);
 		goto leave;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	handle = ocfs2_start_trans(osb, ocfs2_mknod_credits(osb->sb,
 							    S_ISDIR(mode),
 							    xattr_credits));
@@ -410,6 +416,7 @@ static int ocfs2_mknod(struct inode *dir,
 		inc_nlink(dir);
 	}
 
+<<<<<<< HEAD
 	if (default_acl) {
 		status = ocfs2_set_acl(handle, inode, new_fe_bh,
 				       ACL_TYPE_DEFAULT, default_acl,
@@ -420,6 +427,10 @@ static int ocfs2_mknod(struct inode *dir,
 				       ACL_TYPE_ACCESS, acl,
 				       meta_ac, data_ac);
 	}
+=======
+	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
+			 meta_ac, data_ac);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (status < 0) {
 		mlog_errno(status);
@@ -461,10 +472,13 @@ static int ocfs2_mknod(struct inode *dir,
 	d_instantiate(dentry, inode);
 	status = 0;
 leave:
+<<<<<<< HEAD
 	if (default_acl)
 		posix_acl_release(default_acl);
 	if (acl)
 		posix_acl_release(acl);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (status < 0 && did_quota_inode)
 		dquot_free_inode(inode);
 	if (handle)

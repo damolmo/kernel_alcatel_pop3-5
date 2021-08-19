@@ -1455,6 +1455,12 @@ static int cit_get_packet_size(struct gspca_dev *gspca_dev)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
+=======
+	if (alt->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 }
 
@@ -2632,6 +2638,10 @@ static int sd_start(struct gspca_dev *gspca_dev)
 
 static int sd_isoc_init(struct gspca_dev *gspca_dev)
 {
+<<<<<<< HEAD
+=======
+	struct usb_interface_cache *intfc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct usb_host_interface *alt;
 	int max_packet_size;
 
@@ -2647,8 +2657,22 @@ static int sd_isoc_init(struct gspca_dev *gspca_dev)
 		break;
 	}
 
+<<<<<<< HEAD
 	/* Start isoc bandwidth "negotiation" at max isoc bandwidth */
 	alt = &gspca_dev->dev->actconfig->intf_cache[0]->altsetting[1];
+=======
+	intfc = gspca_dev->dev->actconfig->intf_cache[0];
+
+	if (intfc->num_altsetting < 2)
+		return -ENODEV;
+
+	alt = &intfc->altsetting[1];
+
+	if (alt->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+	/* Start isoc bandwidth "negotiation" at max isoc bandwidth */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alt->endpoint[0].desc.wMaxPacketSize = cpu_to_le16(max_packet_size);
 
 	return 0;
@@ -2671,6 +2695,12 @@ static int sd_isoc_nego(struct gspca_dev *gspca_dev)
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Existence of altsetting and endpoint was verified in sd_isoc_init()
+	 */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	alt = &gspca_dev->dev->actconfig->intf_cache[0]->altsetting[1];
 	packet_size = le16_to_cpu(alt->endpoint[0].desc.wMaxPacketSize);
 	if (packet_size <= min_packet_size)

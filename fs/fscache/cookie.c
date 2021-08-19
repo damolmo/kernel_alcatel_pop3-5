@@ -541,6 +541,10 @@ void __fscache_disable_cookie(struct fscache_cookie *cookie, bool invalidate)
 		hlist_for_each_entry(object, &cookie->backing_objects, cookie_link) {
 			if (invalidate)
 				set_bit(FSCACHE_OBJECT_RETIRED, &object->flags);
+<<<<<<< HEAD
+=======
+			clear_bit(FSCACHE_OBJECT_PENDING_WRITE, &object->flags);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			fscache_raise_event(object, FSCACHE_OBJECT_EV_KILL);
 		}
 	} else {
@@ -559,6 +563,13 @@ void __fscache_disable_cookie(struct fscache_cookie *cookie, bool invalidate)
 		wait_on_atomic_t(&cookie->n_active, fscache_wait_atomic_t,
 				 TASK_UNINTERRUPTIBLE);
 
+<<<<<<< HEAD
+=======
+	/* Make sure any pending writes are cancelled. */
+	if (cookie->def->type != FSCACHE_COOKIE_TYPE_INDEX)
+		fscache_invalidate_writes(cookie);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Reset the cookie state if it wasn't relinquished */
 	if (!test_bit(FSCACHE_COOKIE_RELINQUISHED, &cookie->flags)) {
 		atomic_inc(&cookie->n_active);

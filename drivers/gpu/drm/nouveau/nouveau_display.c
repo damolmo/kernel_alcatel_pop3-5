@@ -103,7 +103,11 @@ nouveau_display_scanoutpos_head(struct drm_crtc *crtc, int *vpos, int *hpos,
 		.base.head = nouveau_crtc(crtc)->index,
 	};
 	struct nouveau_display *disp = nouveau_display(crtc->dev);
+<<<<<<< HEAD
 	int ret, retry = 1;
+=======
+	int ret, retry = 20;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	do {
 		ret = nvif_mthd(&disp->disp, 0, &args, sizeof(args));
@@ -366,7 +370,12 @@ nouveau_display_init(struct drm_device *dev)
 		return ret;
 
 	/* enable polling for external displays */
+<<<<<<< HEAD
 	drm_kms_helper_poll_enable(dev);
+=======
+	if (!dev->mode_config.poll_enabled)
+		drm_kms_helper_poll_enable(dev);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* enable hotplug interrupts */
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
@@ -615,10 +624,13 @@ nouveau_display_resume(struct drm_device *dev, bool runtime)
 		nv_crtc->lut.depth = 0;
 	}
 
+<<<<<<< HEAD
 	/* Make sure that drm and hw vblank irqs get resumed if needed. */
 	for (head = 0; head < dev->mode_config.num_crtc; head++)
 		drm_vblank_on(dev, head);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* This should ensure we don't hit a locking problem when someone
 	 * wakes us up via a connector.  We should never go into suspend
 	 * while the display is on anyways.
@@ -628,6 +640,13 @@ nouveau_display_resume(struct drm_device *dev, bool runtime)
 
 	drm_helper_resume_force_mode(dev);
 
+<<<<<<< HEAD
+=======
+	/* Make sure that drm and hw vblank irqs get resumed if needed. */
+	for (head = 0; head < dev->mode_config.num_crtc; head++)
+		drm_vblank_on(dev, head);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
 		struct nouveau_crtc *nv_crtc = nouveau_crtc(crtc);
 		u32 offset = nv_crtc->cursor.nvbo->bo.offset;

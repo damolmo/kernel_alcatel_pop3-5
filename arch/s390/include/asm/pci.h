@@ -44,11 +44,15 @@ struct zpci_fmb {
 	u64 rpcit_ops;
 	u64 dma_rbytes;
 	u64 dma_wbytes;
+<<<<<<< HEAD
 	/* software counters */
 	atomic64_t allocated_pages;
 	atomic64_t mapped_pages;
 	atomic64_t unmapped_pages;
 } __packed __aligned(16);
+=======
+} __packed __aligned(64);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define ZPCI_MSI_VEC_BITS	11
 #define ZPCI_MSI_VEC_MAX	(1 << ZPCI_MSI_VEC_BITS)
@@ -114,6 +118,13 @@ struct zpci_dev {
 	/* Function measurement block */
 	struct zpci_fmb *fmb;
 	u16		fmb_update;	/* update interval */
+<<<<<<< HEAD
+=======
+	/* software counters */
+	atomic64_t allocated_pages;
+	atomic64_t mapped_pages;
+	atomic64_t unmapped_pages;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	enum pci_bus_speed max_bus_speed;
 

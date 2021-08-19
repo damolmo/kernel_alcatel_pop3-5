@@ -68,6 +68,10 @@
 #include <linux/vmalloc.h>
 #include <linux/workqueue.h>
 #include <linux/kmemleak.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/cacheflush.h>
 #include <asm/sections.h>
@@ -1012,8 +1016,16 @@ area_found:
 		mutex_unlock(&pcpu_alloc_mutex);
 	}
 
+<<<<<<< HEAD
 	if (chunk != pcpu_reserved_chunk)
 		pcpu_nr_empty_pop_pages -= occ_pages;
+=======
+	if (chunk != pcpu_reserved_chunk) {
+		spin_lock_irqsave(&pcpu_lock, flags);
+		pcpu_nr_empty_pop_pages -= occ_pages;
+		spin_unlock_irqrestore(&pcpu_lock, flags);
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (pcpu_nr_empty_pop_pages < PCPU_EMPTY_POP_PAGES_LOW)
 		pcpu_schedule_balance_work();

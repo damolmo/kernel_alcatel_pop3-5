@@ -187,7 +187,11 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 		goto out;
 
 	ret = NULL;
+<<<<<<< HEAD
 	req = inet_reqsk_alloc(&tcp6_request_sock_ops);
+=======
+	req = inet_reqsk_alloc(&tcp6_request_sock_ops, sk);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!req)
 		goto out;
 
@@ -241,16 +245,27 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 		memset(&fl6, 0, sizeof(fl6));
 		fl6.flowi6_proto = IPPROTO_TCP;
 		fl6.daddr = ireq->ir_v6_rmt_addr;
+<<<<<<< HEAD
 		final_p = fl6_update_dst(&fl6, np->opt, &final);
+=======
+		final_p = fl6_update_dst(&fl6, rcu_dereference(np->opt), &final);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		fl6.saddr = ireq->ir_v6_loc_addr;
 		fl6.flowi6_oif = sk->sk_bound_dev_if;
 		fl6.flowi6_mark = ireq->ir_mark;
 		fl6.fl6_dport = ireq->ir_rmt_port;
 		fl6.fl6_sport = inet_sk(sk)->inet_sport;
+<<<<<<< HEAD
 		fl6.flowi6_uid = sock_i_uid(sk);
 		security_req_classify_flow(req, flowi6_to_flowi(&fl6));
 
 		dst = ip6_dst_lookup_flow(sk, &fl6, final_p);
+=======
+		fl6.flowi6_uid = sk->sk_uid;
+		security_req_classify_flow(req, flowi6_to_flowi(&fl6));
+
+		dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (IS_ERR(dst))
 			goto out_free;
 	}

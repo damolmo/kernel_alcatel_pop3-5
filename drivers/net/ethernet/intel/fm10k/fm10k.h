@@ -33,7 +33,11 @@
 #include "fm10k_pf.h"
 #include "fm10k_vf.h"
 
+<<<<<<< HEAD
 #define FM10K_MAX_JUMBO_FRAME_SIZE	15358	/* Maximum supported size 15K */
+=======
+#define FM10K_MAX_JUMBO_FRAME_SIZE	15342	/* Maximum supported size 15K */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define MAX_QUEUES	FM10K_MAX_QUEUES_PF
 

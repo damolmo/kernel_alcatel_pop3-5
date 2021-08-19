@@ -370,9 +370,15 @@ static irqreturn_t dt3k_interrupt(int irq, void *d)
 static int dt3k_ns_to_timer(unsigned int timer_base, unsigned int *nanosec,
 			    unsigned int flags)
 {
+<<<<<<< HEAD
 	int divider, base, prescale;
 
 	/* This function needs improvment */
+=======
+	unsigned int divider, base, prescale;
+
+	/* This function needs improvement */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Don't know if divider==0 works. */
 
 	for (prescale = 0; prescale < 16; prescale++) {
@@ -386,7 +392,11 @@ static int dt3k_ns_to_timer(unsigned int timer_base, unsigned int *nanosec,
 			divider = (*nanosec) / base;
 			break;
 		case CMDF_ROUND_UP:
+<<<<<<< HEAD
 			divider = (*nanosec) / base;
+=======
+			divider = DIV_ROUND_UP(*nanosec, base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			break;
 		}
 		if (divider < 65536) {
@@ -396,7 +406,11 @@ static int dt3k_ns_to_timer(unsigned int timer_base, unsigned int *nanosec,
 	}
 
 	prescale = 15;
+<<<<<<< HEAD
 	base = timer_base * (1 << prescale);
+=======
+	base = timer_base * (prescale + 1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	divider = 65535;
 	*nanosec = divider * base;
 	return (prescale << 16) | (divider);

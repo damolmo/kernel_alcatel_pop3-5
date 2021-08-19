@@ -60,6 +60,7 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long uaddr, void *dst, const void *src,
 		       unsigned long len)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	preempt_disable();
 #endif
@@ -68,16 +69,25 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 #ifdef CONFIG_SMP
 	preempt_enable();
 #endif
+=======
+	preempt_disable();
+	memcpy(dst, src, len);
+	flush_ptrace_access(vma, page, uaddr, dst, len);
+	preempt_enable();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __sync_icache_dcache(pte_t pte, unsigned long addr)
 {
 	struct page *page = pte_page(pte);
 
+<<<<<<< HEAD
 	/* no flushing needed for anonymous pages */
 	if (!page_mapping(page))
 		return;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!test_and_set_bit(PG_dcache_clean, &page->flags)) {
 		__flush_dcache_area(page_address(page),
 				PAGE_SIZE << compound_order(page));
@@ -102,7 +112,10 @@ EXPORT_SYMBOL(flush_dcache_page);
 /*
  * Additional functions defined in assembly.
  */
+<<<<<<< HEAD
 EXPORT_SYMBOL(flush_cache_all);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 EXPORT_SYMBOL(flush_icache_range);
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE

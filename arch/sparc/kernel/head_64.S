@@ -461,9 +461,14 @@ sun4v_chip_type:
 	subcc	%g3, 1, %g3
 	bne,pt	%xcc, 41b
 	add	%g1, 1, %g1
+<<<<<<< HEAD
 	mov	SUN4V_CHIP_SPARC64X, %g4
 	ba,pt	%xcc, 5f
 	nop
+=======
+	ba,pt	%xcc, 5f
+	 mov	SUN4V_CHIP_SPARC64X, %g4
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 49:
 	mov	SUN4V_CHIP_UNKNOWN, %g4
@@ -548,8 +553,12 @@ sun4u_init:
 	stxa		%g0, [%g7] ASI_DMMU
 	membar	#Sync
 
+<<<<<<< HEAD
 	ba,pt		%xcc, sun4u_continue
 	 nop
+=======
+	ba,a,pt		%xcc, sun4u_continue
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 sun4v_init:
 	/* Set ctx 0 */
@@ -560,14 +569,22 @@ sun4v_init:
 	mov		SECONDARY_CONTEXT, %g7
 	stxa		%g0, [%g7] ASI_MMU
 	membar		#Sync
+<<<<<<< HEAD
 	ba,pt		%xcc, niagara_tlb_fixup
 	 nop
+=======
+	ba,a,pt		%xcc, niagara_tlb_fixup
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 sun4u_continue:
 	BRANCH_IF_ANY_CHEETAH(g1, g7, cheetah_tlb_fixup)
 
+<<<<<<< HEAD
 	ba,pt	%xcc, spitfire_tlb_fixup
 	 nop
+=======
+	ba,a,pt	%xcc, spitfire_tlb_fixup
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 niagara_tlb_fixup:
 	mov	3, %g2		/* Set TLB type to hypervisor. */
@@ -639,8 +656,12 @@ niagara_patch:
 	call	hypervisor_patch_cachetlbops
 	 nop
 
+<<<<<<< HEAD
 	ba,pt	%xcc, tlb_fixup_done
 	 nop
+=======
+	ba,a,pt	%xcc, tlb_fixup_done
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 cheetah_tlb_fixup:
 	mov	2, %g2		/* Set TLB type to cheetah+. */
@@ -659,8 +680,12 @@ cheetah_tlb_fixup:
 	call	cheetah_patch_cachetlbops
 	 nop
 
+<<<<<<< HEAD
 	ba,pt	%xcc, tlb_fixup_done
 	 nop
+=======
+	ba,a,pt	%xcc, tlb_fixup_done
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 spitfire_tlb_fixup:
 	/* Set TLB type to spitfire. */
@@ -782,8 +807,12 @@ setup_trap_table:
 	call	%o1
 	 add	%sp, (2047 + 128), %o0
 
+<<<<<<< HEAD
 	ba,pt	%xcc, 2f
 	 nop
+=======
+	ba,a,pt	%xcc, 2f
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 1:	sethi	%hi(sparc64_ttable_tl0), %o0
 	set	prom_set_trap_table_name, %g2
@@ -822,8 +851,12 @@ setup_trap_table:
 
 	BRANCH_IF_ANY_CHEETAH(o2, o3, 1f)
 
+<<<<<<< HEAD
 	ba,pt	%xcc, 2f
 	 nop
+=======
+	ba,a,pt	%xcc, 2f
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Disable STICK_INT interrupts. */
 1:

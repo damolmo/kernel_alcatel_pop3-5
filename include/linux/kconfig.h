@@ -17,10 +17,18 @@
  * the last step cherry picks the 2nd arg, we get a zero.
  */
 #define __ARG_PLACEHOLDER_1 0,
+<<<<<<< HEAD
 #define config_enabled(cfg) _config_enabled(cfg)
 #define _config_enabled(value) __config_enabled(__ARG_PLACEHOLDER_##value)
 #define __config_enabled(arg1_or_junk) ___config_enabled(arg1_or_junk 1, 0)
 #define ___config_enabled(__ignored, val, ...) val
+=======
+#define config_enabled(cfg)		___is_defined(cfg)
+#define __is_defined(x)			___is_defined(x)
+#define ___is_defined(val)		____is_defined(__ARG_PLACEHOLDER_##val)
+#define ____is_defined(arg1_or_junk)	__take_second_arg(arg1_or_junk 1, 0)
+#define __take_second_arg(__ignored, val, ...) val
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * IS_ENABLED(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'y' or 'm',
@@ -50,6 +58,10 @@
  * built-in code when CONFIG_FOO is set to 'm'.
  */
 #define IS_REACHABLE(option) (config_enabled(option) || \
+<<<<<<< HEAD
 		 (config_enabled(option##_MODULE) && config_enabled(MODULE)))
+=======
+		 (config_enabled(option##_MODULE) && __is_defined(MODULE)))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* __LINUX_KCONFIG_H */

@@ -43,7 +43,13 @@ static void sclp_cpu_capability_notify(struct work_struct *work)
 
 static void __ref sclp_cpu_change_notify(struct work_struct *work)
 {
+<<<<<<< HEAD
 	smp_rescan_cpus();
+=======
+	lock_device_hotplug();
+	smp_rescan_cpus();
+	unlock_device_hotplug();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void sclp_conf_receiver_fn(struct evbuf_header *evbuf)

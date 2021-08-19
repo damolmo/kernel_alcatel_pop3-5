@@ -319,7 +319,11 @@ iscsi_boot_create_kobj(struct iscsi_boot_kset *boot_kset,
 	boot_kobj->kobj.kset = boot_kset->kset;
 	if (kobject_init_and_add(&boot_kobj->kobj, &iscsi_boot_ktype,
 				 NULL, name, index)) {
+<<<<<<< HEAD
 		kfree(boot_kobj);
+=======
+		kobject_put(&boot_kobj->kobj);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return NULL;
 	}
 	boot_kobj->data = data;

@@ -960,7 +960,11 @@ static void rtl8192_hard_data_xmit(struct sk_buff *skb, struct net_device *dev, 
 
 	spin_lock_irqsave(&priv->tx_lock, flags);
 
+<<<<<<< HEAD
 	memcpy((unsigned char *)(skb->cb), &dev, sizeof(dev));
+=======
+	*(struct net_device **)(skb->cb) = dev;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	tcb_desc->bTxEnableFwCalcDur = 1;
 	skb_push(skb, priv->ieee80211->tx_headroom);
 	ret = rtl8192_tx(dev, skb);
@@ -1009,7 +1013,11 @@ void rtl8192_try_wake_queue(struct net_device *dev, int pri);
 static void rtl8192_tx_isr(struct urb *tx_urb)
 {
 	struct sk_buff *skb = (struct sk_buff *)tx_urb->context;
+<<<<<<< HEAD
 	struct net_device *dev = (struct net_device *)(skb->cb);
+=======
+	struct net_device *dev = *(struct net_device **)(skb->cb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct r8192_priv *priv = NULL;
 	cb_desc *tcb_desc = (cb_desc *)(skb->cb + MAX_DEV_ADDR_SIZE);
 	u8  queue_index = tcb_desc->queue_index;
@@ -1682,6 +1690,11 @@ static short rtl8192_usb_initendpoints(struct net_device *dev)
 
 		priv->rx_urb[16] = usb_alloc_urb(0, GFP_KERNEL);
 		priv->oldaddr = kmalloc(16, GFP_KERNEL);
+<<<<<<< HEAD
+=======
+		if (!priv->oldaddr)
+			return -ENOMEM;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		oldaddr = priv->oldaddr;
 		align = ((long)oldaddr) & 3;
 		if (align) {
@@ -3193,7 +3206,11 @@ static void rtl819x_update_rxcounts(struct r8192_priv *priv, u32 *TotalRxBcnNum,
 			     u32 *TotalRxDataNum)
 {
 	u16			SlotIndex;
+<<<<<<< HEAD
 	u8			i;
+=======
+	u16			i;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	*TotalRxBcnNum = 0;
 	*TotalRxDataNum = 0;

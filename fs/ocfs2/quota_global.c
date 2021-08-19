@@ -714,7 +714,11 @@ static int ocfs2_release_dquot(struct dquot *dquot)
 
 	mutex_lock(&dquot->dq_lock);
 	/* Check whether we are not racing with some other dqget() */
+<<<<<<< HEAD
 	if (atomic_read(&dquot->dq_count) > 1)
+=======
+	if (dquot_is_busy(dquot))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto out;
 	/* Running from downconvert thread? Postpone quota processing to wq */
 	if (current == osb->dc_task) {

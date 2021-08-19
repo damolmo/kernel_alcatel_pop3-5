@@ -6,7 +6,10 @@
  * is Copyright (c) Steven Rostedt <srostedt@redhat.com>
  *
  */
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
 #include <linux/slab.h>
@@ -156,7 +159,11 @@ ftrace_push_return_trace(unsigned long ret, unsigned long func, int *depth,
 	 * The curr_ret_stack is initialized to -1 and get increased
 	 * in this function.  So it can be less than -1 only if it was
 	 * filtered out via ftrace_graph_notrace_addr() which can be
+<<<<<<< HEAD
 	 * set from set_graph_notrace file in debugfs by user.
+=======
+	 * set from set_graph_notrace file in tracefs by user.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 */
 	if (current->curr_ret_stack < -1)
 		return -EBUSY;
@@ -869,6 +876,10 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 	struct ftrace_graph_ret *graph_ret;
 	struct ftrace_graph_ent *call;
 	unsigned long long duration;
+<<<<<<< HEAD
+=======
+	int cpu = iter->cpu;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int ret;
 	int i;
 
@@ -878,10 +889,20 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 
 	if (data) {
 		struct fgraph_cpu_data *cpu_data;
+<<<<<<< HEAD
 		int cpu = iter->cpu;
 
 		cpu_data = per_cpu_ptr(data->cpu_data, cpu);
 
+=======
+
+		cpu_data = per_cpu_ptr(data->cpu_data, cpu);
+
+		/* If a graph tracer ignored set_graph_notrace */
+		if (call->depth < -1)
+			call->depth += FTRACE_NOTRACE_DEPTH;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/*
 		 * Comments display at + 1 to depth. Since
 		 * this is a leaf function, keep the comments
@@ -890,7 +911,12 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 		cpu_data->depth = call->depth - 1;
 
 		/* No need to keep this function around for this depth */
+<<<<<<< HEAD
 		if (call->depth < FTRACE_RETFUNC_DEPTH)
+=======
+		if (call->depth < FTRACE_RETFUNC_DEPTH &&
+		    !WARN_ON_ONCE(call->depth < 0))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cpu_data->enter_funcs[call->depth] = 0;
 	}
 
@@ -910,6 +936,12 @@ print_graph_entry_leaf(struct trace_iterator *iter,
 	if (!ret)
 		return TRACE_TYPE_PARTIAL_LINE;
 
+<<<<<<< HEAD
+=======
+	print_graph_irq(iter, graph_ret->func, TRACE_GRAPH_RET,
+			cpu, iter->ent->pid, flags);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return TRACE_TYPE_HANDLED;
 }
 
@@ -927,11 +959,23 @@ print_graph_entry_nested(struct trace_iterator *iter,
 		struct fgraph_cpu_data *cpu_data;
 		int cpu = iter->cpu;
 
+<<<<<<< HEAD
+=======
+		/* If a graph tracer ignored set_graph_notrace */
+		if (call->depth < -1)
+			call->depth += FTRACE_NOTRACE_DEPTH;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cpu_data = per_cpu_ptr(data->cpu_data, cpu);
 		cpu_data->depth = call->depth;
 
 		/* Save this function pointer to see if the exit matches */
+<<<<<<< HEAD
 		if (call->depth < FTRACE_RETFUNC_DEPTH)
+=======
+		if (call->depth < FTRACE_RETFUNC_DEPTH &&
+		    !WARN_ON_ONCE(call->depth < 0))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			cpu_data->enter_funcs[call->depth] = call->func;
 	}
 
@@ -1184,7 +1228,12 @@ print_graph_return(struct ftrace_graph_ret *trace, struct trace_seq *s,
 		 */
 		cpu_data->depth = trace->depth - 1;
 
+<<<<<<< HEAD
 		if (trace->depth < FTRACE_RETFUNC_DEPTH) {
+=======
+		if (trace->depth < FTRACE_RETFUNC_DEPTH &&
+		    !WARN_ON_ONCE(trace->depth < 0)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (cpu_data->enter_funcs[trace->depth] != trace->func)
 				func_match = 0;
 			cpu_data->enter_funcs[trace->depth] = 0;
@@ -1582,12 +1631,20 @@ static const struct file_operations graph_depth_fops = {
 	.llseek		= generic_file_llseek,
 };
 
+<<<<<<< HEAD
 static __init int init_graph_debugfs(void)
+=======
+static __init int init_graph_tracefs(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct dentry *d_tracer;
 
 	d_tracer = tracing_init_dentry();
+<<<<<<< HEAD
 	if (!d_tracer)
+=======
+	if (IS_ERR(d_tracer))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return 0;
 
 	trace_create_file("max_graph_depth", 0644, d_tracer,
@@ -1595,7 +1652,11 @@ static __init int init_graph_debugfs(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 fs_initcall(init_graph_debugfs);
+=======
+fs_initcall(init_graph_tracefs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static __init int init_graph_trace(void)
 {

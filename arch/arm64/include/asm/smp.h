@@ -20,10 +20,13 @@
 #include <linux/cpumask.h>
 #include <linux/thread_info.h>
 
+<<<<<<< HEAD
 #ifndef CONFIG_SMP
 # error "<asm/smp.h> included in non-SMP build"
 #endif
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define raw_smp_processor_id() (current_thread_info()->cpu)
 
 struct seq_file;

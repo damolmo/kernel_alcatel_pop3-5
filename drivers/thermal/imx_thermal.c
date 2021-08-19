@@ -493,6 +493,12 @@ static int imx_thermal_probe(struct platform_device *pdev)
 	if (data->irq < 0)
 		return data->irq;
 
+<<<<<<< HEAD
+=======
+	data->irq_enabled = true;
+	data->mode = THERMAL_DEVICE_ENABLED;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = devm_request_threaded_irq(&pdev->dev, data->irq,
 			imx_thermal_alarm_irq, imx_thermal_alarm_irq_thread,
 			0, "imx_thermal", data);
@@ -576,9 +582,12 @@ static int imx_thermal_probe(struct platform_device *pdev)
 	regmap_write(map, TEMPSENSE0 + REG_CLR, TEMPSENSE0_POWER_DOWN);
 	regmap_write(map, TEMPSENSE0 + REG_SET, TEMPSENSE0_MEASURE_TEMP);
 
+<<<<<<< HEAD
 	data->irq_enabled = true;
 	data->mode = THERMAL_DEVICE_ENABLED;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 

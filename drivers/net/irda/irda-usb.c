@@ -1082,7 +1082,11 @@ static int stir421x_patch_device(struct irda_usb_cb *self)
          * are "42101001.sb" or "42101002.sb"
          */
         sprintf(stir421x_fw_name, "4210%4X.sb",
+<<<<<<< HEAD
                 self->usbdev->descriptor.bcdDevice);
+=======
+		le16_to_cpu(self->usbdev->descriptor.bcdDevice));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
         ret = request_firmware(&fw, stir421x_fw_name, &self->usbdev->dev);
         if (ret < 0)
                 return ret;

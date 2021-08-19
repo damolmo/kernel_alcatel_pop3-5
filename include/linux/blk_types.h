@@ -120,18 +120,28 @@ struct bio {
 #define BIO_USER_MAPPED 6	/* contains user pages */
 #define BIO_EOPNOTSUPP	7	/* not supported */
 #define BIO_NULL_MAPPED 8	/* contains invalid user pages */
+<<<<<<< HEAD
 #define BIO_FS_INTEGRITY 9	/* fs owns integrity data, not block layer */
 #define BIO_QUIET	10	/* Make BIO Quiet */
 #define BIO_MAPPED_INTEGRITY 11/* integrity metadata has been remapped */
 #define BIO_SNAP_STABLE	12	/* bio data must be snapshotted during write */
 #define BIO_TOI		13	/* bio is TuxOnIce submitted */
+=======
+#define BIO_QUIET	9	/* Make BIO Quiet */
+#define BIO_SNAP_STABLE	10	/* bio data must be snapshotted during write */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * Flags starting here get preserved by bio_reset() - this includes
  * BIO_POOL_IDX()
  */
+<<<<<<< HEAD
 #define BIO_RESET_BITS	14
 #define BIO_OWNS_VEC	14	/* bio_free() should free bvec */
+=======
+#define BIO_RESET_BITS	13
+#define BIO_OWNS_VEC	13	/* bio_free() should free bvec */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define bio_flagged(bio, flag)	((bio)->bi_flags & (1 << (flag)))
 

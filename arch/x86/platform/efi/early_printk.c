@@ -179,7 +179,11 @@ early_efi_write(struct console *con, const char *str, unsigned int num)
 			num--;
 		}
 
+<<<<<<< HEAD
 		if (efi_x >= si->lfb_width) {
+=======
+		if (efi_x + font->width > si->lfb_width) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			efi_x = 0;
 			efi_y += font->height;
 		}

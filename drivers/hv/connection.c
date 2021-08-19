@@ -418,6 +418,10 @@ int vmbus_post_msg(void *buffer, size_t buflen)
 	union hv_connection_id conn_id;
 	int ret = 0;
 	int retries = 0;
+<<<<<<< HEAD
+=======
+	u32 usec = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	conn_id.asu32 = 0;
 	conn_id.u.id = VMBUS_MESSAGE_CONNECTION_ID;
@@ -443,7 +447,13 @@ int vmbus_post_msg(void *buffer, size_t buflen)
 		}
 
 		retries++;
+<<<<<<< HEAD
 		msleep(100);
+=======
+		udelay(usec);
+		if (usec < 2048)
+			usec *= 2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	return ret;
 }

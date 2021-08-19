@@ -309,6 +309,12 @@ static void mxs_mmc_ac(struct mxs_mmc_host *host)
 	cmd0 = BF_SSP(cmd->opcode, CMD0_CMD);
 	cmd1 = cmd->arg;
 
+<<<<<<< HEAD
+=======
+	if (cmd->opcode == MMC_STOP_TRANSMISSION)
+		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (host->sdio_irq_en) {
 		ctrl0 |= BM_SSP_CTRL0_SDIO_IRQ_CHECK;
 		cmd0 |= BM_SSP_CMD0_CONT_CLKING_EN | BM_SSP_CMD0_SLOW_CLKING_EN;
@@ -417,8 +423,12 @@ static void mxs_mmc_adtc(struct mxs_mmc_host *host)
 		       ssp->base + HW_SSP_BLOCK_SIZE);
 	}
 
+<<<<<<< HEAD
 	if ((cmd->opcode == MMC_STOP_TRANSMISSION) ||
 	    (cmd->opcode == SD_IO_RW_EXTENDED))
+=======
+	if (cmd->opcode == SD_IO_RW_EXTENDED)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cmd0 |= BM_SSP_CMD0_APPEND_8CYC;
 
 	cmd1 = cmd->arg;
@@ -647,7 +657,11 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 
 	ret = mmc_of_parse(mmc);
 	if (ret)
+<<<<<<< HEAD
 		goto out_clk_disable;
+=======
+		goto out_free_dma;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
@@ -659,13 +673,21 @@ static int mxs_mmc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, mmc);
 
+<<<<<<< HEAD
+=======
+	spin_lock_init(&host->lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = devm_request_irq(&pdev->dev, irq_err, mxs_mmc_irq_handler, 0,
 			       DRIVER_NAME, host);
 	if (ret)
 		goto out_free_dma;
 
+<<<<<<< HEAD
 	spin_lock_init(&host->lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ret = mmc_add_host(mmc);
 	if (ret)
 		goto out_free_dma;

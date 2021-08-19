@@ -18,7 +18,10 @@ void foo(void)
 	OFFSET(TI_preempt_count, thread_info, preempt_count);
 	OFFSET(TI_rar_saved, thread_info, rar_saved);
 	OFFSET(TI_rsr_saved, thread_info, rsr_saved);
+<<<<<<< HEAD
 	OFFSET(TI_restart_block, thread_info, restart_block);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	BLANK();
 	OFFSET(TSK_active_mm, task_struct, active_mm);
 	BLANK();

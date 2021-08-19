@@ -154,17 +154,29 @@ void ping_hash(struct sock *sk)
 void ping_unhash(struct sock *sk)
 {
 	struct inet_sock *isk = inet_sk(sk);
+<<<<<<< HEAD
 	pr_debug("ping_unhash(isk=%p,isk->num=%u)\n", isk, isk->inet_num);
 	if (sk_hashed(sk)) {
 		write_lock_bh(&ping_table.lock);
+=======
+
+	pr_debug("ping_unhash(isk=%p,isk->num=%u)\n", isk, isk->inet_num);
+	write_lock_bh(&ping_table.lock);
+	if (sk_hashed(sk)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		hlist_nulls_del(&sk->sk_nulls_node);
 		sk_nulls_node_init(&sk->sk_nulls_node);
 		sock_put(sk);
 		isk->inet_num = 0;
 		isk->inet_sport = 0;
 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+<<<<<<< HEAD
 		write_unlock_bh(&ping_table.lock);
 	}
+=======
+	}
+	write_unlock_bh(&ping_table.lock);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL_GPL(ping_unhash);
 
@@ -644,6 +656,11 @@ static int ping_v4_push_pending_frames(struct sock *sk, struct pingfakehdr *pfh,
 {
 	struct sk_buff *skb = skb_peek(&sk->sk_write_queue);
 
+<<<<<<< HEAD
+=======
+	if (!skb)
+		return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pfh->wcheck = csum_partial((char *)&pfh->icmph,
 		sizeof(struct icmphdr), pfh->wcheck);
 	pfh->icmph.checksum = csum_fold(pfh->wcheck);
@@ -656,9 +673,19 @@ int ping_common_sendmsg(int family, struct msghdr *msg, size_t len,
 			void *user_icmph, size_t icmph_len) {
 	u8 type, code;
 
+<<<<<<< HEAD
 	if (len > 0xFFFF || len < icmph_len)
 		return -EMSGSIZE;
 
+=======
+	if (len > 0xFFFF)
+		return -EMSGSIZE;
+
+	/* Must have at least a full ICMP header. */
+	if (len < icmph_len)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 *	Check the flags.
 	 */
@@ -746,8 +773,15 @@ static int ping_v4_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *m
 
 	if (msg->msg_controllen) {
 		err = ip_cmsg_send(sock_net(sk), msg, &ipc, false);
+<<<<<<< HEAD
 		if (err)
 			return err;
+=======
+		if (unlikely(err)) {
+			kfree(ipc.opt);
+			return err;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ipc.opt)
 			free = 1;
 	}
@@ -768,8 +802,15 @@ static int ping_v4_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *m
 	ipc.addr = faddr = daddr;
 
 	if (ipc.opt && ipc.opt->opt.srr) {
+<<<<<<< HEAD
 		if (!daddr)
 			return -EINVAL;
+=======
+		if (!daddr) {
+			err = -EINVAL;
+			goto out_free;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		faddr = ipc.opt->opt.faddr;
 	}
 	tos = get_rttos(&ipc, inet);
@@ -790,7 +831,14 @@ static int ping_v4_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *m
 	flowi4_init_output(&fl4, ipc.oif, sk->sk_mark, tos,
 			   RT_SCOPE_UNIVERSE, sk->sk_protocol,
 			   inet_sk_flowi_flags(sk), faddr, saddr, 0, 0,
+<<<<<<< HEAD
 			   sock_i_uid(sk));
+=======
+			   sk->sk_uid);
+
+	fl4.fl4_icmp_type = user_icmph.type;
+	fl4.fl4_icmp_code = user_icmph.code;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	security_sk_classify_flow(sk, flowi4_to_flowi(&fl4));
 	rt = ip_route_output_flow(net, &fl4, sk);
@@ -835,6 +883,10 @@ back_from_confirm:
 
 out:
 	ip_rt_put(rt);
+<<<<<<< HEAD
+=======
+out_free:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (free)
 		kfree(ipc.opt);
 	if (!err) {
@@ -980,11 +1032,18 @@ void ping_rcv(struct sk_buff *skb)
 		pr_debug("rcv on socket %p\n", sk);
 		if (skb2)
 			ping_queue_rcv_skb(sk, skb2);
+<<<<<<< HEAD
 		/*mtk_net: don't put sock here, do sock_put after free skb*/
 		/* sock_put(sk); */			
 		return;
 	}
 	pr_info("[mtk_net][ping_debug]no socket, dropping\n");
+=======
+		sock_put(sk);
+		return;
+	}
+	pr_debug("no socket, dropping\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* We're called from icmp_rcv(). kfree_skb() is done there. */
 }

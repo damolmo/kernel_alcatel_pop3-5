@@ -65,6 +65,16 @@ static inline int is_arch_mappable_range(unsigned long addr,
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ * Note that using this definition ignores is_arch_mappable_range(),
+ * so on tilepro code that uses user_addr_max() is constrained not
+ * to reference the tilepro user-interrupt region.
+ */
+#define user_addr_max() (current_thread_info()->addr_limit.seg)
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Test whether a block of memory is a valid user space address.
  * Returns 0 if the range is valid, nonzero otherwise.
  */
@@ -462,6 +472,7 @@ copy_in_user(void __user *to, const void __user *from, unsigned long n)
 #endif
 
 
+<<<<<<< HEAD
 /**
  * strlen_user: - Get the size of a string in user space.
  * @str: The string to measure.
@@ -518,6 +529,11 @@ static inline long __must_check strncpy_from_user(
 		return __strncpy_from_user(dst, src, count);
 	return -EFAULT;
 }
+=======
+extern long strnlen_user(const char __user *str, long n);
+extern long strlen_user(const char __user *str);
+extern long strncpy_from_user(char *dst, const char __user *src, long);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  * clear_user: - Zero a block of memory in user space.

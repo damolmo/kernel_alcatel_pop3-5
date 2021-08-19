@@ -138,6 +138,10 @@
 #define GSC_OUT_YUV420_3P		(3 << 4)
 #define GSC_OUT_YUV422_1P		(4 << 4)
 #define GSC_OUT_YUV422_2P		(5 << 4)
+<<<<<<< HEAD
+=======
+#define GSC_OUT_YUV422_3P		(6 << 4)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define GSC_OUT_YUV444			(7 << 4)
 #define GSC_OUT_TILE_TYPE_MASK		(1 << 2)
 #define GSC_OUT_TILE_C_16x8		(0 << 2)

@@ -90,6 +90,10 @@ module_param_named(debug, i8042_debug, bool, 0600);
 MODULE_PARM_DESC(debug, "Turn i8042 debugging mode on and off");
 #endif
 
+<<<<<<< HEAD
+=======
+static bool i8042_present;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static bool i8042_bypass_aux_irq_test;
 static char i8042_kbd_firmware_id[128];
 static char i8042_aux_firmware_id[128];
@@ -306,6 +310,12 @@ int i8042_command(unsigned char *param, int command)
 	unsigned long flags;
 	int retval;
 
+<<<<<<< HEAD
+=======
+	if (!i8042_present)
+		return -1;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_lock_irqsave(&i8042_lock, flags);
 	retval = __i8042_command(param, command);
 	spin_unlock_irqrestore(&i8042_lock, flags);
@@ -397,8 +407,15 @@ static int i8042_start(struct serio *serio)
 {
 	struct i8042_port *port = serio->port_data;
 
+<<<<<<< HEAD
 	port->exists = true;
 	mb();
+=======
+	spin_lock_irq(&i8042_lock);
+	port->exists = true;
+	spin_unlock_irq(&i8042_lock);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return 0;
 }
 
@@ -411,16 +428,30 @@ static void i8042_stop(struct serio *serio)
 {
 	struct i8042_port *port = serio->port_data;
 
+<<<<<<< HEAD
 	port->exists = false;
 
 	/*
+=======
+	spin_lock_irq(&i8042_lock);
+	port->exists = false;
+	port->serio = NULL;
+	spin_unlock_irq(&i8042_lock);
+
+	/*
+	 * We need to make sure that interrupt handler finishes using
+	 * our serio port before we return from this function.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 * We synchronize with both AUX and KBD IRQs because there is
 	 * a (very unlikely) chance that AUX IRQ is raised for KBD port
 	 * and vice versa.
 	 */
 	synchronize_irq(I8042_AUX_IRQ);
 	synchronize_irq(I8042_KBD_IRQ);
+<<<<<<< HEAD
 	port->serio = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -537,7 +568,11 @@ static irqreturn_t i8042_interrupt(int irq, void *dev_id)
 
 	spin_unlock_irqrestore(&i8042_lock, flags);
 
+<<<<<<< HEAD
 	if (likely(port->exists && !filtered))
+=======
+	if (likely(serio && !filtered))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		serio_interrupt(serio, data, dfl);
 
  out:
@@ -1230,6 +1265,10 @@ static int __init i8042_create_kbd_port(void)
 	serio->start		= i8042_start;
 	serio->stop		= i8042_stop;
 	serio->close		= i8042_port_close;
+<<<<<<< HEAD
+=======
+	serio->ps2_cmd_mutex	= &i8042_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	serio->port_data	= port;
 	serio->dev.parent	= &i8042_platform_device->dev;
 	strlcpy(serio->name, "i8042 KBD port", sizeof(serio->name));
@@ -1257,6 +1296,10 @@ static int __init i8042_create_aux_port(int idx)
 	serio->write		= i8042_aux_write;
 	serio->start		= i8042_start;
 	serio->stop		= i8042_stop;
+<<<<<<< HEAD
+=======
+	serio->ps2_cmd_mutex	= &i8042_mutex;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	serio->port_data	= port;
 	serio->dev.parent	= &i8042_platform_device->dev;
 	if (idx < 0) {
@@ -1323,6 +1366,7 @@ static void i8042_unregister_ports(void)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * Checks whether port belongs to i8042 controller.
  */
@@ -1338,6 +1382,8 @@ bool i8042_check_port_owner(const struct serio *port)
 }
 EXPORT_SYMBOL(i8042_check_port_owner);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void i8042_free_irqs(void)
 {
 	if (i8042_aux_irq_registered)
@@ -1376,7 +1422,12 @@ static int __init i8042_setup_aux(void)
 	if (error)
 		goto err_free_ports;
 
+<<<<<<< HEAD
 	if (aux_enable())
+=======
+	error = aux_enable();
+	if (error)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto err_free_irq;
 
 	i8042_aux_irq_registered = true;
@@ -1495,12 +1546,22 @@ static int __init i8042_init(void)
 
 	err = i8042_platform_init();
 	if (err)
+<<<<<<< HEAD
 		return err;
+=======
+		return (err == -ENODEV) ? 0 : err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	err = i8042_controller_check();
 	if (err)
 		goto err_platform_exit;
 
+<<<<<<< HEAD
+=======
+	/* Set this before creating the dev to allow i8042_command to work right away */
+	i8042_present = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	pdev = platform_create_bundle(&i8042_driver, i8042_probe, NULL, 0, NULL, 0);
 	if (IS_ERR(pdev)) {
 		err = PTR_ERR(pdev);
@@ -1518,6 +1579,12 @@ static int __init i8042_init(void)
 
 static void __exit i8042_exit(void)
 {
+<<<<<<< HEAD
+=======
+	if (!i8042_present)
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	platform_device_unregister(i8042_platform_device);
 	platform_driver_unregister(&i8042_driver);
 	i8042_platform_exit();

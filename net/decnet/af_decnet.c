@@ -678,6 +678,12 @@ static int dn_create(struct net *net, struct socket *sock, int protocol,
 {
 	struct sock *sk;
 
+<<<<<<< HEAD
+=======
+	if (protocol < 0 || protocol > SK_PROTOCOL_MAX)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!net_eq(net, &init_net))
 		return -EAFNOSUPPORT;
 
@@ -1334,6 +1340,15 @@ static int dn_setsockopt(struct socket *sock, int level, int optname, char __use
 	lock_sock(sk);
 	err = __dn_setsockopt(sock, level, optname, optval, optlen, 0);
 	release_sock(sk);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NETFILTER
+	/* we need to exclude all possible ENOPROTOOPTs except default case */
+	if (err == -ENOPROTOOPT && optname != DSO_LINKINFO &&
+	    optname != DSO_STREAM && optname != DSO_SEQPACKET)
+		err = nf_setsockopt(sk, PF_DECnet, optname, optval, optlen);
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return err;
 }
@@ -1441,6 +1456,7 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 		dn_nsp_send_disc(sk, 0x38, 0, sk->sk_allocation);
 		break;
 
+<<<<<<< HEAD
 	default:
 #ifdef CONFIG_NETFILTER
 		return nf_setsockopt(sk, PF_DECnet, optname, optval, optlen);
@@ -1450,6 +1466,8 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 	case DSO_SEQPACKET:
 		return -ENOPROTOOPT;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case DSO_MAXWINDOW:
 		if (optlen != sizeof(unsigned long))
 			return -EINVAL;
@@ -1497,6 +1515,15 @@ static int __dn_setsockopt(struct socket *sock, int level,int optname, char __us
 			return -EINVAL;
 		scp->info_loc = u.info;
 		break;
+<<<<<<< HEAD
+=======
+
+	case DSO_LINKINFO:
+	case DSO_STREAM:
+	case DSO_SEQPACKET:
+	default:
+		return -ENOPROTOOPT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -1510,6 +1537,23 @@ static int dn_getsockopt(struct socket *sock, int level, int optname, char __use
 	lock_sock(sk);
 	err = __dn_getsockopt(sock, level, optname, optval, optlen, 0);
 	release_sock(sk);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NETFILTER
+	if (err == -ENOPROTOOPT && optname != DSO_STREAM &&
+	    optname != DSO_SEQPACKET && optname != DSO_CONACCEPT &&
+	    optname != DSO_CONREJECT) {
+		int len;
+
+		if (get_user(len, optlen))
+			return -EFAULT;
+
+		err = nf_getsockopt(sk, PF_DECnet, optname, optval, &len);
+		if (err >= 0)
+			err = put_user(len, optlen);
+	}
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return err;
 }
@@ -1575,6 +1619,7 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 		r_data = &link;
 		break;
 
+<<<<<<< HEAD
 	default:
 #ifdef CONFIG_NETFILTER
 	{
@@ -1595,6 +1640,8 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 	case DSO_CONREJECT:
 		return -ENOPROTOOPT;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case DSO_MAXWINDOW:
 		if (r_len > sizeof(unsigned long))
 			r_len = sizeof(unsigned long);
@@ -1626,6 +1673,16 @@ static int __dn_getsockopt(struct socket *sock, int level,int optname, char __us
 			r_len = sizeof(unsigned char);
 		r_data = &scp->info_rem;
 		break;
+<<<<<<< HEAD
+=======
+
+	case DSO_STREAM:
+	case DSO_SEQPACKET:
+	case DSO_CONACCEPT:
+	case DSO_CONREJECT:
+	default:
+		return -ENOPROTOOPT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (r_data) {

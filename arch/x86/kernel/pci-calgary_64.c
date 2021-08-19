@@ -296,7 +296,11 @@ static void iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr,
 
 	/* were we called with bad_dma_address? */
 	badend = DMA_ERROR_CODE + (EMERGENCY_PAGES * PAGE_SIZE);
+<<<<<<< HEAD
 	if (unlikely((dma_addr >= DMA_ERROR_CODE) && (dma_addr < badend))) {
+=======
+	if (unlikely(dma_addr < badend)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		WARN(1, KERN_ERR "Calgary: driver tried unmapping bad DMA "
 		       "address 0x%Lx\n", dma_addr);
 		return;

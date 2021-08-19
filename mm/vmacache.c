@@ -6,6 +6,7 @@
 #include <linux/vmacache.h>
 
 /*
+<<<<<<< HEAD
  * Flush vma caches for threads that share a given mm.
  *
  * The operation is safe because the caller holds the mmap_sem
@@ -42,6 +43,8 @@ void vmacache_flush_all(struct mm_struct *mm)
 }
 
 /*
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * This task may be accessing a foreign mm via (for example)
  * get_user_pages()->find_vma().  The vmacache is task-local and this
  * task's vmacache pertains to a different mm (ie, its own).  There is

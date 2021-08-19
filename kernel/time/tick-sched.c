@@ -468,6 +468,7 @@ update_ts_time_stats(int cpu, struct tick_sched *ts, ktime_t now, u64 *last_upda
 
 }
 
+<<<<<<< HEAD
 static void
 update_ts_time_stats_wo_cpuoffline(int cpu, struct tick_sched *ts, ktime_t now, u64 *last_update_time)
 {
@@ -499,6 +500,11 @@ static void tick_nohz_stop_idle(struct tick_sched *ts, ktime_t now)
 {
 	update_ts_time_stats(smp_processor_id(), ts, now, NULL);
 	update_ts_time_stats_wo_cpuoffline(smp_processor_id(), ts, now, NULL);
+=======
+static void tick_nohz_stop_idle(struct tick_sched *ts, ktime_t now)
+{
+	update_ts_time_stats(smp_processor_id(), ts, now, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ts->idle_active = 0;
 
 	sched_clock_idle_wakeup_event(0);
@@ -509,7 +515,10 @@ static ktime_t tick_nohz_start_idle(struct tick_sched *ts)
 	ktime_t now = ktime_get();
 
 	ts->idle_entrytime = now;
+<<<<<<< HEAD
 	ts->idle_entrytime_wo_cpuoffline = now;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ts->idle_active = 1;
 	sched_clock_idle_sleep_event();
 	return now;
@@ -556,6 +565,7 @@ u64 get_cpu_idle_time_us(int cpu, u64 *last_update_time)
 }
 EXPORT_SYMBOL_GPL(get_cpu_idle_time_us);
 
+<<<<<<< HEAD
 u64 get_cpu_idle_time_us_wo_cpuoffline(int cpu, u64 *last_update_time)
 {
 	struct tick_sched *ts = &per_cpu(tick_cpu_sched, cpu);
@@ -584,6 +594,8 @@ u64 get_cpu_idle_time_us_wo_cpuoffline(int cpu, u64 *last_update_time)
 EXPORT_SYMBOL_GPL(get_cpu_idle_time_us_wo_cpuoffline);
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * get_cpu_iowait_time_us - get the total iowait time of a cpu
  * @cpu: CPU number to query
@@ -624,6 +636,7 @@ u64 get_cpu_iowait_time_us(int cpu, u64 *last_update_time)
 }
 EXPORT_SYMBOL_GPL(get_cpu_iowait_time_us);
 
+<<<<<<< HEAD
 u64 get_cpu_iowait_time_us_wo_cpuoffline(int cpu, u64 *last_update_time)
 {
 	struct tick_sched *ts = &per_cpu(tick_cpu_sched, cpu);
@@ -651,6 +664,8 @@ u64 get_cpu_iowait_time_us_wo_cpuoffline(int cpu, u64 *last_update_time)
 EXPORT_SYMBOL_GPL(get_cpu_iowait_time_us_wo_cpuoffline);
 
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static ktime_t tick_nohz_stop_sched_tick(struct tick_sched *ts,
 					 ktime_t now, int cpu)
 {
@@ -929,8 +944,11 @@ void tick_nohz_idle_enter(void)
 	ts->inidle = 1;
 	__tick_nohz_idle_enter(ts);
 
+<<<<<<< HEAD
 	tick_set_cpu_plugoff_flag(0);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	local_irq_enable();
 }
 
@@ -1284,8 +1302,12 @@ void tick_cancel_sched_timer(int cpu)
 		hrtimer_cancel(&ts->sched_timer);
 # endif
 
+<<<<<<< HEAD
 	/*memset(ts, 0, sizeof(*ts));*/ /*to avoid idle time clear to 0 after CPU plug off*/
 	ts->nohz_mode = NOHZ_MODE_INACTIVE;
+=======
+	memset(ts, 0, sizeof(*ts));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 #endif
 

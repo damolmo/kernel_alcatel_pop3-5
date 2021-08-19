@@ -4,9 +4,15 @@
  */
 
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/mmu_context.h>
 #include <linux/export.h>
 #include <linux/sched.h>
+=======
+#include <linux/sched.h>
+#include <linux/mmu_context.h>
+#include <linux/export.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/mmu_context.h>
 

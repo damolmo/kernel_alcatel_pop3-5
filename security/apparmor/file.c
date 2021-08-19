@@ -110,7 +110,12 @@ int aa_audit_file(struct aa_profile *profile, struct file_perms *perms,
 	int type = AUDIT_APPARMOR_AUTO;
 	struct common_audit_data sa;
 	struct apparmor_audit_data aad = {0,};
+<<<<<<< HEAD
 	sa.type = LSM_AUDIT_DATA_NONE;
+=======
+	sa.type = LSM_AUDIT_DATA_TASK;
+	sa.u.tsk = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	sa.aad = &aad;
 	aad.op = op,
 	aad.fs.request = request;

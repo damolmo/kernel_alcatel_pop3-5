@@ -70,7 +70,15 @@ ATOMIC_OPS(sub)
 #define atomic64_add_negative(i, v) (atomic64_add_return(i, v) < 0)
 
 #define atomic_cmpxchg(v, o, n) (cmpxchg(&((v)->counter), (o), (n)))
+<<<<<<< HEAD
 #define atomic_xchg(v, new) (xchg(&((v)->counter), new))
+=======
+
+static inline int atomic_xchg(atomic_t *v, int new)
+{
+	return xchg(&v->counter, new);
+}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 {

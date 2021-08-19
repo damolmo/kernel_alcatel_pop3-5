@@ -744,6 +744,10 @@ void ath9k_hw_set_interrupts(struct ath_hw *ah);
 void ath9k_hw_enable_interrupts(struct ath_hw *ah);
 void ath9k_hw_disable_interrupts(struct ath_hw *ah);
 void ath9k_hw_kill_interrupts(struct ath_hw *ah);
+<<<<<<< HEAD
+=======
+void ath9k_hw_resume_interrupts(struct ath_hw *ah);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 void ar9002_hw_attach_mac_ops(struct ath_hw *ah);
 

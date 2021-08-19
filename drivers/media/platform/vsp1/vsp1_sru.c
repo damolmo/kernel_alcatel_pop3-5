@@ -154,6 +154,10 @@ static int sru_s_stream(struct v4l2_subdev *subdev, int enable)
 	mutex_lock(sru->ctrls.lock);
 	ctrl0 |= vsp1_sru_read(sru, VI6_SRU_CTRL0)
 	       & (VI6_SRU_CTRL0_PARAM0_MASK | VI6_SRU_CTRL0_PARAM1_MASK);
+<<<<<<< HEAD
+=======
+	vsp1_sru_write(sru, VI6_SRU_CTRL0, ctrl0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(sru->ctrls.lock);
 
 	vsp1_sru_write(sru, VI6_SRU_CTRL1, VI6_SRU_CTRL1_PARAM5);

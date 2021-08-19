@@ -196,7 +196,11 @@ static int uninorth_insert_memory(struct agp_memory *mem, off_t pg_start, int ty
 	return 0;
 }
 
+<<<<<<< HEAD
 int uninorth_remove_memory(struct agp_memory *mem, off_t pg_start, int type)
+=======
+static int uninorth_remove_memory(struct agp_memory *mem, off_t pg_start, int type)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	size_t i;
 	u32 *gp;
@@ -467,7 +471,11 @@ static int uninorth_free_gatt_table(struct agp_bridge_data *bridge)
 	return 0;
 }
 
+<<<<<<< HEAD
 void null_cache_flush(void)
+=======
+static void null_cache_flush(void)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	mb();
 }

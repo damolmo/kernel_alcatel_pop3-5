@@ -406,6 +406,7 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 
 	ubifs_pad(c, buf + len, ALIGN(len, c->min_io_size) - len);
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_FS_FULL_USE_LOG
 	/* Not Switch to next log LEB, programming next available page in the same log LEB continuously*/
 
@@ -419,12 +420,15 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 		ubifs_msg("switch log LEB %d:%d to %d:%d\n", old_lnum, old_offs, c->lhead_lnum, c->lhead_offs);
 	}
 #else
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Switch to the next log LEB */
 	if (c->lhead_offs) {
 		c->lhead_lnum = ubifs_next_log_lnum(c, c->lhead_lnum);
 		ubifs_assert(c->lhead_lnum != c->ltail_lnum);
 		c->lhead_offs = 0;
 	}
+<<<<<<< HEAD
 #endif
 
 	if (c->lhead_offs == 0) {
@@ -437,6 +441,17 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 	len = ALIGN(len, c->min_io_size);
 	dbg_log("writing commit start at LEB %d:0, len %d", c->lhead_lnum, len);
 	err = ubifs_leb_write(c, c->lhead_lnum, cs, c->lhead_offs, len); /*MTK, modify offset 0 -> c->lhead_offs*/
+=======
+
+	/* Must ensure next LEB has been unmapped */
+	err = ubifs_leb_unmap(c, c->lhead_lnum);
+	if (err)
+		goto out;
+
+	len = ALIGN(len, c->min_io_size);
+	dbg_log("writing commit start at LEB %d:0, len %d", c->lhead_lnum, len);
+	err = ubifs_leb_write(c, c->lhead_lnum, cs, 0, len);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (err)
 		goto out;
 
@@ -653,10 +668,13 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 	struct rb_root done_tree = RB_ROOT;
 	int lnum, err, first = 1, write_lnum, offs = 0;
 	void *buf;
+<<<<<<< HEAD
 #if defined(CONFIG_UBIFS_FS_FULL_USE_LOG)
 	const struct ubifs_cs_node *node;
 	unsigned long long cs_sqnum = 0;
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dbg_rcvry("log tail LEB %d, log head LEB %d", c->ltail_lnum,
 		  c->lhead_lnum);
@@ -666,6 +684,7 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 	lnum = c->ltail_lnum;
 	write_lnum = lnum;
 	while (1) {
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 		if (mutex_trylock(&ubifs_sbuf_mutex) == 0) {
 			atomic_long_inc(&ubifs_sbuf_lock_count);
@@ -702,6 +721,14 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 					continue;
 			}
 #endif
+=======
+		sleb = ubifs_scan(c, lnum, 0, c->sbuf, 0);
+		if (IS_ERR(sleb)) {
+			err = PTR_ERR(sleb);
+			goto out_free;
+		}
+		list_for_each_entry(snod, &sleb->nodes, list) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			switch (snod->type) {
 			case UBIFS_REF_NODE: {
 				struct ubifs_ref_node *ref = snod->node;
@@ -730,9 +757,12 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 			}
 		}
 		ubifs_scan_destroy(sleb);
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 		mutex_unlock(&ubifs_sbuf_mutex);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (lnum == c->lhead_lnum)
 			break;
 		lnum = ubifs_next_log_lnum(c, lnum);
@@ -767,9 +797,12 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 
 out_scan:
 	ubifs_scan_destroy(sleb);
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	mutex_unlock(&ubifs_sbuf_mutex);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 out_free:
 	destroy_done_tree(&done_tree);
 	vfree(buf);

@@ -124,9 +124,13 @@ int xfrm6_output_finish(struct sk_buff *skb)
 	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
 	skb->protocol = htons(ETH_P_IPV6);
 
+<<<<<<< HEAD
 #ifdef CONFIG_NETFILTER
 	IP6CB(skb)->flags |= IP6SKB_XFRM_TRANSFORMED;
 #endif
+=======
+	IP6CB(skb)->flags |= IP6SKB_XFRM_TRANSFORMED;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return xfrm_output(skb);
 }
@@ -151,9 +155,17 @@ static int __xfrm6_output(struct sk_buff *skb)
 
 	if (skb->len > mtu && xfrm6_local_dontfrag(skb)) {
 		xfrm6_local_rxpmtu(skb, mtu);
+<<<<<<< HEAD
 		return -EMSGSIZE;
 	} else if (!skb->ignore_df && skb->len > mtu && skb->sk) {
 		xfrm_local_error(skb, mtu);
+=======
+		kfree_skb(skb);
+		return -EMSGSIZE;
+	} else if (!skb->ignore_df && skb->len > mtu && skb->sk) {
+		xfrm_local_error(skb, mtu);
+		kfree_skb(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EMSGSIZE;
 	}
 

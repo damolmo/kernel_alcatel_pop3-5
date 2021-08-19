@@ -2,11 +2,16 @@
 
 #include <linux/kernel.h>
 #include <linux/console.h>
+<<<<<<< HEAD
+=======
+#include <linux/errno.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/string.h>
 
 #include "console_cmdline.h"
 #include "braille.h"
 
+<<<<<<< HEAD
 char *_braille_console_setup(char **str, char **brl_options)
 {
 	if (!memcmp(*str, "brl,", 4)) {
@@ -23,6 +28,24 @@ char *_braille_console_setup(char **str, char **brl_options)
 		return NULL;
 
 	return *str;
+=======
+int _braille_console_setup(char **str, char **brl_options)
+{
+	if (!strncmp(*str, "brl,", 4)) {
+		*brl_options = "";
+		*str += 4;
+	} else if (!strncmp(*str, "brl=", 4)) {
+		*brl_options = *str + 4;
+		*str = strchr(*brl_options, ',');
+		if (!*str) {
+			pr_err("need port name after brl=\n");
+			return -EINVAL;
+		}
+		*((*str)++) = 0;
+	}
+
+	return 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int

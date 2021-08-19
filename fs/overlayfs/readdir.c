@@ -36,7 +36,11 @@ struct ovl_dir_cache {
 
 struct ovl_readdir_data {
 	struct dir_context ctx;
+<<<<<<< HEAD
 	bool is_merge;
+=======
+	bool is_lowest;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct rb_root root;
 	struct list_head *list;
 	struct list_head middle;
@@ -133,9 +137,15 @@ static int ovl_cache_entry_add_rb(struct ovl_readdir_data *rdd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ovl_fill_lower(struct ovl_readdir_data *rdd,
 			  const char *name, int namelen,
 			  loff_t offset, u64 ino, unsigned int d_type)
+=======
+static int ovl_fill_lowest(struct ovl_readdir_data *rdd,
+			   const char *name, int namelen,
+			   loff_t offset, u64 ino, unsigned int d_type)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct ovl_cache_entry *p;
 
@@ -186,10 +196,17 @@ static int ovl_fill_merge(void *buf, const char *name, int namelen,
 	struct ovl_readdir_data *rdd = buf;
 
 	rdd->count++;
+<<<<<<< HEAD
 	if (!rdd->is_merge)
 		return ovl_cache_entry_add_rb(rdd, name, namelen, ino, d_type);
 	else
 		return ovl_fill_lower(rdd, name, namelen, offset, ino, d_type);
+=======
+	if (!rdd->is_lowest)
+		return ovl_cache_entry_add_rb(rdd, name, namelen, ino, d_type);
+	else
+		return ovl_fill_lowest(rdd, name, namelen, offset, ino, d_type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static inline int ovl_dir_read(struct path *realpath,
@@ -283,7 +300,11 @@ static int ovl_dir_read_merged(struct dentry *dentry, struct list_head *list)
 		.ctx.actor = ovl_fill_merge,
 		.list = list,
 		.root = RB_ROOT,
+<<<<<<< HEAD
 		.is_merge = false,
+=======
+		.is_lowest = false,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	};
 
 	ovl_path_lower(dentry, &lowerpath);
@@ -306,7 +327,11 @@ static int ovl_dir_read_merged(struct dentry *dentry, struct list_head *list)
 		 * offsets to be reasonably constant
 		 */
 		list_add(&rdd.middle, rdd.list);
+<<<<<<< HEAD
 		rdd.is_merge = true;
+=======
+		rdd.is_lowest = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		err = ovl_dir_read(&lowerpath, &rdd);
 		list_del(&rdd.middle);
 	}
@@ -447,10 +472,21 @@ static int ovl_dir_fsync(struct file *file, loff_t start, loff_t end,
 	struct dentry *dentry = file->f_path.dentry;
 	struct file *realfile = od->realfile;
 
+<<<<<<< HEAD
 	/*
 	 * Need to check if we started out being a lower dir, but got copied up
 	 */
 	if (!od->is_upper && ovl_path_type(dentry) != OVL_PATH_LOWER) {
+=======
+	/* Nothing to sync for lower */
+	if (ovl_path_type(dentry) != OVL_PATH_UPPER)
+		return 0;
+
+	/*
+	 * Need to check if we started out being a lower dir, but got copied up
+	 */
+	if (!od->is_upper) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		struct inode *inode = file_inode(file);
 
 		realfile = lockless_dereference(od->upperfile);
@@ -579,7 +615,12 @@ void ovl_cleanup_whiteouts(struct dentry *upper, struct list_head *list)
 			       (int) PTR_ERR(dentry));
 			continue;
 		}
+<<<<<<< HEAD
 		ovl_cleanup(upper->d_inode, dentry);
+=======
+		if (dentry->d_inode)
+			ovl_cleanup(upper->d_inode, dentry);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dput(dentry);
 	}
 	mutex_unlock(&upper->d_inode->i_mutex);

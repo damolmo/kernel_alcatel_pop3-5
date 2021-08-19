@@ -24,8 +24,15 @@ const char *get_system_type(void)
 	return soc_info.sys_type;
 }
 
+<<<<<<< HEAD
 static __init void prom_init_cmdline(int argc, char **argv)
 {
+=======
+static __init void prom_init_cmdline(void)
+{
+	int argc;
+	char **argv;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int i;
 
 	pr_debug("prom: fw_arg0=%08x fw_arg1=%08x fw_arg2=%08x fw_arg3=%08x\n",
@@ -54,14 +61,21 @@ static __init void prom_init_cmdline(int argc, char **argv)
 
 void __init prom_init(void)
 {
+<<<<<<< HEAD
 	int argc;
 	char **argv;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	prom_soc_init(&soc_info);
 
 	pr_info("SoC Type: %s\n", get_system_type());
 
+<<<<<<< HEAD
 	prom_init_cmdline(argc, argv);
+=======
+	prom_init_cmdline();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __init prom_free_prom_memory(void)

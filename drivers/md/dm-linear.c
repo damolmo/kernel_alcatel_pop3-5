@@ -25,7 +25,11 @@ struct linear_c {
 /*
  * Construct a linear mapping: <dev_path> <offset>
  */
+<<<<<<< HEAD
 static int linear_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+=======
+int dm_linear_ctr(struct dm_target *ti, unsigned int argc, char **argv)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct linear_c *lc;
 	unsigned long long tmp;
@@ -63,14 +67,24 @@ static int linear_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	kfree(lc);
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
 static void linear_dtr(struct dm_target *ti)
+=======
+EXPORT_SYMBOL_GPL(dm_linear_ctr);
+
+void dm_linear_dtr(struct dm_target *ti)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct linear_c *lc = (struct linear_c *) ti->private;
 
 	dm_put_device(ti, lc->dev);
 	kfree(lc);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(dm_linear_dtr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static sector_t linear_map_sector(struct dm_target *ti, sector_t bi_sector)
 {
@@ -89,14 +103,24 @@ static void linear_map_bio(struct dm_target *ti, struct bio *bio)
 			linear_map_sector(ti, bio->bi_iter.bi_sector);
 }
 
+<<<<<<< HEAD
 static int linear_map(struct dm_target *ti, struct bio *bio)
+=======
+int dm_linear_map(struct dm_target *ti, struct bio *bio)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	linear_map_bio(ti, bio);
 
 	return DM_MAPIO_REMAPPED;
 }
+<<<<<<< HEAD
 
 static void linear_status(struct dm_target *ti, status_type_t type,
+=======
+EXPORT_SYMBOL_GPL(dm_linear_map);
+
+void dm_linear_status(struct dm_target *ti, status_type_t type,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			  unsigned status_flags, char *result, unsigned maxlen)
 {
 	struct linear_c *lc = (struct linear_c *) ti->private;
@@ -112,8 +136,14 @@ static void linear_status(struct dm_target *ti, status_type_t type,
 		break;
 	}
 }
+<<<<<<< HEAD
 
 static int linear_ioctl(struct dm_target *ti, unsigned int cmd,
+=======
+EXPORT_SYMBOL_GPL(dm_linear_status);
+
+int dm_linear_ioctl(struct dm_target *ti, unsigned int cmd,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			unsigned long arg)
 {
 	struct linear_c *lc = (struct linear_c *) ti->private;
@@ -129,8 +159,14 @@ static int linear_ioctl(struct dm_target *ti, unsigned int cmd,
 
 	return r ? : __blkdev_driver_ioctl(dev->bdev, dev->mode, cmd, arg);
 }
+<<<<<<< HEAD
 
 static int linear_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
+=======
+EXPORT_SYMBOL_GPL(dm_linear_ioctl);
+
+int dm_linear_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			struct bio_vec *biovec, int max_size)
 {
 	struct linear_c *lc = ti->private;
@@ -144,19 +180,30 @@ static int linear_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 
 	return min(max_size, q->merge_bvec_fn(q, bvm, biovec));
 }
+<<<<<<< HEAD
 
 static int linear_iterate_devices(struct dm_target *ti,
+=======
+EXPORT_SYMBOL_GPL(dm_linear_merge);
+
+int dm_linear_iterate_devices(struct dm_target *ti,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				  iterate_devices_callout_fn fn, void *data)
 {
 	struct linear_c *lc = ti->private;
 
 	return fn(ti, lc->dev, lc->start, ti->len, data);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(dm_linear_iterate_devices);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static struct target_type linear_target = {
 	.name   = "linear",
 	.version = {1, 2, 1},
 	.module = THIS_MODULE,
+<<<<<<< HEAD
 	.ctr    = linear_ctr,
 	.dtr    = linear_dtr,
 	.map    = linear_map,
@@ -164,6 +211,15 @@ static struct target_type linear_target = {
 	.ioctl  = linear_ioctl,
 	.merge  = linear_merge,
 	.iterate_devices = linear_iterate_devices,
+=======
+	.ctr    = dm_linear_ctr,
+	.dtr    = dm_linear_dtr,
+	.map    = dm_linear_map,
+	.status = dm_linear_status,
+	.ioctl  = dm_linear_ioctl,
+	.merge  = dm_linear_merge,
+	.iterate_devices = dm_linear_iterate_devices,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 int __init dm_linear_init(void)

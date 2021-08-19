@@ -83,10 +83,19 @@ static void free_buffer_page(struct ion_system_heap *heap,
 	unsigned int order = compound_order(page);
 	bool cached = ion_buffer_cached(buffer);
 
+<<<<<<< HEAD
 	if (!cached && !(buffer->private_flags & ION_PRIV_FLAG_SHRINKER_FREE)) {
 		struct ion_page_pool *pool = heap->pools[order_to_index(order)];
 
 		ion_page_pool_free(pool, page);
+=======
+	if (!cached) {
+		struct ion_page_pool *pool = heap->pools[order_to_index(order)];
+		if (buffer->private_flags & ION_PRIV_FLAG_SHRINKER_FREE)
+			ion_page_pool_free_immediate(pool, page);
+		else
+			ion_page_pool_free(pool, page);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else {
 		__free_pages(page, order);
 	}

@@ -76,6 +76,10 @@ static int hidp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long 
 			sockfd_put(csock);
 			return err;
 		}
+<<<<<<< HEAD
+=======
+		ca.name[sizeof(ca.name)-1] = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		err = hidp_connection_add(&ca, csock, isock);
 		if (!err && copy_to_user(argp, &ca, sizeof(ca)))

@@ -268,6 +268,7 @@ static inline u16 volt2reg(int channel, long volt, u8 bypass_attn)
 	long reg;
 
 	if (bypass_attn & (1 << channel))
+<<<<<<< HEAD
 		reg = (volt * 1024) / 2250;
 	else
 		reg = (volt * r[1] * 1024) / ((r[0] + r[1]) * 2250);
@@ -282,6 +283,27 @@ static u16 adt7475_read_word(struct i2c_client *client, int reg)
 	val |= (i2c_smbus_read_byte_data(client, reg + 1) << 8);
 
 	return val;
+=======
+		reg = DIV_ROUND_CLOSEST(volt * 1024, 2250);
+	else
+		reg = DIV_ROUND_CLOSEST(volt * r[1] * 1024,
+					(r[0] + r[1]) * 2250);
+	return clamp_val(reg, 0, 1023) & (0xff << 2);
+}
+
+static int adt7475_read_word(struct i2c_client *client, int reg)
+{
+	int val1, val2;
+
+	val1 = i2c_smbus_read_byte_data(client, reg);
+	if (val1 < 0)
+		return val1;
+	val2 = i2c_smbus_read_byte_data(client, reg + 1);
+	if (val2 < 0)
+		return val2;
+
+	return val1 | (val2 << 8);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void adt7475_write_word(struct i2c_client *client, int reg, u16 val)

@@ -117,7 +117,11 @@ static int mpl115_read_raw(struct iio_dev *indio_dev,
 		*val = ret >> 6;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_OFFSET:
+<<<<<<< HEAD
 		*val = 605;
+=======
+		*val = -605;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*val2 = 750000;
 		return IIO_VAL_INT_PLUS_MICRO;
 	case IIO_CHAN_INFO_SCALE:
@@ -136,6 +140,10 @@ static const struct iio_chan_spec mpl115_channels[] = {
 	{
 		.type = IIO_TEMP,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+<<<<<<< HEAD
+=======
+		.info_mask_shared_by_type =
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_SCALE),
 	},
 };

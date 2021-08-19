@@ -801,7 +801,13 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
 								      hw_queue);
 			if (rx_remained_cnt == 0)
 				return;
+<<<<<<< HEAD
 
+=======
+			buffer_desc = &rtlpci->rx_ring[rxring_idx].buffer_desc[
+				rtlpci->rx_ring[rxring_idx].idx];
+			pdesc = (struct rtl_rx_desc *)skb->data;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else {	/* rx descriptor */
 			pdesc = &rtlpci->rx_ring[rxring_idx].desc[
 				rtlpci->rx_ring[rxring_idx].idx];
@@ -824,6 +830,7 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
 		new_skb = dev_alloc_skb(rtlpci->rxbuffersize);
 		if (unlikely(!new_skb))
 			goto no_new;
+<<<<<<< HEAD
 		if (rtlpriv->use_new_trx_flow) {
 			buffer_desc =
 			  &rtlpci->rx_ring[rxring_idx].buffer_desc
@@ -831,6 +838,8 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
 			/*means rx wifi info*/
 			pdesc = (struct rtl_rx_desc *)skb->data;
 		}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		memset(&rx_status , 0 , sizeof(rx_status));
 		rtlpriv->cfg->ops->query_rx_desc(hw, &stats,
 						 &rx_status, (u8 *)pdesc, skb);
@@ -1578,7 +1587,11 @@ int rtl_pci_reset_trx_ring(struct ieee80211_hw *hw)
 							 true,
 							 HW_DESC_TXBUFF_ADDR),
 						 skb->len, PCI_DMA_TODEVICE);
+<<<<<<< HEAD
 				kfree_skb(skb);
+=======
+				dev_kfree_skb_irq(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				ring->idx = (ring->idx + 1) % ring->entries;
 			}
 			ring->idx = 0;

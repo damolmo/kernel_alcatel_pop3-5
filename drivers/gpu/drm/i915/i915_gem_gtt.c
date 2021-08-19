@@ -1745,6 +1745,10 @@ void i915_global_gtt_cleanup(struct drm_device *dev)
 		struct i915_hw_ppgtt *ppgtt = dev_priv->mm.aliasing_ppgtt;
 
 		ppgtt->base.cleanup(&ppgtt->base);
+<<<<<<< HEAD
+=======
+		kfree(ppgtt);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (drm_mm_initialized(&vm->mm)) {

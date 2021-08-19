@@ -843,6 +843,11 @@ void core_tpg_remove_lun(
 	struct se_portal_group *tpg,
 	struct se_lun *lun)
 {
+<<<<<<< HEAD
+=======
+	lun->lun_shutdown = true;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	core_clear_lun_from_tpg(lun, tpg);
 	transport_clear_lun_ref(lun);
 
@@ -850,6 +855,10 @@ void core_tpg_remove_lun(
 
 	spin_lock(&tpg->tpg_lun_lock);
 	lun->lun_status = TRANSPORT_LUN_STATUS_FREE;
+<<<<<<< HEAD
+=======
+	lun->lun_shutdown = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&tpg->tpg_lun_lock);
 
 	percpu_ref_exit(&lun->lun_ref);

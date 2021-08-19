@@ -195,6 +195,19 @@ static int mxs_pinctrl_get_func_groups(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void mxs_pinctrl_rmwl(u32 value, u32 mask, u8 shift, void __iomem *reg)
+{
+	u32 tmp;
+
+	tmp = readl(reg);
+	tmp &= ~(mask << shift);
+	tmp |= value << shift;
+	writel(tmp, reg);
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int mxs_pinctrl_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
 			       unsigned group)
 {
@@ -212,8 +225,12 @@ static int mxs_pinctrl_set_mux(struct pinctrl_dev *pctldev, unsigned selector,
 		reg += bank * 0x20 + pin / 16 * 0x10;
 		shift = pin % 16 * 2;
 
+<<<<<<< HEAD
 		writel(0x3 << shift, reg + CLR);
 		writel(g->muxsel[i] << shift, reg + SET);
+=======
+		mxs_pinctrl_rmwl(g->muxsel[i], 0x3, shift, reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return 0;
@@ -280,8 +297,12 @@ static int mxs_pinconf_group_set(struct pinctrl_dev *pctldev,
 			/* mA */
 			if (config & MA_PRESENT) {
 				shift = pin % 8 * 4;
+<<<<<<< HEAD
 				writel(0x3 << shift, reg + CLR);
 				writel(ma << shift, reg + SET);
+=======
+				mxs_pinctrl_rmwl(ma, 0x3, shift, reg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 
 			/* vol */

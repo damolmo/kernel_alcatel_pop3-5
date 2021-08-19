@@ -625,6 +625,12 @@ int mei_cl_connect(struct mei_cl *cl, struct file *file)
 
 	dev = cl->dev;
 
+<<<<<<< HEAD
+=======
+	if (!mei_cl_is_connected(cl))
+		return -ENODEV;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	rets = pm_runtime_get(dev->dev);
 	if (rets < 0 && rets != -EINPROGRESS) {
 		pm_runtime_put_noidle(dev->dev);

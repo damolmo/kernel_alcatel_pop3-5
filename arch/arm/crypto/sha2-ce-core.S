@@ -69,18 +69,41 @@
 	.word		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 
 	/*
+<<<<<<< HEAD
 	 * void sha2_ce_transform(struct sha256_state *sst, u8 const *src,
 				  int blocks);
 	 */
 ENTRY(sha2_ce_transform)
 	/* load state */
 	vld1.32		{dga-dgb}, [r0]
+=======
+	 * void sha2_ce_transform(int blocks, u8 const *src, u32 *state,
+	 *			  u8 *head);
+	 */
+ENTRY(sha2_ce_transform)
+	/* load state */
+	vld1.32		{dga-dgb}, [r2]
+
+	/* load partial input (if supplied) */
+	teq		r3, #0
+	beq		0f
+	vld1.32		{q0-q1}, [r3]!
+	vld1.32		{q2-q3}, [r3]
+	teq		r0, #0
+	b		1f
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* load input */
 0:	vld1.32		{q0-q1}, [r1]!
 	vld1.32		{q2-q3}, [r1]!
+<<<<<<< HEAD
 	subs		r2, r2, #1
 
+=======
+	subs		r0, r0, #1
+
+1:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifndef CONFIG_CPU_BIG_ENDIAN
 	vrev32.8	q0, q0
 	vrev32.8	q1, q1
@@ -120,6 +143,10 @@ ENTRY(sha2_ce_transform)
 	bne		0b
 
 	/* store new state */
+<<<<<<< HEAD
 	vst1.32		{dga-dgb}, [r0]
+=======
+	vst1.32		{dga-dgb}, [r2]
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	bx		lr
 ENDPROC(sha2_ce_transform)

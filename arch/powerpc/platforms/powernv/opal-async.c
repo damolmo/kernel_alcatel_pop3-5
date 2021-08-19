@@ -39,18 +39,30 @@ int __opal_async_get_token(void)
 	int token;
 
 	spin_lock_irqsave(&opal_async_comp_lock, flags);
+<<<<<<< HEAD
 	token = find_first_bit(opal_async_complete_map, opal_max_async_tokens);
+=======
+	token = find_first_zero_bit(opal_async_token_map, opal_max_async_tokens);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (token >= opal_max_async_tokens) {
 		token = -EBUSY;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (__test_and_set_bit(token, opal_async_token_map)) {
+=======
+	if (!__test_and_clear_bit(token, opal_async_complete_map)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		token = -EBUSY;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	__clear_bit(token, opal_async_complete_map);
+=======
+	__set_bit(token, opal_async_token_map);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 out:
 	spin_unlock_irqrestore(&opal_async_comp_lock, flags);

@@ -840,3 +840,7 @@ module_platform_driver(asoc_ssp_driver);
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("PXA SSP/PCM SoC Interface");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:pxa-ssp-dai");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

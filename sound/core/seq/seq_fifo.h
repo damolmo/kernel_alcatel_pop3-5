@@ -68,5 +68,10 @@ int snd_seq_fifo_poll_wait(struct snd_seq_fifo *f, struct file *file, poll_table
 /* resize pool in fifo */
 int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize);
 
+<<<<<<< HEAD
+=======
+/* get the number of unused cells safely */
+int snd_seq_fifo_unused_cells(struct snd_seq_fifo *f);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif

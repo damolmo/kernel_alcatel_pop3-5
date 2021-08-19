@@ -180,6 +180,12 @@ cifs_get_next_mid(struct TCP_Server_Info *server)
 	/* we do not want to loop forever */
 	last_mid = cur_mid;
 	cur_mid++;
+<<<<<<< HEAD
+=======
+	/* avoid 0xFFFF MID */
+	if (cur_mid == 0xffff)
+		cur_mid++;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * This nested loop looks more expensive than it is.
@@ -305,7 +311,11 @@ coalesce_t2(char *second_buf, struct smb_hdr *target_hdr)
 	remaining = tgt_total_cnt - total_in_tgt;
 
 	if (remaining < 0) {
+<<<<<<< HEAD
 		cifs_dbg(FYI, "Server sent too much data. tgt_total_cnt=%hu total_in_tgt=%hu\n",
+=======
+		cifs_dbg(FYI, "Server sent too much data. tgt_total_cnt=%hu total_in_tgt=%u\n",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			 tgt_total_cnt, total_in_tgt);
 		return -EPROTO;
 	}
@@ -849,8 +859,18 @@ cifs_query_dir_first(const unsigned int xid, struct cifs_tcon *tcon,
 		     struct cifs_fid *fid, __u16 search_flags,
 		     struct cifs_search_info *srch_inf)
 {
+<<<<<<< HEAD
 	return CIFSFindFirst(xid, tcon, path, cifs_sb,
 			     &fid->netfid, search_flags, srch_inf, true);
+=======
+	int rc;
+
+	rc = CIFSFindFirst(xid, tcon, path, cifs_sb,
+			   &fid->netfid, search_flags, srch_inf, true);
+	if (rc)
+		cifs_dbg(FYI, "find first failed=%d\n", rc);
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static int
@@ -1014,6 +1034,18 @@ cifs_dir_needs_close(struct cifsFileInfo *cfile)
 	return !cfile->srch_inf.endOfSearch && !cfile->invalidHandle;
 }
 
+<<<<<<< HEAD
+=======
+static bool
+cifs_can_echo(struct TCP_Server_Info *server)
+{
+	if (server->tcpStatus == CifsGood)
+		return true;
+
+	return false;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct smb_version_operations smb1_operations = {
 	.send_cancel = send_nt_cancel,
 	.compare_fids = cifs_compare_fids,
@@ -1048,6 +1080,10 @@ struct smb_version_operations smb1_operations = {
 	.get_dfs_refer = CIFSGetDFSRefer,
 	.qfs_tcon = cifs_qfs_tcon,
 	.is_path_accessible = cifs_is_path_accessible,
+<<<<<<< HEAD
+=======
+	.can_echo = cifs_can_echo,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.query_path_info = cifs_query_path_info,
 	.query_file_info = cifs_query_file_info,
 	.get_srv_inum = cifs_get_srv_inum,

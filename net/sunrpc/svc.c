@@ -1061,6 +1061,11 @@ void svc_printk(struct svc_rqst *rqstp, const char *fmt, ...)
 static __printf(2,3) void svc_printk(struct svc_rqst *rqstp, const char *fmt, ...) {}
 #endif
 
+<<<<<<< HEAD
+=======
+extern void svc_tcp_prep_reply_hdr(struct svc_rqst *);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Common routine for processing the RPC request.
  */
@@ -1090,7 +1095,12 @@ svc_process_common(struct svc_rqst *rqstp, struct kvec *argv, struct kvec *resv)
 	rqstp->rq_dropme = false;
 
 	/* Setup reply header */
+<<<<<<< HEAD
 	rqstp->rq_xprt->xpt_ops->xpo_prep_reply_hdr(rqstp);
+=======
+	if (rqstp->rq_prot == IPPROTO_TCP)
+		svc_tcp_prep_reply_hdr(rqstp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	svc_putu32(resv, rqstp->rq_xid);
 
@@ -1137,7 +1147,12 @@ svc_process_common(struct svc_rqst *rqstp, struct kvec *argv, struct kvec *resv)
 	case SVC_DENIED:
 		goto err_bad_auth;
 	case SVC_CLOSE:
+<<<<<<< HEAD
 		if (test_bit(XPT_TEMP, &rqstp->rq_xprt->xpt_flags))
+=======
+		if (rqstp->rq_xprt &&
+		    test_bit(XPT_TEMP, &rqstp->rq_xprt->xpt_flags))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			svc_close_xprt(rqstp->rq_xprt);
 	case SVC_DROP:
 		goto dropit;
@@ -1192,6 +1207,14 @@ svc_process_common(struct svc_rqst *rqstp, struct kvec *argv, struct kvec *resv)
 				procp->pc_release(rqstp, NULL, rqstp->rq_resp);
 			goto dropit;
 		}
+<<<<<<< HEAD
+=======
+		if (*statp == rpc_autherr_badcred) {
+			if (procp->pc_release)
+				procp->pc_release(rqstp, NULL, rqstp->rq_resp);
+			goto err_bad_auth;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (*statp == rpc_success &&
 		    (xdr = procp->pc_encode) &&
 		    !xdr(rqstp, resv->iov_base+resv->iov_len, rqstp->rq_resp)) {
@@ -1347,10 +1370,17 @@ bc_svc_process(struct svc_serv *serv, struct rpc_rqst *req,
 	struct kvec	*resv = &rqstp->rq_res.head[0];
 
 	/* Build the svc_rqst used by the common processing routine */
+<<<<<<< HEAD
 	rqstp->rq_xprt = serv->sv_bc_xprt;
 	rqstp->rq_xid = req->rq_xid;
 	rqstp->rq_prot = req->rq_xprt->prot;
 	rqstp->rq_server = serv;
+=======
+	rqstp->rq_xid = req->rq_xid;
+	rqstp->rq_prot = req->rq_xprt->prot;
+	rqstp->rq_server = serv;
+	rqstp->rq_bc_net = req->rq_xprt->xprt_net;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	rqstp->rq_addrlen = sizeof(req->rq_xprt->addr);
 	memcpy(&rqstp->rq_addr, &req->rq_xprt->addr, rqstp->rq_addrlen);

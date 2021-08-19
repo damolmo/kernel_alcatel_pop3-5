@@ -19,6 +19,12 @@
 static struct nf_logger __rcu *loggers[NFPROTO_NUMPROTO][NF_LOG_TYPE_MAX] __read_mostly;
 static DEFINE_MUTEX(nf_log_mutex);
 
+<<<<<<< HEAD
+=======
+#define nft_log_dereference(logger) \
+	rcu_dereference_protected(logger, lockdep_is_held(&nf_log_mutex))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static struct nf_logger *__find_logger(int pf, const char *str_logger)
 {
 	struct nf_logger *log;
@@ -28,8 +34,12 @@ static struct nf_logger *__find_logger(int pf, const char *str_logger)
 		if (loggers[pf][i] == NULL)
 			continue;
 
+<<<<<<< HEAD
 		log = rcu_dereference_protected(loggers[pf][i],
 						lockdep_is_held(&nf_log_mutex));
+=======
+		log = nft_log_dereference(loggers[pf][i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!strncasecmp(str_logger, log->name, strlen(log->name)))
 			return log;
 	}
@@ -45,8 +55,12 @@ void nf_log_set(struct net *net, u_int8_t pf, const struct nf_logger *logger)
 		return;
 
 	mutex_lock(&nf_log_mutex);
+<<<<<<< HEAD
 	log = rcu_dereference_protected(net->nf.nf_loggers[pf],
 					lockdep_is_held(&nf_log_mutex));
+=======
+	log = nft_log_dereference(net->nf.nf_loggers[pf]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (log == NULL)
 		rcu_assign_pointer(net->nf.nf_loggers[pf], logger);
 
@@ -61,8 +75,12 @@ void nf_log_unset(struct net *net, const struct nf_logger *logger)
 
 	mutex_lock(&nf_log_mutex);
 	for (i = 0; i < NFPROTO_NUMPROTO; i++) {
+<<<<<<< HEAD
 		log = rcu_dereference_protected(net->nf.nf_loggers[i],
 				lockdep_is_held(&nf_log_mutex));
+=======
+		log = nft_log_dereference(net->nf.nf_loggers[i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (log == logger)
 			RCU_INIT_POINTER(net->nf.nf_loggers[i], NULL);
 	}
@@ -97,12 +115,26 @@ EXPORT_SYMBOL(nf_log_register);
 
 void nf_log_unregister(struct nf_logger *logger)
 {
+<<<<<<< HEAD
 	int i;
 
 	mutex_lock(&nf_log_mutex);
 	for (i = 0; i < NFPROTO_NUMPROTO; i++)
 		RCU_INIT_POINTER(loggers[i][logger->type], NULL);
 	mutex_unlock(&nf_log_mutex);
+=======
+	const struct nf_logger *log;
+	int i;
+
+	mutex_lock(&nf_log_mutex);
+	for (i = 0; i < NFPROTO_NUMPROTO; i++) {
+		log = nft_log_dereference(loggers[i][logger->type]);
+		if (log == logger)
+			RCU_INIT_POINTER(loggers[i][logger->type], NULL);
+	}
+	mutex_unlock(&nf_log_mutex);
+	synchronize_rcu();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 EXPORT_SYMBOL(nf_log_unregister);
 
@@ -297,8 +329,12 @@ static int seq_show(struct seq_file *s, void *v)
 	int i, ret;
 	struct net *net = seq_file_net(s);
 
+<<<<<<< HEAD
 	logger = rcu_dereference_protected(net->nf.nf_loggers[*pos],
 					   lockdep_is_held(&nf_log_mutex));
+=======
+	logger = nft_log_dereference(net->nf.nf_loggers[*pos]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!logger)
 		ret = seq_printf(s, "%2lld NONE (", *pos);
@@ -312,8 +348,12 @@ static int seq_show(struct seq_file *s, void *v)
 		if (loggers[*pos][i] == NULL)
 			continue;
 
+<<<<<<< HEAD
 		logger = rcu_dereference_protected(loggers[*pos][i],
 					   lockdep_is_held(&nf_log_mutex));
+=======
+		logger = nft_log_dereference(loggers[*pos][i]);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		ret = seq_printf(s, "%s", logger->name);
 		if (ret < 0)
 			return ret;
@@ -363,7 +403,11 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
 	size_t size = *lenp;
 	int r = 0;
 	int tindex = (unsigned long)table->extra1;
+<<<<<<< HEAD
 	struct net *net = current->nsproxy->net_ns;
+=======
+	struct net *net = table->extra2;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (write) {
 		if (size > sizeof(buf))
@@ -384,6 +428,7 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
 		rcu_assign_pointer(net->nf.nf_loggers[tindex], logger);
 		mutex_unlock(&nf_log_mutex);
 	} else {
+<<<<<<< HEAD
 		mutex_lock(&nf_log_mutex);
 		logger = rcu_dereference_protected(net->nf.nf_loggers[tindex],
 						   lockdep_is_held(&nf_log_mutex));
@@ -393,6 +438,19 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
 			table->data = logger->name;
 		r = proc_dostring(table, write, buffer, lenp, ppos);
 		mutex_unlock(&nf_log_mutex);
+=======
+		struct ctl_table tmp = *table;
+
+		tmp.data = buf;
+		mutex_lock(&nf_log_mutex);
+		logger = nft_log_dereference(net->nf.nf_loggers[tindex]);
+		if (!logger)
+			strlcpy(buf, "NONE", sizeof(buf));
+		else
+			strlcpy(buf, logger->name, sizeof(buf));
+		mutex_unlock(&nf_log_mutex);
+		r = proc_dostring(&tmp, write, buffer, lenp, ppos);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	return r;
@@ -416,7 +474,10 @@ static int netfilter_log_sysctl_init(struct net *net)
 				 3, "%d", i);
 			nf_log_sysctl_table[i].procname	=
 				nf_log_sysctl_fnames[i];
+<<<<<<< HEAD
 			nf_log_sysctl_table[i].data = NULL;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			nf_log_sysctl_table[i].maxlen =
 				NFLOGGER_NAME_LEN * sizeof(char);
 			nf_log_sysctl_table[i].mode = 0644;
@@ -427,6 +488,12 @@ static int netfilter_log_sysctl_init(struct net *net)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	for (i = NFPROTO_UNSPEC; i < NFPROTO_NUMPROTO; i++)
+		table[i].extra2 = net;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	net->nf.nf_log_dir_header = register_net_sysctl(net,
 						"net/netfilter/nf_log",
 						table);

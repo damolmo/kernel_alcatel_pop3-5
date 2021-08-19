@@ -293,7 +293,11 @@ int imx6q_set_lpm(enum mxc_cpu_pwr_mode mode)
 		val |= 0x3 << BP_CLPCR_STBY_COUNT;
 		val |= BM_CLPCR_VSTBY;
 		val |= BM_CLPCR_SBYOS;
+<<<<<<< HEAD
 		if (cpu_is_imx6sl())
+=======
+		if (cpu_is_imx6sl() || cpu_is_imx6sx())
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			val |= BM_CLPCR_BYPASS_PMIC_READY;
 		if (cpu_is_imx6sl() || cpu_is_imx6sx())
 			val |= BM_CLPCR_BYP_MMDC_CH0_LPM_HS;

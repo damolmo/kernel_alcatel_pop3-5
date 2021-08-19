@@ -486,6 +486,10 @@ int zone_instance_to_index(int zone_inst)
 int update_thermal_data()
 {
 	int i;
+<<<<<<< HEAD
+=======
+	int next_thermal_record = cur_thermal_record + 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	char tz_name[256];
 	static unsigned long samples;
 
@@ -495,9 +499,15 @@ int update_thermal_data()
 	}
 
 	/* circular buffer for keeping historic data */
+<<<<<<< HEAD
 	if (cur_thermal_record >= NR_THERMAL_RECORDS)
 		cur_thermal_record = 0;
 	gettimeofday(&trec[cur_thermal_record].tv, NULL);
+=======
+	if (next_thermal_record >= NR_THERMAL_RECORDS)
+		next_thermal_record = 0;
+	gettimeofday(&trec[next_thermal_record].tv, NULL);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (tmon_log) {
 		fprintf(tmon_log, "%lu ", ++samples);
 		fprintf(tmon_log, "%3.1f ", p_param.t_target);
@@ -507,11 +517,20 @@ int update_thermal_data()
 		snprintf(tz_name, 256, "%s/%s%d", THERMAL_SYSFS, TZONE,
 			ptdata.tzi[i].instance);
 		sysfs_get_ulong(tz_name, "temp",
+<<<<<<< HEAD
 				&trec[cur_thermal_record].temp[i]);
 		if (tmon_log)
 			fprintf(tmon_log, "%lu ",
 				trec[cur_thermal_record].temp[i]/1000);
 	}
+=======
+				&trec[next_thermal_record].temp[i]);
+		if (tmon_log)
+			fprintf(tmon_log, "%lu ",
+				trec[next_thermal_record].temp[i] / 1000);
+	}
+	cur_thermal_record = next_thermal_record;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < ptdata.nr_cooling_dev; i++) {
 		char cdev_name[256];
 		unsigned long val;

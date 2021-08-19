@@ -187,6 +187,7 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 	struct scsi_device *SDev;
 	struct scsi_sense_hdr sshdr;
 	int result, err = 0, retries = 0;
+<<<<<<< HEAD
 	struct request_sense *sense = cgc->sense;
 
 	SDev = cd->device;
@@ -199,18 +200,36 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 		}
 	}
 
+=======
+	unsigned char sense_buffer[SCSI_SENSE_BUFFERSIZE];
+
+	SDev = cd->device;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
       retry:
 	if (!scsi_block_when_processing_errors(SDev)) {
 		err = -ENODEV;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	memset(sense, 0, sizeof(*sense));
 	result = scsi_execute(SDev, cgc->cmd, cgc->data_direction,
 			      cgc->buffer, cgc->buflen, (char *)sense,
 			      cgc->timeout, IOCTL_RETRIES, 0, NULL);
 
 	scsi_normalize_sense((char *)sense, sizeof(*sense), &sshdr);
+=======
+	memset(sense_buffer, 0, sizeof(sense_buffer));
+	result = scsi_execute(SDev, cgc->cmd, cgc->data_direction,
+			      cgc->buffer, cgc->buflen, sense_buffer,
+			      cgc->timeout, IOCTL_RETRIES, 0, NULL);
+
+	scsi_normalize_sense(sense_buffer, sizeof(sense_buffer), &sshdr);
+
+	if (cgc->sense)
+		memcpy(cgc->sense, sense_buffer, sizeof(*cgc->sense));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Minimal error checking.  Ignore cases we know about, and report the rest. */
 	if (driver_byte(result) != 0) {
@@ -272,8 +291,11 @@ int sr_do_ioctl(Scsi_CD *cd, struct packet_command *cgc)
 
 	/* Wake up a process waiting for device */
       out:
+<<<<<<< HEAD
 	if (!cgc->sense)
 		kfree(sense);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cgc->stat = err;
 	return err;
 }

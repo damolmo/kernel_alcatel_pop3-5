@@ -690,11 +690,24 @@ static int lg_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
 	/* Setup wireless link with Logitech Wii wheel */
 	if (hdev->product == USB_DEVICE_ID_LOGITECH_WII_WHEEL) {
+<<<<<<< HEAD
 		unsigned char buf[] = { 0x00, 0xAF,  0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 		ret = hid_hw_raw_request(hdev, buf[0], buf, sizeof(buf),
 					HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
 
+=======
+		const unsigned char cbuf[] = { 0x00, 0xAF,  0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+		u8 *buf = kmemdup(cbuf, sizeof(cbuf), GFP_KERNEL);
+
+		if (!buf) {
+			ret = -ENOMEM;
+			goto err_free;
+		}
+
+		ret = hid_hw_raw_request(hdev, buf[0], buf, sizeof(cbuf),
+					HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (ret >= 0) {
 			/* insert a little delay of 10 jiffies ~ 40ms */
 			wait_queue_head_t wait;
@@ -705,9 +718,16 @@ static int lg_probe(struct hid_device *hdev, const struct hid_device_id *id)
 			buf[1] = 0xB2;
 			get_random_bytes(&buf[2], 2);
 
+<<<<<<< HEAD
 			ret = hid_hw_raw_request(hdev, buf[0], buf, sizeof(buf),
 					HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
 		}
+=======
+			ret = hid_hw_raw_request(hdev, buf[0], buf, sizeof(cbuf),
+					HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
+		}
+		kfree(buf);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (drv_data->quirks & LG_FF)

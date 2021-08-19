@@ -865,11 +865,18 @@ static irqreturn_t ftmac100_interrupt(int irq, void *dev_id)
 	struct net_device *netdev = dev_id;
 	struct ftmac100 *priv = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	if (likely(netif_running(netdev))) {
 		/* Disable interrupts for polling */
 		ftmac100_disable_all_int(priv);
 		napi_schedule(&priv->napi);
 	}
+=======
+	/* Disable interrupts for polling */
+	ftmac100_disable_all_int(priv);
+	if (likely(netif_running(netdev)))
+		napi_schedule(&priv->napi);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return IRQ_HANDLED;
 }

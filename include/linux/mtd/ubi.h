@@ -219,7 +219,10 @@ int ubi_leb_unmap(struct ubi_volume_desc *desc, int lnum);
 int ubi_leb_map(struct ubi_volume_desc *desc, int lnum);
 int ubi_is_mapped(struct ubi_volume_desc *desc, int lnum);
 int ubi_sync(int ubi_num);
+<<<<<<< HEAD
 int ubi_flush_all(struct ubi_volume_desc *desc);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ubi_flush(int ubi_num, int vol_id, int lnum);
 
 /*

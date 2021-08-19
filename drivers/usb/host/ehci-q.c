@@ -40,6 +40,13 @@
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+/* PID Codes that are used here, from EHCI specification, Table 3-16. */
+#define PID_CODE_IN    1
+#define PID_CODE_SETUP 2
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /* fill a qtd, returning how much of the buffer we were able to queue up */
 
 static int
@@ -199,7 +206,11 @@ static int qtd_copy_status (
 	int	status = -EINPROGRESS;
 
 	/* count IN/OUT bytes, not SETUP (even short packets) */
+<<<<<<< HEAD
 	if (likely (QTD_PID (token) != 2))
+=======
+	if (likely(QTD_PID(token) != PID_CODE_SETUP))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		urb->actual_length += length - QTD_LENGTH (token);
 
 	/* don't modify error codes */
@@ -215,6 +226,16 @@ static int qtd_copy_status (
 		if (token & QTD_STS_BABBLE) {
 			/* FIXME "must" disable babbling device's port too */
 			status = -EOVERFLOW;
+<<<<<<< HEAD
+=======
+		/*
+		 * When MMF is active and PID Code is IN, queue is halted.
+		 * EHCI Specification, Table 4-13.
+		 */
+		} else if ((token & QTD_STS_MMF) &&
+					(QTD_PID(token) == PID_CODE_IN)) {
+			status = -EPROTO;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* CERR nonzero + halt --> stall */
 		} else if (QTD_CERR(token)) {
 			status = -EPIPE;

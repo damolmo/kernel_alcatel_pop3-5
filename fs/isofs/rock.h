@@ -65,7 +65,11 @@ struct RR_PL_s {
 };
 
 struct stamp {
+<<<<<<< HEAD
 	char time[7];
+=======
+	__u8 time[7];		/* actually 6 unsigned, 1 signed */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 } __attribute__ ((packed));
 
 struct RR_TF_s {

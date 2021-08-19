@@ -564,6 +564,10 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 
 		if (bucket >= ls->ls_rsbtbl_size) {
 			kfree(ri);
+<<<<<<< HEAD
+=======
+			++*pos;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return NULL;
 		}
 		tree = toss ? &ls->ls_rsbtbl[bucket].toss : &ls->ls_rsbtbl[bucket].keep;

@@ -745,6 +745,13 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x074: map_key_clear(KEY_BRIGHTNESS_MAX);		break;
 		case 0x075: map_key_clear(KEY_BRIGHTNESS_AUTO);		break;
 
+<<<<<<< HEAD
+=======
+		case 0x079: map_key_clear(KEY_KBDILLUMUP);	break;
+		case 0x07a: map_key_clear(KEY_KBDILLUMDOWN);	break;
+		case 0x07c: map_key_clear(KEY_KBDILLUMTOGGLE);	break;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		case 0x082: map_key_clear(KEY_VIDEO_NEXT);	break;
 		case 0x083: map_key_clear(KEY_LAST);		break;
 		case 0x084: map_key_clear(KEY_ENTER);		break;
@@ -875,6 +882,11 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 		case 0x2cb: map_key_clear(KEY_KBDINPUTASSIST_ACCEPT);	break;
 		case 0x2cc: map_key_clear(KEY_KBDINPUTASSIST_CANCEL);	break;
 
+<<<<<<< HEAD
+=======
+		case 0x29f: map_key_clear(KEY_SCALE);		break;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		default:    goto ignore;
 		}
 		break;
@@ -950,9 +962,25 @@ static void hidinput_configure_usage(struct hid_input *hidinput, struct hid_fiel
 	}
 
 mapped:
+<<<<<<< HEAD
 	if (device->driver->input_mapped && device->driver->input_mapped(device,
 				hidinput, field, usage, &bit, &max) < 0)
 		goto ignore;
+=======
+	/* Mapping failed, bail out */
+	if (!bit)
+		return;
+
+	if (device->driver->input_mapped &&
+	    device->driver->input_mapped(device, hidinput, field, usage,
+					 &bit, &max) < 0) {
+		/*
+		 * The driver indicated that no further generic handling
+		 * of the usage is desired.
+		 */
+		return;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	set_bit(usage->type, input->evbit);
 
@@ -1011,9 +1039,17 @@ mapped:
 		set_bit(MSC_SCAN, input->mscbit);
 	}
 
+<<<<<<< HEAD
 ignore:
 	return;
 
+=======
+	return;
+
+ignore:
+	usage->type = 0;
+	usage->code = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct hid_usage *usage, __s32 value)
@@ -1090,18 +1126,38 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct 
 
 	/*
 	 * Ignore out-of-range values as per HID specification,
+<<<<<<< HEAD
 	 * section 5.10 and 6.2.25.
+=======
+	 * section 5.10 and 6.2.25, when NULL state bit is present.
+	 * When it's not, clamp the value to match Microsoft's input
+	 * driver as mentioned in "Required HID usages for digitizers":
+	 * https://msdn.microsoft.com/en-us/library/windows/hardware/dn672278(v=vs.85).asp
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 *
 	 * The logical_minimum < logical_maximum check is done so that we
 	 * don't unintentionally discard values sent by devices which
 	 * don't specify logical min and max.
 	 */
 	if ((field->flags & HID_MAIN_ITEM_VARIABLE) &&
+<<<<<<< HEAD
 	    (field->logical_minimum < field->logical_maximum) &&
 	    (value < field->logical_minimum ||
 	     value > field->logical_maximum)) {
 		dbg_hid("Ignoring out-of-range value %x\n", value);
 		return;
+=======
+	    (field->logical_minimum < field->logical_maximum)) {
+		if (field->flags & HID_MAIN_ITEM_NULL_STATE &&
+		    (value < field->logical_minimum ||
+		     value > field->logical_maximum)) {
+			dbg_hid("Ignoring out-of-range value %x\n", value);
+			return;
+		}
+		value = clamp(value,
+			      field->logical_minimum,
+			      field->logical_maximum);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/*
@@ -1122,7 +1178,11 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct 
 		return;
 
 	/* report the usage code as scancode if the key status has changed */
+<<<<<<< HEAD
 	if (usage->type == EV_KEY && !!test_bit(usage->code, input->key) != value)
+=======
+	if (usage->type == EV_KEY && (!!test_bit(usage->code, input->key)) != value)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		input_event(input, EV_MSC, MSC_SCAN, usage->hid);
 
 	input_event(input, usage->type, usage->code, value);

@@ -19,6 +19,10 @@
 #include <linux/ktime.h>
 #include <linux/hrtimer.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/suspend.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <trace/events/power.h>
 
 #include "cpuidle.h"
@@ -32,7 +36,10 @@ LIST_HEAD(cpuidle_detected_devices);
 static int enabled_devices;
 static int off __read_mostly;
 static int initialized __read_mostly;
+<<<<<<< HEAD
 static bool use_deepest_state __read_mostly;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 int cpuidle_disabled(void)
 {
@@ -66,6 +73,7 @@ int cpuidle_play_dead(void)
 }
 
 /**
+<<<<<<< HEAD
  * cpuidle_use_deepest_state - Enable/disable the "deepest idle" mode.
  * @enable: Whether enable or disable the feature.
  *
@@ -84,6 +92,11 @@ void cpuidle_use_deepest_state(bool enable)
  * cpuidle_find_deepest_state - Find the state of the greatest exit latency.
  * @drv: cpuidle driver for a given CPU.
  * @dev: cpuidle device for a given CPU.
+=======
+ * cpuidle_find_deepest_state - Find deepest state meeting specific conditions.
+ * @drv: cpuidle driver for the given CPU.
+ * @dev: cpuidle device for the given CPU.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  */
 static int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
 				      struct cpuidle_device *dev)
@@ -105,6 +118,30 @@ static int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * cpuidle_enter_freeze - Enter an idle state suitable for suspend-to-idle.
+ *
+ * Find the deepest state available and enter it.
+ */
+void cpuidle_enter_freeze(void)
+{
+	struct cpuidle_device *dev = __this_cpu_read(cpuidle_devices);
+	struct cpuidle_driver *drv = cpuidle_get_cpu_driver(dev);
+	int index;
+
+	index = cpuidle_find_deepest_state(drv, dev);
+	if (index >= 0)
+		cpuidle_enter(drv, dev, index);
+	else
+		arch_cpu_idle();
+
+	/* Interrupts are enabled again here. */
+	local_irq_disable();
+}
+
+/**
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * cpuidle_enter_state - enter the state and update stats
  * @dev: cpuidle device for this cpu
  * @drv: cpuidle driver for this cpu
@@ -119,6 +156,12 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
 	ktime_t time_start, time_end;
 	s64 diff;
 
+<<<<<<< HEAD
+=======
+	/* Take note of the planned idle state. */
+	sched_idle_set_state(target_state, index);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	trace_cpu_idle_rcuidle(index, dev->cpu);
 	time_start = ktime_get();
 
@@ -127,7 +170,14 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
 	time_end = ktime_get();
 	trace_cpu_idle_rcuidle(PWR_EVENT_EXIT, dev->cpu);
 
+<<<<<<< HEAD
 	if (!cpuidle_state_is_coupled(dev, drv, entered_state))
+=======
+	/* The cpu is no longer idle or about to enter idle. */
+	sched_idle_set_state(NULL, -1);
+
+	if (!cpuidle_state_is_coupled(dev, drv, index))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		local_irq_enable();
 
 	diff = ktime_to_us(ktime_sub(time_end, time_start));
@@ -166,9 +216,12 @@ int cpuidle_select(struct cpuidle_driver *drv, struct cpuidle_device *dev)
 	if (!drv || !dev || !dev->enabled)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	if (unlikely(use_deepest_state))
 		return cpuidle_find_deepest_state(drv, dev);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return cpuidle_curr_governor->select(drv, dev);
 }
 
@@ -200,7 +253,11 @@ int cpuidle_enter(struct cpuidle_driver *drv, struct cpuidle_device *dev,
  */
 void cpuidle_reflect(struct cpuidle_device *dev, int index)
 {
+<<<<<<< HEAD
 	if (cpuidle_curr_governor->reflect && !unlikely(use_deepest_state))
+=======
+	if (cpuidle_curr_governor->reflect)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cpuidle_curr_governor->reflect(dev, index);
 }
 
@@ -355,6 +412,11 @@ static void __cpuidle_unregister_device(struct cpuidle_device *dev)
 	list_del(&dev->device_list);
 	per_cpu(cpuidle_devices, dev->cpu) = NULL;
 	module_put(drv->owner);
+<<<<<<< HEAD
+=======
+
+	dev->registered = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __cpuidle_device_init(struct cpuidle_device *dev)

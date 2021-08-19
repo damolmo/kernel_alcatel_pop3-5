@@ -22,7 +22,10 @@
 #include <linux/sched.h>
 #include <linux/scatterlist.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include "mtk/mtk_ion.h"
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "ion.h"
 #include "ion_priv.h"
 
@@ -38,10 +41,15 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 	struct page **pages = vmalloc(sizeof(struct page *) * npages);
 	struct page **tmp = pages;
 
+<<<<<<< HEAD
 	if (!pages) {
 		IONMSG("%s vmalloc failed pages is null.\n", __func__);
 		return NULL;
 	}
+=======
+	if (!pages)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (buffer->flags & ION_FLAG_CACHED)
 		pgprot = PAGE_KERNEL;
@@ -59,10 +67,15 @@ void *ion_heap_map_kernel(struct ion_heap *heap,
 	vaddr = vmap(pages, npages, VM_MAP, pgprot);
 	vfree(pages);
 
+<<<<<<< HEAD
 	if (vaddr == NULL) {
 		IONMSG("%s vmap failed vaddr is null.\n", __func__);
 		return ERR_PTR(-ENOMEM);
 	}
+=======
+	if (vaddr == NULL)
+		return ERR_PTR(-ENOMEM);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return vaddr;
 }
@@ -99,11 +112,16 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 		len = min(len, remainder);
 		ret = remap_pfn_range(vma, addr, page_to_pfn(page), len,
 				vma->vm_page_prot);
+<<<<<<< HEAD
 		if (ret) {
 			IONMSG("%s remap_pfn_range failed vma:0x%p, addr = %lu, pfn = %lu, len = %lu, ret = %d.\n",
 				__func__, vma, addr, page_to_pfn(page), len, ret);
 			return ret;
 		}
+=======
+		if (ret)
+			return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		addr += len;
 		if (addr >= vma->vm_end)
 			return 0;
@@ -113,6 +131,7 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 
 static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 {
+<<<<<<< HEAD
 	void *addr = vm_map_ram(pages, num, -1, pgprot);
 
 	if (!addr) {
@@ -121,6 +140,14 @@ static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
 	}
 	memset(addr, 0, PAGE_SIZE * num);
 	vm_unmap_ram(addr, num);
+=======
+	void *addr = vmap(pages, num, VM_MAP, pgprot);
+
+	if (!addr)
+		return -ENOMEM;
+	memset(addr, 0, PAGE_SIZE * num);
+	vunmap(addr);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return 0;
 }
@@ -137,10 +164,15 @@ static int ion_heap_sglist_zero(struct scatterlist *sgl, unsigned int nents,
 		pages[p++] = sg_page_iter_page(&piter);
 		if (p == ARRAY_SIZE(pages)) {
 			ret = ion_heap_clear_pages(pages, p, pgprot);
+<<<<<<< HEAD
 			if (ret) {
 				IONMSG("%s ion_heap_clear_pages failed.\n", __func__);
 				return ret;
 			}
+=======
+			if (ret)
+				return ret;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			p = 0;
 		}
 	}
@@ -174,6 +206,7 @@ int ion_heap_pages_zero(struct page *page, size_t size, pgprot_t pgprot)
 
 void ion_heap_freelist_add(struct ion_heap *heap, struct ion_buffer *buffer)
 {
+<<<<<<< HEAD
 	/* add by k, for mm heap to free mva */
 	if (heap->ops->add_freelist)
 		heap->ops->add_freelist(buffer);
@@ -184,6 +217,11 @@ void ion_heap_freelist_add(struct ion_heap *heap, struct ion_buffer *buffer)
 	if (heap->free_list_size > 200*1024*1024)
 		IONMSG("[ion_dbg] warning: free_list_size=0x%zu\n", heap->free_list_size);
 
+=======
+	spin_lock(&heap->free_lock);
+	list_add(&buffer->list, &heap->free_list);
+	heap->free_list_size += buffer->size;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	spin_unlock(&heap->free_lock);
 	wake_up(&heap->waitqueue);
 }
@@ -340,9 +378,16 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 {
 	struct ion_heap *heap = NULL;
 
+<<<<<<< HEAD
 	switch ((int)heap_data->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
 		pr_err("%s: Heap type is disabled: %d\n", __func__, heap_data->type);
+=======
+	switch (heap_data->type) {
+	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+		pr_err("%s: Heap type is disabled: %d\n", __func__,
+		       heap_data->type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return ERR_PTR(-EINVAL);
 	case ION_HEAP_TYPE_SYSTEM:
 		heap = ion_system_heap_create(heap_data);
@@ -353,12 +398,15 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 	case ION_HEAP_TYPE_CHUNK:
 		heap = ion_chunk_heap_create(heap_data);
 		break;
+<<<<<<< HEAD
 	case ION_HEAP_TYPE_MULTIMEDIA:
 		heap = ion_mm_heap_create(heap_data);
 		break;
 	case ION_HEAP_TYPE_FB:
 		heap = ion_fb_heap_create(heap_data);
 		break;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case ION_HEAP_TYPE_DMA:
 		heap = ion_cma_heap_create(heap_data);
 		break;
@@ -385,9 +433,16 @@ void ion_heap_destroy(struct ion_heap *heap)
 	if (!heap)
 		return;
 
+<<<<<<< HEAD
 	switch ((int)heap->type) {
 	case ION_HEAP_TYPE_SYSTEM_CONTIG:
 		pr_err("%s: Heap type is disabled: %d\n", __func__, heap->type);
+=======
+	switch (heap->type) {
+	case ION_HEAP_TYPE_SYSTEM_CONTIG:
+		pr_err("%s: Heap type is disabled: %d\n", __func__,
+		       heap->type);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	case ION_HEAP_TYPE_SYSTEM:
 		ion_system_heap_destroy(heap);
@@ -398,12 +453,15 @@ void ion_heap_destroy(struct ion_heap *heap)
 	case ION_HEAP_TYPE_CHUNK:
 		ion_chunk_heap_destroy(heap);
 		break;
+<<<<<<< HEAD
 	case ION_HEAP_TYPE_MULTIMEDIA:
 		ion_mm_heap_destroy(heap);
 		break;
 	case ION_HEAP_TYPE_FB:
 		ion_fb_heap_destroy(heap);
 		break;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case ION_HEAP_TYPE_DMA:
 		ion_cma_heap_destroy(heap);
 		break;

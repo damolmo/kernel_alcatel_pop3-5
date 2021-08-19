@@ -16,14 +16,21 @@
 #ifndef BOOT_BOOT_H
 #define BOOT_BOOT_H
 
+<<<<<<< HEAD
 #define STACK_SIZE	512	/* Minimum number of bytes for stack */
+=======
+#define STACK_SIZE	1024	/* Minimum number of bytes for stack */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #ifndef __ASSEMBLY__
 
 #include <stdarg.h>
 #include <linux/types.h>
 #include <linux/edd.h>
+<<<<<<< HEAD
 #include <asm/boot.h>
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/setup.h>
 #include "bitops.h"
 #include "ctype.h"

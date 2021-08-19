@@ -137,8 +137,13 @@ static int crypto_cts_encrypt(struct blkcipher_desc *desc,
 	lcldesc.info = desc->info;
 	lcldesc.flags = desc->flags;
 
+<<<<<<< HEAD
 	if (tot_blocks == 1) {
 		err = crypto_blkcipher_encrypt_iv(&lcldesc, dst, src, bsize);
+=======
+	if (tot_blocks <= 1) {
+		err = crypto_blkcipher_encrypt_iv(&lcldesc, dst, src, nbytes);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (nbytes <= bsize * 2) {
 		err = cts_cbc_encrypt(ctx, desc, dst, src, 0, nbytes);
 	} else {
@@ -232,8 +237,13 @@ static int crypto_cts_decrypt(struct blkcipher_desc *desc,
 	lcldesc.info = desc->info;
 	lcldesc.flags = desc->flags;
 
+<<<<<<< HEAD
 	if (tot_blocks == 1) {
 		err = crypto_blkcipher_decrypt_iv(&lcldesc, dst, src, bsize);
+=======
+	if (tot_blocks <= 1) {
+		err = crypto_blkcipher_decrypt_iv(&lcldesc, dst, src, nbytes);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	} else if (nbytes <= bsize * 2) {
 		err = cts_cbc_decrypt(ctx, desc, dst, src, 0, nbytes);
 	} else {

@@ -17,6 +17,10 @@
 #include <linux/seq_file.h>
 #include <linux/kallsyms.h>
 #include <linux/tick.h>
+<<<<<<< HEAD
+=======
+#include <linux/nmi.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include <asm/uaccess.h>
 
@@ -91,6 +95,12 @@ print_active_timers(struct seq_file *m, struct hrtimer_clock_base *base,
 
 next_one:
 	i = 0;
+<<<<<<< HEAD
+=======
+
+	touch_nmi_watchdog();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	raw_spin_lock_irqsave(&base->cpu_base->lock, flags);
 
 	curr = timerqueue_getnext(&base->active);
@@ -202,6 +212,11 @@ print_tickdevice(struct seq_file *m, struct tick_device *td, int cpu)
 {
 	struct clock_event_device *dev = td->evtdev;
 
+<<<<<<< HEAD
+=======
+	touch_nmi_watchdog();
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	SEQ_printf(m, "Tick Device: mode:     %d\n", td->mode);
 	if (cpu < 0)
 		SEQ_printf(m, "Broadcast device\n");
@@ -262,6 +277,7 @@ static inline void timer_list_header(struct seq_file *m, u64 now)
 	SEQ_printf(m, "\n");
 }
 
+<<<<<<< HEAD
 static int timer_list_show(struct seq_file *m, void *v)
 {
 	struct timer_list_iter *iter = v;
@@ -279,6 +295,8 @@ static int timer_list_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 void sysrq_timer_list_show(void)
 {
 	u64 now = ktime_to_ns(ktime_get());
@@ -297,6 +315,27 @@ void sysrq_timer_list_show(void)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PROC_FS
+static int timer_list_show(struct seq_file *m, void *v)
+{
+	struct timer_list_iter *iter = v;
+
+	if (iter->cpu == -1 && !iter->second_pass)
+		timer_list_header(m, iter->now);
+	else if (!iter->second_pass)
+		print_cpu(m, iter->cpu, iter->now);
+#ifdef CONFIG_GENERIC_CLOCKEVENTS
+	else if (iter->cpu == -1 && iter->second_pass)
+		timer_list_show_tickdevices_header(m);
+	else
+		print_tickdevice(m, tick_get_device(iter->cpu), iter->cpu);
+#endif
+	return 0;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void *move_iter(struct timer_list_iter *iter, loff_t offset)
 {
 	for (; offset; offset--) {
@@ -362,9 +401,17 @@ static int __init init_timer_list_procfs(void)
 {
 	struct proc_dir_entry *pe;
 
+<<<<<<< HEAD
 	pe = proc_create("timer_list", 0444, NULL, &timer_list_fops);
+=======
+	pe = proc_create("timer_list", 0400, NULL, &timer_list_fops);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!pe)
 		return -ENOMEM;
 	return 0;
 }
 __initcall(init_timer_list_procfs);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

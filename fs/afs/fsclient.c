@@ -105,7 +105,11 @@ static void xdr_decode_AFSFetchStatus(const __be32 **_bp,
 			vnode->vfs_inode.i_mode = mode;
 		}
 
+<<<<<<< HEAD
 		vnode->vfs_inode.i_ctime.tv_sec	= status->mtime_server;
+=======
+		vnode->vfs_inode.i_ctime.tv_sec	= status->mtime_client;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vnode->vfs_inode.i_mtime	= vnode->vfs_inode.i_ctime;
 		vnode->vfs_inode.i_atime	= vnode->vfs_inode.i_ctime;
 		vnode->vfs_inode.i_version	= data_version;
@@ -139,7 +143,11 @@ static void xdr_decode_AFSCallBack(const __be32 **_bp, struct afs_vnode *vnode)
 	vnode->cb_version	= ntohl(*bp++);
 	vnode->cb_expiry	= ntohl(*bp++);
 	vnode->cb_type		= ntohl(*bp++);
+<<<<<<< HEAD
 	vnode->cb_expires	= vnode->cb_expiry + get_seconds();
+=======
+	vnode->cb_expires	= vnode->cb_expiry + ktime_get_real_seconds();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*_bp = bp;
 }
 
@@ -703,8 +711,13 @@ int afs_fs_create(struct afs_server *server,
 		memset(bp, 0, padsz);
 		bp = (void *) bp + padsz;
 	}
+<<<<<<< HEAD
 	*bp++ = htonl(AFS_SET_MODE);
 	*bp++ = 0; /* mtime */
+=======
+	*bp++ = htonl(AFS_SET_MODE | AFS_SET_MTIME);
+	*bp++ = htonl(vnode->vfs_inode.i_mtime.tv_sec); /* mtime */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*bp++ = 0; /* owner */
 	*bp++ = 0; /* group */
 	*bp++ = htonl(mode & S_IALLUGO); /* unix mode */
@@ -981,8 +994,13 @@ int afs_fs_symlink(struct afs_server *server,
 		memset(bp, 0, c_padsz);
 		bp = (void *) bp + c_padsz;
 	}
+<<<<<<< HEAD
 	*bp++ = htonl(AFS_SET_MODE);
 	*bp++ = 0; /* mtime */
+=======
+	*bp++ = htonl(AFS_SET_MODE | AFS_SET_MTIME);
+	*bp++ = htonl(vnode->vfs_inode.i_mtime.tv_sec); /* mtime */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*bp++ = 0; /* owner */
 	*bp++ = 0; /* group */
 	*bp++ = htonl(S_IRWXUGO); /* unix mode */
@@ -1192,8 +1210,13 @@ static int afs_fs_store_data64(struct afs_server *server,
 	*bp++ = htonl(vnode->fid.vnode);
 	*bp++ = htonl(vnode->fid.unique);
 
+<<<<<<< HEAD
 	*bp++ = 0; /* mask */
 	*bp++ = 0; /* mtime */
+=======
+	*bp++ = htonl(AFS_SET_MTIME); /* mask */
+	*bp++ = htonl(vnode->vfs_inode.i_mtime.tv_sec); /* mtime */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*bp++ = 0; /* owner */
 	*bp++ = 0; /* group */
 	*bp++ = 0; /* unix mode */
@@ -1225,7 +1248,11 @@ int afs_fs_store_data(struct afs_server *server, struct afs_writeback *wb,
 	_enter(",%x,{%x:%u},,",
 	       key_serial(wb->key), vnode->fid.vid, vnode->fid.vnode);
 
+<<<<<<< HEAD
 	size = to - offset;
+=======
+	size = (loff_t)to - (loff_t)offset;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (first != last)
 		size += (loff_t)(last - first) << PAGE_SHIFT;
 	pos = (loff_t)first << PAGE_SHIFT;
@@ -1269,8 +1296,13 @@ int afs_fs_store_data(struct afs_server *server, struct afs_writeback *wb,
 	*bp++ = htonl(vnode->fid.vnode);
 	*bp++ = htonl(vnode->fid.unique);
 
+<<<<<<< HEAD
 	*bp++ = 0; /* mask */
 	*bp++ = 0; /* mtime */
+=======
+	*bp++ = htonl(AFS_SET_MTIME); /* mask */
+	*bp++ = htonl(vnode->vfs_inode.i_mtime.tv_sec); /* mtime */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	*bp++ = 0; /* owner */
 	*bp++ = 0; /* group */
 	*bp++ = 0; /* unix mode */

@@ -75,6 +75,7 @@ static inline int dt_type(struct p9_wstat *mistat)
 	return rettype;
 }
 
+<<<<<<< HEAD
 static void p9stat_init(struct p9_wstat *stbuf)
 {
 	stbuf->name  = NULL;
@@ -84,6 +85,8 @@ static void p9stat_init(struct p9_wstat *stbuf)
 	stbuf->extension = NULL;
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /**
  * v9fs_alloc_rdir_buf - Allocate buffer used for read and readdir
  * @filp: opened file structure
@@ -113,7 +116,10 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 	int err = 0;
 	struct p9_fid *fid;
 	int buflen;
+<<<<<<< HEAD
 	int reclen = 0;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct p9_rdir *rdir;
 
 	p9_debug(P9_DEBUG_VFS, "name %pD\n", file);
@@ -136,6 +142,7 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 			rdir->tail = err;
 		}
 		while (rdir->head < rdir->tail) {
+<<<<<<< HEAD
 			p9stat_init(&st);
 			err = p9stat_read(fid->clnt, rdir->buf + rdir->head,
 					  rdir->tail - rdir->head, &st);
@@ -145,6 +152,14 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 				return -EIO;
 			}
 			reclen = st.size+2;
+=======
+			err = p9stat_read(fid->clnt, rdir->buf + rdir->head,
+					  rdir->tail - rdir->head, &st);
+			if (err <= 0) {
+				p9_debug(P9_DEBUG_VFS, "returned %d\n", err);
+				return -EIO;
+			}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 			over = !dir_emit(ctx, st.name, strlen(st.name),
 					 v9fs_qid2ino(&st.qid), dt_type(&st));
@@ -152,8 +167,13 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
 			if (over)
 				return 0;
 
+<<<<<<< HEAD
 			rdir->head += reclen;
 			ctx->pos += reclen;
+=======
+			rdir->head += err;
+			ctx->pos += err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 }

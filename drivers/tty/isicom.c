@@ -1055,7 +1055,11 @@ static int isicom_send_break(struct tty_struct *tty, int length)
 
 	outw(0x8000 | ((port->channel) << (card->shift_count)) | 0x3, base);
 	outw((length & 0xff) << 8 | 0x00, base);
+<<<<<<< HEAD
 	outw((length & 0xff00), base);
+=======
+	outw((length & 0xff00u), base);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	InterruptTheCard(base);
 
 	unlock_card(card);

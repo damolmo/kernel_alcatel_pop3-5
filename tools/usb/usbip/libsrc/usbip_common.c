@@ -215,9 +215,22 @@ int read_usb_interface(struct usbip_usb_device *udev, int i,
 		       struct usbip_usb_interface *uinf)
 {
 	char busid[SYSFS_BUS_ID_SIZE];
+<<<<<<< HEAD
 	struct udev_device *sif;
 
 	sprintf(busid, "%s:%d.%d", udev->busid, udev->bConfigurationValue, i);
+=======
+	int size;
+	struct udev_device *sif;
+
+	size = snprintf(busid, sizeof(busid), "%s:%d.%d",
+			udev->busid, udev->bConfigurationValue, i);
+	if (size < 0 || (unsigned int)size >= sizeof(busid)) {
+		err("busid length %i >= %lu or < 0", size,
+		    (unsigned long)sizeof(busid));
+		return -1;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	sif = udev_device_new_from_subsystem_sysname(udev_context, "usb", busid);
 	if (!sif) {

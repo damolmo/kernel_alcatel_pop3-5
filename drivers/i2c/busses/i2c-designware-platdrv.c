@@ -24,6 +24,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmi.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/i2c.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -51,6 +55,25 @@ static u32 i2c_dw_get_clk_rate_khz(struct dw_i2c_dev *dev)
 }
 
 #ifdef CONFIG_ACPI
+<<<<<<< HEAD
+=======
+/*
+ * The HCNT/LCNT information coming from ACPI should be the most accurate
+ * for given platform. However, some systems get it wrong. On such systems
+ * we get better results by calculating those based on the input clock.
+ */
+static const struct dmi_system_id dw_i2c_no_acpi_params[] = {
+	{
+		.ident = "Dell Inspiron 7348",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7348"),
+		},
+	},
+	{ }
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void dw_i2c_acpi_params(struct platform_device *pdev, char method[],
 			       u16 *hcnt, u16 *lcnt, u32 *sda_hold)
 {
@@ -58,6 +81,12 @@ static void dw_i2c_acpi_params(struct platform_device *pdev, char method[],
 	acpi_handle handle = ACPI_HANDLE(&pdev->dev);
 	union acpi_object *obj;
 
+<<<<<<< HEAD
+=======
+	if (dmi_check_system(dw_i2c_no_acpi_params))
+		return;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (ACPI_FAILURE(acpi_evaluate_object(handle, method, NULL, &buf)))
 		return;
 

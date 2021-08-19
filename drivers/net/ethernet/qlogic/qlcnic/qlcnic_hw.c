@@ -341,7 +341,11 @@ qlcnic_pcie_sem_lock(struct qlcnic_adapter *adapter, int sem, u32 id_reg)
 			}
 			return -EIO;
 		}
+<<<<<<< HEAD
 		usleep_range(1000, 1500);
+=======
+		udelay(1200);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (id_reg)

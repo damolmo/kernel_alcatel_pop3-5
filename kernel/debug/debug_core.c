@@ -95,6 +95,7 @@ static bool break_on_exception = true;
 /* Use kdb or gdbserver mode */
 int dbg_kdb_mode = 1;
 
+<<<<<<< HEAD
 static int __init opt_kgdb_con(char *str)
 {
 	kgdb_use_con = 1;
@@ -103,6 +104,8 @@ static int __init opt_kgdb_con(char *str)
 
 early_param("kgdbcon", opt_kgdb_con);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 module_param(kgdb_use_con, int, 0644);
 module_param(kgdbreboot, int, 0644);
 module_param(break_on_panic, bool, 0644);
@@ -447,6 +450,10 @@ static int kgdb_reenter_check(struct kgdb_state *ks)
 
 	if (exception_level > 1) {
 		dump_stack();
+<<<<<<< HEAD
+=======
+		kgdb_io_module_registered = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		panic("Recursive entry to debugger");
 	}
 
@@ -490,6 +497,10 @@ static int kgdb_cpu_enter(struct kgdb_state *ks, struct pt_regs *regs,
 		arch_kgdb_ops.disable_hw_break(regs);
 
 acquirelock:
+<<<<<<< HEAD
+=======
+	rcu_read_lock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Interrupts will be restored by the 'trap return' code, except when
 	 * single stepping.
@@ -544,6 +555,10 @@ return_normal:
 			atomic_dec(&slaves_in_kgdb);
 			dbg_touch_watchdogs();
 			local_irq_restore(flags);
+<<<<<<< HEAD
+=======
+			rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return 0;
 		}
 		cpu_relax();
@@ -562,6 +577,10 @@ return_normal:
 		raw_spin_unlock(&dbg_master_lock);
 		dbg_touch_watchdogs();
 		local_irq_restore(flags);
+<<<<<<< HEAD
+=======
+		rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		goto acquirelock;
 	}
@@ -675,6 +694,10 @@ kgdb_restore:
 	raw_spin_unlock(&dbg_master_lock);
 	dbg_touch_watchdogs();
 	local_irq_restore(flags);
+<<<<<<< HEAD
+=======
+	rcu_read_unlock();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	return kgdb_info[cpu].ret_state;
 }
@@ -800,6 +823,23 @@ static struct console kgdbcons = {
 	.index		= -1,
 };
 
+<<<<<<< HEAD
+=======
+static int __init opt_kgdb_con(char *str)
+{
+	kgdb_use_con = 1;
+
+	if (kgdb_io_module_registered && !kgdb_con_registered) {
+		register_console(&kgdbcons);
+		kgdb_con_registered = 1;
+	}
+
+	return 0;
+}
+
+early_param("kgdbcon", opt_kgdb_con);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_MAGIC_SYSRQ
 static void sysrq_handle_dbg(int key)
 {

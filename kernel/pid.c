@@ -68,9 +68,13 @@ static inline int mk_pid(struct pid_namespace *pid_ns,
  * the scheme scales to up to 4 million PIDs, runtime.
  */
 struct pid_namespace init_pid_ns = {
+<<<<<<< HEAD
 	.kref = {
 		.refcount       = ATOMIC_INIT(2),
 	},
+=======
+	.kref = KREF_INIT(2),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.pidmap = {
 		[ 0 ... PIDMAP_ENTRIES-1] = { ATOMIC_INIT(BITS_PER_PAGE), NULL }
 	},
@@ -316,8 +320,15 @@ struct pid *alloc_pid(struct pid_namespace *ns)
 	}
 
 	if (unlikely(is_child_reaper(pid))) {
+<<<<<<< HEAD
 		if (pid_ns_prepare_proc(ns))
 			goto out_free;
+=======
+		if (pid_ns_prepare_proc(ns)) {
+			disable_pid_allocation(ns);
+			goto out_free;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	get_pid_ns(ns);
@@ -452,7 +463,10 @@ struct task_struct *find_task_by_pid_ns(pid_t nr, struct pid_namespace *ns)
 			   " protection");
 	return pid_task(find_pid_ns(nr, ns), PIDTYPE_PID);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(find_task_by_pid_ns);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct task_struct *find_task_by_vpid(pid_t vnr)
 {
@@ -524,8 +538,16 @@ pid_t __task_pid_nr_ns(struct task_struct *task, enum pid_type type,
 	if (!ns)
 		ns = task_active_pid_ns(current);
 	if (likely(pid_alive(task))) {
+<<<<<<< HEAD
 		if (type != PIDTYPE_PID)
 			task = task->group_leader;
+=======
+		if (type != PIDTYPE_PID) {
+			if (type == __PIDTYPE_TGID)
+				type = PIDTYPE_PID;
+			task = task->group_leader;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nr = pid_nr_ns(task->pids[type].pid, ns);
 	}
 	rcu_read_unlock();
@@ -534,12 +556,15 @@ pid_t __task_pid_nr_ns(struct task_struct *task, enum pid_type type,
 }
 EXPORT_SYMBOL(__task_pid_nr_ns);
 
+<<<<<<< HEAD
 pid_t task_tgid_nr_ns(struct task_struct *tsk, struct pid_namespace *ns)
 {
 	return pid_nr_ns(task_tgid(tsk), ns);
 }
 EXPORT_SYMBOL(task_tgid_nr_ns);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct pid_namespace *task_active_pid_ns(struct task_struct *tsk)
 {
 	return ns_of_pid(task_pid(tsk));

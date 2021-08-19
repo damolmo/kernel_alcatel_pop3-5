@@ -6872,6 +6872,10 @@ mpt_print_ioc_summary(MPT_ADAPTER *ioc, char *buffer, int *size, int len, int sh
 	*size = y;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PROC_FS
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void seq_mpt_print_ioc_summary(MPT_ADAPTER *ioc, struct seq_file *m, int showlan)
 {
 	char expVer[32];
@@ -6903,6 +6907,10 @@ static void seq_mpt_print_ioc_summary(MPT_ADAPTER *ioc, struct seq_file *m, int 
 
 	seq_putc(m, '\n');
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /**
  *	mpt_set_taskmgmt_in_progress_flag - set flags associated with task management

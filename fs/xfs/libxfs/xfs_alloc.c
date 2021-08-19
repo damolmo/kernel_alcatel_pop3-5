@@ -515,6 +515,10 @@ xfs_agfl_write_verify(
 }
 
 const struct xfs_buf_ops xfs_agfl_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_agfl",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_agfl_read_verify,
 	.verify_write = xfs_agfl_write_verify,
 };
@@ -2271,6 +2275,10 @@ xfs_agf_write_verify(
 }
 
 const struct xfs_buf_ops xfs_agf_buf_ops = {
+<<<<<<< HEAD
+=======
+	.name = "xfs_agf",
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.verify_read = xfs_agf_read_verify,
 	.verify_write = xfs_agf_write_verify,
 };

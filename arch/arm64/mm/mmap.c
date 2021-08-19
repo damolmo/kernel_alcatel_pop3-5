@@ -47,6 +47,7 @@ static int mmap_is_legacy(void)
 	return sysctl_legacy_va_layout;
 }
 
+<<<<<<< HEAD
 /*
  * Since get_random_int() returns the same value within a 1 jiffy window, we
  * will almost always get the same randomisation for the stack and mmap
@@ -55,14 +56,28 @@ static int mmap_is_legacy(void)
  *
  * To avoid this we can shift the randomness by 1 bit.
  */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static unsigned long mmap_rnd(void)
 {
 	unsigned long rnd = 0;
 
+<<<<<<< HEAD
 	if (current->flags & PF_RANDOMIZE)
 		rnd = (long)get_random_int() & (STACK_RND_MASK >> 1);
 
 	return rnd << (PAGE_SHIFT + 1);
+=======
+	if (current->flags & PF_RANDOMIZE) {
+#ifdef CONFIG_COMPAT
+		if (test_thread_flag(TIF_32BIT))
+			rnd = get_random_long() & ((1UL << mmap_rnd_compat_bits) - 1);
+		else
+#endif
+			rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
+	}
+	return rnd << PAGE_SHIFT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned long mmap_base(void)

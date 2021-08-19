@@ -277,6 +277,13 @@ int ipc_addid(struct ipc_ids *ids, struct kern_ipc_perm *new, int size)
 	rcu_read_lock();
 	spin_lock(&new->lock);
 
+<<<<<<< HEAD
+=======
+	current_euid_egid(&euid, &egid);
+	new->cuid = new->uid = euid;
+	new->gid = new->cgid = egid;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	id = idr_alloc(&ids->ipcs_idr, new,
 		       (next_id < 0) ? 0 : ipcid_to_idx(next_id), 0,
 		       GFP_NOWAIT);
@@ -289,10 +296,13 @@ int ipc_addid(struct ipc_ids *ids, struct kern_ipc_perm *new, int size)
 
 	ids->in_use++;
 
+<<<<<<< HEAD
 	current_euid_egid(&euid, &egid);
 	new->cuid = new->uid = euid;
 	new->gid = new->cgid = egid;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (next_id < 0) {
 		new->seq = ids->seq++;
 		if (ids->seq > IPCID_SEQ_MAX)
@@ -796,12 +806,19 @@ static struct kern_ipc_perm *sysvipc_find_ipc(struct ipc_ids *ids, loff_t pos,
 			total++;
 	}
 
+<<<<<<< HEAD
 	if (total >= ids->in_use)
 		return NULL;
+=======
+	ipc = NULL;
+	if (total >= ids->in_use)
+		goto out;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	for (; pos < IPCMNI; pos++) {
 		ipc = idr_find(&ids->ipcs_idr, pos);
 		if (ipc != NULL) {
+<<<<<<< HEAD
 			*new_pos = pos + 1;
 			rcu_read_lock();
 			ipc_lock_object(ipc);
@@ -811,6 +828,16 @@ static struct kern_ipc_perm *sysvipc_find_ipc(struct ipc_ids *ids, loff_t pos,
 
 	/* Out of range - return NULL to terminate iteration */
 	return NULL;
+=======
+			rcu_read_lock();
+			ipc_lock_object(ipc);
+			break;
+		}
+	}
+out:
+	*new_pos = pos + 1;
+	return ipc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void *sysvipc_proc_next(struct seq_file *s, void *it, loff_t *pos)

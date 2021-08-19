@@ -17,8 +17,16 @@
 #ifndef __ASM_ARC_UDELAY_H
 #define __ASM_ARC_UDELAY_H
 
+<<<<<<< HEAD
 #include <asm/param.h>		/* HZ */
 
+=======
+#include <asm-generic/types.h>
+#include <asm/param.h>		/* HZ */
+
+extern unsigned long loops_per_jiffy;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static inline void __delay(unsigned long loops)
 {
 	__asm__ __volatile__(

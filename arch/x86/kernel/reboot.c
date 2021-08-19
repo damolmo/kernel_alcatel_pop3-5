@@ -92,6 +92,13 @@ void __noreturn machine_real_restart(unsigned int type)
 	load_cr3(initial_page_table);
 #else
 	write_cr3(real_mode_header->trampoline_pgd);
+<<<<<<< HEAD
+=======
+
+	/* Exiting long mode will fail if CR4.PCIDE is set. */
+	if (static_cpu_has(X86_FEATURE_PCID))
+		cr4_clear_bits(X86_CR4_PCIDE);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	/* Jump to the identity-mapped low memory code */
@@ -157,6 +164,17 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "MacBook5"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on Apple MacBook6,1 */
+		.callback = set_pci_reboot,
+		.ident = "Apple MacBook6,1",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Apple Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "MacBook6,1"),
+		},
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	{	/* Handle problems with rebooting on Apple MacBookPro5 */
 		.callback = set_pci_reboot,
 		.ident = "Apple MacBookPro5",
@@ -181,6 +199,17 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "iMac9,1"),
 		},
 	},
+<<<<<<< HEAD
+=======
+	{	/* Handle problems with rebooting on the iMac10,1. */
+		.callback = set_pci_reboot,
+		.ident = "Apple iMac10,1",
+		.matches = {
+		    DMI_MATCH(DMI_SYS_VENDOR, "Apple Inc."),
+		    DMI_MATCH(DMI_PRODUCT_NAME, "iMac10,1"),
+		},
+	},
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* ASRock */
 	{	/* Handle problems with rebooting on ASRock Q1900DC-ITX */
@@ -397,6 +426,18 @@ static struct dmi_system_id __initdata reboot_dmi_table[] = {
 		},
 	},
 
+<<<<<<< HEAD
+=======
+	{	/* PCIe Wifi card isn't detected after reboot otherwise */
+		.callback = set_pci_reboot,
+		.ident = "Zotac ZBOX CI327 nano",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "NA"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "ZBOX-CI327NANO-GS-01"),
+		},
+	},
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Sony */
 	{	/* Handle problems with rebooting on Sony VGN-Z540N */
 		.callback = set_bios_reboot,
@@ -458,6 +499,7 @@ static void emergency_vmx_disable_all(void)
 	local_irq_disable();
 
 	/*
+<<<<<<< HEAD
 	 * We need to disable VMX on all CPUs before rebooting, otherwise
 	 * we risk hanging up the machine, because the CPU ignore INIT
 	 * signals when VMX is enabled.
@@ -481,6 +523,22 @@ static void emergency_vmx_disable_all(void)
 		cpu_vmxoff();
 
 		/* Halt and disable VMX on the other CPUs */
+=======
+	 * Disable VMX on all CPUs before rebooting, otherwise we risk hanging
+	 * the machine, because the CPU blocks INIT when it's in VMX root.
+	 *
+	 * We can't take any locks and we may be on an inconsistent state, so
+	 * use NMIs as IPIs to tell the other CPUs to exit VMX root and halt.
+	 *
+	 * Do the NMI shootdown even if VMX if off on _this_ CPU, as that
+	 * doesn't prevent a different CPU from being in VMX root operation.
+	 */
+	if (cpu_has_vmx()) {
+		/* Safely force _this_ CPU out of VMX root operation. */
+		__cpu_emergency_vmxoff();
+
+		/* Halt and exit VMX root operation on the other CPUs. */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nmi_shootdown_cpus(vmxoff_nmi);
 
 	}

@@ -40,9 +40,15 @@
 #define AS3935_AFE_PWR_BIT	BIT(0)
 
 #define AS3935_INT		0x03
+<<<<<<< HEAD
 #define AS3935_INT_MASK		0x07
 #define AS3935_EVENT_INT	BIT(3)
 #define AS3935_NOISE_INT	BIT(1)
+=======
+#define AS3935_INT_MASK		0x0f
+#define AS3935_EVENT_INT	BIT(3)
+#define AS3935_NOISE_INT	BIT(0)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define AS3935_DATA		0x07
 #define AS3935_DATA_MASK	0x3F
@@ -50,7 +56,10 @@
 #define AS3935_TUNE_CAP		0x08
 #define AS3935_CALIBRATE	0x3D
 
+<<<<<<< HEAD
 #define AS3935_WRITE_DATA	BIT(15)
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define AS3935_READ_DATA	BIT(14)
 #define AS3935_ADDRESS(x)	((x) << 8)
 
@@ -64,6 +73,10 @@ struct as3935_state {
 	struct delayed_work work;
 
 	u32 tune_cap;
+<<<<<<< HEAD
+=======
+	u8 buffer[16]; /* 8-bit data + 56-bit padding + 64-bit timestamp */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 buf[2] ____cacheline_aligned;
 };
 
@@ -72,7 +85,12 @@ static const struct iio_chan_spec as3935_channels[] = {
 		.type           = IIO_PROXIMITY,
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) |
+<<<<<<< HEAD
 			BIT(IIO_CHAN_INFO_PROCESSED),
+=======
+			BIT(IIO_CHAN_INFO_PROCESSED) |
+			BIT(IIO_CHAN_INFO_SCALE),
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.scan_index     = 0,
 		.scan_type = {
 			.sign           = 'u',
@@ -103,7 +121,11 @@ static int as3935_write(struct as3935_state *st,
 {
 	u8 *buf = st->buf;
 
+<<<<<<< HEAD
 	buf[0] = (AS3935_WRITE_DATA | AS3935_ADDRESS(reg)) >> 8;
+=======
+	buf[0] = AS3935_ADDRESS(reg) >> 8;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	buf[1] = val;
 
 	return spi_write(st->spi, buf, 2);
@@ -181,7 +203,16 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
 		/* storm out of range */
 		if (*val == AS3935_DATA_MASK)
 			return -EINVAL;
+<<<<<<< HEAD
 		*val *= 1000;
+=======
+
+		if (m == IIO_CHAN_INFO_PROCESSED)
+			*val *= 1000;
+		break;
+	case IIO_CHAN_INFO_SCALE:
+		*val = 1000;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		break;
 	default:
 		return -EINVAL;
@@ -206,10 +237,17 @@ static irqreturn_t as3935_trigger_handler(int irq, void *private)
 	ret = as3935_read(st, AS3935_DATA, &val);
 	if (ret)
 		goto err_read;
+<<<<<<< HEAD
 	val &= AS3935_DATA_MASK;
 	val *= 1000;
 
 	iio_push_to_buffers_with_timestamp(indio_dev, &val, pf->timestamp);
+=======
+
+	st->buffer[0] = val & AS3935_DATA_MASK;
+	iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+					   pf->timestamp);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_read:
 	iio_trigger_notify_done(indio_dev->trig);
 
@@ -257,8 +295,11 @@ static irqreturn_t as3935_interrupt_handler(int irq, void *private)
 
 static void calibrate_as3935(struct as3935_state *st)
 {
+<<<<<<< HEAD
 	mutex_lock(&st->lock);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* mask disturber interrupt bit */
 	as3935_write(st, AS3935_INT, BIT(5));
 
@@ -268,8 +309,11 @@ static void calibrate_as3935(struct as3935_state *st)
 
 	mdelay(2);
 	as3935_write(st, AS3935_TUNE_CAP, (st->tune_cap / TUNE_CAP_DIV));
+<<<<<<< HEAD
 
 	mutex_unlock(&st->lock);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -306,6 +350,11 @@ static int as3935_resume(struct spi_device *spi)
 	val &= ~AS3935_AFE_PWR_BIT;
 	ret = as3935_write(st, AS3935_AFE_GAIN, val);
 
+<<<<<<< HEAD
+=======
+	calibrate_as3935(st);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 err_resume:
 	mutex_unlock(&st->lock);
 
@@ -382,7 +431,11 @@ static int as3935_probe(struct spi_device *spi)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+=======
+	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		&as3935_trigger_handler, NULL);
 
 	if (ret) {

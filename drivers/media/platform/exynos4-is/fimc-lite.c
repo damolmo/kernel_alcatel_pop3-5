@@ -490,7 +490,11 @@ static int fimc_lite_open(struct file *file)
 	set_bit(ST_FLITE_IN_USE, &fimc->state);
 	ret = pm_runtime_get_sync(&fimc->pdev->dev);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto unlock;
+=======
+		goto err_pm;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = v4l2_fh_open(file);
 	if (ret < 0)

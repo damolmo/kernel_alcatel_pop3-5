@@ -435,7 +435,11 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr, st
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_ATTR);
 		if (fattr->valid & NFS_ATTR_FATTR_CHANGE)
 			inode->i_version = fattr->change_attr;
+<<<<<<< HEAD
 		else if (nfs_server_capable(inode, NFS_CAP_CHANGE_ATTR))
+=======
+		else
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_ATTR);
 		if (fattr->valid & NFS_ATTR_FATTR_SIZE)
 			inode->i_size = nfs_size_to_loff_t(fattr->size);
@@ -903,6 +907,10 @@ int nfs_release(struct inode *inode, struct file *filp)
 	nfs_file_clear_open_context(filp);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(nfs_open);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * This function is called whenever some part of NFS notices that
@@ -1177,9 +1185,15 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 		return 0;
 	/* Has the inode gone and changed behind our back? */
 	if ((fattr->valid & NFS_ATTR_FATTR_FILEID) && nfsi->fileid != fattr->fileid)
+<<<<<<< HEAD
 		return -EIO;
 	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) && (inode->i_mode & S_IFMT) != (fattr->mode & S_IFMT))
 		return -EIO;
+=======
+		return -ESTALE;
+	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) && (inode->i_mode & S_IFMT) != (fattr->mode & S_IFMT))
+		return -ESTALE;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if ((fattr->valid & NFS_ATTR_FATTR_CHANGE) != 0 &&
 			inode->i_version != fattr->change_attr)
@@ -1360,12 +1374,21 @@ EXPORT_SYMBOL_GPL(_nfs_display_fhandle);
  */
 static int nfs_inode_attrs_need_update(const struct inode *inode, const struct nfs_fattr *fattr)
 {
+<<<<<<< HEAD
 	const struct nfs_inode *nfsi = NFS_I(inode);
 
 	return ((long)fattr->gencount - (long)nfsi->attr_gencount) > 0 ||
 		nfs_ctime_need_update(inode, fattr) ||
 		nfs_size_need_update(inode, fattr) ||
 		((long)nfsi->attr_gencount - (long)nfs_read_attr_generation_counter() > 0);
+=======
+	unsigned long attr_gencount = NFS_I(inode)->attr_gencount;
+
+	return ((long)fattr->gencount - attr_gencount) > 0 ||
+		nfs_ctime_need_update(inode, fattr) ||
+		nfs_size_need_update(inode, fattr) ||
+		((long)attr_gencount - nfs_read_attr_generation_counter() > 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*
@@ -1533,6 +1556,10 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	unsigned long invalid = 0;
 	unsigned long now = jiffies;
 	unsigned long save_cache_validity;
+<<<<<<< HEAD
+=======
+	bool cache_revalidated = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	dfprintk(VFS, "NFS: %s(%s/%lu fh_crc=0x%08x ct=%d info=0x%x)\n",
 			__func__, inode->i_sb->s_id, inode->i_ino,
@@ -1595,6 +1622,7 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 				nfs_force_lookup_revalidate(inode);
 			inode->i_version = fattr->change_attr;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_CHANGE_ATTR)
 		nfsi->cache_validity |= save_cache_validity;
 
@@ -1611,6 +1639,30 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_FORCED);
+=======
+	} else {
+		nfsi->cache_validity |= save_cache_validity;
+		cache_revalidated = false;
+	}
+
+	if (fattr->valid & NFS_ATTR_FATTR_MTIME) {
+		memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
+	} else if (server->caps & NFS_CAP_MTIME) {
+		nfsi->cache_validity |= save_cache_validity &
+				(NFS_INO_INVALID_ATTR
+				| NFS_INO_REVAL_FORCED);
+		cache_revalidated = false;
+	}
+
+	if (fattr->valid & NFS_ATTR_FATTR_CTIME) {
+		memcpy(&inode->i_ctime, &fattr->ctime, sizeof(inode->i_ctime));
+	} else if (server->caps & NFS_CAP_CTIME) {
+		nfsi->cache_validity |= save_cache_validity &
+				(NFS_INO_INVALID_ATTR
+				| NFS_INO_REVAL_FORCED);
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Check if our cached file size is stale */
 	if (fattr->valid & NFS_ATTR_FATTR_SIZE) {
@@ -1631,19 +1683,37 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 					(long long)cur_isize,
 					(long long)new_isize);
 		}
+<<<<<<< HEAD
 	} else
+=======
+	} else {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_PAGECACHE
 				| NFS_INO_REVAL_FORCED);
+<<<<<<< HEAD
+=======
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 
 	if (fattr->valid & NFS_ATTR_FATTR_ATIME)
 		memcpy(&inode->i_atime, &fattr->atime, sizeof(inode->i_atime));
+<<<<<<< HEAD
 	else if (server->caps & NFS_CAP_ATIME)
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATIME
 				| NFS_INO_REVAL_FORCED);
+=======
+	else if (server->caps & NFS_CAP_ATIME) {
+		nfsi->cache_validity |= save_cache_validity &
+				(NFS_INO_INVALID_ATIME
+				| NFS_INO_REVAL_FORCED);
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fattr->valid & NFS_ATTR_FATTR_MODE) {
 		if ((inode->i_mode & S_IALLUGO) != (fattr->mode & S_IALLUGO)) {
@@ -1652,36 +1722,63 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			inode->i_mode = newmode;
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_MODE)
+=======
+	} else if (server->caps & NFS_CAP_MODE) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
 				| NFS_INO_INVALID_ACL
 				| NFS_INO_REVAL_FORCED);
+<<<<<<< HEAD
+=======
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fattr->valid & NFS_ATTR_FATTR_OWNER) {
 		if (!uid_eq(inode->i_uid, fattr->uid)) {
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 			inode->i_uid = fattr->uid;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_OWNER)
+=======
+	} else if (server->caps & NFS_CAP_OWNER) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
 				| NFS_INO_INVALID_ACL
 				| NFS_INO_REVAL_FORCED);
+<<<<<<< HEAD
+=======
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fattr->valid & NFS_ATTR_FATTR_GROUP) {
 		if (!gid_eq(inode->i_gid, fattr->gid)) {
 			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
 			inode->i_gid = fattr->gid;
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_OWNER_GROUP)
+=======
+	} else if (server->caps & NFS_CAP_OWNER_GROUP) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_INVALID_ACCESS
 				| NFS_INO_INVALID_ACL
 				| NFS_INO_REVAL_FORCED);
+<<<<<<< HEAD
+=======
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fattr->valid & NFS_ATTR_FATTR_NLINK) {
 		if (inode->i_nlink != fattr->nlink) {
@@ -1690,19 +1787,35 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 				invalid |= NFS_INO_INVALID_DATA;
 			set_nlink(inode, fattr->nlink);
 		}
+<<<<<<< HEAD
 	} else if (server->caps & NFS_CAP_NLINK)
 		nfsi->cache_validity |= save_cache_validity &
 				(NFS_INO_INVALID_ATTR
 				| NFS_INO_REVAL_FORCED);
+=======
+	} else if (server->caps & NFS_CAP_NLINK) {
+		nfsi->cache_validity |= save_cache_validity &
+				(NFS_INO_INVALID_ATTR
+				| NFS_INO_REVAL_FORCED);
+		cache_revalidated = false;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (fattr->valid & NFS_ATTR_FATTR_SPACE_USED) {
 		/*
 		 * report the blocks in 512byte units
 		 */
 		inode->i_blocks = nfs_calc_block_size(fattr->du.nfs3.used);
+<<<<<<< HEAD
  	}
 	if (fattr->valid & NFS_ATTR_FATTR_BLOCKS_USED)
 		inode->i_blocks = fattr->du.nfs2.blocks;
+=======
+	} else if (fattr->valid & NFS_ATTR_FATTR_BLOCKS_USED)
+		inode->i_blocks = fattr->du.nfs2.blocks;
+	else
+		cache_revalidated = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* Update attrtimeo value if we're out of the unstable period */
 	if (invalid & NFS_INO_INVALID_ATTR) {
@@ -1711,6 +1824,7 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 		nfsi->attrtimeo_timestamp = now;
 		nfsi->attr_gencount = nfs_inc_attr_generation_counter();
 	} else {
+<<<<<<< HEAD
 		if (!time_in_range_open(now, nfsi->attrtimeo_timestamp, nfsi->attrtimeo_timestamp + nfsi->attrtimeo)) {
 			if ((nfsi->attrtimeo <<= 1) > NFS_MAXATTRTIMEO(inode))
 				nfsi->attrtimeo = NFS_MAXATTRTIMEO(inode);
@@ -1718,6 +1832,23 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 		}
 	}
 	invalid &= ~NFS_INO_INVALID_ATTR;
+=======
+		if (cache_revalidated) {
+			if (!time_in_range_open(now, nfsi->attrtimeo_timestamp,
+				nfsi->attrtimeo_timestamp + nfsi->attrtimeo)) {
+				nfsi->attrtimeo <<= 1;
+				if (nfsi->attrtimeo > NFS_MAXATTRTIMEO(inode))
+					nfsi->attrtimeo = NFS_MAXATTRTIMEO(inode);
+			}
+			nfsi->attrtimeo_timestamp = now;
+		}
+	}
+
+	/* Don't declare attrcache up to date if there were no attrs! */
+	if (cache_revalidated)
+		invalid &= ~NFS_INO_INVALID_ATTR;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* Don't invalidate the data if we were to blame */
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode)
 				|| S_ISLNK(inode->i_mode)))
@@ -1826,7 +1957,11 @@ static int nfsiod_start(void)
 {
 	struct workqueue_struct *wq;
 	dprintk("RPC:       creating workqueue nfsiod\n");
+<<<<<<< HEAD
 	wq = alloc_workqueue("nfsiod", WQ_MEM_RECLAIM, 0);
+=======
+	wq = alloc_workqueue("nfsiod", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (wq == NULL)
 		return -ENOMEM;
 	nfsiod_workqueue = wq;

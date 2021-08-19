@@ -27,6 +27,10 @@
 #include <linux/seq_file.h>
 
 #include <asm/mach-jz4740/base.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach-jz4740/gpio.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #include "irq.h"
 

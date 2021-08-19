@@ -29,6 +29,10 @@ static int afs_readpages(struct file *filp, struct address_space *mapping,
 
 const struct file_operations afs_file_operations = {
 	.open		= afs_open,
+<<<<<<< HEAD
+=======
+	.flush		= afs_flush,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.release	= afs_release,
 	.llseek		= generic_file_llseek,
 	.read		= new_sync_read,

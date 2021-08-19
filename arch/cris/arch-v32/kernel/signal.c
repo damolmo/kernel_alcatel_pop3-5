@@ -59,7 +59,11 @@ restore_sigcontext(struct pt_regs *regs, struct sigcontext __user *sc)
 	unsigned long old_usp;
 
         /* Always make any pending restarted system calls return -EINTR */
+<<<<<<< HEAD
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * Restore the registers from &sc->regs. sc is already checked

@@ -461,7 +461,11 @@ static acpi_status acpi_dev_process_resource(struct acpi_resource *ares,
 		ret = c->preproc(ares, c->preproc_data);
 		if (ret < 0) {
 			c->error = ret;
+<<<<<<< HEAD
 			return AE_CTRL_TERMINATE;
+=======
+			return AE_ABORT_METHOD;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		} else if (ret > 0) {
 			return AE_OK;
 		}

@@ -28,6 +28,10 @@
 #include <linux/elf.h>
 
 #include <asm/asm.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-eva.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <asm/branch.h>
 #include <asm/cachectl.h>
 #include <asm/cacheflush.h>
@@ -137,10 +141,19 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 		__asm__ __volatile__ (
 		"	.set	arch=r4000				\n"
 		"	li	%[err], 0				\n"
+<<<<<<< HEAD
 		"1:	ll	%[old], (%[addr])			\n"
 		"	move	%[tmp], %[new]				\n"
 		"2:	sc	%[tmp], (%[addr])			\n"
 		"	bnez	%[tmp], 4f				\n"
+=======
+		"1:							\n"
+		user_ll("%[old]", "(%[addr])")
+		"	move	%[tmp], %[new]				\n"
+		"2:							\n"
+		user_sc("%[tmp]", "(%[addr])")
+		"	beqz	%[tmp], 4f				\n"
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		"3:							\n"
 		"	.subsection 2					\n"
 		"4:	b	1b					\n"
@@ -197,6 +210,15 @@ static inline int mips_atomic_set(unsigned long addr, unsigned long new)
 	unreachable();
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * mips_atomic_set() normally returns directly via syscall_exit potentially
+ * clobbering static registers, so be sure to preserve them.
+ */
+save_static_function(sys_sysmips);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 SYSCALL_DEFINE3(sysmips, long, cmd, long, arg1, long, arg2)
 {
 	switch (cmd) {

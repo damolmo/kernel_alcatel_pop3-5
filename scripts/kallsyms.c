@@ -236,8 +236,11 @@ static int symbol_valid(struct sym_entry *s)
 		 */
 		if ((s->addr == text_range_text->end &&
 				strcmp((char *)s->sym + offset,
+<<<<<<< HEAD
 				       "__stop___modver") &&
 				strcmp((char *)s->sym + offset,
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				       text_range_text->end_sym)) ||
 		    (s->addr == text_range_inittext->end &&
 				strcmp((char *)s->sym + offset,
@@ -443,6 +446,11 @@ static void build_initial_tok_table(void)
 				table[pos] = table[i];
 			learn_symbol(table[pos].sym, table[pos].len);
 			pos++;
+<<<<<<< HEAD
+=======
+		} else {
+			free(table[i].sym);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	table_cnt = pos;

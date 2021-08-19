@@ -205,10 +205,18 @@ K256:
 .global	sha256_block_data_order
 .type	sha256_block_data_order,%function
 sha256_block_data_order:
+<<<<<<< HEAD
 #if __ARM_ARCH__<7
 	sub	r3,pc,#8		@ sha256_block_data_order
 #else
 	adr	r3,sha256_block_data_order
+=======
+.Lsha256_block_data_order:
+#if __ARM_ARCH__<7
+	sub	r3,pc,#8		@ sha256_block_data_order
+#else
+	adr	r3,.Lsha256_block_data_order
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 	ldr	r12,.LOPENSSL_armcap
@@ -291,16 +299,28 @@ sub Dhi()   { shift=~m|q([1]?[0-9])|?"d".($1*2+1):"";   }
 
 sub AUTOLOAD()          # thunk [simplified] x86-style perlasm
 { my $opcode = $AUTOLOAD; $opcode =~ s/.*:://; $opcode =~ s/_/\./;
+<<<<<<< HEAD
 	my $arg = pop;
 	$arg = "#$arg" if ($arg*1 eq $arg);
 	$code .= "\t$opcode\t".join(',',@_,$arg)."\n";
+=======
+  my $arg = pop;
+    $arg = "#$arg" if ($arg*1 eq $arg);
+    $code .= "\t$opcode\t".join(',',@_,$arg)."\n";
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 sub Xupdate()
 { use integer;
+<<<<<<< HEAD
 	my $body = shift;
 	my @insns = (&$body,&$body,&$body,&$body);
 	my ($a,$b,$c,$d,$e,$f,$g,$h);
+=======
+  my $body = shift;
+  my @insns = (&$body,&$body,&$body,&$body);
+  my ($a,$b,$c,$d,$e,$f,$g,$h);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	&vext_8		($T0,@X[0],@X[1],4);	# X[1..4]
 	 eval(shift(@insns));
@@ -399,9 +419,15 @@ sub Xupdate()
 
 sub Xpreload()
 { use integer;
+<<<<<<< HEAD
 	my $body = shift;
 	my @insns = (&$body,&$body,&$body,&$body);
 	my ($a,$b,$c,$d,$e,$f,$g,$h);
+=======
+  my $body = shift;
+  my @insns = (&$body,&$body,&$body,&$body);
+  my ($a,$b,$c,$d,$e,$f,$g,$h);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	 eval(shift(@insns));
 	 eval(shift(@insns));
@@ -683,7 +709,11 @@ close SELF;
 	"sha256h"	=> 0xf3000c40,	"sha256h2"	=> 0xf3100c40,
 	"sha256su0"	=> 0xf3ba03c0,	"sha256su1"	=> 0xf3200c40	);
 
+<<<<<<< HEAD
 	sub unsha256 {
+=======
+    sub unsha256 {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	my ($mnemonic,$arg)=@_;
 
 	if ($arg =~ m/q([0-9]+)(?:,\s*q([0-9]+))?,\s*q([0-9]+)/o) {
@@ -698,7 +728,11 @@ close SELF;
 			($word>>16)&0xff,($word>>24)&0xff,
 			$mnemonic,$arg;
 	}
+<<<<<<< HEAD
 		}
+=======
+    }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 foreach (split($/,$code)) {

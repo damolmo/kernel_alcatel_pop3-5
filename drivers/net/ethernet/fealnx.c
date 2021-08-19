@@ -257,8 +257,13 @@ enum rx_desc_status_bits {
 	RXFSD = 0x00000800,	/* first descriptor */
 	RXLSD = 0x00000400,	/* last descriptor */
 	ErrorSummary = 0x80,	/* error summary */
+<<<<<<< HEAD
 	RUNT = 0x40,		/* runt packet received */
 	LONG = 0x20,		/* long packet received */
+=======
+	RUNTPKT = 0x40,		/* runt packet received */
+	LONGPKT = 0x20,		/* long packet received */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	FAE = 0x10,		/* frame align error */
 	CRC = 0x08,		/* crc error */
 	RXER = 0x04,		/* receive error */
@@ -1633,7 +1638,11 @@ static int netdev_rx(struct net_device *dev)
 					       dev->name, rx_status);
 
 				dev->stats.rx_errors++;	/* end of a packet. */
+<<<<<<< HEAD
 				if (rx_status & (LONG | RUNT))
+=======
+				if (rx_status & (LONGPKT | RUNTPKT))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 					dev->stats.rx_length_errors++;
 				if (rx_status & RXER)
 					dev->stats.rx_frame_errors++;

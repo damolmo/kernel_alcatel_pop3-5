@@ -226,6 +226,17 @@
 	*(.data..init_task)
 
 /*
+<<<<<<< HEAD
+=======
+ * Allow architectures to handle ro_after_init data on their
+ * own by defining an empty RO_AFTER_INIT_DATA.
+ */
+#ifndef RO_AFTER_INIT_DATA
+#define RO_AFTER_INIT_DATA *(.data..ro_after_init)
+#endif
+
+/*
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  * Read only Data
  */
 #define RO_DATA_SECTION(align)						\
@@ -233,6 +244,10 @@
 	.rodata           : AT(ADDR(.rodata) - LOAD_OFFSET) {		\
 		VMLINUX_SYMBOL(__start_rodata) = .;			\
 		*(.rodata) *(.rodata.*)					\
+<<<<<<< HEAD
+=======
+		RO_AFTER_INIT_DATA	/* Read only after init */	\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*(__vermagic)		/* Kernel version magic */	\
 		. = ALIGN(8);						\
 		VMLINUX_SYMBOL(__start___tracepoints_ptrs) = .;		\
@@ -504,15 +519,28 @@
 
 #define INIT_TEXT							\
 	*(.init.text)							\
+<<<<<<< HEAD
+=======
+	*(.text.startup)						\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	MEM_DISCARD(init.text)
 
 #define EXIT_DATA							\
 	*(.exit.data)							\
+<<<<<<< HEAD
+=======
+	*(.fini_array)							\
+	*(.dtors)							\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	MEM_DISCARD(exit.data)						\
 	MEM_DISCARD(exit.rodata)
 
 #define EXIT_TEXT							\
 	*(.exit.text)							\
+<<<<<<< HEAD
+=======
+	*(.text.exit)							\
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	MEM_DISCARD(exit.text)
 
 #define EXIT_CALL							\

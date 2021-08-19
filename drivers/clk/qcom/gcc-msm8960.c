@@ -2740,7 +2740,11 @@ static struct clk_rcg ce3_src = {
 	},
 	.freq_tbl = clk_tbl_ce3,
 	.clkr = {
+<<<<<<< HEAD
 		.enable_reg = 0x2c08,
+=======
+		.enable_reg = 0x36c0,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.enable_mask = BIT(7),
 		.hw.init = &(struct clk_init_data){
 			.name = "ce3_src",
@@ -2756,7 +2760,11 @@ static struct clk_branch ce3_core_clk = {
 	.halt_reg = 0x2fdc,
 	.halt_bit = 5,
 	.clkr = {
+<<<<<<< HEAD
 		.enable_reg = 0x36c4,
+=======
+		.enable_reg = 0x36cc,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		.enable_mask = BIT(4),
 		.hw.init = &(struct clk_init_data){
 			.name = "ce3_core_clk",

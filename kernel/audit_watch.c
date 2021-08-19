@@ -314,8 +314,11 @@ static void audit_update_watch(struct audit_parent *parent,
 					     &nentry->rule.list);
 			}
 
+<<<<<<< HEAD
 			audit_watch_log_rule_change(r, owatch, "updated_rules");
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			call_rcu(&oentry->rcu, audit_free_rule_rcu);
 		}
 
@@ -414,6 +417,16 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	struct path parent_path;
 	int h, ret = 0;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * When we will be calling audit_add_to_parent, krule->watch might have
+	 * been updated and watch might have been freed.
+	 * So we need to keep a reference of watch.
+	 */
+	audit_get_watch(watch);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_unlock(&audit_filter_mutex);
 
 	/* Avoid calling path_lookup under audit_filter_mutex. */
@@ -422,8 +435,15 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	/* caller expects mutex locked */
 	mutex_lock(&audit_filter_mutex);
 
+<<<<<<< HEAD
 	if (ret)
 		return ret;
+=======
+	if (ret) {
+		audit_put_watch(watch);
+		return ret;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* either find an old parent or attach a new one */
 	parent = audit_find_parent(parent_path.dentry->d_inode);
@@ -444,6 +464,10 @@ int audit_add_watch(struct audit_krule *krule, struct list_head **list)
 	*list = &audit_inode_hash[h];
 error:
 	path_put(&parent_path);
+<<<<<<< HEAD
+=======
+	audit_put_watch(watch);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return ret;
 }
 
@@ -455,6 +479,7 @@ void audit_remove_watch_rule(struct audit_krule *krule)
 	list_del(&krule->rlist);
 
 	if (list_empty(&watch->rules)) {
+<<<<<<< HEAD
 		audit_remove_watch(watch);
 
 		if (list_empty(&parent->watches)) {
@@ -462,6 +487,17 @@ void audit_remove_watch_rule(struct audit_krule *krule)
 			fsnotify_destroy_mark(&parent->mark, audit_watch_group);
 			audit_put_parent(parent);
 		}
+=======
+		/*
+		 * audit_remove_watch() drops our reference to 'parent' which
+		 * can get freed. Grab our own reference to be safe.
+		 */
+		audit_get_parent(parent);
+		audit_remove_watch(watch);
+		if (list_empty(&parent->watches))
+			fsnotify_destroy_mark(&parent->mark, audit_watch_group);
+		audit_put_parent(parent);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 }
 

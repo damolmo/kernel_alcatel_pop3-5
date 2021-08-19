@@ -1264,12 +1264,26 @@ static int hci_req_sync(struct hci_dev *hdev,
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_UP, &hdev->flags))
 		return -ENETDOWN;
 
 	/* Serialize all requests */
 	hci_req_lock(hdev);
 	ret = __hci_req_sync(hdev, req, opt, timeout);
+=======
+	/* Serialize all requests */
+	hci_req_lock(hdev);
+	/* check the state after obtaing the lock to protect the HCI_UP
+	 * against any races from hci_dev_do_close when the controller
+	 * gets removed.
+	 */
+	if (test_bit(HCI_UP, &hdev->flags))
+		ret = __hci_req_sync(hdev, req, opt, timeout);
+	else
+		ret = -ENETDOWN;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	hci_req_unlock(hdev);
 
 	return ret;
@@ -1635,6 +1649,10 @@ static void hci_set_event_mask_page_2(struct hci_request *req)
 {
 	struct hci_dev *hdev = req->hdev;
 	u8 events[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+<<<<<<< HEAD
+=======
+	bool changed = false;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* If Connectionless Slave Broadcast master role is supported
 	 * enable all necessary events for it.
@@ -1644,6 +1662,10 @@ static void hci_set_event_mask_page_2(struct hci_request *req)
 		events[1] |= 0x80;	/* Synchronization Train Complete */
 		events[2] |= 0x10;	/* Slave Page Response Timeout */
 		events[2] |= 0x20;	/* CSB Channel Map Change */
+<<<<<<< HEAD
+=======
+		changed = true;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* If Connectionless Slave Broadcast slave role is supported
@@ -1654,6 +1676,7 @@ static void hci_set_event_mask_page_2(struct hci_request *req)
 		events[2] |= 0x02;	/* CSB Receive */
 		events[2] |= 0x04;	/* CSB Timeout */
 		events[2] |= 0x08;	/* Truncated Page Complete */
+<<<<<<< HEAD
 	}
 
 	/* Enable Authenticated Payload Timeout Expired event if supported */
@@ -1661,6 +1684,26 @@ static void hci_set_event_mask_page_2(struct hci_request *req)
 		events[2] |= 0x80;
 
 	hci_req_add(req, HCI_OP_SET_EVENT_MASK_PAGE_2, sizeof(events), events);
+=======
+		changed = true;
+	}
+
+	/* Enable Authenticated Payload Timeout Expired event if supported */
+	if (lmp_ping_capable(hdev) || hdev->le_features[0] & HCI_LE_PING) {
+		events[2] |= 0x80;
+		changed = true;
+	}
+
+	/* Some Broadcom based controllers indicate support for Set Event
+	 * Mask Page 2 command, but then actually do not support it. Since
+	 * the default value is all bits set to zero, the command is only
+	 * required if the event mask has to be changed. In case no change
+	 * to the event mask is needed, skip this command.
+	 */
+	if (changed)
+		hci_req_add(req, HCI_OP_SET_EVENT_MASK_PAGE_2,
+			    sizeof(events), events);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void hci_init3_req(struct hci_request *req, unsigned long opt)
@@ -2293,8 +2336,15 @@ int hci_inquiry(void __user *arg)
 		 * cleared). If it is interrupted by a signal, return -EINTR.
 		 */
 		if (wait_on_bit(&hdev->flags, HCI_INQUIRY,
+<<<<<<< HEAD
 				TASK_INTERRUPTIBLE))
 			return -EINTR;
+=======
+				TASK_INTERRUPTIBLE)) {
+			err = -EINTR;
+			goto done;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	/* for unlimited number of responses we will use buffer with
@@ -2453,8 +2503,18 @@ static int hci_dev_do_open(struct hci_dev *hdev)
 	} else {
 		/* Init failed, cleanup */
 		flush_work(&hdev->tx_work);
+<<<<<<< HEAD
 		flush_work(&hdev->cmd_work);
 		flush_work(&hdev->rx_work);
+=======
+
+		/* Since hci_rx_work() is possible to awake new cmd_work
+		 * it should be flushed first to avoid unexpected call of
+		 * hci_cmd_work()
+		 */
+		flush_work(&hdev->rx_work);
+		flush_work(&hdev->cmd_work);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		skb_queue_purge(&hdev->cmd_q);
 		skb_queue_purge(&hdev->rx_q);
@@ -5367,7 +5427,18 @@ static void hci_rx_work(struct work_struct *work)
 			hci_send_to_sock(hdev, skb);
 		}
 
+<<<<<<< HEAD
 		if (test_bit(HCI_USER_CHANNEL, &hdev->dev_flags)) {
+=======
+		/* If the device has been opened in HCI_USER_CHANNEL,
+		 * the userspace has exclusive access to device.
+		 * When device is HCI_INIT, we still need to process
+		 * the data packets to the driver in order
+		 * to complete its setup().
+		 */
+		if (test_bit(HCI_USER_CHANNEL, &hdev->dev_flags) &&
+		    !test_bit(HCI_INIT, &hdev->flags)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			kfree_skb(skb);
 			continue;
 		}

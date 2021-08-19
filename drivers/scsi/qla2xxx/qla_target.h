@@ -112,7 +112,10 @@
 	(min(1270, ((ql) > 0) ? (QLA_TGT_DATASEGS_PER_CMD_24XX + \
 		QLA_TGT_DATASEGS_PER_CONT_24XX*((ql) - 1)) : 0))
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define GET_TARGET_ID(ha, iocb) ((HAS_EXTENDED_IDS(ha))			\
 			 ? le16_to_cpu((iocb)->u.isp2x.target.extended)	\
@@ -167,7 +170,28 @@ struct imm_ntfy_from_isp {
 			uint32_t srr_rel_offs;
 			uint16_t srr_ui;
 			uint16_t srr_ox_id;
+<<<<<<< HEAD
 			uint8_t  reserved_4[19];
+=======
+			union {
+				struct {
+					uint8_t node_name[8];
+				} plogi; /* PLOGI/ADISC/PDISC */
+				struct {
+					/* PRLI word 3 bit 0-15 */
+					uint16_t wd3_lo;
+					uint8_t resv0[6];
+				} prli;
+				struct {
+					uint8_t port_id[3];
+					uint8_t resv1;
+					uint16_t nport_handle;
+					uint16_t resv2;
+				} req_els;
+			} u;
+			uint8_t port_name[8];
+			uint8_t resv3[3];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			uint8_t  vp_index;
 			uint32_t reserved_5;
 			uint8_t  port_id[3];
@@ -234,6 +258,10 @@ struct nack_to_isp {
 	uint8_t  reserved[2];
 	uint16_t ox_id;
 } __packed;
+<<<<<<< HEAD
+=======
+#define NOTIFY_ACK_FLAGS_TERMINATE	BIT_3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define NOTIFY_ACK_SRR_FLAGS_ACCEPT	0
 #define NOTIFY_ACK_SRR_FLAGS_REJECT	1
 
@@ -305,6 +333,10 @@ struct ctio_to_2xxx {
 #ifndef CTIO_RET_TYPE
 #define CTIO_RET_TYPE	0x17		/* CTIO return entry */
 #define ATIO_TYPE7 0x06 /* Accept target I/O entry for 24xx */
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct fcp_hdr {
 	uint8_t  r_ctl;
@@ -790,6 +822,7 @@ int qla2x00_wait_for_hba_online(struct scsi_qla_host *);
 #define	FC_TM_REJECT                4
 #define FC_TM_FAILED                5
 
+<<<<<<< HEAD
 /*
  * Error code of qlt_pre_xmit_response() meaning that cmd's exchange was
  * terminated, so no more actions is needed and success should be returned
@@ -797,6 +830,8 @@ int qla2x00_wait_for_hba_online(struct scsi_qla_host *);
  */
 #define QLA_TGT_PRE_XMIT_RESP_CMD_ABORTED	0x1717
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if (BITS_PER_LONG > 32) || defined(CONFIG_HIGHMEM64G)
 #define pci_dma_lo32(a) (a & 0xffffffff)
 #define pci_dma_hi32(a) ((((a) >> 16)>>16) & 0xffffffff)
@@ -874,6 +909,18 @@ struct qla_tgt_sess_op {
 	struct scsi_qla_host *vha;
 	struct atio_from_isp atio;
 	struct work_struct work;
+<<<<<<< HEAD
+=======
+	struct list_head cmd_list;
+	bool aborted;
+};
+
+enum qla_sess_deletion {
+	QLA_SESS_DELETION_NONE		= 0,
+	QLA_SESS_DELETION_PENDING	= 1, /* hopefully we can get rid of
+					      * this one */
+	QLA_SESS_DELETION_IN_PROGRESS	= 2,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 /*
@@ -884,8 +931,20 @@ struct qla_tgt_sess {
 	port_id_t s_id;
 
 	unsigned int conf_compl_supported:1;
+<<<<<<< HEAD
 	unsigned int deleted:1;
 	unsigned int local:1;
+=======
+	unsigned int deleted:2;
+	unsigned int local:1;
+	unsigned int logout_on_delete:1;
+	unsigned int plogi_ack_needed:1;
+	unsigned int keep_nport_handle:1;
+
+	unsigned char logout_completed;
+
+	int generation;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	struct se_session *se_sess;
 	struct scsi_qla_host *vha;
@@ -897,6 +956,13 @@ struct qla_tgt_sess {
 
 	uint8_t port_name[WWN_SIZE];
 	struct work_struct free_work;
+<<<<<<< HEAD
+=======
+
+	union {
+		struct imm_ntfy_from_isp tm_iocb;
+	};
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 struct qla_tgt_cmd {
@@ -912,7 +978,10 @@ struct qla_tgt_cmd {
 	unsigned int conf_compl_supported:1;
 	unsigned int sg_mapped:1;
 	unsigned int free_sg:1;
+<<<<<<< HEAD
 	unsigned int aborted:1; /* Needed in case of SRR */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	unsigned int write_data_transferred:1;
 	unsigned int ctx_dsd_alloced:1;
 	unsigned int q_full:1;
@@ -1027,6 +1096,13 @@ struct qla_tgt_srr_ctio {
 	struct qla_tgt_cmd *cmd;
 };
 
+<<<<<<< HEAD
+=======
+/* Check for Switch reserved address */
+#define IS_SW_RESV_ADDR(_s_id) \
+	((_s_id.b.domain == 0xff) && (_s_id.b.area == 0xfc))
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #define QLA_TGT_XMIT_DATA		1
 #define QLA_TGT_XMIT_STATUS		2
 #define QLA_TGT_XMIT_ALL		(QLA_TGT_XMIT_STATUS|QLA_TGT_XMIT_DATA)
@@ -1044,7 +1120,11 @@ extern int qlt_lport_register(void *, u64, u64, u64,
 extern void qlt_lport_deregister(struct scsi_qla_host *);
 extern void qlt_unreg_sess(struct qla_tgt_sess *);
 extern void qlt_fc_port_added(struct scsi_qla_host *, fc_port_t *);
+<<<<<<< HEAD
 extern void qlt_fc_port_deleted(struct scsi_qla_host *, fc_port_t *);
+=======
+extern void qlt_fc_port_deleted(struct scsi_qla_host *, fc_port_t *, int);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int __init qlt_init(void);
 extern void qlt_exit(void);
 extern void qlt_update_vp_map(struct scsi_qla_host *, int);
@@ -1074,12 +1154,29 @@ static inline void qla_reverse_ini_mode(struct scsi_qla_host *ha)
 		ha->host->active_mode |= MODE_INITIATOR;
 }
 
+<<<<<<< HEAD
+=======
+static inline uint32_t sid_to_key(const uint8_t *s_id)
+{
+	uint32_t key;
+
+	key = (((unsigned long)s_id[0] << 16) |
+	       ((unsigned long)s_id[1] << 8) |
+	       (unsigned long)s_id[2]);
+	return key;
+}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /*
  * Exported symbols from qla_target.c LLD logic used by qla2xxx code..
  */
 extern void qlt_response_pkt_all_vps(struct scsi_qla_host *, response_t *);
 extern int qlt_rdy_to_xfer(struct qla_tgt_cmd *);
 extern int qlt_xmit_response(struct qla_tgt_cmd *, int, uint8_t);
+<<<<<<< HEAD
+=======
+extern void qlt_abort_cmd(struct qla_tgt_cmd *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern void qlt_xmit_tm_rsp(struct qla_tgt_mgmt_cmd *);
 extern void qlt_free_mcmd(struct qla_tgt_mgmt_cmd *);
 extern void qlt_free_cmd(struct qla_tgt_cmd *cmd);
@@ -1110,5 +1207,10 @@ extern void qlt_stop_phase2(struct qla_tgt *);
 extern irqreturn_t qla83xx_msix_atio_q(int, void *);
 extern void qlt_83xx_iospace_config(struct qla_hw_data *);
 extern int qlt_free_qfull_cmds(struct scsi_qla_host *);
+<<<<<<< HEAD
+=======
+extern void qlt_logo_completion_handler(fc_port_t *, int);
+extern void qlt_do_generation_tick(struct scsi_qla_host *, int *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #endif /* __QLA_TARGET_H */

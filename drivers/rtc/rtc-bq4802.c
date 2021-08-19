@@ -164,6 +164,13 @@ static int bq4802_probe(struct platform_device *pdev)
 	} else if (p->r->flags & IORESOURCE_MEM) {
 		p->regs = devm_ioremap(&pdev->dev, p->r->start,
 					resource_size(p->r));
+<<<<<<< HEAD
+=======
+		if (!p->regs){
+			err = -ENOMEM;
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		p->read = bq4802_read_mem;
 		p->write = bq4802_write_mem;
 	} else {

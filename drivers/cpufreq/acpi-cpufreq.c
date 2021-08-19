@@ -628,7 +628,11 @@ static int acpi_cpufreq_blacklist(struct cpuinfo_x86 *c)
 	if (c->x86_vendor == X86_VENDOR_INTEL) {
 		if ((c->x86 == 15) &&
 		    (c->x86_model == 6) &&
+<<<<<<< HEAD
 		    (c->x86_mask == 8)) {
+=======
+		    (c->x86_stepping == 8)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			printk(KERN_INFO "acpi-cpufreq: Intel(R) "
 			    "Xeon(R) 7100 Errata AL30, processors may "
 			    "lock up on frequency changes: disabling "
@@ -702,7 +706,12 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		cpumask_copy(policy->cpus, cpu_core_mask(cpu));
 	}
 
+<<<<<<< HEAD
 	if (check_amd_hwpstate_cpu(cpu) && !acpi_pstate_strict) {
+=======
+	if (check_amd_hwpstate_cpu(cpu) && boot_cpu_data.x86 < 0x19 &&
+	    !acpi_pstate_strict) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		cpumask_clear(policy->cpus);
 		cpumask_set_cpu(cpu, policy->cpus);
 		cpumask_copy(data->freqdomain_cpus, cpu_sibling_mask(cpu));

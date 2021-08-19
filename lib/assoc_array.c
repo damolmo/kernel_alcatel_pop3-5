@@ -597,21 +597,47 @@ static bool assoc_array_insert_into_terminal_node(struct assoc_array_edit *edit,
 		if ((edit->segment_cache[ASSOC_ARRAY_FAN_OUT] ^ base_seg) == 0)
 			goto all_leaves_cluster_together;
 
+<<<<<<< HEAD
 		/* Otherwise we can just insert a new node ahead of the old
 		 * one.
 		 */
 		goto present_leaves_cluster_but_not_new_leaf;
+=======
+		/* Otherwise all the old leaves cluster in the same slot, but
+		 * the new leaf wants to go into a different slot - so we
+		 * create a new node (n0) to hold the new leaf and a pointer to
+		 * a new node (n1) holding all the old leaves.
+		 *
+		 * This can be done by falling through to the node splitting
+		 * path.
+		 */
+		pr_devel("present leaves cluster but not new leaf\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 split_node:
 	pr_devel("split node\n");
 
+<<<<<<< HEAD
 	/* We need to split the current node; we know that the node doesn't
 	 * simply contain a full set of leaves that cluster together (it
 	 * contains meta pointers and/or non-clustering leaves).
 	 *
 	 * We need to expel at least two leaves out of a set consisting of the
 	 * leaves in the node and the new leaf.
+=======
+	/* We need to split the current node.  The node must contain anything
+	 * from a single leaf (in the one leaf case, this leaf will cluster
+	 * with the new leaf) and the rest meta-pointers, to all leaves, some
+	 * of which may cluster.
+	 *
+	 * It won't contain the case in which all the current leaves plus the
+	 * new leaves want to cluster in the same slot.
+	 *
+	 * We need to expel at least two leaves out of a set consisting of the
+	 * leaves in the node and the new leaf.  The current meta pointers can
+	 * just be copied as they shouldn't cluster with any of the leaves.
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	 *
 	 * We need a new node (n0) to replace the current one and a new node to
 	 * take the expelled nodes (n1).
@@ -716,6 +742,7 @@ found_slot_for_multiple_occupancy:
 	pr_devel("<--%s() = ok [split node]\n", __func__);
 	return true;
 
+<<<<<<< HEAD
 present_leaves_cluster_but_not_new_leaf:
 	/* All the old leaves cluster in the same slot, but the new leaf wants
 	 * to go into a different slot, so we create a new node to hold the new
@@ -743,6 +770,8 @@ present_leaves_cluster_but_not_new_leaf:
 	pr_devel("<--%s() = ok [insert node before]\n", __func__);
 	return true;
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 all_leaves_cluster_together:
 	/* All the leaves, new and old, want to cluster together in this node
 	 * in the same slot, so we have to replace this node with a shortcut to
@@ -797,9 +826,17 @@ all_leaves_cluster_together:
 		new_s0->index_key[i] =
 			ops->get_key_chunk(index_key, i * ASSOC_ARRAY_KEY_CHUNK_SIZE);
 
+<<<<<<< HEAD
 	blank = ULONG_MAX << (level & ASSOC_ARRAY_KEY_CHUNK_MASK);
 	pr_devel("blank off [%zu] %d: %lx\n", keylen - 1, level, blank);
 	new_s0->index_key[keylen - 1] &= ~blank;
+=======
+	if (level & ASSOC_ARRAY_KEY_CHUNK_MASK) {
+		blank = ULONG_MAX << (level & ASSOC_ARRAY_KEY_CHUNK_MASK);
+		pr_devel("blank off [%zu] %d: %lx\n", keylen - 1, level, blank);
+		new_s0->index_key[keylen - 1] &= ~blank;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* This now reduces to a node splitting exercise for which we'll need
 	 * to regenerate the disparity table.

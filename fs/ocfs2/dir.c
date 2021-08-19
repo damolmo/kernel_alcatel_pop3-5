@@ -1906,8 +1906,12 @@ static int ocfs2_dir_foreach_blk_el(struct inode *inode,
 				/* On error, skip the f_pos to the
 				   next block. */
 				ctx->pos = (ctx->pos | (sb->s_blocksize - 1)) + 1;
+<<<<<<< HEAD
 				brelse(bh);
 				continue;
+=======
+				break;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			}
 			if (le64_to_cpu(de->inode)) {
 				unsigned char d_type = DT_UNKNOWN;

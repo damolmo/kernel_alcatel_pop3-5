@@ -31,7 +31,11 @@ struct smpboot_thread_data;
  * @thread_comm:	The base name of the thread
  */
 struct smp_hotplug_thread {
+<<<<<<< HEAD
 	struct task_struct __percpu	**store;
+=======
+	struct task_struct		* __percpu *store;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct list_head		list;
 	int				(*thread_should_run)(unsigned int cpu);
 	void				(*thread_fn)(unsigned int cpu);
@@ -42,13 +46,20 @@ struct smp_hotplug_thread {
 	void				(*unpark)(unsigned int cpu);
 	void				(*pre_unpark)(unsigned int cpu);
 	bool				selfparking;
+<<<<<<< HEAD
 	cpumask_var_t cpumask;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	const char			*thread_comm;
 };
 
 int smpboot_register_percpu_thread(struct smp_hotplug_thread *plug_thread);
 void smpboot_unregister_percpu_thread(struct smp_hotplug_thread *plug_thread);
 int smpboot_thread_schedule(void);
+<<<<<<< HEAD
 int smpboot_update_cpumask_percpu_thread(struct smp_hotplug_thread *plug_thread,
 					 const struct cpumask *);
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif

@@ -6,6 +6,14 @@
 #include "spk_priv.h"
 #include "serialio.h"
 
+<<<<<<< HEAD
+=======
+#include <linux/serial_core.h>
+/* WARNING:  Do not change this to <linux/serial.h> without testing that
+ * SERIAL_PORT_DFNS does get defined to the appropriate value. */
+#include <asm/serial.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifndef SERIAL_PORT_DFNS
 #define SERIAL_PORT_DFNS
 #endif
@@ -23,9 +31,21 @@ const struct old_serial_port *spk_serial_init(int index)
 	int baud = 9600, quot = 0;
 	unsigned int cval = 0;
 	int cflag = CREAD | HUPCL | CLOCAL | B9600 | CS8;
+<<<<<<< HEAD
 	const struct old_serial_port *ser = rs_table + index;
 	int err;
 
+=======
+	const struct old_serial_port *ser;
+	int err;
+
+	if (index >= ARRAY_SIZE(rs_table)) {
+		pr_info("no port info for ttyS%d\n", index);
+		return NULL;
+	}
+	ser = rs_table + index;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*	Divisor, bytesize and parity */
 	quot = ser->baud_base / baud;
 	cval = cflag & (CSIZE | CSTOPB);

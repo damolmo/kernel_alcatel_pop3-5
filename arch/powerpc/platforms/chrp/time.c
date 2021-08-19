@@ -27,6 +27,11 @@
 #include <asm/sections.h>
 #include <asm/time.h>
 
+<<<<<<< HEAD
+=======
+#include <platforms/chrp/chrp.h>
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern spinlock_t rtc_lock;
 
 #define NVRAM_AS0  0x74
@@ -62,7 +67,11 @@ long __init chrp_time_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 int chrp_cmos_clock_read(int addr)
+=======
+static int chrp_cmos_clock_read(int addr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (nvram_as1 != 0)
 		outb(addr>>8, nvram_as1);
@@ -70,7 +79,11 @@ int chrp_cmos_clock_read(int addr)
 	return (inb(nvram_data));
 }
 
+<<<<<<< HEAD
 void chrp_cmos_clock_write(unsigned long val, int addr)
+=======
+static void chrp_cmos_clock_write(unsigned long val, int addr)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	if (nvram_as1 != 0)
 		outb(addr>>8, nvram_as1);

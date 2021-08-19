@@ -196,7 +196,11 @@ static int mpic_msgr_probe(struct platform_device *dev)
 
 	/* IO map the message register block. */
 	of_address_to_resource(np, 0, &rsrc);
+<<<<<<< HEAD
 	msgr_block_addr = ioremap(rsrc.start, rsrc.end - rsrc.start);
+=======
+	msgr_block_addr = ioremap(rsrc.start, resource_size(&rsrc));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!msgr_block_addr) {
 		dev_err(&dev->dev, "Failed to iomap MPIC message registers");
 		return -EFAULT;

@@ -65,20 +65,35 @@
 #define SHA512_H7	0x5be0cd19137e2179ULL
 
 struct sha1_state {
+<<<<<<< HEAD
 	u32 state[SHA1_DIGEST_SIZE / 4];
 	u64 count;
+=======
+	u64 count;
+	u32 state[SHA1_DIGEST_SIZE / 4];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 buffer[SHA1_BLOCK_SIZE];
 };
 
 struct sha256_state {
+<<<<<<< HEAD
 	u32 state[SHA256_DIGEST_SIZE / 4];
 	u64 count;
+=======
+	u64 count;
+	u32 state[SHA256_DIGEST_SIZE / 4];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 buf[SHA256_BLOCK_SIZE];
 };
 
 struct sha512_state {
+<<<<<<< HEAD
 	u64 state[SHA512_DIGEST_SIZE / 8];
 	u64 count[2];
+=======
+	u64 count[2];
+	u64 state[SHA512_DIGEST_SIZE / 8];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u8 buf[SHA512_BLOCK_SIZE];
 };
 
@@ -90,9 +105,12 @@ extern int crypto_sha1_update(struct shash_desc *desc, const u8 *data,
 extern int crypto_sha256_update(struct shash_desc *desc, const u8 *data,
 			      unsigned int len);
 
+<<<<<<< HEAD
 extern int crypto_sha256_finup(struct shash_desc *desc, const u8 *data,
 			       unsigned int len, u8 *hash);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int crypto_sha512_update(struct shash_desc *desc, const u8 *data,
 			      unsigned int len);
 #endif

@@ -49,7 +49,11 @@ i40e_status i40e_add_sd_table_entry(struct i40e_hw *hw,
 	struct i40e_hmc_sd_entry *sd_entry;
 	bool dma_mem_alloc_done = false;
 	struct i40e_dma_mem mem;
+<<<<<<< HEAD
 	i40e_status ret_code;
+=======
+	i40e_status ret_code = I40E_SUCCESS;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u64 alloc_len;
 
 	if (NULL == hmc_info->sd_table.sd_entry) {

@@ -75,7 +75,11 @@ typedef u64 __nocast cputime64_t;
  */
 static inline cputime_t timespec_to_cputime(const struct timespec *val)
 {
+<<<<<<< HEAD
 	u64 ret = val->tv_sec * NSEC_PER_SEC + val->tv_nsec;
+=======
+	u64 ret = (u64)val->tv_sec * NSEC_PER_SEC + val->tv_nsec;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return (__force cputime_t) ret;
 }
 static inline void cputime_to_timespec(const cputime_t ct, struct timespec *val)
@@ -91,7 +95,12 @@ static inline void cputime_to_timespec(const cputime_t ct, struct timespec *val)
  */
 static inline cputime_t timeval_to_cputime(const struct timeval *val)
 {
+<<<<<<< HEAD
 	u64 ret = val->tv_sec * NSEC_PER_SEC + val->tv_usec * NSEC_PER_USEC;
+=======
+	u64 ret = (u64)val->tv_sec * NSEC_PER_SEC +
+			val->tv_usec * NSEC_PER_USEC;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	return (__force cputime_t) ret;
 }
 static inline void cputime_to_timeval(const cputime_t ct, struct timeval *val)

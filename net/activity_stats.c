@@ -101,7 +101,11 @@ static const struct file_operations activity_stats_fops = {
 	.open		= activity_stats_open,
 	.read		= seq_read,
 	.llseek		= seq_lseek,
+<<<<<<< HEAD
 	.release	= single_release,
+=======
+	.release	= seq_release,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 };
 
 static struct notifier_block activity_stats_notifier_block = {

@@ -85,6 +85,7 @@ static struct { unsigned flag:8; char opt_char; } opt_array[] = {
 	{ _DPRINTK_FLAGS_NONE, '_' },
 };
 
+<<<<<<< HEAD
 /* format a string into buf[] which describes the _ddebug's flags */
 static char *ddebug_describe_flags(struct _ddebug *dp, char *buf,
 				    size_t maxlen)
@@ -101,6 +102,24 @@ static char *ddebug_describe_flags(struct _ddebug *dp, char *buf,
 	*p = '\0';
 
 	return buf;
+=======
+struct flagsbuf { char buf[ARRAY_SIZE(opt_array)+1]; };
+
+/* format a string into buf[] which describes the _ddebug's flags */
+static char *ddebug_describe_flags(unsigned int flags, struct flagsbuf *fb)
+{
+	char *p = fb->buf;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(opt_array); ++i)
+		if (flags & opt_array[i].flag)
+			*p++ = opt_array[i].opt_char;
+	if (p == fb->buf)
+		*p++ = '_';
+	*p = '\0';
+
+	return fb->buf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 #define vpr_info(fmt, ...)					\
@@ -142,7 +161,11 @@ static int ddebug_change(const struct ddebug_query *query,
 	struct ddebug_table *dt;
 	unsigned int newflags;
 	unsigned int nfound = 0;
+<<<<<<< HEAD
 	char flagbuf[10];
+=======
+	struct flagsbuf fbuf;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* search for matching ddebugs */
 	mutex_lock(&ddebug_lock);
@@ -192,8 +215,12 @@ static int ddebug_change(const struct ddebug_query *query,
 			vpr_info("changed %s:%d [%s]%s =%s\n",
 				 trim_prefix(dp->filename), dp->lineno,
 				 dt->mod_name, dp->function,
+<<<<<<< HEAD
 				 ddebug_describe_flags(dp, flagbuf,
 						       sizeof(flagbuf)));
+=======
+				 ddebug_describe_flags(dp->flags, &fbuf));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		}
 	}
 	mutex_unlock(&ddebug_lock);
@@ -353,6 +380,13 @@ static int ddebug_parse_query(char *words[], int nwords,
 				if (parse_lineno(last, &query->last_lineno) < 0)
 					return -EINVAL;
 
+<<<<<<< HEAD
+=======
+				/* special case for last lineno not specified */
+				if (query->last_lineno == 0)
+					query->last_lineno = UINT_MAX;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				if (query->last_lineno < query->first_lineno) {
 					pr_err("last-line:%d < 1st-line:%d\n",
 						query->last_lineno,
@@ -773,7 +807,11 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 {
 	struct ddebug_iter *iter = m->private;
 	struct _ddebug *dp = p;
+<<<<<<< HEAD
 	char flagsbuf[10];
+=======
+	struct flagsbuf flags;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	vpr_info("called m=%p p=%p\n", m, p);
 
@@ -786,7 +824,11 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 	seq_printf(m, "%s:%u [%s]%s =%s \"",
 		   trim_prefix(dp->filename), dp->lineno,
 		   iter->table->mod_name, dp->function,
+<<<<<<< HEAD
 		   ddebug_describe_flags(dp, flagsbuf, sizeof(flagsbuf)));
+=======
+		   ddebug_describe_flags(dp->flags, &flags));
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	seq_escape(m, dp->format, "\t\r\n\"");
 	seq_puts(m, "\"\n");
 

@@ -19,6 +19,10 @@
 
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/rt.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "queue.h"
 
 #define MMC_QUEUE_BOUNCESZ	65536
@@ -50,9 +54,17 @@ static int mmc_queue_thread(void *d)
 {
 	struct mmc_queue *mq = d;
 	struct request_queue *q = mq->queue;
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 	struct mmc_card *card = mq->card;
 #endif
+=======
+	struct sched_param scheduler_params = {0};
+
+	scheduler_params.sched_priority = 1;
+
+	sched_setscheduler(current, SCHED_FIFO, &scheduler_params);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	current->flags |= PF_MEMALLOC;
 
@@ -97,9 +109,12 @@ static int mmc_queue_thread(void *d)
 				set_current_state(TASK_RUNNING);
 				break;
 			}
+<<<<<<< HEAD
 #ifdef MTK_BKOPS_IDLE_MAYA
 			mmc_start_delayed_bkops(card);
 #endif
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			up(&mq->thread_sem);
 			schedule();
 			down(&mq->thread_sem);

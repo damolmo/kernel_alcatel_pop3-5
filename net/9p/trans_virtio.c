@@ -192,7 +192,11 @@ static int pack_sg_list(struct scatterlist *sg, int start,
 		s = rest_of_page(data);
 		if (s > count)
 			s = count;
+<<<<<<< HEAD
 		BUG_ON(index > limit);
+=======
+		BUG_ON(index >= limit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Make sure we don't terminate early. */
 		sg_unmark_end(&sg[index]);
 		sg_set_buf(&sg[index++], data, s);
@@ -238,6 +242,10 @@ pack_sg_list_p(struct scatterlist *sg, int start, int limit,
 		s = rest_of_page(data);
 		if (s > count)
 			s = count;
+<<<<<<< HEAD
+=======
+		BUG_ON(index >= limit);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* Make sure we don't terminate early. */
 		sg_unmark_end(&sg[index]);
 		sg_set_page(&sg[index++], pdata[i++], s, data_off);
@@ -292,8 +300,13 @@ req_retry:
 		if (err == -ENOSPC) {
 			chan->ring_bufs_avail = 0;
 			spin_unlock_irqrestore(&chan->lock, flags);
+<<<<<<< HEAD
 			err = wait_event_interruptible(*chan->vc_wq,
 							chan->ring_bufs_avail);
+=======
+			err = wait_event_killable(*chan->vc_wq,
+						  chan->ring_bufs_avail);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (err  == -ERESTARTSYS)
 				return err;
 
@@ -324,7 +337,11 @@ static int p9_get_mapped_pages(struct virtio_chan *chan,
 		 * Other zc request to finish here
 		 */
 		if (atomic_read(&vp_pinned) >= chan->p9_max_pages) {
+<<<<<<< HEAD
 			err = wait_event_interruptible(vp_wq,
+=======
+			err = wait_event_killable(vp_wq,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			      (atomic_read(&vp_pinned) < chan->p9_max_pages));
 			if (err == -ERESTARTSYS)
 				return err;
@@ -454,8 +471,13 @@ req_retry_pinned:
 		if (err == -ENOSPC) {
 			chan->ring_bufs_avail = 0;
 			spin_unlock_irqrestore(&chan->lock, flags);
+<<<<<<< HEAD
 			err = wait_event_interruptible(*chan->vc_wq,
 						       chan->ring_bufs_avail);
+=======
+			err = wait_event_killable(*chan->vc_wq,
+						  chan->ring_bufs_avail);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			if (err  == -ERESTARTSYS)
 				goto err_out;
 
@@ -472,8 +494,12 @@ req_retry_pinned:
 	virtqueue_kick(chan->vq);
 	spin_unlock_irqrestore(&chan->lock, flags);
 	p9_debug(P9_DEBUG_TRANS, "virtio request kicked\n");
+<<<<<<< HEAD
 	err = wait_event_interruptible(*req->wq,
 				       req->status >= REQ_STATUS_RCVD);
+=======
+	err = wait_event_killable(*req->wq, req->status >= REQ_STATUS_RCVD);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/*
 	 * Non kernel buffers are pinned, unpin them
 	 */
@@ -537,7 +563,11 @@ static int p9_virtio_probe(struct virtio_device *vdev)
 	chan->vq = virtio_find_single_vq(vdev, req_done, "requests");
 	if (IS_ERR(chan->vq)) {
 		err = PTR_ERR(chan->vq);
+<<<<<<< HEAD
 		goto out_free_vq;
+=======
+		goto out_free_chan;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	chan->vq->vdev->priv = chan;
 	spin_lock_init(&chan->lock);
@@ -590,6 +620,10 @@ out_free_tag:
 	kfree(tag);
 out_free_vq:
 	vdev->config->del_vqs(vdev);
+<<<<<<< HEAD
+=======
+out_free_chan:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kfree(chan);
 fail:
 	return err;
@@ -617,6 +651,12 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
 	int ret = -ENOENT;
 	int found = 0;
 
+<<<<<<< HEAD
+=======
+	if (devname == NULL)
+		return -EINVAL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	mutex_lock(&virtio_9p_lock);
 	list_for_each_entry(chan, &virtio_chan_list, chan_list) {
 		if (!strncmp(devname, chan->tag, chan->tag_len) &&
@@ -709,10 +749,23 @@ static struct p9_trans_module p9_virtio_trans = {
 /* The standard init function */
 static int __init p9_virtio_init(void)
 {
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&virtio_chan_list);
 
 	v9fs_register_trans(&p9_virtio_trans);
 	return register_virtio_driver(&p9_virtio_drv);
+=======
+	int rc;
+
+	INIT_LIST_HEAD(&virtio_chan_list);
+
+	v9fs_register_trans(&p9_virtio_trans);
+	rc = register_virtio_driver(&p9_virtio_drv);
+	if (rc)
+		v9fs_unregister_trans(&p9_virtio_trans);
+
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static void __exit p9_virtio_cleanup(void)

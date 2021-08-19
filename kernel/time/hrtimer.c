@@ -53,9 +53,13 @@
 #include <asm/uaccess.h>
 
 #include <trace/events/timer.h>
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 #include "mt_sched_mon.h"
 #endif
+=======
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include "timekeeping.h"
 
 /*
@@ -100,6 +104,12 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 };
 
 static const int hrtimer_clock_to_base_table[MAX_CLOCKS] = {
+<<<<<<< HEAD
+=======
+	/* Make sure we catch unsupported clockids */
+	[0 ... MAX_CLOCKS - 1]	= HRTIMER_MAX_CLOCK_BASES,
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	[CLOCK_REALTIME]	= HRTIMER_BASE_REALTIME,
 	[CLOCK_MONOTONIC]	= HRTIMER_BASE_MONOTONIC,
 	[CLOCK_BOOTTIME]	= HRTIMER_BASE_BOOTTIME,
@@ -108,7 +118,13 @@ static const int hrtimer_clock_to_base_table[MAX_CLOCKS] = {
 
 static inline int hrtimer_clockid_to_base(clockid_t clock_id)
 {
+<<<<<<< HEAD
 	return hrtimer_clock_to_base_table[clock_id];
+=======
+	int base = hrtimer_clock_to_base_table[clock_id];
+	BUG_ON(base == HRTIMER_MAX_CLOCK_BASES);
+	return base;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 
@@ -294,7 +310,11 @@ EXPORT_SYMBOL_GPL(__ktime_divns);
  */
 ktime_t ktime_add_safe(const ktime_t lhs, const ktime_t rhs)
 {
+<<<<<<< HEAD
 	ktime_t res = ktime_add(lhs, rhs);
+=======
+	ktime_t res = ktime_add_unsafe(lhs, rhs);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/*
 	 * We use KTIME_SEC_MAX here, the maximum timeout which we can
@@ -417,6 +437,10 @@ void destroy_hrtimer_on_stack(struct hrtimer *timer)
 {
 	debug_object_free(timer, &hrtimer_debug_descr);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(destroy_hrtimer_on_stack);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #else
 static inline void debug_hrtimer_init(struct hrtimer *timer) { }
@@ -614,6 +638,10 @@ static int hrtimer_reprogram(struct hrtimer *timer,
 static inline void hrtimer_init_hres(struct hrtimer_cpu_base *base)
 {
 	base->expires_next.tv64 = KTIME_MAX;
+<<<<<<< HEAD
+=======
+	base->hang_detected = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	base->hres_active = 0;
 }
 
@@ -1150,7 +1178,16 @@ static void __hrtimer_init(struct hrtimer *timer, clockid_t clock_id,
 
 	cpu_base = raw_cpu_ptr(&hrtimer_bases);
 
+<<<<<<< HEAD
 	if (clock_id == CLOCK_REALTIME && mode != HRTIMER_MODE_ABS)
+=======
+	/*
+	 * POSIX magic: Relative CLOCK_REALTIME timers are not affected by
+	 * clock modifications, so they needs to become CLOCK_MONOTONIC to
+	 * ensure POSIX compliance.
+	 */
+	if (clock_id == CLOCK_REALTIME && mode & HRTIMER_MODE_REL)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		clock_id = CLOCK_MONOTONIC;
 
 	base = hrtimer_clockid_to_base(clock_id);
@@ -1219,6 +1256,7 @@ static void __run_hrtimer(struct hrtimer *timer, ktime_t *now)
 	 */
 	raw_spin_unlock(&cpu_base->lock);
 	trace_hrtimer_expire_entry(timer, now);
+<<<<<<< HEAD
 #ifdef CONFIG_MTPROF
 	mt_trace_hrt_start(fn);
 #endif
@@ -1226,6 +1264,9 @@ static void __run_hrtimer(struct hrtimer *timer, ktime_t *now)
 #ifdef CONFIG_MTPROF
 	mt_trace_hrt_end(fn);
 #endif
+=======
+	restart = fn(timer);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	trace_hrtimer_expire_exit(timer);
 	raw_spin_lock(&cpu_base->lock);
 
@@ -1601,7 +1642,11 @@ long hrtimer_nanosleep(struct timespec *rqtp, struct timespec __user *rmtp,
 			goto out;
 	}
 
+<<<<<<< HEAD
 	restart = &current_thread_info()->restart_block;
+=======
+	restart = &current->restart_block;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	restart->fn = hrtimer_nanosleep_restart;
 	restart->nanosleep.clockid = t.timer.base->clockid;
 	restart->nanosleep.rmtp = rmtp;
@@ -1640,6 +1685,10 @@ static void init_hrtimers_cpu(int cpu)
 		timerqueue_init_head(&cpu_base->clock_base[i].active);
 	}
 
+<<<<<<< HEAD
+=======
+	cpu_base->active_bases = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	cpu_base->cpu = cpu;
 	hrtimer_init_hres(cpu_base);
 }

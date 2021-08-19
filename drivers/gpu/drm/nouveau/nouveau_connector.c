@@ -254,8 +254,15 @@ nouveau_connector_detect(struct drm_connector *connector, bool force)
 	}
 
 	ret = pm_runtime_get_sync(connector->dev->dev);
+<<<<<<< HEAD
 	if (ret < 0 && ret != -EACCES)
 		return conn_status;
+=======
+	if (ret < 0 && ret != -EACCES) {
+		pm_runtime_put_autosuspend(dev->dev);
+		return conn_status;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	nv_encoder = nouveau_connector_ddc_detect(connector);
 	if (nv_encoder && (i2c = nv_encoder->i2c) != NULL) {
@@ -952,10 +959,19 @@ nouveau_connector_hotplug(struct nvif_notify *notify)
 
 		NV_DEBUG(drm, "%splugged %s\n", plugged ? "" : "un", name);
 
+<<<<<<< HEAD
+=======
+		mutex_lock(&drm->dev->mode_config.mutex);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (plugged)
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
 		else
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
+<<<<<<< HEAD
+=======
+		mutex_unlock(&drm->dev->mode_config.mutex);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		drm_helper_hpd_irq_event(connector->dev);
 	}
 

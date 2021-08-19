@@ -173,26 +173,51 @@ static int batadv_interface_tx(struct sk_buff *skb,
 	int gw_mode;
 	enum batadv_forw_mode forw_mode;
 	struct batadv_orig_node *mcast_single_orig = NULL;
+<<<<<<< HEAD
+=======
+	int network_offset = ETH_HLEN;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (atomic_read(&bat_priv->mesh_state) != BATADV_MESH_ACTIVE)
 		goto dropped;
 
 	soft_iface->trans_start = jiffies;
 	vid = batadv_get_vid(skb, 0);
+<<<<<<< HEAD
+=======
+
+	skb_reset_mac_header(skb);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	ethhdr = eth_hdr(skb);
 
 	switch (ntohs(ethhdr->h_proto)) {
 	case ETH_P_8021Q:
+<<<<<<< HEAD
 		vhdr = vlan_eth_hdr(skb);
 
 		if (vhdr->h_vlan_encapsulated_proto != ethertype)
 			break;
+=======
+		if (!pskb_may_pull(skb, sizeof(*vhdr)))
+			goto dropped;
+		vhdr = vlan_eth_hdr(skb);
+
+		if (vhdr->h_vlan_encapsulated_proto != ethertype) {
+			network_offset += VLAN_HLEN;
+			break;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 		/* fall through */
 	case ETH_P_BATMAN:
 		goto dropped;
 	}
 
+<<<<<<< HEAD
+=======
+	skb_set_network_header(skb, network_offset);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (batadv_bla_tx(bat_priv, skb, vid))
 		goto dropped;
 
@@ -373,11 +398,23 @@ void batadv_interface_rx(struct net_device *soft_iface,
 	 */
 	nf_reset(skb);
 
+<<<<<<< HEAD
+=======
+	if (unlikely(!pskb_may_pull(skb, ETH_HLEN)))
+		goto dropped;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	vid = batadv_get_vid(skb, 0);
 	ethhdr = eth_hdr(skb);
 
 	switch (ntohs(ethhdr->h_proto)) {
 	case ETH_P_8021Q:
+<<<<<<< HEAD
+=======
+		if (!pskb_may_pull(skb, VLAN_ETH_HLEN))
+			goto dropped;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vhdr = (struct vlan_ethhdr *)skb->data;
 
 		if (vhdr->h_vlan_encapsulated_proto != ethertype)
@@ -389,6 +426,7 @@ void batadv_interface_rx(struct net_device *soft_iface,
 	}
 
 	/* skb->dev & skb->pkt_type are set here */
+<<<<<<< HEAD
 	if (unlikely(!pskb_may_pull(skb, ETH_HLEN)))
 		goto dropped;
 	skb->protocol = eth_type_trans(skb, soft_iface);
@@ -399,6 +437,10 @@ void batadv_interface_rx(struct net_device *soft_iface,
 	 */
 
 	/* skb->ip_summed = CHECKSUM_UNNECESSARY; */
+=======
+	skb->protocol = eth_type_trans(skb, soft_iface);
+	skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	batadv_inc_counter(bat_priv, BATADV_CNT_RX);
 	batadv_add_counter(bat_priv, BATADV_CNT_RX_BYTES,
@@ -963,7 +1005,13 @@ void batadv_softif_destroy_sysfs(struct net_device *soft_iface)
 static void batadv_softif_destroy_netlink(struct net_device *soft_iface,
 					  struct list_head *head)
 {
+<<<<<<< HEAD
 	struct batadv_hard_iface *hard_iface;
+=======
+	struct batadv_priv *bat_priv = netdev_priv(soft_iface);
+	struct batadv_hard_iface *hard_iface;
+	struct batadv_softif_vlan *vlan;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	list_for_each_entry(hard_iface, &batadv_hardif_list, list) {
 		if (hard_iface->soft_iface == soft_iface)
@@ -971,6 +1019,16 @@ static void batadv_softif_destroy_netlink(struct net_device *soft_iface,
 							BATADV_IF_CLEANUP_KEEP);
 	}
 
+<<<<<<< HEAD
+=======
+	/* destroy the "untagged" VLAN */
+	vlan = batadv_softif_vlan_get(bat_priv, BATADV_NO_FLAGS);
+	if (vlan) {
+		batadv_softif_destroy_vlan(bat_priv, vlan);
+		batadv_softif_vlan_free_ref(vlan);
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	batadv_sysfs_del_meshif(soft_iface);
 	unregister_netdevice_queue(soft_iface, head);
 }

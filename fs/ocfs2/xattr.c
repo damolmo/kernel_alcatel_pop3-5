@@ -645,9 +645,17 @@ int ocfs2_calc_xattr_init(struct inode *dir,
 						     si->value_len);
 
 	if (osb->s_mount_opt & OCFS2_MOUNT_POSIX_ACL) {
+<<<<<<< HEAD
 		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
 					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
 					"", NULL, 0);
+=======
+		down_read(&OCFS2_I(dir)->ip_xattr_sem);
+		acl_len = ocfs2_xattr_get_nolock(dir, dir_bh,
+					OCFS2_XATTR_INDEX_POSIX_ACL_DEFAULT,
+					"", NULL, 0);
+		up_read(&OCFS2_I(dir)->ip_xattr_sem);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (acl_len > 0) {
 			a_size = ocfs2_xattr_entry_real_size(0, acl_len);
 			if (S_ISDIR(mode))
@@ -3810,7 +3818,10 @@ static int ocfs2_xattr_bucket_find(struct inode *inode,
 	u16 blk_per_bucket = ocfs2_blocks_per_xattr_bucket(inode->i_sb);
 	int low_bucket = 0, bucket, high_bucket;
 	struct ocfs2_xattr_bucket *search;
+<<<<<<< HEAD
 	u32 last_hash;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	u64 blkno, lower_blkno = 0;
 
 	search = ocfs2_xattr_bucket_new(inode);
@@ -3854,8 +3865,11 @@ static int ocfs2_xattr_bucket_find(struct inode *inode,
 		if (xh->xh_count)
 			xe = &xh->xh_entries[le16_to_cpu(xh->xh_count) - 1];
 
+<<<<<<< HEAD
 		last_hash = le32_to_cpu(xe->xe_name_hash);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* record lower_blkno which may be the insert place. */
 		lower_blkno = blkno;
 
@@ -7207,12 +7221,19 @@ out:
  */
 int ocfs2_init_security_and_acl(struct inode *dir,
 				struct inode *inode,
+<<<<<<< HEAD
 				const struct qstr *qstr,
 				struct posix_acl *default_acl,
 				struct posix_acl *acl)
 {
 	struct buffer_head *dir_bh = NULL;
 	int ret = 0;
+=======
+				const struct qstr *qstr)
+{
+	int ret = 0;
+	struct buffer_head *dir_bh = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ret = ocfs2_init_security_get(inode, dir, qstr, NULL);
 	if (ret) {
@@ -7225,11 +7246,17 @@ int ocfs2_init_security_and_acl(struct inode *dir,
 		mlog_errno(ret);
 		goto leave;
 	}
+<<<<<<< HEAD
 
 	if (!ret && default_acl)
 		ret = ocfs2_iop_set_acl(inode, default_acl, ACL_TYPE_DEFAULT);
 	if (!ret && acl)
 		ret = ocfs2_iop_set_acl(inode, acl, ACL_TYPE_ACCESS);
+=======
+	ret = ocfs2_init_acl(NULL, inode, dir, NULL, dir_bh, NULL, NULL);
+	if (ret)
+		mlog_errno(ret);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ocfs2_inode_unlock(dir, 0);
 	brelse(dir_bh);

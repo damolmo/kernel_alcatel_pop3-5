@@ -14,10 +14,13 @@
 #include <asm/visasm.h>
 #include <asm/processor.h>
 
+<<<<<<< HEAD
 #define		RTRAP_PSTATE		(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_IE)
 #define		RTRAP_PSTATE_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV)
 #define		RTRAP_PSTATE_AG_IRQOFF	(PSTATE_TSO|PSTATE_PEF|PSTATE_PRIV|PSTATE_AG)
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #ifdef CONFIG_CONTEXT_TRACKING
 # define SCHEDULE_USER schedule_user
 #else
@@ -236,6 +239,7 @@ rt_continue:	ldx			[%sp + PTREGS_OFF + PT_V9_G1], %g1
 		 wrpr			%g1, %cwp
 		ba,a,pt			%xcc, user_rtt_fill_64bit
 
+<<<<<<< HEAD
 user_rtt_fill_fixup:
 		rdpr	%cwp, %g1
 		add	%g1, 1, %g1
@@ -282,6 +286,19 @@ user_rtt_fill_fixup:
 		 add	%sp, PTREGS_OFF, %o0
 		ba,pt	%xcc, rtrap
 		 nop
+=======
+user_rtt_fill_fixup_dax:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	1, %g3
+
+user_rtt_fill_fixup_mna:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 mov	2, %g3
+
+user_rtt_fill_fixup:
+		ba,pt	%xcc, user_rtt_fill_fixup_common
+		 clr	%g3
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 user_rtt_pre_restore:
 		add			%g1, 1, %g1

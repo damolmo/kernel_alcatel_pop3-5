@@ -976,12 +976,20 @@ static struct dmaengine_unmap_pool *__get_unmap_pool(int nr)
 	switch (order) {
 	case 0 ... 1:
 		return &unmap_pool[0];
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_DMA_ENGINE_RAID)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	case 2 ... 4:
 		return &unmap_pool[1];
 	case 5 ... 7:
 		return &unmap_pool[2];
 	case 8:
 		return &unmap_pool[3];
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	default:
 		BUG();
 		return NULL;

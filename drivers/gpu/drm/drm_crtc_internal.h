@@ -36,9 +36,12 @@ int drm_mode_object_get(struct drm_device *dev,
 void drm_mode_object_put(struct drm_device *dev,
 			 struct drm_mode_object *object);
 
+<<<<<<< HEAD
 /* drm_atomic.c */
 int drm_atomic_get_property(struct drm_mode_object *obj,
 			   struct drm_property *property, uint64_t *val);
 int drm_mode_atomic_ioctl(struct drm_device *dev,
 			  void *data, struct drm_file *file_priv);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916

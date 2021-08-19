@@ -103,7 +103,18 @@ static s32 fm10k_init_hw_vf(struct fm10k_hw *hw)
 	s32 err;
 	u16 i;
 
+<<<<<<< HEAD
 	/* assume we always have at least 1 queue */
+=======
+	/* verify we have at least 1 queue */
+	if (!~fm10k_read_reg(hw, FM10K_TXQCTL(0)) ||
+	    !~fm10k_read_reg(hw, FM10K_RXQCTL(0))) {
+		err = FM10K_ERR_NO_RESOURCES;
+		goto reset_max_queues;
+	}
+
+	/* determine how many queues we have */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 1; tqdloc0 && (i < FM10K_MAX_QUEUES_POOL); i++) {
 		/* verify the Descriptor cache offsets are increasing */
 		tqdloc = ~fm10k_read_reg(hw, FM10K_TQDLOC(i));
@@ -119,12 +130,24 @@ static s32 fm10k_init_hw_vf(struct fm10k_hw *hw)
 	/* shut down queues we own and reset DMA configuration */
 	err = fm10k_disable_queues_generic(hw, i);
 	if (err)
+<<<<<<< HEAD
 		return err;
+=======
+		goto reset_max_queues;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	/* record maximum queue count */
 	hw->mac.max_queues = i;
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+reset_max_queues:
+	hw->mac.max_queues = 0;
+
+	return err;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /**

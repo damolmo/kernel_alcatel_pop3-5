@@ -878,6 +878,10 @@ nfsd4_secinfo(struct svc_rqst *rqstp, struct nfsd4_compound_state *cstate,
 				    &exp, &dentry);
 	if (err)
 		return err;
+<<<<<<< HEAD
+=======
+	fh_unlock(&cstate->current_fh);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (dentry->d_inode == NULL) {
 		exp_put(exp);
 		err = nfserr_noent;
@@ -1346,6 +1350,10 @@ nfsd4_proc_compound(struct svc_rqst *rqstp,
 	if (status) {
 		op = &args->ops[0];
 		op->status = status;
+<<<<<<< HEAD
+=======
+		resp->opcnt = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		goto encode_op;
 	}
 
@@ -1404,6 +1412,15 @@ nfsd4_proc_compound(struct svc_rqst *rqstp,
 			opdesc->op_get_currentstateid(cstate, &op->u);
 		op->status = opdesc->op_func(rqstp, cstate, &op->u);
 
+<<<<<<< HEAD
+=======
+		/* Only from SEQUENCE */
+		if (cstate->status == nfserr_replay_cache) {
+			dprintk("%s NFS4.1 replay from cache\n", __func__);
+			status = op->status;
+			goto out;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (!op->status) {
 			if (opdesc->op_set_currentstateid)
 				opdesc->op_set_currentstateid(cstate, &op->u);
@@ -1414,6 +1431,7 @@ nfsd4_proc_compound(struct svc_rqst *rqstp,
 			if (need_wrongsec_check(rqstp))
 				op->status = check_nfsd_access(current_fh->fh_export, rqstp);
 		}
+<<<<<<< HEAD
 
 encode_op:
 		/* Only from SEQUENCE */
@@ -1422,6 +1440,9 @@ encode_op:
 			status = op->status;
 			goto out;
 		}
+=======
+encode_op:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (op->status == nfserr_replay_me) {
 			op->replay = &cstate->replay_owner->so_replay;
 			nfsd4_encode_replay(&resp->xdr, op);

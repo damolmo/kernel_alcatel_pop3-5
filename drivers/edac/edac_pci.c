@@ -274,6 +274,7 @@ static void edac_pci_workq_setup(struct edac_pci_ctl_info *pci,
  */
 static void edac_pci_workq_teardown(struct edac_pci_ctl_info *pci)
 {
+<<<<<<< HEAD
 	int status;
 
 	edac_dbg(0, "\n");
@@ -281,6 +282,14 @@ static void edac_pci_workq_teardown(struct edac_pci_ctl_info *pci)
 	status = cancel_delayed_work(&pci->work);
 	if (status == 0)
 		flush_workqueue(edac_workqueue);
+=======
+	edac_dbg(0, "\n");
+
+	pci->op_state = OP_OFFLINE;
+
+	cancel_delayed_work_sync(&pci->work);
+	flush_workqueue(edac_workqueue);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 /*

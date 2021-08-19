@@ -10,6 +10,10 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
+=======
+#include <asm/assembler.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define AES_ENTRY(func)		ENTRY(ce_ ## func)
 #define AES_ENDPROC(func)	ENDPROC(ce_ ## func)

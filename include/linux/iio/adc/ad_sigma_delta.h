@@ -66,6 +66,10 @@ struct ad_sigma_delta {
 	bool			irq_dis;
 
 	bool			bus_locked;
+<<<<<<< HEAD
+=======
+	bool			keep_cs_asserted;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	uint8_t			comm;
 
@@ -111,6 +115,12 @@ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
 int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
 	unsigned int size, unsigned int *val);
 
+<<<<<<< HEAD
+=======
+int ad_sd_reset(struct ad_sigma_delta *sigma_delta,
+	unsigned int reset_length);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
 	const struct iio_chan_spec *chan, int *val);
 int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,

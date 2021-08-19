@@ -446,7 +446,10 @@ DEFINE_SIMPLE_ATTRIBUTE(freq_stats_fops, freq_stats_get,
 			freq_stats_set, "%llu\n");
 #endif /*CONFIG_COMMON_CLK_FREQ_STATS_ACCOUNTING*/
 
+<<<<<<< HEAD
 /* caller must hold prepare_lock */
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static int clk_debug_create_one(struct clk *clk, struct dentry *pdentry)
 {
 	struct dentry *d;
@@ -1833,6 +1836,12 @@ int clk_set_rate(struct clk *clk, unsigned long rate)
 	clk_change_rate(top);
 
 out:
+<<<<<<< HEAD
+=======
+	/* Always try to update cached phase if possible */
+	if (clk->ops->get_phase)
+		clk->phase = clk->ops->get_phase(clk->hw);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	clk_prepare_unlock();
 
 	return ret;
@@ -2631,14 +2640,20 @@ EXPORT_SYMBOL_GPL(clk_notifier_register);
  */
 int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb)
 {
+<<<<<<< HEAD
 	struct clk_notifier *cn = NULL;
 	int ret = -EINVAL;
+=======
+	struct clk_notifier *cn;
+	int ret = -ENOENT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (!clk || !nb)
 		return -EINVAL;
 
 	clk_prepare_lock();
 
+<<<<<<< HEAD
 	list_for_each_entry(cn, &clk_notifier_list, node)
 		if (cn->clk == clk)
 			break;
@@ -2657,6 +2672,22 @@ int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb)
 
 	} else {
 		ret = -ENOENT;
+=======
+	list_for_each_entry(cn, &clk_notifier_list, node) {
+		if (cn->clk == clk) {
+			ret = srcu_notifier_chain_unregister(&cn->notifier_head, nb);
+
+			clk->notifier_count--;
+
+			/* XXX the notifier code should handle this better */
+			if (!cn->notifier_head.head) {
+				srcu_cleanup_notifier_head(&cn->notifier_head);
+				list_del(&cn->node);
+				kfree(cn);
+			}
+			break;
+		}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	clk_prepare_unlock();

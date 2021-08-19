@@ -138,7 +138,11 @@ static void unmask_giuint_low(struct irq_data *d)
 
 static unsigned int startup_giuint(struct irq_data *data)
 {
+<<<<<<< HEAD
 	if (gpio_lock_as_irq(&vr41xx_gpio_chip, data->hwirq))
+=======
+	if (gpiochip_lock_as_irq(&vr41xx_gpio_chip, data->hwirq))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		dev_err(vr41xx_gpio_chip.dev,
 			"unable to lock HW IRQ %lu for IRQ\n",
 			data->hwirq);
@@ -150,7 +154,11 @@ static unsigned int startup_giuint(struct irq_data *data)
 static void shutdown_giuint(struct irq_data *data)
 {
 	mask_giuint_low(data);
+<<<<<<< HEAD
 	gpio_unlock_as_irq(&vr41xx_gpio_chip, data->hwirq);
+=======
+	gpiochip_unlock_as_irq(&vr41xx_gpio_chip, data->hwirq);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static struct irq_chip giuint_low_irq_chip = {

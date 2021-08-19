@@ -458,8 +458,14 @@ static void negotiate_os_control(struct acpi_pci_root *root, int *no_aspm,
 	decode_osc_support(root, "OS supports", support);
 	status = acpi_pci_osc_support(root, support);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		dev_info(&device->dev, "_OSC failed (%s); disabling ASPM\n",
 			 acpi_format_exception(status));
+=======
+		dev_info(&device->dev, "_OSC failed (%s)%s\n",
+			 acpi_format_exception(status),
+			 pcie_aspm_support_enabled() ? "; disabling ASPM" : "");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		*no_aspm = 1;
 		return;
 	}
@@ -476,9 +482,17 @@ static void negotiate_os_control(struct acpi_pci_root *root, int *no_aspm,
 	}
 
 	control = OSC_PCI_EXPRESS_CAPABILITY_CONTROL
+<<<<<<< HEAD
 		| OSC_PCI_EXPRESS_NATIVE_HP_CONTROL
 		| OSC_PCI_EXPRESS_PME_CONTROL;
 
+=======
+		| OSC_PCI_EXPRESS_PME_CONTROL;
+
+	if (IS_ENABLED(CONFIG_HOTPLUG_PCI_PCIE))
+		control |= OSC_PCI_EXPRESS_NATIVE_HP_CONTROL;
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (pci_aer_available()) {
 		if (aer_acpi_firmware_first())
 			dev_info(&device->dev,

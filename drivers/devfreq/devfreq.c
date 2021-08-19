@@ -397,11 +397,14 @@ static int devfreq_notifier_call(struct notifier_block *nb, unsigned long type,
 static void _remove_devfreq(struct devfreq *devfreq)
 {
 	mutex_lock(&devfreq_list_lock);
+<<<<<<< HEAD
 	if (IS_ERR(find_device_devfreq(devfreq->dev.parent))) {
 		mutex_unlock(&devfreq_list_lock);
 		dev_warn(&devfreq->dev, "releasing devfreq which doesn't exist\n");
 		return;
 	}
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	list_del(&devfreq->node);
 	mutex_unlock(&devfreq_list_lock);
 
@@ -473,6 +476,10 @@ struct devfreq *devfreq_add_device(struct device *dev,
 	devfreq->dev.parent = dev;
 	devfreq->dev.class = devfreq_class;
 	devfreq->dev.release = devfreq_dev_release;
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&devfreq->node);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	devfreq->profile = profile;
 	strncpy(devfreq->governor_name, governor_name, DEVFREQ_NAME_LEN);
 	devfreq->previous_freq = profile->initial_freq;
@@ -585,7 +592,11 @@ struct devfreq *devm_devfreq_add_device(struct device *dev,
 	devfreq = devfreq_add_device(dev, profile, governor_name, data);
 	if (IS_ERR(devfreq)) {
 		devres_free(ptr);
+<<<<<<< HEAD
 		return ERR_PTR(-ENOMEM);
+=======
+		return devfreq;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	*ptr = devfreq;

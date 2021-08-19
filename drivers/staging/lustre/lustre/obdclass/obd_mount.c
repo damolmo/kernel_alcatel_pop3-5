@@ -1012,8 +1012,13 @@ static int lmd_parse(char *options, struct lustre_mount_data *lmd)
 	}
 	lmd->lmd_magic = LMD_MAGIC;
 
+<<<<<<< HEAD
 	OBD_ALLOC(lmd->lmd_params, 4096);
 	if (lmd->lmd_params == NULL)
+=======
+	lmd->lmd_params = kzalloc(LMD_PARAMS_MAXLEN, GFP_NOFS);
+	if (!lmd->lmd_params)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -ENOMEM;
 	lmd->lmd_params[0] = '\0';
 
@@ -1098,15 +1103,28 @@ static int lmd_parse(char *options, struct lustre_mount_data *lmd)
 				goto invalid;
 			clear++;
 		} else if (strncmp(s1, "param=", 6) == 0) {
+<<<<<<< HEAD
 			int length;
+=======
+			size_t length, params_length;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			char *tail = strchr(s1 + 6, ',');
 			if (tail == NULL)
 				length = strlen(s1);
 			else
 				length = tail - s1;
 			length -= 6;
+<<<<<<< HEAD
 			strncat(lmd->lmd_params, s1 + 6, length);
 			strcat(lmd->lmd_params, " ");
+=======
+			params_length = strlen(lmd->lmd_params);
+			if (params_length + length + 1 >= LMD_PARAMS_MAXLEN)
+				return -E2BIG;
+			strncat(lmd->lmd_params, s1 + 6, length);
+			lmd->lmd_params[params_length + length] = '\0';
+			strlcat(lmd->lmd_params, " ", LMD_PARAMS_MAXLEN);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			clear++;
 		} else if (strncmp(s1, "osd=", 4) == 0) {
 			rc = lmd_parse_string(&lmd->lmd_osd_type, s1 + 4);

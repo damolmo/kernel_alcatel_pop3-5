@@ -68,7 +68,11 @@ int big_key_preparse(struct key_preparsed_payload *prep)
 		 *
 		 * TODO: Encrypt the stored data with a temporary key.
 		 */
+<<<<<<< HEAD
 		file = shmem_kernel_file_setup("", datalen, 0, 0);
+=======
+		file = shmem_kernel_file_setup("", datalen, 0);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		if (IS_ERR(file)) {
 			ret = PTR_ERR(file);
 			goto error;
@@ -127,7 +131,11 @@ void big_key_revoke(struct key *key)
 
 	/* clear the quota */
 	key_payload_reserve(key, 0);
+<<<<<<< HEAD
 	if (key_is_instantiated(key) && key->type_data.x[1] > BIG_KEY_FILE_THRESHOLD)
+=======
+	if (key_is_positive(key) && key->type_data.x[1] > BIG_KEY_FILE_THRESHOLD)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		vfs_truncate(path, 0);
 }
 
@@ -156,7 +164,11 @@ void big_key_describe(const struct key *key, struct seq_file *m)
 
 	seq_puts(m, key->description);
 
+<<<<<<< HEAD
 	if (key_is_instantiated(key))
+=======
+	if (key_is_positive(key))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		seq_printf(m, ": %lu [%s]",
 			   datalen,
 			   datalen > BIG_KEY_FILE_THRESHOLD ? "file" : "buff");

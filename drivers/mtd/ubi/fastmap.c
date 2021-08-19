@@ -259,6 +259,10 @@ static int update_vol(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			aeb->pnum = new_aeb->pnum;
 			aeb->copy_flag = new_vh->copy_flag;
 			aeb->scrub = new_aeb->scrub;
+<<<<<<< HEAD
+=======
+			aeb->sqnum = new_aeb->sqnum;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			kmem_cache_free(ai->aeb_slab_cache, new_aeb);
 
 		/* new_aeb is older */
@@ -446,10 +450,18 @@ static int scan_pool(struct ubi_device *ubi, struct ubi_attach_info *ai,
 			unsigned long long ec = be64_to_cpu(ech->ec);
 			unmap_peb(ai, pnum);
 			dbg_bld("Adding PEB to free: %i", pnum);
+<<<<<<< HEAD
 			if (err == UBI_IO_FF_BITFLIPS)
 				add_aeb(ai, free, pnum, ec, 1);
 			else
 				add_aeb(ai, free, pnum, ec, 0);
+=======
+
+			if (err == UBI_IO_FF_BITFLIPS)
+				scrub = 1;
+
+			add_aeb(ai, free, pnum, ec, scrub);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			continue;
 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
 			dbg_bld("Found non empty PEB:%i in pool", pnum);
@@ -1071,6 +1083,10 @@ int ubi_scan_fastmap(struct ubi_device *ubi, struct ubi_attach_info *ai,
 	ubi_msg("fastmap pool size: %d", ubi->fm_pool.max_size);
 	ubi_msg("fastmap WL pool size: %d", ubi->fm_wl_pool.max_size);
 	ubi->fm_disabled = 0;
+<<<<<<< HEAD
+=======
+	ubi->fast_attach = 1;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	ubi_free_vid_hdr(ubi, vh);
 	kfree(ech);

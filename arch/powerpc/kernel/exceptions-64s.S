@@ -938,11 +938,14 @@ hv_facility_unavailable_relon_trampoline:
 #endif
 	STD_RELON_EXCEPTION_PSERIES(0x5700, 0x1700, altivec_assist)
 
+<<<<<<< HEAD
 	/* Other future vectors */
 	.align	7
 	.globl	__end_interrupts
 __end_interrupts:
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	.align	7
 system_call_entry_direct:
 #if defined(CONFIG_RELOCATABLE)
@@ -1236,6 +1239,20 @@ __end_handlers:
 	STD_RELON_EXCEPTION_PSERIES_OOL(0xf60, facility_unavailable)
 	STD_RELON_EXCEPTION_HV_OOL(0xf80, hv_facility_unavailable)
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The __end_interrupts marker must be past the out-of-line (OOL)
+	 * handlers, so that they are copied to real address 0x100 when running
+	 * a relocatable kernel. This ensures they can be reached from the short
+	 * trampoline handlers (like 0x4f00, 0x4f20, etc.) which branch
+	 * directly, without using LOAD_HANDLER().
+	 */
+	.align	7
+	.globl	__end_interrupts
+__end_interrupts:
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #if defined(CONFIG_PPC_PSERIES) || defined(CONFIG_PPC_POWERNV)
 /*
  * Data area reserved for FWNMI option.

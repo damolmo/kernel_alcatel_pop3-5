@@ -28,6 +28,10 @@
 #include <asm/i8259.h>
 #include <asm/apic.h>
 #include <asm/timer.h>
+<<<<<<< HEAD
+=======
+#include <asm/nmi.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 struct ms_hyperv_info ms_hyperv;
 EXPORT_SYMBOL_GPL(ms_hyperv);
@@ -110,6 +114,29 @@ static struct clocksource hyperv_cs = {
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_LOCAL_APIC
+/*
+ * Prior to WS2016 Debug-VM sends NMIs to all CPUs which makes
+ * it dificult to process CHANNELMSG_UNLOAD in case of crash. Handle
+ * unknown NMI on the first CPU which gets it.
+ */
+static int hv_nmi_unknown(unsigned int val, struct pt_regs *regs)
+{
+	static atomic_t nmi_cpu = ATOMIC_INIT(-1);
+
+	if (!unknown_nmi_panic)
+		return NMI_DONE;
+
+	if (atomic_cmpxchg(&nmi_cpu, -1, raw_smp_processor_id()) != -1)
+		return NMI_HANDLED;
+
+	return NMI_DONE;
+}
+#endif
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void __init ms_hyperv_init_platform(void)
 {
 	/*
@@ -134,6 +161,12 @@ static void __init ms_hyperv_init_platform(void)
 		printk(KERN_INFO "HyperV: LAPIC Timer Frequency: %#x\n",
 				lapic_timer_frequency);
 	}
+<<<<<<< HEAD
+=======
+
+	register_nmi_handler(NMI_UNKNOWN, hv_nmi_unknown, NMI_FLAG_FIRST,
+			     "hv_nmi_unknown");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #endif
 
 	if (ms_hyperv.features & HV_X64_MSR_TIME_REF_COUNT_AVAILABLE)

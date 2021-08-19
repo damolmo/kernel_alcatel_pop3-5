@@ -44,12 +44,34 @@
 
 /******************** Little Endian Handling ********************************/
 
+<<<<<<< HEAD
 #define cpu_to_le16(x)  htole16(x)
 #define cpu_to_le32(x)  htole32(x)
 #define le32_to_cpu(x)  le32toh(x)
 #define le16_to_cpu(x)  le16toh(x)
 
 
+=======
+/*
+ * cpu_to_le16/32 are used when initializing structures, a context where a
+ * function call is not allowed. To solve this, we code cpu_to_le16/32 in a way
+ * that allows them to be used when initializing structures.
+ */
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define cpu_to_le16(x)  (x)
+#define cpu_to_le32(x)  (x)
+#else
+#define cpu_to_le16(x)  ((((x) >> 8) & 0xffu) | (((x) & 0xffu) << 8))
+#define cpu_to_le32(x)  \
+	((((x) & 0xff000000u) >> 24) | (((x) & 0x00ff0000u) >>  8) | \
+	(((x) & 0x0000ff00u) <<  8) | (((x) & 0x000000ffu) << 24))
+#endif
+
+#define le32_to_cpu(x)  le32toh(x)
+#define le16_to_cpu(x)  le16toh(x)
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 /******************** Messages and Errors ***********************************/
 
 static const char argv0[] = "ffs-test";

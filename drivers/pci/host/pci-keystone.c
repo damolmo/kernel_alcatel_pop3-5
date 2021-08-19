@@ -42,6 +42,10 @@
 #define PCIE_RC_K2HK		0xb008
 #define PCIE_RC_K2E		0xb009
 #define PCIE_RC_K2L		0xb00a
+<<<<<<< HEAD
+=======
+#define PCIE_RC_K2G		0xb00b
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 #define to_keystone_pcie(x)	container_of(x, struct keystone_pcie, pp)
 
@@ -56,6 +60,11 @@ static void quirk_limit_mrrs(struct pci_dev *dev)
 		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
 		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2L),
 		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
+<<<<<<< HEAD
+=======
+		{ PCI_DEVICE(PCI_VENDOR_ID_TI, PCIE_RC_K2G),
+		 .class = PCI_CLASS_BRIDGE_PCI << 8, .class_mask = ~0, },
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		{ 0, },
 	};
 
@@ -179,14 +188,25 @@ static int ks_pcie_get_irq_controller_info(struct keystone_pcie *ks_pcie,
 	}
 
 	/* interrupt controller is in a child node */
+<<<<<<< HEAD
 	*np_temp = of_find_node_by_name(np_pcie, controller);
+=======
+	*np_temp = of_get_child_by_name(np_pcie, controller);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!(*np_temp)) {
 		dev_err(dev, "Node for %s is absent\n", controller);
 		goto out;
 	}
 	temp = of_irq_count(*np_temp);
+<<<<<<< HEAD
 	if (!temp)
 		goto out;
+=======
+	if (!temp) {
+		of_node_put(*np_temp);
+		goto out;
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (temp > max_host_irqs)
 		dev_warn(dev, "Too many %s interrupts defined %u\n",
 			(legacy ? "legacy" : "MSI"), temp);
@@ -200,6 +220,12 @@ static int ks_pcie_get_irq_controller_info(struct keystone_pcie *ks_pcie,
 		if (host_irqs[temp] < 0)
 			break;
 	}
+<<<<<<< HEAD
+=======
+
+	of_node_put(*np_temp);
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (temp) {
 		*num_irqs = temp;
 		ret = 0;

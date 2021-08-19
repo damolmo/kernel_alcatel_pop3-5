@@ -28,6 +28,10 @@ static int dev_ifname(struct net *net, struct ifreq __user *arg)
 
 	if (copy_from_user(&ifr, arg, sizeof(struct ifreq)))
 		return -EFAULT;
+<<<<<<< HEAD
+=======
+	ifr.ifr_name[IFNAMSIZ-1] = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	error = netdev_get_name(net, ifr.ifr_name, ifr.ifr_ifindex);
 	if (error)

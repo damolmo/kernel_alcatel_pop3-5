@@ -826,7 +826,11 @@ int bnx2x_vfpf_set_mcast(struct net_device *dev)
 	struct bnx2x *bp = netdev_priv(dev);
 	struct vfpf_set_q_filters_tlv *req = &bp->vf2pf_mbox->req.set_q_filters;
 	struct pfvf_general_resp_tlv *resp = &bp->vf2pf_mbox->resp.general_resp;
+<<<<<<< HEAD
 	int rc, i = 0;
+=======
+	int rc = 0, i = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct netdev_hw_addr *ha;
 
 	if (bp->state != BNX2X_STATE_OPEN) {
@@ -841,6 +845,18 @@ int bnx2x_vfpf_set_mcast(struct net_device *dev)
 	/* Get Rx mode requested */
 	DP(NETIF_MSG_IFUP, "dev->flags = %x\n", dev->flags);
 
+<<<<<<< HEAD
+=======
+	/* We support PFVF_MAX_MULTICAST_PER_VF mcast addresses tops */
+	if (netdev_mc_count(dev) > PFVF_MAX_MULTICAST_PER_VF) {
+		DP(NETIF_MSG_IFUP,
+		   "VF supports not more than %d multicast MAC addresses\n",
+		   PFVF_MAX_MULTICAST_PER_VF);
+		rc = -EINVAL;
+		goto out;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	netdev_for_each_mc_addr(ha, dev) {
 		DP(NETIF_MSG_IFUP, "Adding mcast MAC: %pM\n",
 		   bnx2x_mc_addr(ha));
@@ -848,6 +864,7 @@ int bnx2x_vfpf_set_mcast(struct net_device *dev)
 		i++;
 	}
 
+<<<<<<< HEAD
 	/* We support four PFVF_MAX_MULTICAST_PER_VF mcast
 	  * addresses tops
 	  */
@@ -858,6 +875,8 @@ int bnx2x_vfpf_set_mcast(struct net_device *dev)
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	req->n_multicast = i;
 	req->flags |= VFPF_SET_Q_FILTERS_MULTICAST_CHANGED;
 	req->vf_qid = 0;
@@ -882,7 +901,11 @@ int bnx2x_vfpf_set_mcast(struct net_device *dev)
 out:
 	bnx2x_vfpf_finalize(bp, &req->first_tlv);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return rc;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 int bnx2x_vfpf_storm_rx_mode(struct bnx2x *bp)
@@ -1907,6 +1930,21 @@ static void bnx2x_vf_mbx_request(struct bnx2x *bp, struct bnx2x_virtf *vf,
 {
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (vf->state == VF_LOST) {
+		/* Just ack the FW and return if VFs are lost
+		 * in case of parity error. VFs are supposed to be timedout
+		 * on waiting for PF response.
+		 */
+		DP(BNX2X_MSG_IOV,
+		   "VF 0x%x lost, not handling the request\n", vf->abs_vfid);
+
+		storm_memset_vf_mbx_ack(bp, vf->abs_vfid);
+		return;
+	}
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	/* check if tlv type is known */
 	if (bnx2x_tlv_supported(mbx->first_tlv.tl.type)) {
 		/* Lock the per vf op mutex and note the locker's identity.

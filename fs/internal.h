@@ -83,9 +83,17 @@ extern struct file *get_empty_filp(void);
  * super.c
  */
 extern int do_remount_sb(struct super_block *, int, void *, int);
+<<<<<<< HEAD
 extern bool grab_super_passive(struct super_block *sb);
 extern struct dentry *mount_fs(struct file_system_type *,
 			       int, const char *, void *);
+=======
+extern int do_remount_sb2(struct vfsmount *, struct super_block *, int,
+								void *, int);
+extern bool grab_super_passive(struct super_block *sb);
+extern struct dentry *mount_fs(struct file_system_type *,
+			       int, const char *, struct vfsmount *, void *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern struct super_block *user_get_super(dev_t);
 
 /*
@@ -106,6 +114,10 @@ extern struct file *do_file_open_root(struct dentry *, struct vfsmount *,
 extern long do_handle_open(int mountdirfd,
 			   struct file_handle __user *ufh, int open_flag);
 extern int open_check_o_direct(struct file *f);
+<<<<<<< HEAD
+=======
+extern int vfs_open(const struct path *, struct file *, const struct cred *);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 /*
  * inode.c
@@ -121,7 +133,10 @@ extern void inode_add_lru(struct inode *inode);
 extern void inode_wb_list_del(struct inode *inode);
 
 extern long get_nr_dirty_inodes(void);
+<<<<<<< HEAD
 extern void evict_inodes(struct super_block *);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 extern int invalidate_inodes(struct super_block *, bool);
 
 /*

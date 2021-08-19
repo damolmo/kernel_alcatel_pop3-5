@@ -22,10 +22,22 @@
 
 #include <linux/bitops.h>
 #include <linux/bug.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/preempt.h>
 #include <linux/printk.h>
+=======
+#include <linux/compat.h>
+#include <linux/elf.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/personality.h>
+#include <linux/preempt.h>
+#include <linux/printk.h>
+#include <linux/seq_file.h>
+#include <linux/sched.h>
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 #include <linux/smp.h>
 
 /*
@@ -35,6 +47,7 @@
  */
 DEFINE_PER_CPU(struct cpuinfo_arm64, cpu_data);
 static struct cpuinfo_arm64 boot_cpu_data;
+<<<<<<< HEAD
 static bool mixed_endian_el0 = true;
 
 bool cpu_supports_mixed_endian_el0(void)
@@ -66,6 +79,144 @@ static char *icache_policy_str[] = {
 
 unsigned long __icache_flags;
 
+=======
+
+static char *icache_policy_str[] = {
+	[ICACHE_POLICY_RESERVED] = "RESERVED/UNKNOWN",
+	[ICACHE_POLICY_AIVIVT] = "AIVIVT",
+	[ICACHE_POLICY_VIPT] = "VIPT",
+	[ICACHE_POLICY_PIPT] = "PIPT",
+};
+
+unsigned long __icache_flags;
+
+static const char *hwcap_str[] = {
+	"fp",
+	"asimd",
+	"evtstrm",
+	"aes",
+	"pmull",
+	"sha1",
+	"sha2",
+	"crc32",
+	"atomics",
+	NULL
+};
+
+#ifdef CONFIG_COMPAT
+static const char *compat_hwcap_str[] = {
+	"swp",
+	"half",
+	"thumb",
+	"26bit",
+	"fastmult",
+	"fpa",
+	"vfp",
+	"edsp",
+	"java",
+	"iwmmxt",
+	"crunch",
+	"thumbee",
+	"neon",
+	"vfpv3",
+	"vfpv3d16",
+	"tls",
+	"vfpv4",
+	"idiva",
+	"idivt",
+	"vfpd32",
+	"lpae",
+	"evtstrm",
+	NULL
+};
+
+static const char *compat_hwcap2_str[] = {
+	"aes",
+	"pmull",
+	"sha1",
+	"sha2",
+	"crc32",
+	NULL
+};
+#endif /* CONFIG_COMPAT */
+
+static int c_show(struct seq_file *m, void *v)
+{
+	int i, j;
+	bool compat = personality(current->personality) == PER_LINUX32;
+
+	for_each_online_cpu(i) {
+		struct cpuinfo_arm64 *cpuinfo = &per_cpu(cpu_data, i);
+		u32 midr = cpuinfo->reg_midr;
+
+		/*
+		 * glibc reads /proc/cpuinfo to determine the number of
+		 * online processors, looking for lines beginning with
+		 * "processor".  Give glibc what it expects.
+		 */
+		seq_printf(m, "processor\t: %d\n", i);
+		if (compat)
+			seq_printf(m, "model name\t: ARMv8 Processor rev %d (%s)\n",
+				   MIDR_REVISION(midr), COMPAT_ELF_PLATFORM);
+
+		/*
+		 * Dump out the common processor features in a single line.
+		 * Userspace should read the hwcaps with getauxval(AT_HWCAP)
+		 * rather than attempting to parse this, but there's a body of
+		 * software which does already (at least for 32-bit).
+		 */
+		seq_puts(m, "Features\t:");
+		if (compat) {
+#ifdef CONFIG_COMPAT
+			for (j = 0; compat_hwcap_str[j]; j++)
+				if (compat_elf_hwcap & (1 << j))
+					seq_printf(m, " %s", compat_hwcap_str[j]);
+
+			for (j = 0; compat_hwcap2_str[j]; j++)
+				if (compat_elf_hwcap2 & (1 << j))
+					seq_printf(m, " %s", compat_hwcap2_str[j]);
+#endif /* CONFIG_COMPAT */
+		} else {
+			for (j = 0; hwcap_str[j]; j++)
+				if (elf_hwcap & (1 << j))
+					seq_printf(m, " %s", hwcap_str[j]);
+		}
+		seq_puts(m, "\n");
+
+		seq_printf(m, "CPU implementer\t: 0x%02x\n",
+			   MIDR_IMPLEMENTOR(midr));
+		seq_printf(m, "CPU architecture: 8\n");
+		seq_printf(m, "CPU variant\t: 0x%x\n", MIDR_VARIANT(midr));
+		seq_printf(m, "CPU part\t: 0x%03x\n", MIDR_PARTNUM(midr));
+		seq_printf(m, "CPU revision\t: %d\n\n", MIDR_REVISION(midr));
+	}
+
+	return 0;
+}
+
+static void *c_start(struct seq_file *m, loff_t *pos)
+{
+	return *pos < 1 ? (void *)1 : NULL;
+}
+
+static void *c_next(struct seq_file *m, void *v, loff_t *pos)
+{
+	++*pos;
+	return NULL;
+}
+
+static void c_stop(struct seq_file *m, void *v)
+{
+}
+
+const struct seq_operations cpuinfo_op = {
+	.start	= c_start,
+	.next	= c_next,
+	.stop	= c_stop,
+	.show	= c_show
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void cpuinfo_detect_icache_policy(struct cpuinfo_arm64 *info)
 {
 	unsigned int cpu = smp_processor_id();
@@ -89,6 +240,7 @@ static void cpuinfo_detect_icache_policy(struct cpuinfo_arm64 *info)
 	pr_info("Detected %s I-cache on CPU%d\n", icache_policy_str[l1ip], cpu);
 }
 
+<<<<<<< HEAD
 static int check_reg_mask(char *name, u64 mask, u64 boot, u64 cur, int cpu)
 {
 	if ((boot & mask) == (cur & mask))
@@ -180,10 +332,13 @@ static void cpuinfo_sanity_check(struct cpuinfo_arm64 *cur)
 			"Unsupported CPU feature variation.");
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void __cpuinfo_store_cpu(struct cpuinfo_arm64 *info)
 {
 	info->reg_cntfrq = arch_timer_get_cntfrq();
 	info->reg_ctr = read_cpuid_cachetype();
+<<<<<<< HEAD
 	info->reg_dczid = read_cpuid(DCZID_EL0);
 	info->reg_midr = read_cpuid_id();
 
@@ -206,18 +361,57 @@ static void __cpuinfo_store_cpu(struct cpuinfo_arm64 *info)
 	info->reg_id_mmfr3 = read_cpuid(ID_MMFR3_EL1);
 	info->reg_id_pfr0 = read_cpuid(ID_PFR0_EL1);
 	info->reg_id_pfr1 = read_cpuid(ID_PFR1_EL1);
+=======
+	info->reg_dczid = read_cpuid(SYS_DCZID_EL0);
+	info->reg_midr = read_cpuid_id();
+
+	info->reg_id_aa64dfr0 = read_cpuid(SYS_ID_AA64DFR0_EL1);
+	info->reg_id_aa64dfr1 = read_cpuid(SYS_ID_AA64DFR1_EL1);
+	info->reg_id_aa64isar0 = read_cpuid(SYS_ID_AA64ISAR0_EL1);
+	info->reg_id_aa64isar1 = read_cpuid(SYS_ID_AA64ISAR1_EL1);
+	info->reg_id_aa64mmfr0 = read_cpuid(SYS_ID_AA64MMFR0_EL1);
+	info->reg_id_aa64mmfr1 = read_cpuid(SYS_ID_AA64MMFR1_EL1);
+	info->reg_id_aa64mmfr2 = read_cpuid(SYS_ID_AA64MMFR2_EL1);
+	info->reg_id_aa64pfr0 = read_cpuid(SYS_ID_AA64PFR0_EL1);
+	info->reg_id_aa64pfr1 = read_cpuid(SYS_ID_AA64PFR1_EL1);
+
+	info->reg_id_dfr0 = read_cpuid(SYS_ID_DFR0_EL1);
+	info->reg_id_isar0 = read_cpuid(SYS_ID_ISAR0_EL1);
+	info->reg_id_isar1 = read_cpuid(SYS_ID_ISAR1_EL1);
+	info->reg_id_isar2 = read_cpuid(SYS_ID_ISAR2_EL1);
+	info->reg_id_isar3 = read_cpuid(SYS_ID_ISAR3_EL1);
+	info->reg_id_isar4 = read_cpuid(SYS_ID_ISAR4_EL1);
+	info->reg_id_isar5 = read_cpuid(SYS_ID_ISAR5_EL1);
+	info->reg_id_mmfr0 = read_cpuid(SYS_ID_MMFR0_EL1);
+	info->reg_id_mmfr1 = read_cpuid(SYS_ID_MMFR1_EL1);
+	info->reg_id_mmfr2 = read_cpuid(SYS_ID_MMFR2_EL1);
+	info->reg_id_mmfr3 = read_cpuid(SYS_ID_MMFR3_EL1);
+	info->reg_id_pfr0 = read_cpuid(SYS_ID_PFR0_EL1);
+	info->reg_id_pfr1 = read_cpuid(SYS_ID_PFR1_EL1);
+
+	info->reg_mvfr0 = read_cpuid(SYS_MVFR0_EL1);
+	info->reg_mvfr1 = read_cpuid(SYS_MVFR1_EL1);
+	info->reg_mvfr2 = read_cpuid(SYS_MVFR2_EL1);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	cpuinfo_detect_icache_policy(info);
 
 	check_local_cpu_errata();
+<<<<<<< HEAD
 	update_cpu_features(info);
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void cpuinfo_store_cpu(void)
 {
 	struct cpuinfo_arm64 *info = this_cpu_ptr(&cpu_data);
 	__cpuinfo_store_cpu(info);
+<<<<<<< HEAD
 	cpuinfo_sanity_check(info);
+=======
+	update_cpu_features(smp_processor_id(), info, &boot_cpu_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 void __init cpuinfo_store_boot_cpu(void)
@@ -226,6 +420,10 @@ void __init cpuinfo_store_boot_cpu(void)
 	__cpuinfo_store_cpu(info);
 
 	boot_cpu_data = *info;
+<<<<<<< HEAD
+=======
+	init_cpu_features(&boot_cpu_data);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 u64 __attribute_const__ icache_get_ccsidr(void)

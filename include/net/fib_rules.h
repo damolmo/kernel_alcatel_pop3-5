@@ -8,6 +8,14 @@
 #include <net/flow.h>
 #include <net/rtnetlink.h>
 
+<<<<<<< HEAD
+=======
+struct fib_kuid_range {
+	kuid_t start;
+	kuid_t end;
+};
+
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 struct fib_rule {
 	struct list_head	list;
 	int			iifindex;
@@ -28,8 +36,12 @@ struct fib_rule {
 	int			suppress_prefixlen;
 	char			iifname[IFNAMSIZ];
 	char			oifname[IFNAMSIZ];
+<<<<<<< HEAD
 	kuid_t			uid_start;
 	kuid_t			uid_end;
+=======
+	struct fib_kuid_range	uid_range;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct rcu_head		rcu;
 };
 
@@ -88,6 +100,7 @@ struct fib_rules_ops {
 	[FRA_FWMARK]	= { .type = NLA_U32 }, \
 	[FRA_FWMASK]	= { .type = NLA_U32 }, \
 	[FRA_TABLE]     = { .type = NLA_U32 }, \
+<<<<<<< HEAD
 	[FRA_GOTO]	= { .type = NLA_U32 }, \
 	[FRA_UID_START]	= { .type = NLA_U32 }, \
 	[FRA_UID_END]	= { .type = NLA_U32 }, \
@@ -95,6 +108,12 @@ struct fib_rules_ops {
 	[FRA_SUPPRESS_IFGROUP] = { .type = NLA_U32 }, \
 	[FRA_GOTO]	= { .type = NLA_U32 }
 	
+=======
+	[FRA_SUPPRESS_PREFIXLEN] = { .type = NLA_U32 }, \
+	[FRA_SUPPRESS_IFGROUP] = { .type = NLA_U32 }, \
+	[FRA_GOTO]	= { .type = NLA_U32 }, \
+	[FRA_UID_RANGE]	= { .len = sizeof(struct fib_rule_uid_range) }
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 static inline void fib_rule_get(struct fib_rule *rule)
 {

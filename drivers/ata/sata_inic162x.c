@@ -472,7 +472,11 @@ static void inic_fill_sg(struct inic_prd *prd, struct ata_queued_cmd *qc)
 	prd[-1].flags |= PRD_END;
 }
 
+<<<<<<< HEAD
 static void inic_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors inic_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 {
 	struct inic_port_priv *pp = qc->ap->private_data;
 	struct inic_pkt *pkt = pp->pkt;
@@ -532,6 +536,11 @@ static void inic_qc_prep(struct ata_queued_cmd *qc)
 		inic_fill_sg(prd, qc);
 
 	pp->cpb_tbl[0] = pp->pkt_dma;
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned int inic_qc_issue(struct ata_queued_cmd *qc)

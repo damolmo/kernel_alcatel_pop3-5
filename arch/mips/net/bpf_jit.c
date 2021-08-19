@@ -556,6 +556,7 @@ static inline u16 align_sp(unsigned int num)
 	return num;
 }
 
+<<<<<<< HEAD
 static bool is_load_to_a(u16 inst)
 {
 	switch (inst) {
@@ -569,13 +570,20 @@ static bool is_load_to_a(u16 inst)
 	}
 }
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static void save_bpf_jit_regs(struct jit_ctx *ctx, unsigned offset)
 {
 	int i = 0, real_off = 0;
 	u32 sflags, tmp_flags;
 
 	/* Adjust the stack pointer */
+<<<<<<< HEAD
 	emit_stack_offset(-align_sp(offset), ctx);
+=======
+	if (offset)
+		emit_stack_offset(-align_sp(offset), ctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 
 	if (ctx->flags & SEEN_CALL) {
 		/* Argument save area */
@@ -654,7 +662,12 @@ static void restore_bpf_jit_regs(struct jit_ctx *ctx,
 		emit_load_stack_reg(r_ra, r_sp, real_off, ctx);
 
 	/* Restore the sp and discard the scrach memory */
+<<<<<<< HEAD
 	emit_stack_offset(align_sp(offset), ctx);
+=======
+	if (offset)
+		emit_stack_offset(align_sp(offset), ctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 }
 
 static unsigned int get_stack_depth(struct jit_ctx *ctx)
@@ -690,7 +703,10 @@ static unsigned int get_stack_depth(struct jit_ctx *ctx)
 
 static void build_prologue(struct jit_ctx *ctx)
 {
+<<<<<<< HEAD
 	u16 first_inst = ctx->skf->insns[0].code;
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	int sp_off;
 
 	/* Calculate the total offset for the stack pointer */
@@ -703,8 +719,19 @@ static void build_prologue(struct jit_ctx *ctx)
 	if (ctx->flags & SEEN_X)
 		emit_jit_reg_move(r_X, r_zero, ctx);
 
+<<<<<<< HEAD
 	/* Do not leak kernel data to userspace */
 	if ((first_inst != (BPF_RET | BPF_K)) && !(is_load_to_a(first_inst)))
+=======
+	/*
+	 * Do not leak kernel data to userspace, we only need to clear
+	 * r_A if it is ever used.  In fact if it is never used, we
+	 * will not save/restore it, so clearing it in this case would
+	 * corrupt the state of the caller.
+	 */
+	if (bpf_needs_clear_a(&ctx->skf->insns[0]) &&
+	    (ctx->flags & SEEN_A))
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		emit_jit_reg_move(r_A, r_zero, ctx);
 }
 

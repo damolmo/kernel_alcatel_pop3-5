@@ -1693,11 +1693,15 @@ static int lpt_init_wr(struct ubifs_info *c)
 	if (!c->ltab_cmt)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_SHARE_BUFFER
 	c->lpt_buf = c->sbuf;
 #else
 	c->lpt_buf = vmalloc(c->leb_size);
 #endif
+=======
+	c->lpt_buf = vmalloc(c->leb_size);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!c->lpt_buf)
 		return -ENOMEM;
 

@@ -983,7 +983,11 @@ static int asd_process_ctrl_a_user(struct asd_ha_struct *asd_ha,
 {
 	int err, i;
 	u32 offs, size;
+<<<<<<< HEAD
 	struct asd_ll_el *el;
+=======
+	struct asd_ll_el *el = NULL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct asd_ctrla_phy_settings *ps;
 	struct asd_ctrla_phy_settings dflt_ps;
 
@@ -1004,6 +1008,10 @@ static int asd_process_ctrl_a_user(struct asd_ha_struct *asd_ha,
 
 		size = sizeof(struct asd_ctrla_phy_settings);
 		ps = &dflt_ps;
+<<<<<<< HEAD
+=======
+		goto out_process;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 
 	if (size == 0)
@@ -1028,7 +1036,11 @@ static int asd_process_ctrl_a_user(struct asd_ha_struct *asd_ha,
 		ASD_DPRINTK("couldn't find ctrla phy settings struct\n");
 		goto out2;
 	}
+<<<<<<< HEAD
 
+=======
+out_process:
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	err = asd_process_ctrla_phy_settings(asd_ha, ps);
 	if (err) {
 		ASD_DPRINTK("couldn't process ctrla phy settings\n");

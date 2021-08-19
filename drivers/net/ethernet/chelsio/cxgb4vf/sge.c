@@ -2427,8 +2427,13 @@ void t4vf_sge_stop(struct adapter *adapter)
 int t4vf_sge_init(struct adapter *adapter)
 {
 	struct sge_params *sge_params = &adapter->params.sge;
+<<<<<<< HEAD
 	u32 fl0 = sge_params->sge_fl_buffer_size[0];
 	u32 fl1 = sge_params->sge_fl_buffer_size[1];
+=======
+	u32 fl_small_pg = sge_params->sge_fl_buffer_size[0];
+	u32 fl_large_pg = sge_params->sge_fl_buffer_size[1];
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	struct sge *s = &adapter->sge;
 	unsigned int ingpadboundary, ingpackboundary;
 
@@ -2437,9 +2442,26 @@ int t4vf_sge_init(struct adapter *adapter)
 	 * the Physical Function Driver.  Ideally we should be able to deal
 	 * with _any_ configuration.  Practice is different ...
 	 */
+<<<<<<< HEAD
 	if (fl0 != PAGE_SIZE || (fl1 != 0 && fl1 <= fl0)) {
 		dev_err(adapter->pdev_dev, "bad SGE FL buffer sizes [%d, %d]\n",
 			fl0, fl1);
+=======
+
+	/* We only bother using the Large Page logic if the Large Page Buffer
+	 * is larger than our Page Size Buffer.
+	 */
+	if (fl_large_pg <= fl_small_pg)
+		fl_large_pg = 0;
+
+	/* The Page Size Buffer must be exactly equal to our Page Size and the
+	 * Large Page Size Buffer should be 0 (per above) or a power of 2.
+	 */
+	if (fl_small_pg != PAGE_SIZE ||
+	    (fl_large_pg & (fl_large_pg - 1)) != 0) {
+		dev_err(adapter->pdev_dev, "bad SGE FL buffer sizes [%d, %d]\n",
+			fl_small_pg, fl_large_pg);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		return -EINVAL;
 	}
 	if ((sge_params->sge_control & RXPKTCPLMODE_MASK) == 0) {
@@ -2450,8 +2472,13 @@ int t4vf_sge_init(struct adapter *adapter)
 	/*
 	 * Now translate the adapter parameters into our internal forms.
 	 */
+<<<<<<< HEAD
 	if (fl1)
 		s->fl_pg_order = ilog2(fl1) - PAGE_SHIFT;
+=======
+	if (fl_large_pg)
+		s->fl_pg_order = ilog2(fl_large_pg) - PAGE_SHIFT;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	s->stat_len = ((sge_params->sge_control & EGRSTATUSPAGESIZE_MASK)
 			? 128 : 64);
 	s->pktshift = PKTSHIFT_GET(sge_params->sge_control);

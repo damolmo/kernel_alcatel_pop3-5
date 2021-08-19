@@ -153,8 +153,11 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
 {
 	int i;
 
+<<<<<<< HEAD
 	kvm_free_stage2_pgd(kvm);
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
 		if (kvm->vcpus[i]) {
 			kvm_arch_vcpu_free(kvm->vcpus[i]);
@@ -251,6 +254,10 @@ void kvm_arch_vcpu_free(struct kvm_vcpu *vcpu)
 	kvm_mmu_free_memory_caches(vcpu);
 	kvm_timer_vcpu_terminate(vcpu);
 	kvm_vgic_vcpu_destroy(vcpu);
+<<<<<<< HEAD
+=======
+	kvm_vcpu_uninit(vcpu);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kmem_cache_free(kvm_vcpu_cache, vcpu);
 }
 
@@ -280,6 +287,7 @@ void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 	vcpu->cpu = cpu;
 	vcpu->arch.host_cpu_context = this_cpu_ptr(kvm_host_cpu_state);
 
+<<<<<<< HEAD
 	/*
 	 * Check whether this vcpu requires the cache to be flushed on
 	 * this physical CPU. This is a consequence of doing dcache
@@ -289,6 +297,8 @@ void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 	if (cpumask_test_and_clear_cpu(cpu, &vcpu->arch.require_dcache_flush))
 		flush_cache_all(); /* We'd really want v7_flush_dcache_all() */
 
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	kvm_arm_set_running_vcpu(vcpu);
 }
 
@@ -540,7 +550,10 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *run)
 		ret = kvm_call_hyp(__kvm_vcpu_run, vcpu);
 
 		vcpu->mode = OUTSIDE_GUEST_MODE;
+<<<<<<< HEAD
 		vcpu->arch.last_pcpu = smp_processor_id();
+=======
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		kvm_guest_exit();
 		trace_kvm_exit(*vcpu_pc(vcpu));
 		/*

@@ -361,11 +361,18 @@ static struct trace_kprobe *find_trace_kprobe(const char *event,
 static int
 enable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (file) {
 		struct event_file_link *link;
 
+=======
+	struct event_file_link *link = NULL;
+	int ret = 0;
+
+	if (file) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		link = kmalloc(sizeof(*link), GFP_KERNEL);
 		if (!link) {
 			ret = -ENOMEM;
@@ -385,6 +392,21 @@ enable_trace_kprobe(struct trace_kprobe *tk, struct ftrace_event_file *file)
 		else
 			ret = enable_kprobe(&tk->rp.kp);
 	}
+<<<<<<< HEAD
+=======
+
+	if (ret) {
+		if (file) {
+			/* Notice the if is true on not WARN() */
+			if (!WARN_ON_ONCE(!link))
+				list_del_rcu(&link->list);
+			kfree(link);
+			tk->tp.flags &= ~TP_FLAG_TRACE;
+		} else {
+			tk->tp.flags &= ~TP_FLAG_PROFILE;
+		}
+	}
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
  out:
 	return ret;
 }
@@ -611,7 +633,11 @@ static int create_trace_kprobe(int argc, char **argv)
 	bool is_return = false, is_delete = false;
 	char *symbol = NULL, *event = NULL, *group = NULL;
 	char *arg;
+<<<<<<< HEAD
 	unsigned long offset = 0;
+=======
+	long offset = 0;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	void *addr = NULL;
 	char buf[MAX_EVENT_NAME_LEN];
 
@@ -671,6 +697,7 @@ static int create_trace_kprobe(int argc, char **argv)
 		pr_info("Probe point is not specified.\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if (isdigit(argv[1][0])) {
 		if (is_return) {
 			pr_info("Return probe point must be a symbol.\n");
@@ -683,18 +710,35 @@ static int create_trace_kprobe(int argc, char **argv)
 			return ret;
 		}
 	} else {
+=======
+
+	/* try to parse an address. if that fails, try to read the
+	 * input as a symbol. */
+	if (kstrtoul(argv[1], 0, (unsigned long *)&addr)) {
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 		/* a symbol specified */
 		symbol = argv[1];
 		/* TODO: support .init module functions */
 		ret = traceprobe_split_symbol_offset(symbol, &offset);
+<<<<<<< HEAD
 		if (ret) {
 			pr_info("Failed to parse symbol.\n");
+=======
+		if (ret || offset < 0 || offset > UINT_MAX) {
+			pr_info("Failed to parse either an address or a symbol.\n");
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			return ret;
 		}
 		if (offset && is_return) {
 			pr_info("Return probe must be used without offset.\n");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
+=======
+	} else if (is_return) {
+		pr_info("Return probe point must be a symbol.\n");
+		return -EINVAL;
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	}
 	argc -= 2; argv += 2;
 
@@ -1158,7 +1202,11 @@ kprobe_perf_func(struct trace_kprobe *tk, struct pt_regs *regs)
 	size = ALIGN(__size + sizeof(u32), sizeof(u64));
 	size -= sizeof(u32);
 
+<<<<<<< HEAD
 	entry = perf_trace_buf_prepare(size, call->event.type, regs, &rctx);
+=======
+	entry = perf_trace_buf_prepare(size, call->event.type, NULL, &rctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!entry)
 		return;
 
@@ -1189,7 +1237,11 @@ kretprobe_perf_func(struct trace_kprobe *tk, struct kretprobe_instance *ri,
 	size = ALIGN(__size + sizeof(u32), sizeof(u64));
 	size -= sizeof(u32);
 
+<<<<<<< HEAD
 	entry = perf_trace_buf_prepare(size, call->event.type, regs, &rctx);
+=======
+	entry = perf_trace_buf_prepare(size, call->event.type, NULL, &rctx);
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (!entry)
 		return;
 
@@ -1320,7 +1372,11 @@ static int unregister_kprobe_event(struct trace_kprobe *tk)
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Make a debugfs interface for controlling probe points */
+=======
+/* Make a tracefs interface for controlling probe points */
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 static __init int init_kprobe_trace(void)
 {
 	struct dentry *d_tracer;
@@ -1330,14 +1386,22 @@ static __init int init_kprobe_trace(void)
 		return -EINVAL;
 
 	d_tracer = tracing_init_dentry();
+<<<<<<< HEAD
 	if (!d_tracer)
 		return 0;
 
 	entry = debugfs_create_file("kprobe_events", 0644, d_tracer,
+=======
+	if (IS_ERR(d_tracer))
+		return 0;
+
+	entry = tracefs_create_file("kprobe_events", 0644, d_tracer,
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 				    NULL, &kprobe_events_ops);
 
 	/* Event list interface */
 	if (!entry)
+<<<<<<< HEAD
 		pr_warning("Could not create debugfs "
 			   "'kprobe_events' entry\n");
 
@@ -1347,6 +1411,17 @@ static __init int init_kprobe_trace(void)
 
 	if (!entry)
 		pr_warning("Could not create debugfs "
+=======
+		pr_warning("Could not create tracefs "
+			   "'kprobe_events' entry\n");
+
+	/* Profile interface */
+	entry = tracefs_create_file("kprobe_profile", 0444, d_tracer,
+				    NULL, &kprobe_profile_ops);
+
+	if (!entry)
+		pr_warning("Could not create tracefs "
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 			   "'kprobe_profile' entry\n");
 	return 0;
 }
@@ -1484,6 +1559,14 @@ static __init int kprobe_trace_self_tests_init(void)
 
 end:
 	release_all_trace_kprobes();
+<<<<<<< HEAD
+=======
+	/*
+	 * Wait for the optimizer work to finish. Otherwise it might fiddle
+	 * with probes in already freed __init text.
+	 */
+	wait_for_kprobe_optimizer();
+>>>>>>> 21c1bccd7c23ac9673b3f0dd0f8b4f78331b3916
 	if (warn)
 		pr_cont("NG: Some tests are failed. Please check them.\n");
 	else
